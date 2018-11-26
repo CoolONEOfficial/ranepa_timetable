@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
@@ -196,11 +198,17 @@ class GroupSearch extends SearchDelegate<String> {
                 padding: EdgeInsets.all(20.0),
                 child: Column(
                   children: <Widget>[
-                    Icon(
-                      Icons.error,
-                      size: 20,
+                    new Expanded(
+                      child: new FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: new Icon(Icons.error,
+                        size: 70),
+                      ),
                     ),
-                    Text("${snapshot.error}", textAlign: TextAlign.center),
+                    RichText(
+                        text: TextSpan(
+                            text: "${snapshot.error}",
+                            style: TextStyle(color: Colors.black)))
                   ],
                 ),
               );
