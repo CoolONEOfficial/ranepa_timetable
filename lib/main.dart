@@ -8,10 +8,45 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart' as xml;
 
+enum Type { Teacher, Group, Unknown }
+
+class _SearchItem {
+  const _SearchItem(this.type, this.id, this.title);
+
+  final Type type;
+  final int id;
+  final String title;
+
+  @override
+  String toString() {
+    return "Search item: type - " +
+        type.toString() +
+        ", id - " +
+        id.toString() +
+        ", title - " +
+        title +
+        ".\n";
+  }
+}
+
 class GroupSearch extends SearchDelegate<String> {
+  List<_SearchItem> suggestions = [];
+
+  final recentSuggestions = [
+    _SearchItem(Type.Group, 15016, "Иб-021"),
+    _SearchItem(Type.Teacher, 39, "Гришин Алехандр Юрьевич"),
+  ];
+
   @override
   List<Widget> buildActions(BuildContext) {
-    return [IconButton(icon: Icon(Icons.clear))];
+    return [
+      IconButton(
+        icon: Icon(Icons.clear),
+        onPressed: () {
+          query = "";
+        },
+      )
+    ];
   }
 
   @override
@@ -20,7 +55,8 @@ class GroupSearch extends SearchDelegate<String> {
         icon: AnimatedIcon(
             icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
         onPressed: () {
-          showSearch(context: context, delegate: GroupSearch());
+
+          close(context, null);
         });
   }
 
@@ -29,9 +65,6 @@ class GroupSearch extends SearchDelegate<String> {
     // TODO: implement buildResults
     return null;
   }
-
-  String text = '';
-  int groupId = 15022;
 
   void startLoad() async {
     // Send the POST request, with full SOAP envelope as the request body.
@@ -49,28 +82,71 @@ class GroupSearch extends SearchDelegate<String> {
 </soap:Envelope>
 ''');
 
+    final itemArr = xml
+        .parse(response.body)
+        .children[1]
+        .firstChild
+        .firstChild
+        .firstChild
+        .children;
 
+    suggestions.clear();
+    for (var mItem in itemArr) {
+      Type mItemType;
 
-    // Use the xml package's 'parse' method to parse the response.
-    xml.XmlDocument parsedXml = xml.parse(response.body);
+      switch (mItem.children[0].text) {
+        case "Prep":
+          mItemType = Type.Teacher;
+          break;
+        case "Group":
+          mItemType = Type.Group;
+          break;
+        default:
+          mItemType = Type.Unknown;
+      }
 
-    log(parsedXml.firstChild.firstChild.toString());
-
+      suggestions.add(_SearchItem(
+        mItemType,
+        int.parse(mItem.children[1].text),
+        mItem.children[2].text,
+      ));
+    }
+    print(suggestions);
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
     startLoad();
-    // TODO: implement buildSuggestions
+
+    final finalSuggestions = query.isEmpty
+        ? recentSuggestions
+        : suggestions.where((p) => p.title.startsWith(query)).toList();
+
     return ListView.builder(
-        itemBuilder: (context, index) => ListTile(
-              leading: Icon(Icons.flash_on),
-            ));
+        itemBuilder: (context, index) {
+          IconData iconData;
+          switch (finalSuggestions[index].type) {
+            case Type.Unknown:
+              iconData = Icons.insert_drive_file;
+              break;
+            case Type.Teacher:
+              iconData = Icons.person;
+              break;
+            case Type.Group:
+              iconData = Icons.group;
+              break;
+          }
+
+          return ListTile(
+            leading: Icon(iconData),
+            title: Text(finalSuggestions[index].title),
+          );
+        },
+        itemCount: finalSuggestions.length);
   }
 }
 
 class TimetableWidget extends StatefulWidget {
-
   @override
   _TimetableWidgetState createState() => _TimetableWidgetState();
 }
@@ -86,17 +162,6 @@ class _TimetableWidgetState extends State<TimetableWidget> {
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          leading: IconButton(
-            tooltip: 'Navigation menu',
-            icon: AnimatedIcon(
-              icon: AnimatedIcons.menu_arrow,
-              color: Colors.white,
-              progress: _delegate.transitionAnimation,
-            ),
-            onPressed: () {
-              _scaffoldKey.currentState.openDrawer();
-            },
-          ),
           actions: <Widget>[
             IconButton(
               tooltip: 'Search',
