@@ -29,33 +29,38 @@ class _SearchItem extends _SearchItemBase {
 }
 
 class _SearchDivider extends _SearchItemBase {
-  const _SearchDivider();
+  const _SearchDivider(this.title);
+
+  final String title;
 }
 
 class GroupSearch extends SearchDelegate<String> {
   SharedPreferences d;
 
-  List<_SearchItem> suggestions = [];
+  List<_SearchItemBase> webSuggestions = [];
 
-  final groupSuggestions = [
+  // Check 2018-2019 academic year because all item ids in next year will be refreshed
+  bool predefinedSuggestionsValid = DateTime.now().isBefore(DateTime(2019, 9));
+
+  final predefinedSuggestions = [
+    _SearchDivider("Информатика"),
     _SearchItem(Type.Group, 15034, "Иб-011"),
     _SearchItem(Type.Group, 15035, "Иб-012"),
     _SearchItem(Type.Group, 15016, "Иб-021"),
     _SearchItem(Type.Group, 15024, "Иб-031"),
     _SearchItem(Type.Group, 15030, "Иб-041"),
     _SearchItem(Type.Group, 15031, "Иб-042"),
-    _SearchDivider(),
+    _SearchDivider("Экономика"),
     _SearchItem(Type.Group, 15122, "Эб-011"),
     _SearchItem(Type.Group, 15123, "Эб-012"),
     _SearchItem(Type.Group, 15022, "Эб-021"),
     _SearchItem(Type.Group, 15023, "Эб-022"),
     _SearchItem(Type.Group, 15113, "Эб-031"),
-    _SearchItem(Type.Group, 15112, "Эб-032"),
-    _SearchDivider(),
+    _SearchItem(Type.Group, 15112, "Эб-032")
   ];
 
   @override
-  List<Widget> buildActions(BuildContext) {
+  List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
         icon: Icon(Icons.clear),
@@ -106,7 +111,9 @@ class GroupSearch extends SearchDelegate<String> {
         .firstChild
         .children;
 
-    suggestions.clear();
+    webSuggestions.clear();
+    webSuggestions.add(_SearchDivider("Результаты веб-поиска"));
+
     for (var mItem in itemArr) {
       Type mItemType;
 
@@ -121,36 +128,47 @@ class GroupSearch extends SearchDelegate<String> {
           mItemType = Type.Unknown;
       }
 
-      suggestions.add(_SearchItem(
+      webSuggestions.add(_SearchItem(
         mItemType,
         int.parse(mItem.children[1].text),
         mItem.children[2].text,
       ));
     }
-    print(suggestions);
+    print(webSuggestions);
   }
 
   Widget _buildSuggestions() {
-    final List<_SearchItemBase> _recentSuggestions = query.isEmpty
-        ? groupSuggestions
-        : groupSuggestions.where((p) {
-            if (p is _SearchItem) {
-              final _SearchItem _p = p;
-              return _p.title
-                  .startsWith(RegExp("^" + query, caseSensitive: false));
+    final List<_SearchItemBase> queryPredefinedSuggestions = query.isEmpty
+        ? predefinedSuggestions
+        : predefinedSuggestions.where((mSearchItemBase) {
+            switch (mSearchItemBase.runtimeType) {
+              case _SearchItem:
+                final _SearchItem mSearchItem = mSearchItemBase;
+                return mSearchItem.title
+                    .startsWith(RegExp("^" + query, caseSensitive: false));
+                break;
+              case _SearchDivider:
+                return true;
+                break;
             }
 
             return false;
           }).toList();
 
-    final List<_SearchItemBase> _suggestions =
-        DateTime.now().isBefore(DateTime(2019, 9))
-            ? (List.from(_recentSuggestions)..addAll(suggestions))
-            : suggestions;
+    final List<_SearchItemBase> suggestions = predefinedSuggestionsValid
+        ? (List.from(queryPredefinedSuggestions)..addAll(webSuggestions))
+        : webSuggestions;
+
+    for (var mIndex = suggestions.length - 1; mIndex > 0; mIndex--) {
+      final mSuggestion = suggestions.elementAt(mIndex);
+      final mPreSuggestion = suggestions.elementAt(mIndex - 1);
+      if (mSuggestion is _SearchDivider && mPreSuggestion is _SearchDivider)
+        suggestions.removeAt(mIndex - 1);
+    }
 
     return ListView.builder(
         itemBuilder: (context, index) {
-          final mBaseItem = _suggestions[index];
+          final mBaseItem = suggestions[index];
 
           if (mBaseItem is _SearchItem) {
             final _SearchItem mSearchItem = mBaseItem;
@@ -173,7 +191,7 @@ class GroupSearch extends SearchDelegate<String> {
                 showResults(context);
               },
               leading: Icon(iconData),
-              title: index > _recentSuggestions.length - 1
+              title: index > queryPredefinedSuggestions.length - 1
                   // Not recent suggestion
                   ? RichText(
                       text: TextSpan(
@@ -195,10 +213,24 @@ class GroupSearch extends SearchDelegate<String> {
                         ])),
             );
           } else if (mBaseItem is _SearchDivider) {
-            return Divider();
+            final _SearchDivider mDivider = mBaseItem;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(left: 15, top: 15),
+                  child: RichText(
+                      text: TextSpan(
+                          text: mDivider.title,
+                          style: TextStyle(color: Colors.grey))),
+                ),
+                Divider(),
+              ],
+            );
           }
         },
-        itemCount: _suggestions.length);
+        itemCount: suggestions.length);
   }
 
   @override
