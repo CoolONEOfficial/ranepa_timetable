@@ -1,13 +1,15 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart' as xml;
 
 enum Type { Teacher, Group, Unknown }
 
-class _SearchItem {
+abstract class _SearchItemBase {
+  const _SearchItemBase();
+}
+
+class _SearchItem extends _SearchItemBase {
   const _SearchItem(this.type, this.id, this.title);
 
   final Type type;
@@ -26,12 +28,30 @@ class _SearchItem {
   }
 }
 
+class _SearchDivider extends _SearchItemBase {
+  const _SearchDivider();
+}
+
 class GroupSearch extends SearchDelegate<String> {
+  SharedPreferences d;
+
   List<_SearchItem> suggestions = [];
 
-  final recentSuggestions = [
+  final groupSuggestions = [
+    _SearchItem(Type.Group, 15034, "Иб-011"),
+    _SearchItem(Type.Group, 15035, "Иб-012"),
     _SearchItem(Type.Group, 15016, "Иб-021"),
-    _SearchItem(Type.Teacher, 39, "Гришин Алехандр Юрьевич"),
+    _SearchItem(Type.Group, 15024, "Иб-031"),
+    _SearchItem(Type.Group, 15030, "Иб-041"),
+    _SearchItem(Type.Group, 15031, "Иб-042"),
+    _SearchDivider(),
+    _SearchItem(Type.Group, 15122, "Эб-011"),
+    _SearchItem(Type.Group, 15123, "Эб-012"),
+    _SearchItem(Type.Group, 15022, "Эб-021"),
+    _SearchItem(Type.Group, 15023, "Эб-022"),
+    _SearchItem(Type.Group, 15113, "Эб-031"),
+    _SearchItem(Type.Group, 15112, "Эб-032"),
+    _SearchDivider(),
   ];
 
   @override
@@ -62,7 +82,7 @@ class GroupSearch extends SearchDelegate<String> {
     return null;
   }
 
-  Future<void> startLoad(BuildContext context) async {
+  Future<void> loadSuggestions() async {
     // Send the POST request, with full SOAP envelope as the request body.
     http.Response response = await http.post(
         'http://test.ranhigs-nn.ru/api/WebService.asmx',
@@ -111,67 +131,80 @@ class GroupSearch extends SearchDelegate<String> {
   }
 
   Widget _buildSuggestions() {
-    final List<_SearchItem> _recentSuggestions = query.isEmpty
-        ? recentSuggestions
-        : recentSuggestions
-            .where((p) =>
-                p.title.startsWith(RegExp("^" + query, caseSensitive: false)))
-            .toList();
+    final List<_SearchItemBase> _recentSuggestions = query.isEmpty
+        ? groupSuggestions
+        : groupSuggestions.where((p) {
+            if (p is _SearchItem) {
+              final _SearchItem _p = p;
+              return _p.title
+                  .startsWith(RegExp("^" + query, caseSensitive: false));
+            }
 
-    final List<_SearchItem> finalSuggestions = List.from(_recentSuggestions)
-      ..addAll(suggestions);
+            return false;
+          }).toList();
+
+    final List<_SearchItemBase> _suggestions =
+        DateTime.now().isBefore(DateTime(2019, 9))
+            ? (List.from(_recentSuggestions)..addAll(suggestions))
+            : suggestions;
 
     return ListView.builder(
         itemBuilder: (context, index) {
-          IconData iconData;
-          switch (finalSuggestions[index].type) {
-            case Type.Unknown:
-              iconData = Icons.insert_drive_file;
-              break;
-            case Type.Teacher:
-              iconData = Icons.person;
-              break;
-            case Type.Group:
-              iconData = Icons.group;
-              break;
-          }
+          final mBaseItem = _suggestions[index];
 
-          return ListTile(
-            onTap: () {
-              showResults(context);
-            },
-            leading: Icon(iconData),
-            title: index > _recentSuggestions.length - 1
-                // Not recent suggestion
-                ? RichText(
-                    text: TextSpan(
-                        text: finalSuggestions[index].title,
-                        style: TextStyle(color: Colors.grey)))
-                // Recent suggestion
-                : RichText(
-                    // Recent suggestion
-                    text: TextSpan(
-                        text: finalSuggestions[index]
-                            .title
-                            .substring(0, query.length),
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                        children: [
-                        TextSpan(
-                            text: finalSuggestions[index]
-                                .title
-                                .substring(query.length),
-                            style: TextStyle(color: Colors.grey))
-                      ])),
-          );
+          if (mBaseItem is _SearchItem) {
+            final _SearchItem mSearchItem = mBaseItem;
+
+            IconData iconData;
+            switch (mSearchItem.type) {
+              case Type.Unknown:
+                iconData = Icons.insert_drive_file;
+                break;
+              case Type.Teacher:
+                iconData = Icons.person;
+                break;
+              case Type.Group:
+                iconData = Icons.group;
+                break;
+            }
+
+            return ListTile(
+              onTap: () {
+                showResults(context);
+              },
+              leading: Icon(iconData),
+              title: index > _recentSuggestions.length - 1
+                  // Not recent suggestion
+                  ? RichText(
+                      text: TextSpan(
+                          text: mSearchItem.title,
+                          style: TextStyle(color: Colors.grey)))
+                  // Recent suggestion
+                  : RichText(
+                      // Recent suggestion
+                      text: TextSpan(
+                          text: mSearchItem.title.substring(0, query.length),
+                          style: TextStyle(
+                              color: Colors.black, fontWeight: FontWeight.bold),
+                          children: [
+                          TextSpan(
+                              text: mSearchItem.title.substring(query.length),
+                              style: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.normal))
+                        ])),
+            );
+          } else if (mBaseItem is _SearchDivider) {
+            return Divider();
+          }
         },
-        itemCount: finalSuggestions.length);
+        itemCount: _suggestions.length);
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
     return FutureBuilder(
-      future: startLoad(context),
+      future: loadSuggestions(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.none:
@@ -201,8 +234,7 @@ class GroupSearch extends SearchDelegate<String> {
                     new Expanded(
                       child: new FittedBox(
                         fit: BoxFit.scaleDown,
-                        child: new Icon(Icons.error,
-                        size: 70),
+                        child: new Icon(Icons.error, size: 70),
                       ),
                     ),
                     RichText(

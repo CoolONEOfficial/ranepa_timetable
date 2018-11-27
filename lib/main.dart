@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:ranepa_timetable/search.dart';
 
 class TimetableWidget extends StatefulWidget {
@@ -36,15 +35,6 @@ class _TimetableWidgetState extends State<TimetableWidget> {
                   });
                 }
               },
-            ),
-            IconButton(
-              tooltip: 'More (not implemented)',
-              icon: Icon(
-                Theme.of(context).platform == TargetPlatform.iOS
-                    ? Icons.more_horiz
-                    : Icons.more_vert,
-              ),
-              onPressed: () {},
             ),
           ],
         ));
