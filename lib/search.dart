@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/timetable.dart';
 import 'package:xml/xml.dart' as xml;
 
 enum Type { Teacher, Group, Unknown }
 
-abstract class _SearchItemBase {
-  const _SearchItemBase();
+abstract class SearchItemBase {
+  const SearchItemBase();
 }
 
-class _SearchItem extends _SearchItemBase {
-  const _SearchItem(this.type, this.id, this.title);
+class SearchItem extends SearchItemBase {
+  const SearchItem(this.type, this.id, this.title);
 
   final Type type;
   final int id;
@@ -28,36 +29,38 @@ class _SearchItem extends _SearchItemBase {
   }
 }
 
-class _SearchDivider extends _SearchItemBase {
-  const _SearchDivider(this.title);
+class SearchDivider extends SearchItemBase {
+  const SearchDivider(this.title);
 
   final String title;
 }
 
 class GroupSearch extends SearchDelegate<String> {
-  SharedPreferences d;
-
-  List<_SearchItemBase> webSuggestions = [];
+  List<SearchItemBase> webSuggestions = [];
 
   // Check 2018-2019 academic year because all item ids in next year will be refreshed
   bool predefinedSuggestionsValid = DateTime.now().isBefore(DateTime(2019, 9));
 
-  final predefinedSuggestions = [
-    _SearchDivider("Информатика"),
-    _SearchItem(Type.Group, 15034, "Иб-011"),
-    _SearchItem(Type.Group, 15035, "Иб-012"),
-    _SearchItem(Type.Group, 15016, "Иб-021"),
-    _SearchItem(Type.Group, 15024, "Иб-031"),
-    _SearchItem(Type.Group, 15030, "Иб-041"),
-    _SearchItem(Type.Group, 15031, "Иб-042"),
-    _SearchDivider("Экономика"),
-    _SearchItem(Type.Group, 15122, "Эб-011"),
-    _SearchItem(Type.Group, 15123, "Эб-012"),
-    _SearchItem(Type.Group, 15022, "Эб-021"),
-    _SearchItem(Type.Group, 15023, "Эб-022"),
-    _SearchItem(Type.Group, 15113, "Эб-031"),
-    _SearchItem(Type.Group, 15112, "Эб-032")
-  ];
+  SearchItem tappedSearchItem;
+
+  GroupSearch(BuildContext context)
+      : predefinedSuggestions = [
+          SearchDivider(AppLocalizations.of(context).groupInformatics),
+          SearchItem(Type.Group, 15034, "Иб-011"),
+          SearchItem(Type.Group, 15035, "Иб-012"),
+          SearchItem(Type.Group, 15016, "Иб-021"),
+          SearchItem(Type.Group, 15024, "Иб-031"),
+          SearchItem(Type.Group, 15030, "Иб-041"),
+          SearchItem(Type.Group, 15031, "Иб-042"),
+          SearchDivider(AppLocalizations.of(context).groupEconomics),
+          SearchItem(Type.Group, 15122, "Эб-011"),
+          SearchItem(Type.Group, 15123, "Эб-012"),
+          SearchItem(Type.Group, 15022, "Эб-021"),
+          SearchItem(Type.Group, 15023, "Эб-022"),
+          SearchItem(Type.Group, 15113, "Эб-031"),
+          SearchItem(Type.Group, 15112, "Эб-032")
+        ];
+  final List predefinedSuggestions;
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -83,8 +86,7 @@ class GroupSearch extends SearchDelegate<String> {
 
   @override
   Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
-    return null;
+    return TimetableWidget(item: tappedSearchItem);
   }
 
   Future<void> loadSuggestions() async {
@@ -112,7 +114,7 @@ class GroupSearch extends SearchDelegate<String> {
         .children;
 
     webSuggestions.clear();
-    webSuggestions.add(_SearchDivider("Результаты веб-поиска"));
+    webSuggestions.add(SearchDivider("Результаты веб-поиска"));
 
     for (var mItem in itemArr) {
       Type mItemType;
@@ -128,7 +130,7 @@ class GroupSearch extends SearchDelegate<String> {
           mItemType = Type.Unknown;
       }
 
-      webSuggestions.add(_SearchItem(
+      webSuggestions.add(SearchItem(
         mItemType,
         int.parse(mItem.children[1].text),
         mItem.children[2].text,
@@ -138,16 +140,16 @@ class GroupSearch extends SearchDelegate<String> {
   }
 
   Widget _buildSuggestions() {
-    final List<_SearchItemBase> queryPredefinedSuggestions = query.isEmpty
+    final queryPredefinedSuggestions = query.isEmpty
         ? predefinedSuggestions
         : predefinedSuggestions.where((mSearchItemBase) {
             switch (mSearchItemBase.runtimeType) {
-              case _SearchItem:
-                final _SearchItem mSearchItem = mSearchItemBase;
+              case SearchItem:
+                final SearchItem mSearchItem = mSearchItemBase;
                 return mSearchItem.title
                     .startsWith(RegExp("^" + query, caseSensitive: false));
                 break;
-              case _SearchDivider:
+              case SearchDivider:
                 return true;
                 break;
             }
@@ -155,14 +157,14 @@ class GroupSearch extends SearchDelegate<String> {
             return false;
           }).toList();
 
-    final List<_SearchItemBase> suggestions = predefinedSuggestionsValid
+    final suggestions = predefinedSuggestionsValid
         ? (List.from(queryPredefinedSuggestions)..addAll(webSuggestions))
         : webSuggestions;
 
     for (var mIndex = suggestions.length - 1; mIndex > 0; mIndex--) {
       final mSuggestion = suggestions.elementAt(mIndex);
       final mPreSuggestion = suggestions.elementAt(mIndex - 1);
-      if (mSuggestion is _SearchDivider && mPreSuggestion is _SearchDivider)
+      if (mSuggestion is SearchDivider && mPreSuggestion is SearchDivider)
         suggestions.removeAt(mIndex - 1);
     }
 
@@ -170,8 +172,8 @@ class GroupSearch extends SearchDelegate<String> {
         itemBuilder: (context, index) {
           final mBaseItem = suggestions[index];
 
-          if (mBaseItem is _SearchItem) {
-            final _SearchItem mSearchItem = mBaseItem;
+          if (mBaseItem is SearchItem) {
+            final SearchItem mSearchItem = mBaseItem;
 
             IconData iconData;
             switch (mSearchItem.type) {
@@ -188,6 +190,7 @@ class GroupSearch extends SearchDelegate<String> {
 
             return ListTile(
               onTap: () {
+                tappedSearchItem = mSearchItem;
                 showResults(context);
               },
               leading: Icon(iconData),
@@ -212,8 +215,8 @@ class GroupSearch extends SearchDelegate<String> {
                                   fontWeight: FontWeight.normal))
                         ])),
             );
-          } else if (mBaseItem is _SearchDivider) {
-            final _SearchDivider mDivider = mBaseItem;
+          } else if (mBaseItem is SearchDivider) {
+            final SearchDivider mDivider = mBaseItem;
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,

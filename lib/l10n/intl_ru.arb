@@ -6,5 +6,20 @@
     "description": "The application title",
     "type": "text",
     "placeholders": {}
+  },
+  "searchTip": "Поиск",
+  "@searchTip": {
+   "type": "text",
+   "placeholders": {}
+  },
+  "groupEconomics": "Экономика",
+  "@groupEconomics": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "groupInformatics": "Информатика",
+  "@groupInformatics": {
+    "type": "text",
+    "placeholders": {}
   }
 }

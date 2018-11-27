@@ -3,8 +3,8 @@
     <item android:drawable="@color/ic_launcher_background" />
 
     <item
-        android:width="200dp"
-        android:height="200dp"
+        android:width="100dp"
+        android:height="100dp"
         android:gravity="center">
         <bitmap
             android:src="@drawable/ic_launcher_foreground" />

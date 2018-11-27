@@ -6,19 +6,21 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/search.dart';
 
-class TimetableWidget extends StatefulWidget {
+class MainWidget extends StatefulWidget {
   @override
-  _TimetableWidgetState createState() => _TimetableWidgetState();
+  _MainWidgetState createState() => _MainWidgetState();
 }
 
-class _TimetableWidgetState extends State<TimetableWidget> {
-  final GroupSearch _delegate = GroupSearch();
+class _MainWidgetState extends State<MainWidget> {
+  GroupSearch _delegate;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String _lastStringSelected;
 
   @override
   Widget build(BuildContext context) {
+    _delegate = GroupSearch(context);
+
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -60,5 +62,5 @@ Future main() async {
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
-      home: TimetableWidget()));
+      home: MainWidget()));
 }

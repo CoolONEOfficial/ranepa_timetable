@@ -1,8 +1,23 @@
 {
-  "@@last_modified": "2018-11-27T20:47:48.907357",
+  "@@last_modified": "2018-11-27T23:54:13.559450",
   "title": "NRU RANEPA (Timetable)",
   "@title": {
     "description": "The application title",
+    "type": "text",
+    "placeholders": {}
+  },
+  "searchTip": "Search",
+  "@searchTip": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "groupEconomics": "Economics",
+  "@groupEconomics": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "groupInformatics": "Informatics",
+  "@groupInformatics": {
     "type": "text",
     "placeholders": {}
   }

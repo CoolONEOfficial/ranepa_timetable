@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'l10n/messages_all.dart';
 
 class AppLocalizations {
+
+
   static Future<AppLocalizations> load(Locale locale) {
     final String name =
     locale.countryCode == null ? locale.languageCode : locale.toString();
@@ -28,7 +30,17 @@ class AppLocalizations {
 
   String get searchTip {
     return Intl.message('Search',
-        name: 'search_tip');
+        name: 'searchTip');
+  }
+
+  String get groupEconomics{
+    return Intl.message('Economics',
+        name: 'groupEconomics');
+  }
+
+  String get groupInformatics{
+    return Intl.message('Informatics',
+        name: 'groupInformatics');
   }
 }
 
