@@ -1,6 +1,6 @@
-# ranepa_timetable
+# RANEPA Timetable
 
-Custom RANEPA android client on Flutter.
+Custom RANEPA android client written on Flutter.
 
 ## Getting Started
 

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/search.dart';
 
 class TimetableWidget extends StatefulWidget {
@@ -22,7 +24,7 @@ class _TimetableWidgetState extends State<TimetableWidget> {
         appBar: AppBar(
           actions: <Widget>[
             IconButton(
-              tooltip: 'Search',
+              tooltip: AppLocalizations.of(context).title,
               icon: const Icon(Icons.search),
               onPressed: () async {
                 final String selected = await showSearch<String>(
@@ -43,6 +45,17 @@ class _TimetableWidgetState extends State<TimetableWidget> {
 
 Future main() async {
   return runApp(MaterialApp(
+      localizationsDelegates: [
+        AppLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [
+        const Locale('en', 'US'), // English
+        const Locale('ru', 'RU'), // Русский
+      ],
+      onGenerateTitle: (BuildContext context) =>
+          AppLocalizations.of(context).title,
       title: 'Flutter View',
       theme: ThemeData(
         primarySwatch: Colors.grey,

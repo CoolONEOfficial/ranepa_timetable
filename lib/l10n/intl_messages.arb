@@ -1,0 +1,9 @@
+{
+  "@@last_modified": "2018-11-27T20:47:48.907357",
+  "title": "NRU RANEPA (Timetable)",
+  "@title": {
+    "description": "The application title",
+    "type": "text",
+    "placeholders": {}
+  }
+}

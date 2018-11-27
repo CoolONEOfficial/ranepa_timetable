@@ -1,0 +1,10 @@
+{
+  "@@locale": "ru",
+  "@@last_modified": "2018-11-27T20:47:48.907357",
+  "title": "НИУ РАНХиГС (Расписание)",
+  "@title": {
+    "description": "The application title",
+    "type": "text",
+    "placeholders": {}
+  }
+}
