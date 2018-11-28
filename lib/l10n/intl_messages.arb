@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-11-27T23:54:13.559450",
+  "@@last_modified": "2018-11-29T00:31:58.508752",
   "title": "NRU RANEPA (Timetable)",
   "@title": {
     "description": "The application title",
@@ -18,6 +18,131 @@
   },
   "groupInformatics": "Informatics",
   "@groupInformatics": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "loading": "Loading",
+  "@loading": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "math": "Mathematics",
+  "@math": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "economics": "Economics",
+  "@economics": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "informationTheory": "Information theory",
+  "@informationTheory": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "philosophy": "Philosophy",
+  "@philosophy": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "speechCulture": "Culture of Speech",
+  "@speechCulture": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "physics": "Physics",
+  "@physics": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "chemistry": "Chemistry",
+  "@chemistry": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "literature": "Literature",
+  "@literature": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "english": "English",
+  "@english": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "informatics": "Informatics",
+  "@informatics": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "geography": "Geography",
+  "@geography": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "history": "History",
+  "@history": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "lifeSafety": "Basics of life safety",
+  "@lifeSafety": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "biology": "Biology",
+  "@biology": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "socialStudies": "Social Studies",
+  "@socialStudies": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "physicalCulture": "Physical Culture",
+  "@physicalCulture": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "ethics": "Ethics",
+  "@ethics": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "management": "Management",
+  "@management": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "softwareDevelopment": "Software Development",
+  "@softwareDevelopment": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "computerArchitecture": "Сomputer Architecture",
+  "@computerArchitecture": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "operatingSystems": "Operating Systems",
+  "@operatingSystems": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "computerGraphic": "Computer Graphic",
+  "@computerGraphic": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "projectDevelopment": "Project Development",
+  "@projectDevelopment": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "databases": "Databases",
+  "@databases": {
     "type": "text",
     "placeholders": {}
   }

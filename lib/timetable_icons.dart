@@ -23,51 +23,57 @@
 
 import 'package:flutter/widgets.dart';
 
+const timetableFontFamily = 'Timetable';
+
 class TimetableIcons {
   TimetableIcons._();
 
-  static const _kFontFam = 'Timetable';
-
-  static const IconData math = const IconData(0xe800, fontFamily: _kFontFam);
+  static const IconData math =
+      const IconData(0xe800, fontFamily: timetableFontFamily);
   static const IconData economics =
-  const IconData(0xe801, fontFamily: _kFontFam);
+      const IconData(0xe801, fontFamily: timetableFontFamily);
   static const IconData informationTheory =
-  const IconData(0xe802, fontFamily: _kFontFam);
+      const IconData(0xe802, fontFamily: timetableFontFamily);
   static const IconData philosophy =
-  const IconData(0xe803, fontFamily: _kFontFam);
+      const IconData(0xe803, fontFamily: timetableFontFamily);
   static const IconData speechCulture =
-  const IconData(0xe804, fontFamily: _kFontFam);
-  static const IconData physics = const IconData(0xe805, fontFamily: _kFontFam);
+      const IconData(0xe804, fontFamily: timetableFontFamily);
+  static const IconData physics =
+      const IconData(0xe805, fontFamily: timetableFontFamily);
   static const IconData chemistry =
-  const IconData(0xe806, fontFamily: _kFontFam);
+      const IconData(0xe806, fontFamily: timetableFontFamily);
   static const IconData literature =
-  const IconData(0xe807, fontFamily: _kFontFam);
-  static const IconData english = const IconData(0xe808, fontFamily: _kFontFam);
+      const IconData(0xe807, fontFamily: timetableFontFamily);
+  static const IconData english =
+      const IconData(0xe808, fontFamily: timetableFontFamily);
   static const IconData informatics =
-  const IconData(0xe809, fontFamily: _kFontFam);
+      const IconData(0xe809, fontFamily: timetableFontFamily);
   static const IconData geography =
-  const IconData(0xe80a, fontFamily: _kFontFam);
-  static const IconData history = const IconData(0xe80b, fontFamily: _kFontFam);
+      const IconData(0xe80a, fontFamily: timetableFontFamily);
+  static const IconData history =
+      const IconData(0xe80b, fontFamily: timetableFontFamily);
   static const IconData lifeSafety =
-  const IconData(0xe80c, fontFamily: _kFontFam);
-  static const IconData biology = const IconData(0xe80d, fontFamily: _kFontFam);
+      const IconData(0xe80c, fontFamily: timetableFontFamily);
+  static const IconData biology =
+      const IconData(0xe80d, fontFamily: timetableFontFamily);
   static const IconData socialStudies =
-  const IconData(0xe80e, fontFamily: _kFontFam);
+      const IconData(0xe80e, fontFamily: timetableFontFamily);
   static const IconData physicalCulture =
-  const IconData(0xe80f, fontFamily: _kFontFam);
-  static const IconData ethics = const IconData(0xe810, fontFamily: _kFontFam);
+      const IconData(0xe80f, fontFamily: timetableFontFamily);
+  static const IconData ethics =
+      const IconData(0xe810, fontFamily: timetableFontFamily);
   static const IconData management =
-  const IconData(0xe811, fontFamily: _kFontFam);
+      const IconData(0xe811, fontFamily: timetableFontFamily);
   static const IconData softwareDevelopment =
-  const IconData(0xe812, fontFamily: _kFontFam);
+      const IconData(0xe812, fontFamily: timetableFontFamily);
   static const IconData computerArchitecture =
-  const IconData(0xe813, fontFamily: _kFontFam);
+      const IconData(0xe813, fontFamily: timetableFontFamily);
   static const IconData operatingSystems =
-  const IconData(0xe814, fontFamily: _kFontFam);
+      const IconData(0xe814, fontFamily: timetableFontFamily);
   static const IconData computerGraphic =
-  const IconData(0xe815, fontFamily: _kFontFam);
+      const IconData(0xe815, fontFamily: timetableFontFamily);
   static const IconData projectDevelopment =
-  const IconData(0xe816, fontFamily: _kFontFam);
+      const IconData(0xe816, fontFamily: timetableFontFamily);
   static const IconData databases =
-  const IconData(0xf1c0, fontFamily: _kFontFam);
+      const IconData(0xf1c0, fontFamily: timetableFontFamily);
 }

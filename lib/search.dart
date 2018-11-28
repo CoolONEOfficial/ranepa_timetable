@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/timetable.dart';
-import 'package:ranepa_timetable/timetable_icons.dart';
 import 'package:xml/xml.dart' as xml;
 
-class SearchItemTypes {
-  final IconData _icon;
-  const SearchItemTypes._internal(this._icon);
-  toString() => 'Enum.$_icon';
+class SearchItemType {
+  final IconData icon;
+  const SearchItemType(this.icon);
+}
 
+class SearchItemTypes {
   static const UNKNOWN =
-      const SearchItemTypes._internal(Icons.insert_drive_file);
+      const SearchItemType(Icons.insert_drive_file);
   static const TEACHER =
-      const SearchItemTypes._internal(Icons.person);
-  static const GROUP = const SearchItemTypes._internal(Icons.group);
+      const SearchItemType(Icons.person);
+  static const GROUP = const SearchItemType(Icons.group);
 }
 
 abstract class SearchItemBase {
@@ -24,7 +24,7 @@ abstract class SearchItemBase {
 class SearchItem extends SearchItemBase {
   const SearchItem(this.type, this.id, this.title);
 
-  final SearchItemTypes type;
+  final SearchItemType type;
   final int id;
   final String title;
 
@@ -74,7 +74,7 @@ class GroupSearch extends SearchDelegate<String> {
   final List predefinedSuggestions;
 
   @override
-  List<Widget> buildActions(BuildContext context) {
+  List<Widget> buildActions(context) {
     return [
       IconButton(
         icon: Icon(Icons.clear),
@@ -86,7 +86,7 @@ class GroupSearch extends SearchDelegate<String> {
   }
 
   @override
-  Widget buildLeading(BuildContext context) {
+  Widget buildLeading(context) {
     return IconButton(
         icon: AnimatedIcon(
             icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
@@ -96,11 +96,11 @@ class GroupSearch extends SearchDelegate<String> {
   }
 
   @override
-  Widget buildResults(BuildContext context) {
+  Widget buildResults(context) {
     return TimetableWidget(item: tappedSearchItem);
   }
 
-  Future<void> loadSuggestions() async {
+  Future loadSuggestions() async {
     // Send the POST request, with full SOAP envelope as the request body.
     http.Response response = await http.post(
         'http://test.ranhigs-nn.ru/api/WebService.asmx',
@@ -128,7 +128,7 @@ class GroupSearch extends SearchDelegate<String> {
     webSuggestions.add(SearchDivider("Результаты веб-поиска"));
 
     for (var mItem in itemArr) {
-      SearchItemTypes mItemType;
+      SearchItemType mItemType;
 
       switch (mItem.children[0].text) {
         case "Prep":
@@ -191,7 +191,7 @@ class GroupSearch extends SearchDelegate<String> {
                 tappedSearchItem = mSearchItem;
                 showResults(context);
               },
-              leading: Icon(mSearchItem.type._icon),
+              leading: Icon(mSearchItem.type.icon),
               title: index > queryPredefinedSuggestions.length - 1
                   // Not recent suggestion
                   ? RichText(
@@ -235,10 +235,10 @@ class GroupSearch extends SearchDelegate<String> {
   }
 
   @override
-  Widget buildSuggestions(BuildContext context) {
+  Widget buildSuggestions(context) {
     return FutureBuilder(
       future: loadSuggestions(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
+      builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.none:
           case ConnectionState.active:

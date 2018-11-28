@@ -20,9 +20,34 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
+    "biology" : MessageLookupByLibrary.simpleMessage("Biology"),
+    "chemistry" : MessageLookupByLibrary.simpleMessage("Chemistry"),
+    "computerArchitecture" : MessageLookupByLibrary.simpleMessage("Сomputer Architecture"),
+    "computerGraphic" : MessageLookupByLibrary.simpleMessage("Computer Graphic"),
+    "databases" : MessageLookupByLibrary.simpleMessage("Databases"),
+    "economics" : MessageLookupByLibrary.simpleMessage("Economics"),
+    "english" : MessageLookupByLibrary.simpleMessage("English"),
+    "ethics" : MessageLookupByLibrary.simpleMessage("Ethics"),
+    "geography" : MessageLookupByLibrary.simpleMessage("Geography"),
     "groupEconomics" : MessageLookupByLibrary.simpleMessage("Economics"),
     "groupInformatics" : MessageLookupByLibrary.simpleMessage("Informatics"),
+    "history" : MessageLookupByLibrary.simpleMessage("History"),
+    "informatics" : MessageLookupByLibrary.simpleMessage("Informatics"),
+    "informationTheory" : MessageLookupByLibrary.simpleMessage("Information theory"),
+    "lifeSafety" : MessageLookupByLibrary.simpleMessage("Basics of life safety"),
+    "literature" : MessageLookupByLibrary.simpleMessage("Literature"),
+    "loading" : MessageLookupByLibrary.simpleMessage("Loading"),
+    "management" : MessageLookupByLibrary.simpleMessage("Management"),
+    "math" : MessageLookupByLibrary.simpleMessage("Mathematics"),
+    "operatingSystems" : MessageLookupByLibrary.simpleMessage("Operating Systems"),
+    "philosophy" : MessageLookupByLibrary.simpleMessage("Philosophy"),
+    "physicalCulture" : MessageLookupByLibrary.simpleMessage("Physical Culture"),
+    "physics" : MessageLookupByLibrary.simpleMessage("Physics"),
+    "projectDevelopment" : MessageLookupByLibrary.simpleMessage("Project Development"),
     "searchTip" : MessageLookupByLibrary.simpleMessage("Search"),
+    "socialStudies" : MessageLookupByLibrary.simpleMessage("Social Studies"),
+    "softwareDevelopment" : MessageLookupByLibrary.simpleMessage("Software Development"),
+    "speechCulture" : MessageLookupByLibrary.simpleMessage("Culture of Speech"),
     "title" : MessageLookupByLibrary.simpleMessage("NRU RANEPA (Timetable)")
   };
 }

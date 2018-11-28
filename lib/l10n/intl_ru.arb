@@ -21,5 +21,130 @@
   "@groupInformatics": {
     "type": "text",
     "placeholders": {}
+  },
+  "loading": "Загрузка",
+  "@loading": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "math": "Математика",
+  "@math": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "economics": "Экономика",
+  "@economics": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "informationTheory": "Теория информации",
+  "@informationTheory": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "philosophy": "Философия",
+  "@philosophy": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "speechCulture": "Культура речи",
+  "@speechCulture": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "physics": "Физика",
+  "@physics": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "chemistry": "Химия",
+  "@chemistry": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "literature": "Литература",
+  "@literature": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "english": "Английский язык",
+  "@english": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "informatics": "Информатика",
+  "@informatics": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "geography": "География",
+  "@geography": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "history": "История",
+  "@history": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "lifeSafety": "ОБЖ",
+  "@lifeSafety": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "biology": "Биология",
+  "@biology": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "socialStudies": "Обществознание",
+  "@socialStudies": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "physicalCulture": "Физ-ра",
+  "@physicalCulture": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "ethics": "Этика",
+  "@ethics": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "management": "Менеджмент",
+  "@management": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "softwareDevelopment": "Разработка ПО",
+  "@softwareDevelopment": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "computerArchitecture": "Архитектура ПК",
+  "@computerArchitecture": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "operatingSystems": "Операционные системы",
+  "@operatingSystems": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "computerGraphic": "Компьютерная графика",
+  "@computerGraphic": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "projectDevelopment": "Проектная разработка",
+  "@projectDevelopment": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "databases": "Базы данных",
+  "@databases": {
+    "type": "text",
+    "placeholders": {}
   }
 }

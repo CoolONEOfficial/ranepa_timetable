@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/search.dart';
+import 'package:ranepa_timetable/timeline_model.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
 import 'package:xml/xml.dart' as xml;
+import 'timeline.dart';
 
 class ClassItemTypes {
   final IconData _icon;
+
   const ClassItemTypes._internal(this._icon);
+
   toString() => 'Enum.$_icon';
 
   static const UNKNOWN =
@@ -56,42 +61,12 @@ class ClassItemTypes {
       const ClassItemTypes._internal(TimetableIcons.databases);
 }
 
-//enum Name {
-//  Unknown,
-//  Economics,
-//  Math,
-//  InformationTheory,
-//  Philosophy,
-//  SpeechCulture,
-//  Physics,
-//  literature,
-//  English,
-//  Informatics,
-//  Geography,
-//  History,
-//  SocialStudies,
-//  Biology,
-//  LifeSafety,
-//  PhysicalCulture,
-//}
-
-class ClassItem {
-  const ClassItem(
-      this.start, this.end, this.date, this.name, this.room, this.group);
-
-  final DateTime date;
-  final TimeOfDay start, end;
-  final String name;
-  final String room;
-  final String group;
-}
-
 class TimetableWidget extends StatelessWidget {
   const TimetableWidget({Key key, this.item}) : super(key: key);
 
   final SearchItem item;
 
-  Future<void> loadTimetable() async {
+  Future<List<TimelineModel>> loadTimetable() async {
     // Send the POST request, with full SOAP envelope as the request body.
     http.Response response = await http.post(
         'http://test.ranhigs-nn.ru/api/WebService.asmx',
@@ -120,36 +95,75 @@ class TimetableWidget extends StatelessWidget {
     for (var mItem in itemArr) {
       print(mItem.toString());
     }
-//    webSuggestions.clear();
-//    webSuggestions.add(_SearchDivider("Результаты веб-поиска"));
-//
-//    for (var mItem in itemArr) {
-//      Type mItemType;
-//
-//      switch (mItem.children[0].text) {
-//        case "Prep":
-//          mItemType = Type.Teacher;
-//          break;
-//        case "Group":
-//          mItemType = Type.Group;
-//          break;
-//        default:
-//          mItemType = Type.Unknown;
-//      }
-//
-//      webSuggestions.add(_SearchItem(
-//        mItemType,
-//        int.parse(mItem.children[1].text),
-//        mItem.children[2].text,
-//      ));
-//    }
-//    print(webSuggestions);
+
+    List<TimelineModel> classesList = [];
+
+    for(var mItem in itemArr) {
+      classesList.add(
+        TimelineModel(
+
+        )
+      );
+    }
+
+    return classesList;
+  }
+
+  Widget buildTimetable(List<TimelineModel> list) {
+    return TimelineComponent(
+      timelineList: list,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    loadTimetable();
 
-    return Container();
+    return FutureBuilder<List<TimelineModel>>(
+      future: loadTimetable(),
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+          case ConnectionState.active:
+          case ConnectionState.waiting:
+            return Center(
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    child: CircularProgressIndicator(),
+                    height: 15.0,
+                    width: 15.0,
+                  ),
+                  RichText(
+                      text: TextSpan(
+                          text: "${AppLocalizations.of(context).loading}",
+                          style: TextStyle(color: Colors.black)))
+                ],
+              ),
+            );
+            break;
+          case ConnectionState.done:
+            if (snapshot.hasError)
+              return Container(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  children: <Widget>[
+                    new Expanded(
+                      child: new FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: new Icon(Icons.error, size: 140),
+                      ),
+                    ),
+                    RichText(
+                        text: TextSpan(
+                            text: "${snapshot.error}",
+                            style: TextStyle(color: Colors.black)))
+                  ],
+                ),
+              );
+            return buildTimetable(snapshot.data);
+        }
+        return null; // unreachable
+      },
+    );
   }
 }
