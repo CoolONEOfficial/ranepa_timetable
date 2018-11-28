@@ -8,22 +8,23 @@ For help getting started with Flutter, view our online [documentation](https://f
 
 ## References, used in the development
 
-[Localization](https://proandroiddev.com/flutter-localization-step-by-step-30f95d06018d)
-[Icons](https://pub.dartlang.org/packages/flutter_launcher_icons#-installing-tab-)
+[Localization](https://proandroiddev.com/flutter-localization-step-by-step-30f95d06018d) flutter app
+
+[Icons](https://pub.dartlang.org/packages/flutter_launcher_icons#-installing-tab-) for IOS/Android versions for Flutter app
 
 ## Useful commands
 
-# Regenerate .arb translations files
+### Regenerate .arb translations files
 ```Shell
 flutter pub pub run intl_translation:generate_from_arb --output-dir=lib/l10n
 ```
 
-# Regenerate translations classes
+### Regenerate translations classes
 ```Shell
 flutter pub pub run intl_translation:generate_from_arb --output-dir=lib/l10n --no-use-deferred-loading lib/localizations.dart lib/l10n/intl_messages.arb lib/l10n/intl_ru.arb
 ```
 
-# Regenerate icons
+### Regenerate icons
 ```Shell
 flutter pub pub run flutter_launcher_icons:main
 ```
