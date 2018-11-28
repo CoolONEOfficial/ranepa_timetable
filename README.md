@@ -18,7 +18,7 @@ For help getting started with Flutter, view our online [documentation](https://f
 
 ### Regenerate .arb translations files
 ```Shell
-flutter pub pub run intl_translation:generate_from_arb --output-dir=lib/l10n
+flutter pub pub run intl_translation:extract_to_arb --output-dir=lib/l10n lib/localizations.dart
 ```
 
 ### Regenerate translations classes
