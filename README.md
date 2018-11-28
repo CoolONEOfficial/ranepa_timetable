@@ -1,3 +1,5 @@
+![RANEPA Logo](assets/images/icon-710x599.png?raw=true "")
+
 # NRU RANEPA Timetable
 
 Custom open-source NRU RANEPA mobile client written on Flutter.
