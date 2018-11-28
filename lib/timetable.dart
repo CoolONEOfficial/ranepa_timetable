@@ -18,7 +18,7 @@ class ClassItemTypes {
   static const INFORMATION_THEORY =
       const ClassItemTypes._internal(TimetableIcons.informationTheory);
   static const PHILOSOPHY =
-      const ClassItemTypes._internal(TimetableIcons.phylosophy);
+      const ClassItemTypes._internal(TimetableIcons.philosophy);
   static const SPEECH_CULTURE =
       const ClassItemTypes._internal(TimetableIcons.speechCulture);
   static const PHYSICS = const ClassItemTypes._internal(TimetableIcons.physics);
