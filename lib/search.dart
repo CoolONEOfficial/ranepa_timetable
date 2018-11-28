@@ -13,7 +13,7 @@ class SearchItemTypes {
   static const UNKNOWN =
       const SearchItemTypes._internal(Icons.insert_drive_file);
   static const TEACHER =
-      const SearchItemTypes._internal(TimetableIcons.projectDevelopment);
+      const SearchItemTypes._internal(Icons.person);
   static const GROUP = const SearchItemTypes._internal(Icons.group);
 }
 
