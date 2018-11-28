@@ -39,7 +39,6 @@ flutter_icons:
   adaptive_icon_background: "#982825"
   adaptive_icon_foreground: "assets/images/icon-foreground-432x432.png"
 
-
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 
@@ -50,6 +49,11 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  fonts:
+   - family:  Timetable
+     fonts:
+      - asset: assets/fonts/Timetable.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

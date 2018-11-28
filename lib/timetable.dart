@@ -2,7 +2,78 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:ranepa_timetable/search.dart';
+import 'package:ranepa_timetable/timetable_icons.dart';
 import 'package:xml/xml.dart' as xml;
+
+class ClassItemTypes {
+  final IconData _icon;
+  const ClassItemTypes._internal(this._icon);
+  toString() => 'Enum.$_icon';
+
+  static const UNKNOWN =
+      const ClassItemTypes._internal(Icons.insert_drive_file);
+  static const ECONOMICS =
+      const ClassItemTypes._internal(TimetableIcons.economics);
+  static const MATH = const ClassItemTypes._internal(TimetableIcons.math);
+  static const INFORMATION_THEORY =
+      const ClassItemTypes._internal(TimetableIcons.informationTheory);
+  static const PHILOSOPHY =
+      const ClassItemTypes._internal(TimetableIcons.phylosophy);
+  static const SPEECH_CULTURE =
+      const ClassItemTypes._internal(TimetableIcons.speechCulture);
+  static const PHYSICS = const ClassItemTypes._internal(TimetableIcons.physics);
+  static const CHEMISTRY =
+      const ClassItemTypes._internal(TimetableIcons.chemistry);
+  static const LITERATURE =
+      const ClassItemTypes._internal(TimetableIcons.literature);
+  static const ENGLISH = const ClassItemTypes._internal(TimetableIcons.english);
+  static const INFORMATICS =
+      const ClassItemTypes._internal(TimetableIcons.informatics);
+  static const GEOGRAPHY =
+      const ClassItemTypes._internal(TimetableIcons.geography);
+  static const HISTORY = const ClassItemTypes._internal(TimetableIcons.history);
+  static const SOCIAL_STUDIES =
+      const ClassItemTypes._internal(TimetableIcons.socialStudies);
+  static const BIOLOGY = const ClassItemTypes._internal(TimetableIcons.biology);
+  static const LIFE_SAFETY =
+      const ClassItemTypes._internal(TimetableIcons.lifeSafety);
+  static const PHYSICAL_CULTURE =
+      const ClassItemTypes._internal(TimetableIcons.physicalCulture);
+  static const ETHICS = const ClassItemTypes._internal(TimetableIcons.ethics);
+  static const MANAGEMENT =
+      const ClassItemTypes._internal(TimetableIcons.management);
+  static const SOFTWARE_DEVELOPMENT =
+      const ClassItemTypes._internal(TimetableIcons.softwareDevelopment);
+  static const COMPUTER_ARCHITECTURE =
+      const ClassItemTypes._internal(TimetableIcons.computerArchitecture);
+  static const OPERATING_SYSTEMS =
+      const ClassItemTypes._internal(TimetableIcons.operatingSystems);
+  static const COMPUTER_GRAPHIC =
+      const ClassItemTypes._internal(TimetableIcons.computerGraphic);
+  static const PROJECT_DEVELOPMENT =
+      const ClassItemTypes._internal(TimetableIcons.projectDevelopment);
+  static const DATABASES =
+      const ClassItemTypes._internal(TimetableIcons.databases);
+}
+
+//enum Name {
+//  Unknown,
+//  Economics,
+//  Math,
+//  InformationTheory,
+//  Philosophy,
+//  SpeechCulture,
+//  Physics,
+//  literature,
+//  English,
+//  Informatics,
+//  Geography,
+//  History,
+//  SocialStudies,
+//  Biology,
+//  LifeSafety,
+//  PhysicalCulture,
+//}
 
 class ClassItem {
   const ClassItem(

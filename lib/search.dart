@@ -2,9 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/timetable.dart';
+import 'package:ranepa_timetable/timetable_icons.dart';
 import 'package:xml/xml.dart' as xml;
 
-enum Type { Teacher, Group, Unknown }
+class SearchItemTypes {
+  final IconData _icon;
+  const SearchItemTypes._internal(this._icon);
+  toString() => 'Enum.$_icon';
+
+  static const UNKNOWN =
+      const SearchItemTypes._internal(Icons.insert_drive_file);
+  static const TEACHER =
+      const SearchItemTypes._internal(TimetableIcons.projectDevelopment);
+  static const GROUP = const SearchItemTypes._internal(Icons.group);
+}
 
 abstract class SearchItemBase {
   const SearchItemBase();
@@ -13,7 +24,7 @@ abstract class SearchItemBase {
 class SearchItem extends SearchItemBase {
   const SearchItem(this.type, this.id, this.title);
 
-  final Type type;
+  final SearchItemTypes type;
   final int id;
   final String title;
 
@@ -46,19 +57,19 @@ class GroupSearch extends SearchDelegate<String> {
   GroupSearch(BuildContext context)
       : predefinedSuggestions = [
           SearchDivider(AppLocalizations.of(context).groupInformatics),
-          SearchItem(Type.Group, 15034, "Иб-011"),
-          SearchItem(Type.Group, 15035, "Иб-012"),
-          SearchItem(Type.Group, 15016, "Иб-021"),
-          SearchItem(Type.Group, 15024, "Иб-031"),
-          SearchItem(Type.Group, 15030, "Иб-041"),
-          SearchItem(Type.Group, 15031, "Иб-042"),
+          SearchItem(SearchItemTypes.GROUP, 15034, "Иб-011"),
+          SearchItem(SearchItemTypes.GROUP, 15035, "Иб-012"),
+          SearchItem(SearchItemTypes.GROUP, 15016, "Иб-021"),
+          SearchItem(SearchItemTypes.GROUP, 15024, "Иб-031"),
+          SearchItem(SearchItemTypes.GROUP, 15030, "Иб-041"),
+          SearchItem(SearchItemTypes.GROUP, 15031, "Иб-042"),
           SearchDivider(AppLocalizations.of(context).groupEconomics),
-          SearchItem(Type.Group, 15122, "Эб-011"),
-          SearchItem(Type.Group, 15123, "Эб-012"),
-          SearchItem(Type.Group, 15022, "Эб-021"),
-          SearchItem(Type.Group, 15023, "Эб-022"),
-          SearchItem(Type.Group, 15113, "Эб-031"),
-          SearchItem(Type.Group, 15112, "Эб-032")
+          SearchItem(SearchItemTypes.GROUP, 15122, "Эб-011"),
+          SearchItem(SearchItemTypes.GROUP, 15123, "Эб-012"),
+          SearchItem(SearchItemTypes.GROUP, 15022, "Эб-021"),
+          SearchItem(SearchItemTypes.GROUP, 15023, "Эб-022"),
+          SearchItem(SearchItemTypes.GROUP, 15113, "Эб-031"),
+          SearchItem(SearchItemTypes.GROUP, 15112, "Эб-032")
         ];
   final List predefinedSuggestions;
 
@@ -117,17 +128,17 @@ class GroupSearch extends SearchDelegate<String> {
     webSuggestions.add(SearchDivider("Результаты веб-поиска"));
 
     for (var mItem in itemArr) {
-      Type mItemType;
+      SearchItemTypes mItemType;
 
       switch (mItem.children[0].text) {
         case "Prep":
-          mItemType = Type.Teacher;
+          mItemType = SearchItemTypes.TEACHER;
           break;
         case "Group":
-          mItemType = Type.Group;
+          mItemType = SearchItemTypes.GROUP;
           break;
         default:
-          mItemType = Type.Unknown;
+          mItemType = SearchItemTypes.UNKNOWN;
       }
 
       webSuggestions.add(SearchItem(
@@ -175,25 +186,12 @@ class GroupSearch extends SearchDelegate<String> {
           if (mBaseItem is SearchItem) {
             final SearchItem mSearchItem = mBaseItem;
 
-            IconData iconData;
-            switch (mSearchItem.type) {
-              case Type.Unknown:
-                iconData = Icons.insert_drive_file;
-                break;
-              case Type.Teacher:
-                iconData = Icons.person;
-                break;
-              case Type.Group:
-                iconData = Icons.group;
-                break;
-            }
-
             return ListTile(
               onTap: () {
                 tappedSearchItem = mSearchItem;
                 showResults(context);
               },
-              leading: Icon(iconData),
+              leading: Icon(mSearchItem.type._icon),
               title: index > queryPredefinedSuggestions.length - 1
                   // Not recent suggestion
                   ? RichText(
