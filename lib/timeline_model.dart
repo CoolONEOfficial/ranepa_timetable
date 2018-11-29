@@ -14,22 +14,22 @@ limitations under the License. */
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:ranepa_timetable/timetable_lessons.dart';
 
 class TimelineModel {
-  final String title;
+  final Lesson classType;
   final String room;
-  final IconData icon;
 
   final DateTime date;
-  final TimeOfDay start, end;
+  final TimeOfDay start, finish;
   final String group;
 
-  const TimelineModel(
-      {this.date,
-      this.start,
-      this.end,
-      this.group,
-      this.title,
-      this.room,
-      this.icon});
+  const TimelineModel({
+    @required this.date,
+    @required this.start,
+    @required this.finish,
+    @required this.room,
+    @required this.group,
+    @required this.classType,
+  });
 }

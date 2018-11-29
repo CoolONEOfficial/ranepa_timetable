@@ -6,14 +6,13 @@ import 'package:xml/xml.dart' as xml;
 
 class SearchItemType {
   final IconData icon;
+
   const SearchItemType(this.icon);
 }
 
 class SearchItemTypes {
-  static const UNKNOWN =
-      const SearchItemType(Icons.insert_drive_file);
-  static const TEACHER =
-      const SearchItemType(Icons.person);
+  static const UNKNOWN = const SearchItemType(Icons.insert_drive_file);
+  static const TEACHER = const SearchItemType(Icons.person);
   static const GROUP = const SearchItemType(Icons.group);
 }
 
@@ -45,6 +44,8 @@ class SearchDivider extends SearchItemBase {
 
   final String title;
 }
+
+enum GroupSearchResponseIndexes { Type, Id, Title }
 
 class GroupSearch extends SearchDelegate<String> {
   List<SearchItemBase> webSuggestions = [];
@@ -98,56 +99,6 @@ class GroupSearch extends SearchDelegate<String> {
   @override
   Widget buildResults(context) {
     return TimetableWidget(item: tappedSearchItem);
-  }
-
-  Future loadSuggestions() async {
-    // Send the POST request, with full SOAP envelope as the request body.
-    http.Response response = await http.post(
-        'http://test.ranhigs-nn.ru/api/WebService.asmx',
-        headers: {'Content-Type': 'text/xml; charset=utf-8'},
-        body: '''
-<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <GetNameUidForRasp xmlns="http://tempuri.org/">
-      <str>$query</str>
-    </GetNameUidForRasp>
-  </soap:Body>
-</soap:Envelope>
-''');
-
-    final itemArr = xml
-        .parse(response.body)
-        .children[1]
-        .firstChild
-        .firstChild
-        .firstChild
-        .children;
-
-    webSuggestions.clear();
-    webSuggestions.add(SearchDivider("Результаты веб-поиска"));
-
-    for (var mItem in itemArr) {
-      SearchItemType mItemType;
-
-      switch (mItem.children[0].text) {
-        case "Prep":
-          mItemType = SearchItemTypes.TEACHER;
-          break;
-        case "Group":
-          mItemType = SearchItemTypes.GROUP;
-          break;
-        default:
-          mItemType = SearchItemTypes.UNKNOWN;
-      }
-
-      webSuggestions.add(SearchItem(
-        mItemType,
-        int.parse(mItem.children[1].text),
-        mItem.children[2].text,
-      ));
-    }
-    print(webSuggestions);
   }
 
   Widget _buildSuggestions() {
@@ -236,9 +187,21 @@ class GroupSearch extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(context) {
-    return FutureBuilder(
-      future: loadSuggestions(),
+    print("Suggestions build start");
+    return FutureBuilder<String>(
+      future: http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
+          headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <GetNameUidForRasp xmlns="http://tempuri.org/">
+      <str>$query</str>
+    </GetNameUidForRasp>
+  </soap:Body>
+</soap:Envelope>
+''').then((response) => response.body),
       builder: (context, snapshot) {
+        print("Search builder started: " + snapshot.connectionState.toString());
         switch (snapshot.connectionState) {
           case ConnectionState.none:
           case ConnectionState.active:
@@ -259,6 +222,7 @@ class GroupSearch extends SearchDelegate<String> {
             );
             break;
           case ConnectionState.done:
+            print("Search results done");
             if (snapshot.hasError)
               return Container(
                 padding: EdgeInsets.all(20.0),
@@ -277,6 +241,43 @@ class GroupSearch extends SearchDelegate<String> {
                   ],
                 ),
               );
+
+            print("Search snapshot data: " + snapshot.data);
+            final itemArr = xml
+                .parse(snapshot.data)
+                .children[1]
+                .firstChild
+                .firstChild
+                .firstChild
+                .children;
+
+            webSuggestions.clear();
+            webSuggestions.add(SearchDivider("Результаты веб-поиска"));
+
+            for (var mItem in itemArr) {
+              SearchItemType mItemType;
+
+              switch (
+                  mItem.children[GroupSearchResponseIndexes.Type.index].text) {
+                case "Prep":
+                  mItemType = SearchItemTypes.TEACHER;
+                  break;
+                case "Group":
+                  mItemType = SearchItemTypes.GROUP;
+                  break;
+                default:
+                  mItemType = SearchItemTypes.UNKNOWN;
+              }
+
+              webSuggestions.add(SearchItem(
+                mItemType,
+                int.parse(
+                    mItem.children[GroupSearchResponseIndexes.Id.index].text),
+                mItem.children[GroupSearchResponseIndexes.Title.index].text,
+              ));
+            }
+            print(webSuggestions);
+
             return _buildSuggestions();
         }
         return null; // unreachable

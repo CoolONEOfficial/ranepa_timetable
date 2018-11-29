@@ -41,7 +41,7 @@ class TimelineElement extends StatelessWidget {
       width: 40.0,
       child: new CustomPaint(
         painter: new TimelinePainter(
-            iconCodePoint: model.icon.codePoint,
+            iconCodePoint: model.classType.icon.codePoint,
             lineColor: lineColor,
             backgroundColor: backgroundColor,
             firstElement: firstElement,
@@ -59,9 +59,9 @@ class TimelineElement extends StatelessWidget {
         new Container(
           padding: const EdgeInsets.only(bottom: 8.0, top: 24.0, left: 8.0),
           child: new Text(
-            model.title.length > 47
-                ? model.title.substring(0, 47) + "..."
-                : model.title,
+            model.classType.title.length > 47
+                ? model.classType.title.substring(0, 47) + "..."
+                : model.classType.title,
             style: new TextStyle(
               fontWeight: FontWeight.bold,
               color: headingColor != null ? headingColor : Colors.black,

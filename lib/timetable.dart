@@ -5,73 +5,87 @@ import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/timeline_model.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
+import 'package:ranepa_timetable/timetable_lessons.dart';
 import 'package:xml/xml.dart' as xml;
+
 import 'timeline.dart';
 
-class ClassItemTypes {
+class LessonItemTypes {
   final IconData _icon;
 
-  const ClassItemTypes._internal(this._icon);
+  const LessonItemTypes._internal(this._icon);
 
   toString() => 'Enum.$_icon';
 
   static const UNKNOWN =
-      const ClassItemTypes._internal(Icons.insert_drive_file);
+      const LessonItemTypes._internal(Icons.insert_drive_file);
   static const ECONOMICS =
-      const ClassItemTypes._internal(TimetableIcons.economics);
-  static const MATH = const ClassItemTypes._internal(TimetableIcons.math);
+      const LessonItemTypes._internal(TimetableIcons.economics);
+  static const MATH = const LessonItemTypes._internal(TimetableIcons.math);
   static const INFORMATION_THEORY =
-      const ClassItemTypes._internal(TimetableIcons.informationTheory);
+      const LessonItemTypes._internal(TimetableIcons.informationTheory);
   static const PHILOSOPHY =
-      const ClassItemTypes._internal(TimetableIcons.philosophy);
+      const LessonItemTypes._internal(TimetableIcons.philosophy);
   static const SPEECH_CULTURE =
-      const ClassItemTypes._internal(TimetableIcons.speechCulture);
-  static const PHYSICS = const ClassItemTypes._internal(TimetableIcons.physics);
+      const LessonItemTypes._internal(TimetableIcons.speechCulture);
+  static const PHYSICS =
+      const LessonItemTypes._internal(TimetableIcons.physics);
   static const CHEMISTRY =
-      const ClassItemTypes._internal(TimetableIcons.chemistry);
+      const LessonItemTypes._internal(TimetableIcons.chemistry);
   static const LITERATURE =
-      const ClassItemTypes._internal(TimetableIcons.literature);
-  static const ENGLISH = const ClassItemTypes._internal(TimetableIcons.english);
+      const LessonItemTypes._internal(TimetableIcons.literature);
+  static const ENGLISH =
+      const LessonItemTypes._internal(TimetableIcons.english);
   static const INFORMATICS =
-      const ClassItemTypes._internal(TimetableIcons.informatics);
+      const LessonItemTypes._internal(TimetableIcons.informatics);
   static const GEOGRAPHY =
-      const ClassItemTypes._internal(TimetableIcons.geography);
-  static const HISTORY = const ClassItemTypes._internal(TimetableIcons.history);
+      const LessonItemTypes._internal(TimetableIcons.geography);
+  static const HISTORY =
+      const LessonItemTypes._internal(TimetableIcons.history);
   static const SOCIAL_STUDIES =
-      const ClassItemTypes._internal(TimetableIcons.socialStudies);
-  static const BIOLOGY = const ClassItemTypes._internal(TimetableIcons.biology);
+      const LessonItemTypes._internal(TimetableIcons.socialStudies);
+  static const BIOLOGY =
+      const LessonItemTypes._internal(TimetableIcons.biology);
   static const LIFE_SAFETY =
-      const ClassItemTypes._internal(TimetableIcons.lifeSafety);
+      const LessonItemTypes._internal(TimetableIcons.lifeSafety);
   static const PHYSICAL_CULTURE =
-      const ClassItemTypes._internal(TimetableIcons.physicalCulture);
-  static const ETHICS = const ClassItemTypes._internal(TimetableIcons.ethics);
+      const LessonItemTypes._internal(TimetableIcons.physicalCulture);
+  static const ETHICS = const LessonItemTypes._internal(TimetableIcons.ethics);
   static const MANAGEMENT =
-      const ClassItemTypes._internal(TimetableIcons.management);
+      const LessonItemTypes._internal(TimetableIcons.management);
   static const SOFTWARE_DEVELOPMENT =
-      const ClassItemTypes._internal(TimetableIcons.softwareDevelopment);
+      const LessonItemTypes._internal(TimetableIcons.softwareDevelopment);
   static const COMPUTER_ARCHITECTURE =
-      const ClassItemTypes._internal(TimetableIcons.computerArchitecture);
+      const LessonItemTypes._internal(TimetableIcons.computerArchitecture);
   static const OPERATING_SYSTEMS =
-      const ClassItemTypes._internal(TimetableIcons.operatingSystems);
+      const LessonItemTypes._internal(TimetableIcons.operatingSystems);
   static const COMPUTER_GRAPHIC =
-      const ClassItemTypes._internal(TimetableIcons.computerGraphic);
+      const LessonItemTypes._internal(TimetableIcons.computerGraphic);
   static const PROJECT_DEVELOPMENT =
-      const ClassItemTypes._internal(TimetableIcons.projectDevelopment);
+      const LessonItemTypes._internal(TimetableIcons.projectDevelopment);
   static const DATABASES =
-      const ClassItemTypes._internal(TimetableIcons.databases);
+      const LessonItemTypes._internal(TimetableIcons.databases);
 }
+
+enum TimetableResponseIndexes { Date, TimeStart, TimeFinish, Name, Room, Group }
 
 class TimetableWidget extends StatelessWidget {
   const TimetableWidget({Key key, this.item}) : super(key: key);
 
   final SearchItem item;
 
-  Future<List<TimelineModel>> loadTimetable() async {
-    // Send the POST request, with full SOAP envelope as the request body.
-    http.Response response = await http.post(
-        'http://test.ranhigs-nn.ru/api/WebService.asmx',
-        headers: {'Content-Type': 'text/xml; charset=utf-8'},
-        body: '''
+  Widget buildTimetable(List<TimelineModel> list) {
+    return TimelineComponent(
+      timelineList: list,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print("started build");
+    return FutureBuilder(
+      future: http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
+          headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -82,45 +96,9 @@ class TimetableWidget extends StatelessWidget {
     </GetRaspGroup>
   </soap:Body>
 </soap:Envelope>
-''');
-
-    final itemArr = xml
-        .parse(response.body)
-        .children[1]
-        .firstChild
-        .firstChild
-        .firstChild
-        .children;
-
-    for (var mItem in itemArr) {
-      print(mItem.toString());
-    }
-
-    List<TimelineModel> classesList = [];
-
-    for(var mItem in itemArr) {
-      classesList.add(
-        TimelineModel(
-
-        )
-      );
-    }
-
-    return classesList;
-  }
-
-  Widget buildTimetable(List<TimelineModel> list) {
-    return TimelineComponent(
-      timelineList: list,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    return FutureBuilder<List<TimelineModel>>(
-      future: loadTimetable(),
+''').then((response) => response.body),
       builder: (context, snapshot) {
+        print("started builder: " + snapshot.connectionState.toString());
         switch (snapshot.connectionState) {
           case ConnectionState.none:
           case ConnectionState.active:
@@ -160,7 +138,45 @@ class TimetableWidget extends StatelessWidget {
                   ],
                 ),
               );
-            return buildTimetable(snapshot.data);
+
+            final itemArr = xml
+                .parse(snapshot.data)
+                .children[1]
+                .firstChild
+                .firstChild
+                .firstChild
+                .children;
+
+            List<TimelineModel> classesList = [];
+
+            for (var mItem in itemArr) {
+              final mItemTimeStart =
+                  mItem.children[TimetableResponseIndexes.TimeStart.index].text;
+              final mItemTimeFinish = mItem
+                  .children[TimetableResponseIndexes.TimeFinish.index].text;
+
+              classesList.add(TimelineModel(
+                  date: DateTime.parse(
+                      mItem.children[TimetableResponseIndexes.Date.index].text),
+                  start: TimeOfDay(
+                      hour: int.parse(mItemTimeStart.substring(
+                          0, mItemTimeStart.length - 3)),
+                      minute: int.parse(mItemTimeStart.substring(
+                          mItemTimeStart.length - 2, mItemTimeStart.length))),
+                  finish: TimeOfDay(
+                      hour: int.parse(mItemTimeFinish.substring(
+                          0, mItemTimeFinish.length - 3)),
+                      minute: int.parse(mItemTimeFinish.substring(
+                          mItemTimeFinish.length - 2, mItemTimeFinish.length))),
+                  room:
+                      mItem.children[TimetableResponseIndexes.Room.index].text,
+                  group:
+                      mItem.children[TimetableResponseIndexes.Group.index].text,
+                  classType: Lesson.fromString(
+                      context, mItem.children[TimetableResponseIndexes.Name.index].text)));
+            }
+
+            return buildTimetable(classesList);
         }
         return null; // unreachable
       },
