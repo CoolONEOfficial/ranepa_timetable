@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:intl/message_lookup_by_library.dart';
 
 // ignore: unnecessary_new
-final messages = MessageLookup();
+final messages = new MessageLookup();
 
 // ignore: unused_element
 final _keepAnalysisHappy = Intl.defaultLocale;
@@ -47,6 +47,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "physics" : MessageLookupByLibrary.simpleMessage("Физика"),
     "projectDevelopment" : MessageLookupByLibrary.simpleMessage("Проектная разработка"),
     "saturday" : MessageLookupByLibrary.simpleMessage("Сб"),
+    "searchResults" : MessageLookupByLibrary.simpleMessage("Результаты веб-поиска"),
     "searchTip" : MessageLookupByLibrary.simpleMessage("Поиск"),
     "socialStudies" : MessageLookupByLibrary.simpleMessage("Обществознание"),
     "softwareDevelopment" : MessageLookupByLibrary.simpleMessage("Разработка ПО"),

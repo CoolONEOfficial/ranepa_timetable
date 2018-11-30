@@ -33,6 +33,11 @@ class AppLocalizations {
         name: 'searchTip');
   }
 
+  String get searchResults {
+    return Intl.message('Web search results',
+        name: 'searchResults');
+  }
+
   String get groupEconomics{
     return Intl.message('Economics',
         name: 'groupEconomics');

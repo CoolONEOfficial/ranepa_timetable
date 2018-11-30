@@ -25,16 +25,19 @@ dev_dependencies:
   intl_translation: ^0.17.1
 
 flutter_icons:
-  image_path_android: "assets/images/icon-710x599.png"
-  image_path_ios: "assets/images/icon-710x599.png"
+  image_path_android: "assets/images/icon.png"
+  image_path_ios: "assets/images/icon.png"
   android: true
   ios: true
   adaptive_icon_background: "#982825"
-  adaptive_icon_foreground: "assets/images/icon-foreground-432x432.png"
+  adaptive_icon_foreground: "assets/images/icon-foreground.png"
 
 flutter:
 
   uses-material-design: true
+
+  assets:
+   - assets/images/icon-foreground.png
 
   fonts:
    - family:  Timetable

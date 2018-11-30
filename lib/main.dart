@@ -47,6 +47,47 @@ class _MainWidgetState extends State<MainWidget> {
   Search _searchDelegate;
   SearchItem _searchSelected;
 
+  Widget buildDrawer() {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          DrawerHeader(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                RichText(
+                    text: TextSpan(
+                      text: AppLocalizations.of(context).title,
+                      style: Theme.of(context).textTheme.subhead,
+                    )),
+              ],
+            ),
+            decoration: BoxDecoration(
+                color: Theme.of(context).accentColor,
+                image: DecorationImage(
+                    image: AssetImage(
+                        'assets/images/icon-foreground.png'))),
+          ),
+          ListTile(
+            title: Text('Item 1'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: Text('Item 2'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _searchDelegate = Search(context);
@@ -200,44 +241,45 @@ class _MainWidgetState extends State<MainWidget> {
             return DefaultTabController(
                 length: tabCount,
                 child: Scaffold(
-                    key: _scaffoldKey,
-                    body: TabBarView(children: tabViews),
-                    appBar: AppBar(
-                      title: _searchSelected != null
-                          ? Text(_searchSelected.title)
-                          : null,
-                      actions: <Widget>[
-                        IconButton(
-                          tooltip: AppLocalizations.of(context).searchTip,
-                          icon: const Icon(Icons.calendar_today),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          tooltip: AppLocalizations.of(context).searchTip,
-                          icon: const Icon(Icons.alarm),
-                          onPressed: () {},
-                        ),
-                        IconButton(
-                          tooltip: AppLocalizations.of(context).searchTip,
-                          icon: const Icon(Icons.search),
-                          onPressed: () async {
-                            final selected = await showSearch<SearchItem>(
-                              context: context,
-                              delegate: _searchDelegate,
-                            );
-                            if (selected != null &&
-                                selected != _searchSelected) {
-                              setState(() {
-                                _searchSelected = selected;
-                              });
-                            }
-                          },
-                        ),
-                      ],
-                      bottom: TabBar(
-                        tabs: tabs,
+                  key: _scaffoldKey,
+                  body: TabBarView(children: tabViews),
+                  appBar: AppBar(
+                    title: _searchSelected != null
+                        ? Text(_searchSelected.title)
+                        : null,
+                    actions: <Widget>[
+                      IconButton(
+                        tooltip: AppLocalizations.of(context).searchTip,
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () {},
                       ),
-                    )));
+                      IconButton(
+                        tooltip: AppLocalizations.of(context).searchTip,
+                        icon: const Icon(Icons.alarm),
+                        onPressed: () {},
+                      ),
+                      IconButton(
+                        tooltip: AppLocalizations.of(context).searchTip,
+                        icon: const Icon(Icons.search),
+                        onPressed: () async {
+                          final selected = await showSearch<SearchItem>(
+                            context: context,
+                            delegate: _searchDelegate,
+                          );
+                          if (selected != null && selected != _searchSelected) {
+                            setState(() {
+                              _searchSelected = selected;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                    bottom: TabBar(
+                      tabs: tabs,
+                    ),
+                  ),
+                  drawer: buildDrawer(),
+                ));
         }
         return null; // unreachable
       },

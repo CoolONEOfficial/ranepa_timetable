@@ -52,7 +52,6 @@ class Search extends SearchDelegate<SearchItem> {
   // Check 2018-2019 academic year because all item ids in next year will be refreshed
   final bool predefinedSuggestionsValid =
       DateTime.now().isBefore(DateTime(2019, 9));
-  static const searchQueryLength = 2;
 
   final List<SearchItemBase> predefinedSuggestions;
 
@@ -71,7 +70,8 @@ class Search extends SearchDelegate<SearchItem> {
           SearchItem(SearchItemTypes.GROUP, 15022, "Эб-021"),
           SearchItem(SearchItemTypes.GROUP, 15023, "Эб-022"),
           SearchItem(SearchItemTypes.GROUP, 15113, "Эб-031"),
-          SearchItem(SearchItemTypes.GROUP, 15112, "Эб-032")
+          SearchItem(SearchItemTypes.GROUP, 15112, "Эб-032"),
+          SearchDivider(AppLocalizations.of(context).searchResults),
         ];
 
   @override
@@ -118,11 +118,13 @@ class Search extends SearchDelegate<SearchItem> {
         ? (List.from(queryPredefinedSuggestions)..addAll(webSuggestions))
         : webSuggestions;
 
-    for (var mIndex = suggestions.length - 1; mIndex > 0; mIndex--) {
+    for (var mIndex = 0; mIndex < suggestions.length - 1; mIndex++) {
       final mSuggestion = suggestions.elementAt(mIndex);
-      final mPreSuggestion = suggestions.elementAt(mIndex - 1);
-      if (mSuggestion is SearchDivider && mPreSuggestion is SearchDivider)
-        suggestions.removeAt(mIndex - 1);
+      final mPreSuggestion = suggestions.elementAt(mIndex + 1);
+      if (mSuggestion is SearchDivider && mPreSuggestion is SearchDivider) {
+        suggestions.removeAt(mIndex);
+        mIndex--; // don't skip
+      }
     }
 
     return ListView.builder(
@@ -131,18 +133,8 @@ class Search extends SearchDelegate<SearchItem> {
 
           if (mBaseItem is SearchItem) {
             final SearchItem mSearchItem = mBaseItem;
-
-            debugPrint("queryPredefinedSugg len: " +
-                queryPredefinedSuggestions.length.toString());
-
-            debugPrint("index of " +
-                query +
-                " in " +
-                mSearchItem.title +
-                ": " +
-                mSearchItem.title
-                    .indexOf(RegExp("^" + query, caseSensitive: false))
-                    .toString());
+            final queryIndex =
+                mSearchItem.title.indexOf(RegExp(query, caseSensitive: false));
 
             return ListTile(
                 onTap: () {
@@ -151,20 +143,48 @@ class Search extends SearchDelegate<SearchItem> {
                 leading: Icon(mSearchItem.type.icon),
                 title: RichText(
                     // Recent suggestion
-                    text: TextSpan(
-                        text: mSearchItem.title.substring(
-                            mSearchItem.title.indexOf(
-                                RegExp("^" + query, caseSensitive: false)),
-                            query.length),
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                        children: [
-                      TextSpan(
-                          text: mSearchItem.title.substring(query.length),
-                          style: TextStyle(
-                              color: Colors.grey,
-                              fontWeight: FontWeight.normal))
-                    ]))
+                    text: queryIndex == 0
+                        ? TextSpan(
+                            text: mSearchItem.title.substring(
+                              0,
+                              query.length,
+                            ),
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            children: [
+                              TextSpan(
+                                  text:
+                                      mSearchItem.title.substring(query.length),
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.normal))
+                            ],
+                          )
+                        : TextSpan(
+                            text: mSearchItem.title.substring(
+                              0,
+                              queryIndex,
+                            ),
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.normal),
+                            children: [
+                              TextSpan(
+                                  text: mSearchItem.title.substring(
+                                      queryIndex, queryIndex + query.length),
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text: mSearchItem.title
+                                      .substring(queryIndex + query.length),
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.normal))
+                            ],
+                          ))
                 // Recent suggestion
                 );
           } else if (mBaseItem is SearchDivider) {
@@ -192,7 +212,7 @@ class Search extends SearchDelegate<SearchItem> {
   Widget buildSuggestions(context) {
     debugPrint("Suggestions build start");
     webSuggestions.clear();
-    return query.length < searchQueryLength
+    return query.isEmpty
         ? _buildSuggestions()
         : FutureBuilder<String>(
             future: http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
@@ -257,8 +277,6 @@ class Search extends SearchDelegate<SearchItem> {
                       .firstChild
                       .firstChild
                       .children;
-
-                  webSuggestions.add(SearchDivider("Результаты веб-поиска"));
 
                   for (var mItem in itemArr) {
                     SearchItemType mItemType;
