@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-11-29T00:31:58.508752",
+  "@@last_modified": "2018-11-29T23:09:59.297210",
   "title": "NRU RANEPA (Timetable)",
   "@title": {
     "description": "The application title",
@@ -143,6 +143,36 @@
   },
   "databases": "Databases",
   "@databases": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "monday": "Mo",
+  "@monday": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "tuesday": "Tu",
+  "@tuesday": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "wednesday": "We",
+  "@wednesday": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "thursday": "Th",
+  "@thursday": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "friday": "Fr",
+  "@friday": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "saturday": "Sa",
+  "@saturday": {
     "type": "text",
     "placeholders": {}
   }

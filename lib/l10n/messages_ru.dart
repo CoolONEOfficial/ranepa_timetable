@@ -28,6 +28,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "economics" : MessageLookupByLibrary.simpleMessage("Экономика"),
     "english" : MessageLookupByLibrary.simpleMessage("Английский язык"),
     "ethics" : MessageLookupByLibrary.simpleMessage("Этика"),
+    "friday" : MessageLookupByLibrary.simpleMessage("Пт"),
     "geography" : MessageLookupByLibrary.simpleMessage("География"),
     "groupEconomics" : MessageLookupByLibrary.simpleMessage("Экономика"),
     "groupInformatics" : MessageLookupByLibrary.simpleMessage("Информатика"),
@@ -39,15 +40,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "loading" : MessageLookupByLibrary.simpleMessage("Загрузка"),
     "management" : MessageLookupByLibrary.simpleMessage("Менеджмент"),
     "math" : MessageLookupByLibrary.simpleMessage("Математика"),
+    "monday" : MessageLookupByLibrary.simpleMessage("Пн"),
     "operatingSystems" : MessageLookupByLibrary.simpleMessage("Операционные системы"),
     "philosophy" : MessageLookupByLibrary.simpleMessage("Философия"),
     "physicalCulture" : MessageLookupByLibrary.simpleMessage("Физ-ра"),
     "physics" : MessageLookupByLibrary.simpleMessage("Физика"),
     "projectDevelopment" : MessageLookupByLibrary.simpleMessage("Проектная разработка"),
+    "saturday" : MessageLookupByLibrary.simpleMessage("Сб"),
     "searchTip" : MessageLookupByLibrary.simpleMessage("Поиск"),
     "socialStudies" : MessageLookupByLibrary.simpleMessage("Обществознание"),
     "softwareDevelopment" : MessageLookupByLibrary.simpleMessage("Разработка ПО"),
     "speechCulture" : MessageLookupByLibrary.simpleMessage("Культура речи"),
-    "title" : MessageLookupByLibrary.simpleMessage("НИУ РАНХиГС (Расписание)")
+    "thursday" : MessageLookupByLibrary.simpleMessage("Чт"),
+    "title" : MessageLookupByLibrary.simpleMessage("НИУ РАНХиГС (Расписание)"),
+    "tuesday" : MessageLookupByLibrary.simpleMessage("Вт"),
+    "wednesday" : MessageLookupByLibrary.simpleMessage("Ср")
   };
 }

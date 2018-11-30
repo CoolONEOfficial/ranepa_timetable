@@ -167,6 +167,36 @@ class AppLocalizations {
     return Intl.message('Databases',
         name: 'databases');
   }
+
+  String get monday{
+    return Intl.message('Mo',
+        name: 'monday');
+  }
+
+  String get tuesday{
+    return Intl.message('Tu',
+        name: 'tuesday');
+  }
+
+  String get wednesday{
+    return Intl.message('We',
+        name: 'wednesday');
+  }
+
+  String get thursday{
+    return Intl.message('Th',
+        name: 'thursday');
+  }
+
+  String get friday{
+    return Intl.message('Fr',
+        name: 'friday');
+  }
+
+  String get saturday{
+    return Intl.message('Sa',
+        name: 'saturday');
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

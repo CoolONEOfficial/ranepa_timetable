@@ -146,5 +146,35 @@
   "@databases": {
     "type": "text",
     "placeholders": {}
+  },
+  "monday": "Пн",
+  "@monday": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "tuesday": "Вт",
+  "@tuesday": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "wednesday": "Ср",
+  "@wednesday": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "thursday": "Чт",
+  "@thursday": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "friday": "Пт",
+  "@friday": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "saturday": "Сб",
+  "@saturday": {
+    "type": "text",
+    "placeholders": {}
   }
 }

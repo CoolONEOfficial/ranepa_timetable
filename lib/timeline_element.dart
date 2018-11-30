@@ -62,10 +62,10 @@ class TimelineElement extends StatelessWidget {
             model.classType.title.length > 47
                 ? model.classType.title.substring(0, 47) + "..."
                 : model.classType.title,
-            style: new TextStyle(
-              fontWeight: FontWeight.bold,
-              color: headingColor != null ? headingColor : Colors.black,
-            ),
+            style: headingColor != null
+                ? new TextStyle(
+                    fontWeight: FontWeight.bold, color: headingColor)
+                : Theme.of(context).textTheme.title,
           ),
         ),
         new Expanded(
@@ -76,9 +76,11 @@ class TimelineElement extends StatelessWidget {
                     : model.room)
                 : "",
             // To prevent overflowing of text to the next element, the text is truncated if greater than 75 characters
-            style: new TextStyle(
-              color: descriptionColor != null ? descriptionColor : Colors.grey,
-            ),
+            style: descriptionColor != null
+                ? new TextStyle(
+                    color: descriptionColor,
+                  )
+                : Theme.of(context).textTheme.caption,
           ),
         )
       ],

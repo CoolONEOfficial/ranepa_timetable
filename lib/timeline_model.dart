@@ -15,6 +15,7 @@ limitations under the License. */
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ranepa_timetable/timetable_lessons.dart';
+import 'package:ranepa_timetable/timetable_teacher.dart';
 
 class TimelineModel {
   final Lesson classType;
@@ -23,6 +24,7 @@ class TimelineModel {
   final DateTime date;
   final TimeOfDay start, finish;
   final String group;
+  final Teacher teacher;
 
   const TimelineModel({
     @required this.date,
@@ -31,5 +33,6 @@ class TimelineModel {
     @required this.room,
     @required this.group,
     @required this.classType,
+    @required this.teacher,
   });
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/timetable.dart';
 import 'package:xml/xml.dart' as xml;
 
 class SearchItemType {
@@ -45,17 +44,17 @@ class SearchDivider extends SearchItemBase {
   final String title;
 }
 
-enum GroupSearchResponseIndexes { Type, Id, Title }
+enum SearchResponseIndexes { Type, Id, Title }
 
-class GroupSearch extends SearchDelegate<String> {
+class Search extends SearchDelegate<SearchItem> {
   List<SearchItemBase> webSuggestions = [];
 
   // Check 2018-2019 academic year because all item ids in next year will be refreshed
   bool predefinedSuggestionsValid = DateTime.now().isBefore(DateTime(2019, 9));
 
-  SearchItem tappedSearchItem;
+  final List predefinedSuggestions;
 
-  GroupSearch(BuildContext context)
+  Search(BuildContext context)
       : predefinedSuggestions = [
           SearchDivider(AppLocalizations.of(context).groupInformatics),
           SearchItem(SearchItemTypes.GROUP, 15034, "Иб-011"),
@@ -72,7 +71,6 @@ class GroupSearch extends SearchDelegate<String> {
           SearchItem(SearchItemTypes.GROUP, 15113, "Эб-031"),
           SearchItem(SearchItemTypes.GROUP, 15112, "Эб-032")
         ];
-  final List predefinedSuggestions;
 
   @override
   List<Widget> buildActions(context) {
@@ -94,11 +92,6 @@ class GroupSearch extends SearchDelegate<String> {
         onPressed: () {
           close(context, null);
         });
-  }
-
-  @override
-  Widget buildResults(context) {
-    return TimetableWidget(item: tappedSearchItem);
   }
 
   Widget _buildSuggestions() {
@@ -139,8 +132,7 @@ class GroupSearch extends SearchDelegate<String> {
 
             return ListTile(
               onTap: () {
-                tappedSearchItem = mSearchItem;
-                showResults(context);
+                close(context, mSearchItem);
               },
               leading: Icon(mSearchItem.type.icon),
               title: index > queryPredefinedSuggestions.length - 1
@@ -258,7 +250,7 @@ class GroupSearch extends SearchDelegate<String> {
               SearchItemType mItemType;
 
               switch (
-                  mItem.children[GroupSearchResponseIndexes.Type.index].text) {
+                  mItem.children[SearchResponseIndexes.Type.index].text) {
                 case "Prep":
                   mItemType = SearchItemTypes.TEACHER;
                   break;
@@ -272,8 +264,8 @@ class GroupSearch extends SearchDelegate<String> {
               webSuggestions.add(SearchItem(
                 mItemType,
                 int.parse(
-                    mItem.children[GroupSearchResponseIndexes.Id.index].text),
-                mItem.children[GroupSearchResponseIndexes.Title.index].text,
+                    mItem.children[SearchResponseIndexes.Id.index].text),
+                mItem.children[SearchResponseIndexes.Title.index].text,
               ));
             }
             print(webSuggestions);
@@ -283,5 +275,10 @@ class GroupSearch extends SearchDelegate<String> {
         return null; // unreachable
       },
     );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return Container();
   }
 }

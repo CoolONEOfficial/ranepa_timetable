@@ -28,6 +28,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "economics" : MessageLookupByLibrary.simpleMessage("Economics"),
     "english" : MessageLookupByLibrary.simpleMessage("English"),
     "ethics" : MessageLookupByLibrary.simpleMessage("Ethics"),
+    "friday" : MessageLookupByLibrary.simpleMessage("Fr"),
     "geography" : MessageLookupByLibrary.simpleMessage("Geography"),
     "groupEconomics" : MessageLookupByLibrary.simpleMessage("Economics"),
     "groupInformatics" : MessageLookupByLibrary.simpleMessage("Informatics"),
@@ -39,15 +40,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "loading" : MessageLookupByLibrary.simpleMessage("Loading"),
     "management" : MessageLookupByLibrary.simpleMessage("Management"),
     "math" : MessageLookupByLibrary.simpleMessage("Mathematics"),
+    "monday" : MessageLookupByLibrary.simpleMessage("Mo"),
     "operatingSystems" : MessageLookupByLibrary.simpleMessage("Operating Systems"),
     "philosophy" : MessageLookupByLibrary.simpleMessage("Philosophy"),
     "physicalCulture" : MessageLookupByLibrary.simpleMessage("Physical Culture"),
     "physics" : MessageLookupByLibrary.simpleMessage("Physics"),
     "projectDevelopment" : MessageLookupByLibrary.simpleMessage("Project Development"),
+    "saturday" : MessageLookupByLibrary.simpleMessage("Sa"),
     "searchTip" : MessageLookupByLibrary.simpleMessage("Search"),
     "socialStudies" : MessageLookupByLibrary.simpleMessage("Social Studies"),
     "softwareDevelopment" : MessageLookupByLibrary.simpleMessage("Software Development"),
     "speechCulture" : MessageLookupByLibrary.simpleMessage("Culture of Speech"),
-    "title" : MessageLookupByLibrary.simpleMessage("NRU RANEPA (Timetable)")
+    "thursday" : MessageLookupByLibrary.simpleMessage("Th"),
+    "title" : MessageLookupByLibrary.simpleMessage("NRU RANEPA (Timetable)"),
+    "tuesday" : MessageLookupByLibrary.simpleMessage("Tu"),
+    "wednesday" : MessageLookupByLibrary.simpleMessage("We")
   };
 }
