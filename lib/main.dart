@@ -53,9 +53,9 @@ class _MainWidgetState extends State<MainWidget> {
     if (_searchSelected == null)
       _searchSelected = _searchDelegate.predefinedSuggestions[3];
 
-    final now = new DateTime.now();
-    final today = new DateTime(now.year, now.month, now.day);
-    print("Today: " + today.toIso8601String());
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    debugPrint("Today: " + today.toIso8601String());
 
     final weekdayNames = [
       AppLocalizations.of(context).monday,
@@ -69,12 +69,12 @@ class _MainWidgetState extends State<MainWidget> {
     final tabs = List<Tab>();
     var _tabCount = tabCount;
     for (int mTabId = 0; mTabId < _tabCount; mTabId++) {
-      print("mTabId: " + mTabId.toString());
+      debugPrint("mTabId: " + mTabId.toString());
       final mDay = today.add(Duration(days: mTabId));
-      print("mDay: " + mDay.day.toString());
-      print("mWeekday: " + mDay.weekday.toString());
+      debugPrint("mDay: " + mDay.day.toString());
+      debugPrint("mWeekday: " + mDay.weekday.toString());
       if (mDay.weekday == DateTime.sunday) {
-        print("Skippin sunday");
+        debugPrint("Skippin sunday");
         // Skip day
         _tabCount++;
         continue;
@@ -99,7 +99,7 @@ class _MainWidgetState extends State<MainWidget> {
 </soap:Envelope>
 ''').then((response) => response.body),
       builder: (context, snapshot) {
-        print("started builder: " + snapshot.connectionState.toString());
+        debugPrint("started builder: " + snapshot.connectionState.toString());
         switch (snapshot.connectionState) {
           case ConnectionState.none:
           case ConnectionState.active:
@@ -126,10 +126,10 @@ class _MainWidgetState extends State<MainWidget> {
                 padding: EdgeInsets.all(20.0),
                 child: Column(
                   children: <Widget>[
-                    new Expanded(
-                      child: new FittedBox(
+                    Expanded(
+                      child: FittedBox(
                         fit: BoxFit.scaleDown,
-                        child: new Icon(Icons.error, size: 140),
+                        child: Icon(Icons.error, size: 140),
                       ),
                     ),
                     RichText(
@@ -201,7 +201,7 @@ class _MainWidgetState extends State<MainWidget> {
                 length: tabCount,
                 child: Scaffold(
                     key: _scaffoldKey,
-                    body: new TabBarView(children: tabViews),
+                    body: TabBarView(children: tabViews),
                     appBar: AppBar(
                       title: _searchSelected != null
                           ? Text(_searchSelected.title)

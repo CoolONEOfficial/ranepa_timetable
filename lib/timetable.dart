@@ -72,7 +72,7 @@ class TimetableWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("started build");
+    debugPrint("started build");
     return TimelineComponent(
       timelineList: lessons,
     );

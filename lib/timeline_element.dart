@@ -22,7 +22,6 @@ class TimelineElement extends StatelessWidget {
   final TimelineModel model;
   final bool firstElement;
   final bool lastElement;
-  final Animation<double> controller;
   final Color headingColor;
   final Color descriptionColor;
 
@@ -32,44 +31,40 @@ class TimelineElement extends StatelessWidget {
       @required this.model,
       this.firstElement = false,
       this.lastElement = false,
-      this.controller,
       this.headingColor,
       this.descriptionColor});
 
-  Widget _buildLine(BuildContext context, Widget child) {
-    return new Container(
-      width: 40.0,
-      child: new CustomPaint(
-        painter: new TimelinePainter(
+  Widget _buildLine(BuildContext context) {
+    return SizedBox.expand(
+        child: Container(
+      child: CustomPaint(
+        painter: TimelinePainter(context,
             iconCodePoint: model.classType.icon.codePoint,
             lineColor: lineColor,
             backgroundColor: backgroundColor,
             firstElement: firstElement,
-            lastElement: lastElement,
-            controller: controller),
+            lastElement: lastElement),
       ),
-    );
+    ));
   }
 
   Widget _buildContentColumn(BuildContext context) {
-    return new Column(
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
       children: <Widget>[
-        new Container(
-          padding: const EdgeInsets.only(bottom: 8.0, top: 24.0, left: 8.0),
-          child: new Text(
+        Container(
+          padding: EdgeInsets.only(bottom: 8.0, top: 16.0, left: 140.0),
+          child: Text(
             model.classType.title.length > 47
                 ? model.classType.title.substring(0, 47) + "..."
                 : model.classType.title,
             style: headingColor != null
-                ? new TextStyle(
-                    fontWeight: FontWeight.bold, color: headingColor)
+                ? TextStyle(fontWeight: FontWeight.bold, color: headingColor)
                 : Theme.of(context).textTheme.title,
           ),
         ),
-        new Expanded(
-          child: new Text(
+        Container(
+          padding: EdgeInsets.only(bottom: 8.0, top: 45.0, left: 45.0),
+          child: Text(
             model.room != null
                 ? (model.room.length > 50
                     ? model.room.substring(0, 50) + "..."
@@ -77,31 +72,24 @@ class TimelineElement extends StatelessWidget {
                 : "",
             // To prevent overflowing of text to the next element, the text is truncated if greater than 75 characters
             style: descriptionColor != null
-                ? new TextStyle(
+                ? TextStyle(
                     color: descriptionColor,
                   )
-                : Theme.of(context).textTheme.caption,
+                : Theme.of(context).textTheme.subtitle,
           ),
-        )
+        ),
       ],
     );
   }
 
   Widget _buildRow(BuildContext context) {
-    return new Container(
+    return Container(
       height: 80.0,
       color: backgroundColor,
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 0.0),
-      child: new Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Stack(
         children: <Widget>[
-          new AnimatedBuilder(
-            builder: _buildLine,
-            animation: controller,
-          ),
-          new Expanded(
-            child: _buildContentColumn(context),
-          ),
+          _buildLine(context),
+          _buildContentColumn(context),
         ],
       ),
     );

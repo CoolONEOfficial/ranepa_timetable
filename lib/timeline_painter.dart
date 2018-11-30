@@ -21,87 +21,82 @@ class TimelinePainter extends CustomPainter {
   final Color backgroundColor;
   final bool firstElement;
   final bool lastElement;
-  final Animation<double> controller;
-  final Animation<double> height;
   final int iconCodePoint;
+  final BuildContext context;
 
-  TimelinePainter({
-    @required this.iconCodePoint,
-    @required this.lineColor,
-    @required this.backgroundColor,
-    this.firstElement = false,
-    this.lastElement = false,
-    this.controller
-  })
-      :
-        height = new Tween(begin: 0.0, end: 1.0).animate(
-          new CurvedAnimation(
-            parent: controller,
-            curve: new Interval(0.45, 1.0, curve: Curves.ease),
-          ),
-        ),
-        super(repaint: controller);
+  TimelinePainter(this.context,
+      {@required this.iconCodePoint,
+      @required this.lineColor,
+      @required this.backgroundColor,
+      this.firstElement = false,
+      this.lastElement = false});
 
   @override
   void paint(Canvas canvas, Size size) {
     _centerElementPaint(canvas, size);
   }
 
+  static const rectMargins = 8.0;
+
   void _centerElementPaint(Canvas canvas, Size size) {
-    Paint lineStroke = new Paint()
+    Paint lineStroke = Paint()
       ..color = lineColor
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke;
+    canvas.drawRRect(
+        RRect.fromLTRBR(rectMargins, rectMargins, size.width - rectMargins,
+            size.height - rectMargins, Radius.circular(5)),
+        Paint()
+          ..color = Theme.of(context).backgroundColor
+          ..strokeCap = StrokeCap.round
+          ..strokeWidth = 2.0
+          ..style = PaintingStyle.fill);
+
+    final iconSize = 15.0;
+    final circleSize = 23.0;
+    final circleOffset = Offset(rectMargins * 2 + circleSize + 70, size.height / 2);
+
     if (firstElement && lastElement) {
       // Do nothing
     } else if (firstElement) {
-      Offset offsetCenter = size.center(new Offset(0.0, -4.0));
-      Offset offsetBottom = size.bottomCenter(new Offset(0.0, 0.0));
-      Offset renderOffset = new Offset(
-          offsetBottom.dx, offsetBottom.dy * (0.5 + (controller.value / 2)));
-      canvas.drawLine(offsetCenter, renderOffset, lineStroke);
+      final offsetCenter = circleOffset.translate(0.0, circleSize / 2);
+      final offsetBottom = Offset(circleOffset.dx, size.height);
+      canvas.drawLine(offsetCenter, offsetBottom, lineStroke);
     } else if (lastElement) {
-      Offset offsetTopCenter = size.topCenter(new Offset(0.0, 0.0));
-      Offset offsetCenter = size.center(new Offset(0.0, -4.0));
-      Offset renderOffset =
-      new Offset(offsetCenter.dx, offsetCenter.dy * controller.value);
-      canvas.drawLine(offsetTopCenter, renderOffset, lineStroke);
+      final offsetCenter = circleOffset.translate(0.0, -circleSize / 2);
+      final offsetTop = Offset(circleOffset.dx, 0);
+      canvas.drawLine(offsetCenter, offsetTop, lineStroke);
     } else {
-      Offset offsetTopCenter = size.topCenter(new Offset(0.0, 0.0));
-      Offset offsetBottom = size.bottomCenter(new Offset(0.0, 0.0));
-      Offset renderOffset =
-      new Offset(offsetBottom.dx, offsetBottom.dy * controller.value);
-      canvas.drawLine(offsetTopCenter, renderOffset, lineStroke);
+      final offsetTop = Offset(circleOffset.dx, 0);
+      final offsetBottom = Offset(circleOffset.dx, size.height);
+      canvas.drawLine(offsetTop, offsetBottom, lineStroke);
     }
 
-    final iconSize = 10.0;
-    final circleSize = 8.0;
-
-    final circleOffset = size.center(new Offset(0.0, -circleSize));
-    canvas.drawCircle(circleOffset, circleSize * 2,
-        new Paint()
+    canvas.drawCircle(
+        circleOffset,
+        circleSize,
+        Paint()
           ..color = Colors.white
-          ..style = PaintingStyle.fill
-    );
-    canvas.drawCircle(circleOffset, circleSize * 2,
-        new Paint()
+          ..style = PaintingStyle.fill);
+    canvas.drawCircle(
+        circleOffset,
+        circleSize,
+        Paint()
           ..color = lineColor
           ..style = PaintingStyle.stroke
-          ..strokeWidth = lineStroke.strokeWidth
-    );
+          ..strokeWidth = lineStroke.strokeWidth);
 
     final span = TextSpan(
         style: TextStyle(
-            fontFamily: timetableFontFamily, color: Colors.black, fontSize: 20),
+            fontFamily: timetableFontFamily, color: Colors.black, fontSize: iconSize*2),
         text: String.fromCharCode(iconCodePoint));
     final textPainter = TextPainter(
         text: span,
         textAlign: TextAlign.center,
         textDirection: TextDirection.ltr);
     textPainter.layout(minWidth: iconSize * 2);
-    textPainter.paint(
-        canvas, size.center(new Offset(-iconSize, -iconSize - circleSize)));
+    textPainter.paint(canvas, circleOffset.translate(-iconSize, -(circleSize / 3 * 2)));
   }
 
   @override

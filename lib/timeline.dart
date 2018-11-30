@@ -40,7 +40,7 @@ class TimelineComponent extends StatefulWidget {
 
   @override
   TimelineComponentState createState() {
-    return new TimelineComponentState();
+    return TimelineComponentState();
   }
 }
 
@@ -60,11 +60,11 @@ class TimelineComponentState extends State<TimelineComponent>
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      child: new ListView.builder(
+    return Container(
+      child: ListView.builder(
         itemCount: widget.timelineList.length,
         itemBuilder: (_, index) {
-          return new TimelineElement(
+          return TimelineElement(
             lineColor: widget.lineColor == null
                 ? Theme.of(context).accentColor
                 : widget.lineColor,
@@ -74,7 +74,6 @@ class TimelineComponentState extends State<TimelineComponent>
             model: widget.timelineList[index],
             firstElement: index == 0,
             lastElement: widget.timelineList.length == index + 1,
-            controller: controller,
             headingColor: widget.headingColor,
             descriptionColor: widget.descriptionColor,
           );
