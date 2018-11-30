@@ -1,4 +1,4 @@
-![RANEPA Logo](assets/images/icon-710x599.png?raw=true "")
+![RANEPA Logo](assets/images/icon.png?raw=true "")
 
 # NRU RANEPA Timetable
 
