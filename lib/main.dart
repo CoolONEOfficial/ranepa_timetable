@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -40,6 +41,8 @@ class DaysOfWeek {
 }
 
 class _MainWidgetState extends State<MainWidget> {
+  static const ch = const MethodChannel('ru.coolone.ranepatimetable/battery');
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   static const tabCount = 6;
