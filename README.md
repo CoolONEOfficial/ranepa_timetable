@@ -30,3 +30,8 @@ flutter pub pub run intl_translation:generate_from_arb --output-dir=lib/l10n --n
 ```Shell
 flutter pub pub run flutter_launcher_icons:main
 ```
+
+### Regenerate all json serialized .g.dart files
+```Shell
+flutter packages pub run build_runner build
+```

@@ -9,7 +9,7 @@ import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/timeline_model.dart';
 import 'package:ranepa_timetable/timetable.dart';
-import 'package:ranepa_timetable/timetable_lessons.dart';
+import 'package:ranepa_timetable/timetable_lesson.dart';
 import 'package:ranepa_timetable/timetable_teacher.dart';
 import 'package:xml/xml.dart' as xml;
 
@@ -41,7 +41,20 @@ class DaysOfWeek {
 }
 
 class _MainWidgetState extends State<MainWidget> {
-  static const ch = const MethodChannel('ru.coolone.ranepatimetable/battery');
+  static const channel =
+      const MethodChannel('ru.coolone.ranepatimetable/jsonChannel');
+
+  Future<void> _get([dynamic args]) async {
+    var resp;
+    try {
+      debugPrint("Channel req.. args: ${args.toString()}");
+      resp = await channel.invokeMethod('set', args);
+    } on PlatformException catch (e) {
+      resp = e.message;
+    }
+
+    debugPrint("Get resp: " + resp.toString());
+  }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -63,16 +76,15 @@ class _MainWidgetState extends State<MainWidget> {
               children: <Widget>[
                 RichText(
                     text: TextSpan(
-                      text: AppLocalizations.of(context).title,
-                      style: Theme.of(context).textTheme.subhead,
-                    )),
+                  text: AppLocalizations.of(context).title,
+                  style: Theme.of(context).textTheme.subhead,
+                )),
               ],
             ),
             decoration: BoxDecoration(
                 color: Theme.of(context).accentColor,
                 image: DecorationImage(
-                    image: AssetImage(
-                        'assets/images/icon-foreground.png'))),
+                    image: AssetImage('assets/images/icon-foreground.png'))),
           ),
           ListTile(
             title: Text('Item 1'),
@@ -98,7 +110,9 @@ class _MainWidgetState extends State<MainWidget> {
       _searchSelected = _searchDelegate.predefinedSuggestions[3];
 
     final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
+    final today = DateTime(now.year, now.month,
+        now.weekday == DateTime.sunday ? now.day + 1 : now.day); // skip sunday
+
     debugPrint("Today: " + today.toIso8601String());
 
     final weekdayNames = [
@@ -240,6 +254,8 @@ class _MainWidgetState extends State<MainWidget> {
             for (var mTab in tabsLessonsList) {
               tabViews.add(TimetableWidget(lessons: mTab));
             }
+
+            if (tabsLessonsList.isNotEmpty) _get(tabsLessonsList.first);
 
             return DefaultTabController(
                 length: tabCount,

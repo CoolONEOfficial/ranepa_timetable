@@ -39,7 +39,7 @@ class TimelineElement extends StatelessWidget {
         child: Container(
       child: CustomPaint(
         painter: TimelinePainter(context,
-            iconCodePoint: model.classType.icon.codePoint,
+            iconCodePoint: model.classType.iconCodePoint,
             lineColor: lineColor,
             backgroundColor: backgroundColor,
             firstElement: firstElement,

@@ -17,12 +17,15 @@ dependencies:
   xml: ^3.2.3
   shared_preferences: ^0.4.3
   tuple: ^1.0.2
+  json_serializable: ^2.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.7.0
   intl_translation: ^0.17.1
+  build_runner: ^1.0.0
+  json_serializable: ^2.0.0
 
 flutter_icons:
   image_path_android: "assets/images/icon.png"

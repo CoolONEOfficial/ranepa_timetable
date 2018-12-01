@@ -1,3 +1,11 @@
+// ignore: uri_does_not_exist
+import 'package:json_annotation/json_annotation.dart';
+
+// ignore: uri_has_not_been_generated
+part 'timetable_teacher.g.dart';
+
+// ignore: undefined_annotation
+@JsonSerializable(nullable: false)
 class Teacher {
   const Teacher(this.name, this.surname, this.patronymic);
 
