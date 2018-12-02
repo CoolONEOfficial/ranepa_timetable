@@ -17,8 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
 
 class TimelinePainter extends CustomPainter {
-  final Color lineColor;
-  final Color backgroundColor;
   final bool firstElement;
   final bool lastElement;
   final int iconCodePoint;
@@ -26,10 +24,8 @@ class TimelinePainter extends CustomPainter {
 
   TimelinePainter(this.context,
       {@required this.iconCodePoint,
-      @required this.lineColor,
-      @required this.backgroundColor,
-      this.firstElement = false,
-      this.lastElement = false});
+        this.firstElement = false,
+        this.lastElement = false});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -40,7 +36,7 @@ class TimelinePainter extends CustomPainter {
 
   void _centerElementPaint(Canvas canvas, Size size) {
     Paint lineStroke = Paint()
-      ..color = lineColor
+      ..color = Theme.of(context).accentColor
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke;
@@ -83,13 +79,13 @@ class TimelinePainter extends CustomPainter {
         circleOffset,
         circleSize,
         Paint()
-          ..color = lineColor
+          ..color = Theme.of(context).accentColor
           ..style = PaintingStyle.stroke
           ..strokeWidth = lineStroke.strokeWidth);
 
     final span = TextSpan(
         style: TextStyle(
-            fontFamily: timetableFontFamily, color: Colors.black, fontSize: iconSize*2),
+            fontFamily: TimetableIcons.databases.fontFamily, color: Colors.black, fontSize: iconSize*2),
         text: String.fromCharCode(iconCodePoint));
     final textPainter = TextPainter(
         text: span,
@@ -100,8 +96,7 @@ class TimelinePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(TimelinePainter oldDelegate) {
-    return oldDelegate.lineColor != lineColor ||
-        oldDelegate.backgroundColor != backgroundColor;
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return null;
   }
 }

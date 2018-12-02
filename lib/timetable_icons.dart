@@ -15,8 +15,8 @@
 ///
 import 'package:flutter/widgets.dart';
 
-class Timetable {
-  Timetable._();
+class TimetableIcons {
+  TimetableIcons._();
 
   static const _kFontFam = 'Timetable';
 
@@ -44,6 +44,6 @@ class Timetable {
   static const IconData economics = const IconData(0xe819, fontFamily: _kFontFam);
   static const IconData philosophy = const IconData(0xe81a, fontFamily: _kFontFam);
   static const IconData academy = const IconData(0xe81b, fontFamily: _kFontFam);
-  static const IconData project_development = const IconData(0xe81c, fontFamily: _kFontFam);
+  static const IconData projectDevelopment = const IconData(0xe81c, fontFamily: _kFontFam);
   static const IconData operatingSystems = const IconData(0xe81d, fontFamily: _kFontFam);
 }

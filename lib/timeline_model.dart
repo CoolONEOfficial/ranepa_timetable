@@ -16,28 +16,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ranepa_timetable/timetable_lesson.dart';
 import 'package:ranepa_timetable/timetable_teacher.dart';
-
-// ignore: uri_does_not_exist
 import 'package:json_annotation/json_annotation.dart';
 
-// ignore: uri_has_not_been_generated
 part 'timeline_model.g.dart';
 
-// ignore: undefined_annotation
 @JsonSerializable(nullable: false)
 class TimelineModel {
-  final Lesson classType;
-  final String room;
+  final LessonModel lesson;
+  final int room;
 
   final DateTime date;
 
-  // ignore: undefined_annotation
+  final String group;
+  final TeacherModel teacher;
+
   @JsonKey(fromJson: _timeOfDayFromIntList, toJson: _timeOfDayToIntList)
   final TimeOfDay start, finish;
-  final String group;
-  final Teacher teacher;
 
-  static TimeOfDay _timeOfDayFromIntList(List<int> intList) => TimeOfDay(hour: intList[0], minute: intList[1]);
+  static TimeOfDay _timeOfDayFromIntList(List<int> intList) =>
+      TimeOfDay(hour: intList[0], minute: intList[1]);
 
   static List<int> _timeOfDayToIntList(TimeOfDay timeOfDay) =>
       [timeOfDay.hour, timeOfDay.minute];
@@ -48,7 +45,12 @@ class TimelineModel {
     @required this.finish,
     @required this.room,
     @required this.group,
-    @required this.classType,
+    @required this.lesson,
     @required this.teacher,
   });
+
+  factory TimelineModel.fromJson(Map<String, dynamic> json) =>
+      _$TimelineModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TimelineModelToJson(this);
 }

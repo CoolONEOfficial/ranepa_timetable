@@ -67,7 +67,7 @@
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <provider
-            android:name=".WidgetDataProvider"
+            android:name=".TimetableDataProvider"
             android:authorities="ru.coolone.ranepatimetable.provider"
             android:exported="true"
             tools:ignore="ExportedContentProvider" />

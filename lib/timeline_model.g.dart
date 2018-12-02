@@ -11,19 +11,19 @@ TimelineModel _$TimelineModelFromJson(Map<String, dynamic> json) {
       date: DateTime.parse(json['date'] as String),
       start: TimelineModel._timeOfDayFromIntList(json['start'] as List<int>),
       finish: TimelineModel._timeOfDayFromIntList(json['finish'] as List<int>),
-      room: json['room'] as String,
+      room: json['room'] as int,
       group: json['group'] as String,
-      classType: Lesson.fromJson(json['classType'] as Map<String, dynamic>),
-      teacher: Teacher.fromJson(json['teacher'] as Map<String, dynamic>));
+      lesson: LessonModel.fromJson(json['lesson'] as Map<String, dynamic>),
+      teacher: TeacherModel.fromJson(json['teacher'] as Map<String, dynamic>));
 }
 
 Map<String, dynamic> _$TimelineModelToJson(TimelineModel instance) =>
     <String, dynamic>{
-      'classType': instance.classType,
+      'lesson': instance.lesson,
       'room': instance.room,
       'date': instance.date.toIso8601String(),
-      'start': TimelineModel._timeOfDayToIntList(instance.start),
-      'finish': TimelineModel._timeOfDayToIntList(instance.finish),
       'group': instance.group,
-      'teacher': instance.teacher
+      'teacher': instance.teacher,
+      'start': TimelineModel._timeOfDayToIntList(instance.start),
+      'finish': TimelineModel._timeOfDayToIntList(instance.finish)
     };

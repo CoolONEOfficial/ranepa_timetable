@@ -54,6 +54,9 @@ flutter {
 }
 
 dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.4'
+    annotationProcessor 'org.projectlombok:lombok:1.18.4'
+    implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.android.support:support-compat:27.1.1'
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'

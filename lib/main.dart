@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
@@ -41,14 +42,23 @@ class DaysOfWeek {
 }
 
 class _MainWidgetState extends State<MainWidget> {
-  static const channel =
-      const MethodChannel('ru.coolone.ranepatimetable/jsonChannel');
+  static const channel = const MethodChannel(
+      'ru.coolone.ranepatimetable/jsonChannel', JSONMethodCodec());
 
   Future<void> _get([dynamic args]) async {
     var resp;
+    List<String> jsons = [];
+
+    for (var mArg in args) {
+      final str = json.encode(mArg);
+      print('Call add on: ' + str);
+
+      jsons.add(str);
+    }
+
     try {
-      debugPrint("Channel req.. args: ${args.toString()}");
-      resp = await channel.invokeMethod('set', args);
+      debugPrint("Channel req.. args: ${jsons.toString()}");
+      resp = await channel.invokeMethod('set', jsons);
     } on PlatformException catch (e) {
       resp = e.message;
     }
@@ -76,9 +86,9 @@ class _MainWidgetState extends State<MainWidget> {
               children: <Widget>[
                 RichText(
                     text: TextSpan(
-                  text: AppLocalizations.of(context).title,
-                  style: Theme.of(context).textTheme.subhead,
-                )),
+                      text: AppLocalizations.of(context).title,
+                      style: Theme.of(context).textTheme.subhead,
+                    )),
               ],
             ),
             decoration: BoxDecoration(
@@ -240,14 +250,13 @@ class _MainWidgetState extends State<MainWidget> {
                           0, mItemTimeFinish.length - 3)),
                       minute: int.parse(mItemTimeFinish.substring(
                           mItemTimeFinish.length - 2, mItemTimeFinish.length))),
-                  room:
-                      mItem.children[TimetableResponseIndexes.Room.index].text,
-                  group:
-                      mItem.children[TimetableResponseIndexes.Group.index].text,
-                  classType: Lesson.fromString(context,
-                      mItem.children[TimetableResponseIndexes.Name.index].text),
-                  teacher:
-                      Teacher.parse(mItem.children[TimetableResponseIndexes.Name.index].text)));
+                  room: int.parse(new RegExp(r"\d{3}")
+                      .stringMatch(mItem
+                      .children[TimetableResponseIndexes.Room.index].text)
+                      .toString()),
+                  group: mItem.children[TimetableResponseIndexes.Group.index].text,
+                  lesson: LessonModel.fromString(context, mItem.children[TimetableResponseIndexes.Name.index].text),
+                  teacher: TeacherModel.parse(mItem.children[TimetableResponseIndexes.Name.index].text)));
             }
 
             final tabViews = List<Widget>();
@@ -318,7 +327,7 @@ Future main() async {
         const Locale('ru', 'RU'), // Русский
       ],
       onGenerateTitle: (BuildContext context) =>
-          AppLocalizations.of(context).title,
+      AppLocalizations.of(context).title,
       title: 'Flutter View',
       theme: ThemeData.light(),
       home: MainWidget()));

@@ -51,28 +51,28 @@ class Search extends SearchDelegate<SearchItem> {
 
   // Check 2018-2019 academic year because all item ids in next year will be refreshed
   final bool predefinedSuggestionsValid =
-      DateTime.now().isBefore(DateTime(2019, 9));
+  DateTime.now().isBefore(DateTime(2019, 9));
 
   final List<SearchItemBase> predefinedSuggestions;
 
   Search(BuildContext context)
       : predefinedSuggestions = [
-          SearchDivider(AppLocalizations.of(context).groupInformatics),
-          SearchItem(SearchItemTypes.GROUP, 15034, "Иб-011"),
-          SearchItem(SearchItemTypes.GROUP, 15035, "Иб-012"),
-          SearchItem(SearchItemTypes.GROUP, 15016, "Иб-021"),
-          SearchItem(SearchItemTypes.GROUP, 15024, "Иб-031"),
-          SearchItem(SearchItemTypes.GROUP, 15030, "Иб-041"),
-          SearchItem(SearchItemTypes.GROUP, 15031, "Иб-042"),
-          SearchDivider(AppLocalizations.of(context).groupEconomics),
-          SearchItem(SearchItemTypes.GROUP, 15122, "Эб-011"),
-          SearchItem(SearchItemTypes.GROUP, 15123, "Эб-012"),
-          SearchItem(SearchItemTypes.GROUP, 15022, "Эб-021"),
-          SearchItem(SearchItemTypes.GROUP, 15023, "Эб-022"),
-          SearchItem(SearchItemTypes.GROUP, 15113, "Эб-031"),
-          SearchItem(SearchItemTypes.GROUP, 15112, "Эб-032"),
-          SearchDivider(AppLocalizations.of(context).searchResults),
-        ];
+    SearchDivider(AppLocalizations.of(context).groupInformatics),
+    SearchItem(SearchItemTypes.GROUP, 15034, "Иб-011"),
+    SearchItem(SearchItemTypes.GROUP, 15035, "Иб-012"),
+    SearchItem(SearchItemTypes.GROUP, 15016, "Иб-021"),
+    SearchItem(SearchItemTypes.GROUP, 15024, "Иб-031"),
+    SearchItem(SearchItemTypes.GROUP, 15030, "Иб-041"),
+    SearchItem(SearchItemTypes.GROUP, 15031, "Иб-042"),
+    SearchDivider(AppLocalizations.of(context).groupEconomics),
+    SearchItem(SearchItemTypes.GROUP, 15122, "Эб-011"),
+    SearchItem(SearchItemTypes.GROUP, 15123, "Эб-012"),
+    SearchItem(SearchItemTypes.GROUP, 15022, "Эб-021"),
+    SearchItem(SearchItemTypes.GROUP, 15023, "Эб-022"),
+    SearchItem(SearchItemTypes.GROUP, 15113, "Эб-031"),
+    SearchItem(SearchItemTypes.GROUP, 15112, "Эб-032"),
+    SearchDivider(AppLocalizations.of(context).searchResults),
+  ];
 
   @override
   List<Widget> buildActions(context) {
@@ -100,19 +100,19 @@ class Search extends SearchDelegate<SearchItem> {
     final queryPredefinedSuggestions = query.isEmpty
         ? predefinedSuggestions
         : predefinedSuggestions.where((mSearchItemBase) {
-            switch (mSearchItemBase.runtimeType) {
-              case SearchItem:
-                final SearchItem mSearchItem = mSearchItemBase;
-                return mSearchItem.title
-                    .startsWith(RegExp("^" + query, caseSensitive: false));
-                break;
-              case SearchDivider:
-                return true;
-                break;
-            }
+      switch (mSearchItemBase.runtimeType) {
+        case SearchItem:
+          final SearchItem mSearchItem = mSearchItemBase;
+          return mSearchItem.title
+              .startsWith(RegExp("^" + query, caseSensitive: false));
+          break;
+        case SearchDivider:
+          return true;
+          break;
+      }
 
-            return false;
-          }).toList();
+      return false;
+    }).toList();
 
     final List<SearchItemBase> suggestions = predefinedSuggestionsValid
         ? (List.from(queryPredefinedSuggestions)..addAll(webSuggestions))
@@ -134,7 +134,7 @@ class Search extends SearchDelegate<SearchItem> {
           if (mBaseItem is SearchItem) {
             final SearchItem mSearchItem = mBaseItem;
             final queryIndex =
-                mSearchItem.title.indexOf(RegExp(query, caseSensitive: false));
+            mSearchItem.title.indexOf(RegExp(query, caseSensitive: false));
 
             return ListTile(
                 onTap: () {
@@ -142,51 +142,51 @@ class Search extends SearchDelegate<SearchItem> {
                 },
                 leading: Icon(mSearchItem.type.icon),
                 title: RichText(
-                    // Recent suggestion
+                  // Recent suggestion
                     text: queryIndex == 0
                         ? TextSpan(
-                            text: mSearchItem.title.substring(
-                              0,
-                              query.length,
-                            ),
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            children: [
-                              TextSpan(
-                                  text:
-                                      mSearchItem.title.substring(query.length),
-                                  style: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.normal))
-                            ],
-                          )
-                        : TextSpan(
-                            text: mSearchItem.title.substring(
-                              0,
-                              queryIndex,
-                            ),
+                      text: mSearchItem.title.substring(
+                        0,
+                        query.length,
+                      ),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      children: [
+                        TextSpan(
+                            text:
+                            mSearchItem.title.substring(query.length),
                             style: TextStyle(
                                 color: Colors.grey,
-                                fontWeight: FontWeight.normal),
-                            children: [
-                              TextSpan(
-                                  text: mSearchItem.title.substring(
-                                      queryIndex, queryIndex + query.length),
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold)),
-                              TextSpan(
-                                  text: mSearchItem.title
-                                      .substring(queryIndex + query.length),
-                                  style: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.normal))
-                            ],
-                          ))
-                // Recent suggestion
-                );
+                                fontWeight: FontWeight.normal))
+                      ],
+                    )
+                        : TextSpan(
+                      text: mSearchItem.title.substring(
+                        0,
+                        queryIndex,
+                      ),
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.normal),
+                      children: [
+                        TextSpan(
+                            text: mSearchItem.title.substring(
+                                queryIndex, queryIndex + query.length),
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold)),
+                        TextSpan(
+                            text: mSearchItem.title
+                                .substring(queryIndex + query.length),
+                            style: TextStyle(
+                                color: Colors.grey,
+                                fontWeight: FontWeight.normal))
+                      ],
+                    ))
+              // Recent suggestion
+            );
           } else if (mBaseItem is SearchDivider) {
             final SearchDivider mDivider = mBaseItem;
 
@@ -215,8 +215,8 @@ class Search extends SearchDelegate<SearchItem> {
     return query.isEmpty
         ? _buildSuggestions()
         : FutureBuilder<String>(
-            future: http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
-                headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
+      future: http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
+          headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -226,87 +226,87 @@ class Search extends SearchDelegate<SearchItem> {
   </soap:Body>
 </soap:Envelope>
 ''').then((response) => response.body),
-            builder: (context, snapshot) {
-              debugPrint("Search builder started: " +
-                  snapshot.connectionState.toString());
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                case ConnectionState.active:
-                case ConnectionState.waiting:
-                  return Stack(
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.only(right: 10, top: 10),
-                        alignment: Alignment.topRight,
-                        child: SizedBox(
-                          child: CircularProgressIndicator(),
-                          height: 15.0,
-                          width: 15.0,
-                        ),
+      builder: (context, snapshot) {
+        debugPrint("Search builder started: " +
+            snapshot.connectionState.toString());
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+          case ConnectionState.active:
+          case ConnectionState.waiting:
+            return Stack(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.only(right: 10, top: 10),
+                  alignment: Alignment.topRight,
+                  child: SizedBox(
+                    child: CircularProgressIndicator(),
+                    height: 15.0,
+                    width: 15.0,
+                  ),
+                ),
+                _buildSuggestions()
+              ],
+            );
+            break;
+          case ConnectionState.done:
+            debugPrint("Search results done");
+            if (snapshot.hasError)
+              return Container(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Icon(Icons.error, size: 70),
                       ),
-                      _buildSuggestions()
-                    ],
-                  );
+                    ),
+                    RichText(
+                        text: TextSpan(
+                            text: "${snapshot.error}",
+                            style: TextStyle(color: Colors.black)))
+                  ],
+                ),
+              );
+
+            debugPrint("Search snapshot data: " + snapshot.data);
+            final itemArr = xml
+                .parse(snapshot.data)
+                .children[1]
+                .firstChild
+                .firstChild
+                .firstChild
+                .children;
+
+            for (var mItem in itemArr) {
+              SearchItemType mItemType;
+
+              switch (
+              mItem.children[SearchResponseIndexes.Type.index].text) {
+                case "Prep":
+                  mItemType = SearchItemTypes.TEACHER;
                   break;
-                case ConnectionState.done:
-                  debugPrint("Search results done");
-                  if (snapshot.hasError)
-                    return Container(
-                      padding: EdgeInsets.all(20.0),
-                      child: Column(
-                        children: <Widget>[
-                          Expanded(
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Icon(Icons.error, size: 70),
-                            ),
-                          ),
-                          RichText(
-                              text: TextSpan(
-                                  text: "${snapshot.error}",
-                                  style: TextStyle(color: Colors.black)))
-                        ],
-                      ),
-                    );
-
-                  debugPrint("Search snapshot data: " + snapshot.data);
-                  final itemArr = xml
-                      .parse(snapshot.data)
-                      .children[1]
-                      .firstChild
-                      .firstChild
-                      .firstChild
-                      .children;
-
-                  for (var mItem in itemArr) {
-                    SearchItemType mItemType;
-
-                    switch (
-                        mItem.children[SearchResponseIndexes.Type.index].text) {
-                      case "Prep":
-                        mItemType = SearchItemTypes.TEACHER;
-                        break;
-                      case "Group":
-                        mItemType = SearchItemTypes.GROUP;
-                        break;
-                      default:
-                        mItemType = SearchItemTypes.UNKNOWN;
-                    }
-
-                    webSuggestions.add(SearchItem(
-                      mItemType,
-                      int.parse(
-                          mItem.children[SearchResponseIndexes.Id.index].text),
-                      mItem.children[SearchResponseIndexes.Title.index].text,
-                    ));
-                  }
-                  debugPrint(webSuggestions.toString());
-
-                  return _buildSuggestions();
+                case "Group":
+                  mItemType = SearchItemTypes.GROUP;
+                  break;
+                default:
+                  mItemType = SearchItemTypes.UNKNOWN;
               }
-              return null; // unreachable
-            },
-          );
+
+              webSuggestions.add(SearchItem(
+                mItemType,
+                int.parse(
+                    mItem.children[SearchResponseIndexes.Id.index].text),
+                mItem.children[SearchResponseIndexes.Title.index].text,
+              ));
+            }
+            debugPrint(webSuggestions.toString());
+
+            return _buildSuggestions();
+        }
+        return null; // unreachable
+      },
+    );
   }
 
   @override

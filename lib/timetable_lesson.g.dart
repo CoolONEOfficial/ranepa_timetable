@@ -6,11 +6,12 @@ part of 'timetable_lesson.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Lesson _$LessonFromJson(Map<String, dynamic> json) {
-  return Lesson(json['title'] as String, json['iconCodePoint'] as int);
+LessonModel _$LessonModelFromJson(Map<String, dynamic> json) {
+  return LessonModel(json['title'] as String, json['iconCodePoint'] as int);
 }
 
-Map<String, dynamic> _$LessonToJson(Lesson instance) => <String, dynamic>{
+Map<String, dynamic> _$LessonModelToJson(LessonModel instance) =>
+    <String, dynamic>{
       'title': instance.title,
       'iconCodePoint': instance.iconCodePoint
     };

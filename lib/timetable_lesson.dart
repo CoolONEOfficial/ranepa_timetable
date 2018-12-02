@@ -3,10 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
 import 'package:tuple/tuple.dart';
-// ignore: uri_does_not_exist
 import 'package:json_annotation/json_annotation.dart';
 
-// ignore: uri_has_not_been_generated
 part 'timetable_lesson.g.dart';
 
 enum LessonType { Theory, Practice }
@@ -19,22 +17,26 @@ Tuple2<String, LessonType> parseLesson(String str) {
   return Tuple2<String, LessonType>(
       str.substring(0, bracketIndex),
       (lowerTitle.contains("практ", bracketIndex) ||
-              lowerTitle.contains("семин"))
+          lowerTitle.contains("семин"))
           ? LessonType.Practice
           : lowerTitle.contains("лекци", bracketIndex)
-              ? LessonType.Theory
-              : null);
+          ? LessonType.Theory
+          : null);
 }
 
 // ignore: undefined_annotation
 @JsonSerializable(nullable: false)
-class Lesson {
+class LessonModel {
   final String title;
   final int iconCodePoint;
 
-  const Lesson(this.title, this.iconCodePoint);
+  const LessonModel(this.title, this.iconCodePoint);
 
-  static Lesson fromString(BuildContext context, String str) {
+  factory LessonModel.fromJson(Map<String, dynamic> json) => _$LessonModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LessonModelToJson(this);
+
+  static LessonModel fromString(BuildContext context, String str) {
     final types = LessonTypes(context);
     str = str.toLowerCase();
 
@@ -73,7 +75,7 @@ class Lesson {
       return types.computerGraphic;
     if (str.contains("проектн")) return types.projectDevelopment;
     if (str.contains("баз") && str.contains("данн")) return types.databases;
-    return Lesson(
+    return LessonModel(
         parseLesson(str).item1, Icons.book.codePoint); // Use original title
   }
 }
@@ -88,62 +90,62 @@ class LessonTypes {
   }
 
   LessonTypes._internal(this.context)
-      : math = Lesson(
-            AppLocalizations.of(context).math, TimetableIcons.math.codePoint),
-        economics = Lesson(AppLocalizations.of(context).economics,
+      : math = LessonModel(
+      AppLocalizations.of(context).math, TimetableIcons.math.codePoint),
+        economics = LessonModel(AppLocalizations.of(context).economics,
             TimetableIcons.economics.codePoint),
-        informationTheory = Lesson(
+        informationTheory = LessonModel(
             AppLocalizations.of(context).informationTheory,
             TimetableIcons.informationTheory.codePoint),
-        philosophy = Lesson(AppLocalizations.of(context).philosophy,
+        philosophy = LessonModel(AppLocalizations.of(context).philosophy,
             TimetableIcons.philosophy.codePoint),
-        speechCulture = Lesson(AppLocalizations.of(context).speechCulture,
+        speechCulture = LessonModel(AppLocalizations.of(context).speechCulture,
             TimetableIcons.speechCulture.codePoint),
-        physics = Lesson(AppLocalizations.of(context).physics,
+        physics = LessonModel(AppLocalizations.of(context).physics,
             TimetableIcons.physics.codePoint),
-        chemistry = Lesson(AppLocalizations.of(context).chemistry,
+        chemistry = LessonModel(AppLocalizations.of(context).chemistry,
             TimetableIcons.chemistry.codePoint),
-        literature = Lesson(AppLocalizations.of(context).literature,
+        literature = LessonModel(AppLocalizations.of(context).literature,
             TimetableIcons.literature.codePoint),
-        english = Lesson(AppLocalizations.of(context).english,
+        english = LessonModel(AppLocalizations.of(context).english,
             TimetableIcons.english.codePoint),
-        informatics = Lesson(AppLocalizations.of(context).informatics,
+        informatics = LessonModel(AppLocalizations.of(context).informatics,
             TimetableIcons.informatics.codePoint),
-        geography = Lesson(AppLocalizations.of(context).geography,
+        geography = LessonModel(AppLocalizations.of(context).geography,
             TimetableIcons.geography.codePoint),
-        history = Lesson(AppLocalizations.of(context).history,
+        history = LessonModel(AppLocalizations.of(context).history,
             TimetableIcons.history.codePoint),
-        lifeSafety = Lesson(AppLocalizations.of(context).lifeSafety,
+        lifeSafety = LessonModel(AppLocalizations.of(context).lifeSafety,
             TimetableIcons.lifeSafety.codePoint),
-        biology = Lesson(AppLocalizations.of(context).biology,
+        biology = LessonModel(AppLocalizations.of(context).biology,
             TimetableIcons.biology.codePoint),
-        socialStudies = Lesson(AppLocalizations.of(context).socialStudies,
+        socialStudies = LessonModel(AppLocalizations.of(context).socialStudies,
             TimetableIcons.socialStudies.codePoint),
-        physicalCulture = Lesson(AppLocalizations.of(context).physicalCulture,
+        physicalCulture = LessonModel(AppLocalizations.of(context).physicalCulture,
             TimetableIcons.physicalCulture.codePoint),
-        ethics = Lesson(AppLocalizations.of(context).ethics,
+        ethics = LessonModel(AppLocalizations.of(context).ethics,
             TimetableIcons.ethics.codePoint),
-        management = Lesson(AppLocalizations.of(context).management,
+        management = LessonModel(AppLocalizations.of(context).management,
             TimetableIcons.management.codePoint),
-        softwareDevelopment = Lesson(
+        softwareDevelopment = LessonModel(
             AppLocalizations.of(context).softwareDevelopment,
             TimetableIcons.softwareDevelopment.codePoint),
-        computerArchitecture = Lesson(
+        computerArchitecture = LessonModel(
             AppLocalizations.of(context).computerArchitecture,
             TimetableIcons.computerArchitecture.codePoint),
-        operatingSystems = Lesson(AppLocalizations.of(context).operatingSystems,
+        operatingSystems = LessonModel(AppLocalizations.of(context).operatingSystems,
             TimetableIcons.operatingSystems.codePoint),
-        computerGraphic = Lesson(AppLocalizations.of(context).computerGraphic,
+        computerGraphic = LessonModel(AppLocalizations.of(context).computerGraphic,
             TimetableIcons.computerGraphic.codePoint),
-        projectDevelopment = Lesson(
+        projectDevelopment = LessonModel(
             AppLocalizations.of(context).projectDevelopment,
             TimetableIcons.projectDevelopment.codePoint),
-        databases = Lesson(AppLocalizations.of(context).databases,
+        databases = LessonModel(AppLocalizations.of(context).databases,
             TimetableIcons.databases.codePoint);
 
   final BuildContext context;
 
-  final Lesson math,
+  final LessonModel math,
       economics,
       informationTheory,
       philosophy,

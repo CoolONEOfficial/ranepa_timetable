@@ -31,11 +31,11 @@ class TimelineComponent extends StatefulWidget {
 
   const TimelineComponent(
       {Key key,
-      this.timelineList,
-      this.lineColor,
-      this.backgroundColor,
-      this.headingColor,
-      this.descriptionColor})
+        this.timelineList,
+        this.lineColor,
+        this.backgroundColor,
+        this.headingColor,
+        this.descriptionColor})
       : super(key: key);
 
   @override
@@ -65,17 +65,9 @@ class TimelineComponentState extends State<TimelineComponent>
         itemCount: widget.timelineList.length,
         itemBuilder: (_, index) {
           return TimelineElement(
-            lineColor: widget.lineColor == null
-                ? Theme.of(context).accentColor
-                : widget.lineColor,
-            backgroundColor: widget.backgroundColor == null
-                ? Colors.transparent
-                : widget.backgroundColor,
             model: widget.timelineList[index],
             firstElement: index == 0,
             lastElement: widget.timelineList.length == index + 1,
-            headingColor: widget.headingColor,
-            descriptionColor: widget.descriptionColor,
           );
         },
       ),

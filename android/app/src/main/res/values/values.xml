@@ -3,8 +3,8 @@
     <string name="app_title">NRU RANEPA (Timetable)</string>
     <string name="empty_view_text" translatable="false">No cities found...</string>
     <string name="toast_format_string" translatable="false">%1$s!</string>
-    <string name="item_format_string" translatable="false">%1$d\u00B0 on %2$s</string>
-    <string name="header_format_string" translatable="false">%1$d\u00B0 in %2$s</string>
+    <string name="item_format_string" translatable="false">%1$s\u00B0 on %2$s</string>
+    <string name="header_format_string" translatable="false">%1$s\u00B0 in %2$s</string>
     <string name="refresh" translatable="false">Refresh</string>
     <string name="city_name" translatable="false">San Francisco</string>
 </resources>
