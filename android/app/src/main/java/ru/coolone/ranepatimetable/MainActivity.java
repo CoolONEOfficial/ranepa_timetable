@@ -3,10 +3,14 @@ package ru.coolone.ranepatimetable;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.text.DateFormat;
+
 import io.flutter.app.FlutterActivity;
-import io.flutter.plugin.common.JSONMethodCodec;
-import io.flutter.plugin.common.MethodCall;
-import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.BasicMessageChannel;
+import io.flutter.plugin.common.StringCodec;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 import lombok.var;
 
@@ -18,25 +22,21 @@ public class MainActivity extends FlutterActivity {
 
         GeneratedPluginRegistrant.registerWith(this);
 
-        new MethodChannel(getFlutterView(), "ru.coolone.ranepatimetable/jsonChannel", JSONMethodCodec.INSTANCE).setMethodCallHandler(
-                new MethodChannel.MethodCallHandler() {
+        new BasicMessageChannel<>(getFlutterView(), "ru.coolone.ranepatimetable/jsonChannel", StringCodec.INSTANCE).setMessageHandler(
+                new BasicMessageChannel.MessageHandler<String>() {
                     @Override
-                    public void onMethodCall(MethodCall call, MethodChannel.Result result) {
-                        if (call.method.equals("set")) {
-                            var cursor = getContentResolver().query(TimetableDataProvider.CONTENT_URI, null, null,
-                                    null, null);
+                    public void onMessage(String s, BasicMessageChannel.Reply<String> reply) {
+                        Gson g = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
 
-                            Log.d("TAGG", call.arguments.toString());
+                        var arr = g.fromJson(s, TimelineModel[].class);
 
-                            result.success(cursor.getCount());
-
-                            cursor.close();
-                        } else {
-                            result.notImplemented();
+                        for(var mObj: arr) {
+                            Log.d("TAG", "Arr " + mObj);
                         }
-                    }
 
-                });
+                    }
+                }
+       );
     }
 
 }

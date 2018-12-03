@@ -8,11 +8,11 @@ part of 'timetable_room.dart';
 
 RoomModel _$RoomModelFromJson(Map<String, dynamic> json) {
   return RoomModel(
-      json['room'] as int, _$enumDecode(_$LocationEnumMap, json['location']));
+      json['number'] as int, _$enumDecode(_$LocationEnumMap, json['location']));
 }
 
 Map<String, dynamic> _$RoomModelToJson(RoomModel instance) => <String, dynamic>{
-      'room': instance.number,
+      'number': instance.number,
       'location': _$LocationEnumMap[instance.location]
     };
 
@@ -31,5 +31,6 @@ T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
 
 const _$LocationEnumMap = <Location, dynamic>{
   Location.Academy: 'Academy',
-  Location.Hostel: 'Hostel'
+  Location.Hotel: 'Hotel',
+  Location.StudyHostel: 'StudyHostel'
 };

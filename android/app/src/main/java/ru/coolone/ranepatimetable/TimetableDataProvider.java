@@ -7,10 +7,12 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.var;
 
 /**
@@ -36,9 +38,22 @@ class LessonModel {
 }
 
 @AllArgsConstructor
-class TimelineDataModel {
+class RoomModel {
+    enum Location {
+        Academy,
+        Hotel,
+        StudyHostel
+    }
+
+    final int number;
+    final Location location;
+}
+
+
+@AllArgsConstructor
+class TimelineModel {
     final LessonModel lesson;
-    final int room;
+    final RoomModel room;
 
     final Date date;
 
@@ -60,7 +75,8 @@ public class TimetableDataProvider extends ContentProvider {
         ID("_id"),
         LESSON_TITLE("lesson_title"),
         LESSON_ICON("lesson_icon"),
-        ROOM("room"),
+        ROOM_NUMBER("room_number"),
+        ROOM_LOCATION("room_location"),
         DATE("date"),
         GROUP("group"),
         TEACHER_NAME("teacher_name"),
@@ -91,14 +107,14 @@ public class TimetableDataProvider extends ContentProvider {
      * Database, SharedPreferences) so that the data can persist if the process is ever killed.
      * For simplicity, in this sample the data will only be stored in memory.
      */
-    private static final ArrayList<TimelineDataModel> sData = new ArrayList<>();
+    private static final ArrayList<TimelineModel> sData = new ArrayList<>();
 
     @Override
     public boolean onCreate() {
         // We are going to initialize the data provider with some default values
-        sData.add(new TimelineDataModel(
+        sData.add(new TimelineModel(
                         new LessonModel("Lesson one", 123),
-                        431,
+                        new RoomModel(432, RoomModel.Location.Academy),
                         new Date(),
                         "group11",
                         new TeacherModel("DFsdfs", "snm", "sanich"),
@@ -107,9 +123,9 @@ public class TimetableDataProvider extends ContentProvider {
                 )
         );
 
-        sData.add(new TimelineDataModel(
+        sData.add(new TimelineModel(
                         new LessonModel("Lesson two", 321),
-                        112,
+                        new RoomModel(12, RoomModel.Location.StudyHostel),
                         new Date(),
                         "group11",
                         new TeacherModel("Name", "snm", "sanich"),
@@ -152,14 +168,45 @@ public class TimetableDataProvider extends ContentProvider {
     }
 
     @Override
+    @SneakyThrows
     public Uri insert(Uri uri, ContentValues values) {
+
+        sData.add(
+                new TimelineModel(
+                        new LessonModel(
+                                values.getAsString(Columns.LESSON_TITLE.text),
+                                values.getAsInteger(Columns.LESSON_ICON.text)
+                        ),
+                        new RoomModel(
+                                values.getAsInteger(Columns.ROOM_NUMBER.text),
+                                RoomModel.Location.valueOf(values.getAsString(Columns.ROOM_LOCATION.text))
+                        ),
+                        DateFormat.getDateTimeInstance().parse(values.getAsString(Columns.DATE.text)),
+                        values.getAsString(Columns.GROUP.text),
+                        new TeacherModel(
+                                values.getAsString(Columns.TEACHER_NAME.text),
+                                values.getAsString(Columns.TEACHER_SURNAME.text),
+                                values.getAsString(Columns.TEACHER_PATRONYMIC.text)
+                        ),
+                        new TimeOfDayModel(
+                                values.getAsInteger(Columns.START_HOUR.text),
+                                values.getAsInteger(Columns.START_MINUTE.text)
+                        ),
+                        new TimeOfDayModel(
+                                values.getAsInteger(Columns.FINISH_HOUR.text),
+                                values.getAsInteger(Columns.FINISH_MINUTE.text)
+                        )
+
+                )
+        );
+
         // This example code does not support inserting
         return null;
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        // This example code does not support deleting
+        sData.clear();
         return 0;
     }
 

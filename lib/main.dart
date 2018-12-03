@@ -43,8 +43,8 @@ class DaysOfWeek {
 }
 
 class _MainWidgetState extends State<MainWidget> {
-  static const channel = const MethodChannel(
-      'ru.coolone.ranepatimetable/jsonChannel', JSONMethodCodec());
+  static const channel = const BasicMessageChannel(
+      'ru.coolone.ranepatimetable/jsonChannel', StringCodec());
 
   Future<void> _get([dynamic args]) async {
     var resp;
@@ -59,7 +59,7 @@ class _MainWidgetState extends State<MainWidget> {
 
     try {
       debugPrint("Channel req.. args: ${jsons.toString()}");
-      resp = await channel.invokeMethod('set', jsons);
+      resp = await channel.send(jsons.toString());
     } on PlatformException catch (e) {
       resp = e.message;
     }

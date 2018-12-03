@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'timetable_room.g.dart';
 
-enum Location { Academy, Hostel }
+enum Location { Academy, Hotel, StudyHostel }
 
 @JsonSerializable(nullable: false)
 class RoomModel {
@@ -19,8 +19,8 @@ class RoomModel {
   factory RoomModel.fromString(String str) {
     return RoomModel(
         int.parse(new RegExp(r"\d{3}").stringMatch(str).toString()),
-        str.startsWith("СО") || str.startsWith("П8")
-            ? Location.Hostel
-            : Location.Academy);
+        str.startsWith("СО")
+            ? Location.StudyHostel
+            : str.startsWith("П8") ? Location.Hotel : Location.Academy);
   }
 }

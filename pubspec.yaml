@@ -42,9 +42,9 @@ flutter:
    - assets/images/icon-foreground.png
 
   fonts:
-   - family:  Timetable
+   - family:  TimetableIcons
      fonts:
-      - asset: assets/fonts/Timetable.ttf
+      - asset: assets/fonts/TimetableIcons.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

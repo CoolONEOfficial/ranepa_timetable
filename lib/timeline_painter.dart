@@ -85,9 +85,11 @@ class TimelinePainter extends CustomPainter {
           ..style = PaintingStyle.stroke
           ..strokeWidth = lineStroke.strokeWidth);
 
+    final fontFamily = TimetableIcons.databases.fontFamily;
+
     final lessonIconSpan = TextSpan(
       style: TextStyle(
-        fontFamily: TimetableIcons.databases.fontFamily,
+        fontFamily: fontFamily,
         color: Colors.black,
         fontSize: iconSize * 2,
       ),
@@ -103,13 +105,15 @@ class TimelinePainter extends CustomPainter {
 
     final lessonTypeSpan = TextSpan(
       style: TextStyle(
-        fontFamily: TimetableIcons.databases.fontFamily,
+        fontFamily: fontFamily,
         color: Colors.black,
         fontSize: 20,
       ),
-      text: String.fromCharCode((model.room.location == Location.Academy
-              ? TimetableIcons.academy
-              : TimetableIcons.hostel)
+      text: String.fromCharCode((model.room.location == Location.StudyHostel
+              ? TimetableIcons.studyHostel
+              : model.room.location == Location.Hotel
+                  ? TimetableIcons.hotel
+                  : TimetableIcons.academy)
           .codePoint),
     );
     final lessonTypeTextPainter = TextPainter(
