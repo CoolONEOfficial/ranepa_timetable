@@ -72,28 +72,28 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
 
     @Override
     public RemoteViews getViewAt(int position) {
-        // Get the data for this position from the content provider
-        String date = "Unknown Day";
-        String lesson = "Unknown lesson";
-        if (mCursor.moveToPosition(position)) {
-            date = mCursor.getString(mCursor.getColumnIndex(TimetableDataProvider.Columns.DATE.toString()));
-            lesson = mCursor.getString(mCursor.getColumnIndex(TimetableDataProvider.Columns.LESSON_TITLE.toString()));
-        }
-
-        // Return a proper item with the proper day and temperature
-        final String formatStr = mContext.getResources().getString(R.string.item_format_string);
-
-        var rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
-        rv.setTextViewText(R.id.widget_item_text, String.format(formatStr, lesson, date));
-//        rv.setImageViewBitmap(R.id.widget_item, buildBitmap(mContext, "\ue80f"));
-
-        // Set the click intent so that we can handle it and show a toast message
-        final Intent fillInIntent = new Intent();
-        final Bundle extras = new Bundle();
-        extras.putString(WidgetProvider.EXTRA_DAY_ID, date);
-        fillInIntent.putExtras(extras);
-        rv.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
-        return rv;
+//        // Get the data for this position from the content provider
+//        String date = "Unknown Day";
+//        String lesson = "Unknown lesson";
+//        if (mCursor.moveToPosition(position)) {
+//            date = mCursor.getString(mCursor.getColumnIndex(TimetableDataProvider.Columns.DATE.toString()));
+//            lesson = mCursor.getString(mCursor.getColumnIndex(TimetableDataProvider.Columns.LESSON_TITLE.toString()));
+//        }
+//
+//        // Return a proper item with the proper day and temperature
+//        final String formatStr = mContext.getResources().getString(R.string.item_format_string);
+//
+//        var rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
+//        rv.setTextViewText(R.id.widget_item_text, String.format(formatStr, lesson, date));
+////        rv.setImageViewBitmap(R.id.widget_item, buildBitmap(mContext, "\ue80f"));
+//
+//        // Set the click intent so that we can handle it and show a toast message
+//        final Intent fillInIntent = new Intent();
+//        final Bundle extras = new Bundle();
+//        extras.putString(WidgetProvider.EXTRA_DAY_ID, date);
+//        fillInIntent.putExtras(extras);
+//        rv.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
+        return null;
     }
 
     @Override
@@ -124,7 +124,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         if (mCursor != null) {
             mCursor.close();
         }
-        mCursor = mContext.getContentResolver().query(TimetableDataProvider.CONTENT_URI, null, null,
+        mCursor = mContext.getContentResolver().query(TimetableDataProvider.URI_TIMELINE, null, null,
                 null, null);
     }
 }

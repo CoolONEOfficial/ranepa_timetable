@@ -9,8 +9,10 @@ part of 'timeline_model.dart';
 TimelineModel _$TimelineModelFromJson(Map<String, dynamic> json) {
   return TimelineModel(
       date: DateTime.parse(json['date'] as String),
-      start: TimelineModel._timeOfDayFromIntList(json['start'] as List<int>),
-      finish: TimelineModel._timeOfDayFromIntList(json['finish'] as List<int>),
+      start: TimelineModel._timeOfDayFromIntList(
+          json['start'] as Map<String, int>),
+      finish: TimelineModel._timeOfDayFromIntList(
+          json['finish'] as Map<String, int>),
       room: RoomModel.fromJson(json['room'] as Map<String, dynamic>),
       group: json['group'] as String,
       lesson: LessonModel.fromJson(json['lesson'] as Map<String, dynamic>),

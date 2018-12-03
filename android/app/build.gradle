@@ -54,6 +54,9 @@ flutter {
 }
 
 dependencies {
+    def room_version = "1.1.1"
+    implementation "android.arch.persistence.room:runtime:$room_version"
+    annotationProcessor "android.arch.persistence.room:compiler:$room_version"
     compileOnly 'org.projectlombok:lombok:1.18.4'
     annotationProcessor 'org.projectlombok:lombok:1.18.4'
     implementation 'com.google.code.gson:gson:2.8.5'

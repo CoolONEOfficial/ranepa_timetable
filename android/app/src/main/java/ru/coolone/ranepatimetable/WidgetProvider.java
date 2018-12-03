@@ -67,7 +67,7 @@ public class WidgetProvider extends AppWidgetProvider {
             final AppWidgetManager mgr = AppWidgetManager.getInstance(context);
             final ComponentName cn = new ComponentName(context, WidgetProvider.class);
             sDataObserver = new WidgetDataProviderObserver(mgr, cn, sWorkerQueue);
-            r.registerContentObserver(TimetableDataProvider.CONTENT_URI, true, sDataObserver);
+            r.registerContentObserver(TimetableDataProvider.URI_TIMELINE, true, sDataObserver);
         }
     }
 

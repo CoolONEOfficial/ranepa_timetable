@@ -33,5 +33,5 @@ flutter pub pub run flutter_launcher_icons:main
 
 ### Regenerate all json serialized .g.dart files
 ```Shell
-flutter packages pub run build_runner build
+flutter packages pub run build_runner build --delete-conflicting-outputs
 ```

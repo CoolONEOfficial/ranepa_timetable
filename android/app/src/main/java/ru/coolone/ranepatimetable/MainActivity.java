@@ -1,5 +1,6 @@
 package ru.coolone.ranepatimetable;
 
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -26,14 +27,9 @@ public class MainActivity extends FlutterActivity {
                 new BasicMessageChannel.MessageHandler<String>() {
                     @Override
                     public void onMessage(String s, BasicMessageChannel.Reply<String> reply) {
-                        Gson g = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
-
-                        var arr = g.fromJson(s, TimelineModel[].class);
-
-                        for(var mObj: arr) {
-                            Log.d("TAG", "Arr " + mObj);
-                        }
-
+                        var values = new ContentValues();
+                        values.put("", s);
+                        getContentResolver().insert(TimetableDataProvider.URI_TIMELINE, values);
                     }
                 }
        );

@@ -34,11 +34,11 @@ class TimelineModel {
   @JsonKey(fromJson: _timeOfDayFromIntList, toJson: _timeOfDayToIntList)
   final TimeOfDay start, finish;
 
-  static TimeOfDay _timeOfDayFromIntList(List<int> intList) =>
-      TimeOfDay(hour: intList[0], minute: intList[1]);
+  static TimeOfDay _timeOfDayFromIntList(Map<String, int> map) =>
+      TimeOfDay(hour: map["hour"], minute: map["minute"]);
 
-  static List<int> _timeOfDayToIntList(TimeOfDay timeOfDay) =>
-      [timeOfDay.hour, timeOfDay.minute];
+  static Map<String, int> _timeOfDayToIntList(TimeOfDay timeOfDay) =>
+  {"hour": timeOfDay.hour, "minute": timeOfDay.minute};
 
   const TimelineModel({
     @required this.date,
