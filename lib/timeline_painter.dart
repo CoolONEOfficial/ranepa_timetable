@@ -13,19 +13,20 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:ranepa_timetable/timeline_model.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
+import 'package:ranepa_timetable/timetable_room.dart';
 
 class TimelinePainter extends CustomPainter {
   final bool firstElement;
   final bool lastElement;
-  final int iconCodePoint;
+  final TimelineModel model;
   final BuildContext context;
 
-  TimelinePainter(this.context,
-      {@required this.iconCodePoint,
-        this.firstElement = false,
-        this.lastElement = false});
+  TimelinePainter(this.context, this.model,
+      {this.firstElement = false, this.lastElement = false});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -42,7 +43,7 @@ class TimelinePainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
     canvas.drawRRect(
         RRect.fromLTRBR(rectMargins, rectMargins, size.width - rectMargins,
-            size.height - rectMargins, Radius.circular(5)),
+            size.height, Radius.circular(5)),
         Paint()
           ..color = Theme.of(context).backgroundColor
           ..strokeCap = StrokeCap.round
@@ -51,7 +52,8 @@ class TimelinePainter extends CustomPainter {
 
     final iconSize = 15.0;
     final circleSize = 23.0;
-    final circleOffset = Offset(rectMargins * 2 + circleSize + 70, size.height / 2);
+    final circleOffset = Offset(
+        rectMargins * 2 + circleSize + 70, (size.height + rectMargins) / 2);
 
     if (firstElement && lastElement) {
       // Do nothing
@@ -83,16 +85,39 @@ class TimelinePainter extends CustomPainter {
           ..style = PaintingStyle.stroke
           ..strokeWidth = lineStroke.strokeWidth);
 
-    final span = TextSpan(
-        style: TextStyle(
-            fontFamily: TimetableIcons.databases.fontFamily, color: Colors.black, fontSize: iconSize*2),
-        text: String.fromCharCode(iconCodePoint));
-    final textPainter = TextPainter(
-        text: span,
+    final lessonIconSpan = TextSpan(
+      style: TextStyle(
+        fontFamily: TimetableIcons.databases.fontFamily,
+        color: Colors.black,
+        fontSize: iconSize * 2,
+      ),
+      text: String.fromCharCode(model.lesson.iconCodePoint),
+    );
+    final lessonIconTextPainter = TextPainter(
+        text: lessonIconSpan,
         textAlign: TextAlign.center,
         textDirection: TextDirection.ltr);
-    textPainter.layout(minWidth: iconSize * 2);
-    textPainter.paint(canvas, circleOffset.translate(-iconSize, -(circleSize / 3 * 2)));
+    lessonIconTextPainter.layout(minWidth: iconSize * 2);
+    lessonIconTextPainter.paint(
+        canvas, circleOffset.translate(-iconSize, -(circleSize / 3 * 2)));
+
+    final lessonTypeSpan = TextSpan(
+      style: TextStyle(
+        fontFamily: TimetableIcons.databases.fontFamily,
+        color: Colors.black,
+        fontSize: 20,
+      ),
+      text: String.fromCharCode((model.room.location == Location.Academy
+              ? TimetableIcons.academy
+              : TimetableIcons.hostel)
+          .codePoint),
+    );
+    final lessonTypeTextPainter = TextPainter(
+        text: lessonTypeSpan,
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr);
+    lessonTypeTextPainter.layout(minWidth: iconSize * 2);
+    lessonTypeTextPainter.paint(canvas, Offset(20, 52));
   }
 
   @override

@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:http/http.dart' as http;
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/timeline_model.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/timetable_lesson.dart';
+import 'package:ranepa_timetable/timetable_room.dart';
 import 'package:ranepa_timetable/timetable_teacher.dart';
 import 'package:xml/xml.dart' as xml;
 
@@ -86,9 +87,9 @@ class _MainWidgetState extends State<MainWidget> {
               children: <Widget>[
                 RichText(
                     text: TextSpan(
-                      text: AppLocalizations.of(context).title,
-                      style: Theme.of(context).textTheme.subhead,
-                    )),
+                  text: AppLocalizations.of(context).title,
+                  style: Theme.of(context).textTheme.subhead,
+                )),
               ],
             ),
             decoration: BoxDecoration(
@@ -250,13 +251,13 @@ class _MainWidgetState extends State<MainWidget> {
                           0, mItemTimeFinish.length - 3)),
                       minute: int.parse(mItemTimeFinish.substring(
                           mItemTimeFinish.length - 2, mItemTimeFinish.length))),
-                  room: int.parse(new RegExp(r"\d{3}")
-                      .stringMatch(mItem
-                      .children[TimetableResponseIndexes.Room.index].text)
-                      .toString()),
-                  group: mItem.children[TimetableResponseIndexes.Group.index].text,
-                  lesson: LessonModel.fromString(context, mItem.children[TimetableResponseIndexes.Name.index].text),
-                  teacher: TeacherModel.parse(mItem.children[TimetableResponseIndexes.Name.index].text)));
+                  room: RoomModel.fromString(
+                      mItem.children[TimetableResponseIndexes.Room.index].text),
+                  group:
+                      mItem.children[TimetableResponseIndexes.Group.index].text,
+                  lesson: LessonModel.fromString(context,
+                      mItem.children[TimetableResponseIndexes.Name.index].text),
+                  teacher: TeacherModel.fromString(mItem.children[TimetableResponseIndexes.Name.index].text)));
             }
 
             final tabViews = List<Widget>();
@@ -327,7 +328,7 @@ Future main() async {
         const Locale('ru', 'RU'), // Русский
       ],
       onGenerateTitle: (BuildContext context) =>
-      AppLocalizations.of(context).title,
+          AppLocalizations.of(context).title,
       title: 'Flutter View',
       theme: ThemeData.light(),
       home: MainWidget()));

@@ -14,16 +14,17 @@ limitations under the License. */
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:ranepa_timetable/timetable_lesson.dart';
-import 'package:ranepa_timetable/timetable_teacher.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:ranepa_timetable/timetable_lesson.dart';
+import 'package:ranepa_timetable/timetable_room.dart';
+import 'package:ranepa_timetable/timetable_teacher.dart';
 
 part 'timeline_model.g.dart';
 
 @JsonSerializable(nullable: false)
 class TimelineModel {
   final LessonModel lesson;
-  final int room;
+  final RoomModel room;
 
   final DateTime date;
 

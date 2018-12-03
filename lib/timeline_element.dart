@@ -23,36 +23,64 @@ class TimelineElement extends StatelessWidget {
 
   TimelineElement(
       {@required this.model,
-        this.firstElement = false,
-        this.lastElement = false});
+      this.firstElement = false,
+      this.lastElement = false});
 
   Widget _buildLine(BuildContext context) {
     return SizedBox.expand(
         child: Container(
-          child: CustomPaint(
-            painter: TimelinePainter(context,
-                iconCodePoint: model.lesson.iconCodePoint,
-                firstElement: firstElement,
-                lastElement: lastElement),
-          ),
-        ));
+      child: CustomPaint(
+        painter: TimelinePainter(context, model,
+            firstElement: firstElement, lastElement: lastElement),
+      ),
+    ));
   }
 
   Widget _buildContentColumn(BuildContext context) {
     return Stack(
       children: <Widget>[
         Container(
-          padding: EdgeInsets.only(bottom: 8.0, top: 16.0, left: 140.0),
+          padding: EdgeInsets.only(top: 20.0, left: 140.0),
           child: Text(
             model.lesson.title,
             style: Theme.of(context).textTheme.title,
           ),
         ),
+        Padding(
+          padding: EdgeInsets.only(top: 45.0, left: 140.0, right: 15),
+          child: new SizedBox(
+            height: 22,
+            child: new SingleChildScrollView(
+              child: new Text(
+                model.teacher.toString(),
+                style: Theme.of(context).textTheme.title,
+              ),
+            ),
+          ),
+        ),
         Container(
-          padding: EdgeInsets.only(bottom: 8.0, top: 45.0, left: 45.0),
+          padding: EdgeInsets.only(top: 55.0, left: 50.0),
           child: Text(
-            model.room.toString(),
+            model.room.number.toString(),
             style: Theme.of(context).textTheme.subtitle,
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.only(top: 15.0, left: 15.0),
+          width: 80,
+          child: Text(
+            model.start.format(context),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.title,
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.only(top: 35.0, left: 15.0),
+          width: 80,
+          child: Text(
+            model.finish.format(context),
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.body2,
           ),
         ),
       ],

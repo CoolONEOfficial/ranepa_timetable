@@ -1,21 +1,19 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'timetable_lesson.dart';
+part of 'timetable_room.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-LessonModel _$LessonModelFromJson(Map<String, dynamic> json) {
-  return LessonModel(json['title'] as String, json['iconCodePoint'] as int,
-      type: _$enumDecode(_$LessonTypeEnumMap, json['type']));
+RoomModel _$RoomModelFromJson(Map<String, dynamic> json) {
+  return RoomModel(
+      json['room'] as int, _$enumDecode(_$LocationEnumMap, json['location']));
 }
 
-Map<String, dynamic> _$LessonModelToJson(LessonModel instance) =>
-    <String, dynamic>{
-      'title': instance.title,
-      'iconCodePoint': instance.iconCodePoint,
-      'type': _$LessonTypeEnumMap[instance.type]
+Map<String, dynamic> _$RoomModelToJson(RoomModel instance) => <String, dynamic>{
+      'room': instance.number,
+      'location': _$LocationEnumMap[instance.location]
     };
 
 T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
@@ -31,7 +29,7 @@ T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
       .key;
 }
 
-const _$LessonTypeEnumMap = <LessonType, dynamic>{
-  LessonType.Theory: 'Theory',
-  LessonType.Practice: 'Practice'
+const _$LocationEnumMap = <Location, dynamic>{
+  Location.Academy: 'Academy',
+  Location.Hostel: 'Hostel'
 };

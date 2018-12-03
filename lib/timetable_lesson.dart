@@ -1,27 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
-import 'package:tuple/tuple.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 part 'timetable_lesson.g.dart';
 
 enum LessonType { Theory, Practice }
 
-Tuple2<String, LessonType> parseLesson(String str) {
-  final bracketIndex = str.indexOf('(');
-  assert(bracketIndex != -1);
+String parseLessonTitle(String str) {
+  final openBracketIndex = str.indexOf('(');
+  assert(openBracketIndex != -1);
+
+  final closeBracketIndex = str.indexOf(')');
+  assert(closeBracketIndex != -1);
+
+  return str.substring(openBracketIndex + 1, closeBracketIndex);
+}
+
+LessonType parseLessonType(String str) {
+  final openBracketIndex = str.indexOf('(');
+  assert(openBracketIndex != -1);
   final lowerTitle = str.toLowerCase();
 
-  return Tuple2<String, LessonType>(
-      str.substring(0, bracketIndex),
-      (lowerTitle.contains("практ", bracketIndex) ||
-          lowerTitle.contains("семин"))
-          ? LessonType.Practice
-          : lowerTitle.contains("лекци", bracketIndex)
+  return lowerTitle.contains("практ", openBracketIndex) ||
+          lowerTitle.contains("семин")
+      ? LessonType.Practice
+      : lowerTitle.contains("лекци", openBracketIndex)
           ? LessonType.Theory
-          : null);
+          : null;
 }
 
 // ignore: undefined_annotation
@@ -29,54 +36,80 @@ Tuple2<String, LessonType> parseLesson(String str) {
 class LessonModel {
   final String title;
   final int iconCodePoint;
+  LessonType type;
 
-  const LessonModel(this.title, this.iconCodePoint);
+  LessonModel(this.title, this.iconCodePoint, {this.type});
 
-  factory LessonModel.fromJson(Map<String, dynamic> json) => _$LessonModelFromJson(json);
+  factory LessonModel.fromJson(Map<String, dynamic> json) =>
+      _$LessonModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$LessonModelToJson(this);
 
-  static LessonModel fromString(BuildContext context, String str) {
+  factory LessonModel.fromString(BuildContext context, String str) {
     final types = LessonTypes(context);
     str = str.toLowerCase();
 
-    if (str.contains("математик")) return types.math;
-    if (str.contains("экономик")) return types.economics;
-    if (str.contains("теори") && str.contains("информаци"))
+    LessonModel model;
+
+    if (str.contains("математик"))
+      model = types.math;
+    else if (str.contains("экономик"))
+      model = types.economics;
+    else if (str.contains("теори") && str.contains("информаци"))
       return types.informationTheory;
-    if (str.contains("философи")) return types.philosophy;
-    if (str.contains("культур") && str.contains("реч"))
+    else if (str.contains("философи"))
+      model = types.philosophy;
+    else if (str.contains("культур") && str.contains("реч"))
       return types.speechCulture;
-    if (str.contains("физик")) return types.physics;
-    if (str.contains("хими")) return types.chemistry;
-    if (str.contains("литератур")) return types.literature;
-    if (str.contains("английск")) return types.english;
-    if (str.contains("информатик")) return types.informatics;
-    if (str.contains("географи")) return types.geography;
-    if (str.contains("истори")) return types.history;
-    if (str.contains("обж") ||
+    else if (str.contains("физик"))
+      model = types.physics;
+    else if (str.contains("хими"))
+      model = types.chemistry;
+    else if (str.contains("литератур"))
+      model = types.literature;
+    else if (str.contains("английск"))
+      model = types.english;
+    else if (str.contains("информатик"))
+      model = types.informatics;
+    else if (str.contains("географи"))
+      model = types.geography;
+    else if (str.contains("истори"))
+      model = types.history;
+    else if (str.contains("обж") ||
         (str.contains("безопасност") && str.contains("жизнедеятельност")))
       return types.lifeSafety;
-    if (str.contains("биологи")) return types.biology;
-    if (str.contains("общество")) return types.socialStudies;
-    if (str.contains("физ") && str.contains("культур"))
+    else if (str.contains("биологи"))
+      model = types.biology;
+    else if (str.contains("общество"))
+      model = types.socialStudies;
+    else if (str.contains("физ") && str.contains("культур"))
       return types.physicalCulture;
-    if (str.contains("этик")) return types.ethics;
-    if (str.contains("менеджмент")) return types.management;
-    if (str.contains("разработ") &&
+    else if (str.contains("этик"))
+      model = types.ethics;
+    else if (str.contains("менеджмент"))
+      model = types.management;
+    else if (str.contains("разработ") &&
         ((str.contains("програмн") && str.contains("обеспечени")) ||
-            str.contains("ПО"))) return types.softwareDevelopment;
-    if (str.contains("архитектур") &&
+            str.contains("ПО")))
+      model = types.softwareDevelopment;
+    else if (str.contains("архитектур") &&
         (str.contains("эвм") || str.contains("пк")))
       return types.computerArchitecture;
-    if (str.contains("операционн") && str.contains("систем"))
+    else if (str.contains("операционн") && str.contains("систем"))
       return types.operatingSystems;
-    if (str.contains("компьютерн") && str.contains("график"))
+    else if (str.contains("компьютерн") && str.contains("график"))
       return types.computerGraphic;
-    if (str.contains("проектн")) return types.projectDevelopment;
-    if (str.contains("баз") && str.contains("данн")) return types.databases;
-    return LessonModel(
-        parseLesson(str).item1, Icons.book.codePoint); // Use original title
+    else if (str.contains("проектн"))
+      model = types.projectDevelopment;
+    else if (str.contains("баз") && str.contains("данн"))
+      return types.databases;
+    else
+      model = LessonModel(
+          parseLessonTitle(str), Icons.book.codePoint); // Use original title
+
+    model.type = parseLessonType(str);
+
+    return model;
   }
 }
 
@@ -91,7 +124,7 @@ class LessonTypes {
 
   LessonTypes._internal(this.context)
       : math = LessonModel(
-      AppLocalizations.of(context).math, TimetableIcons.math.codePoint),
+            AppLocalizations.of(context).math, TimetableIcons.math.codePoint),
         economics = LessonModel(AppLocalizations.of(context).economics,
             TimetableIcons.economics.codePoint),
         informationTheory = LessonModel(
@@ -121,7 +154,8 @@ class LessonTypes {
             TimetableIcons.biology.codePoint),
         socialStudies = LessonModel(AppLocalizations.of(context).socialStudies,
             TimetableIcons.socialStudies.codePoint),
-        physicalCulture = LessonModel(AppLocalizations.of(context).physicalCulture,
+        physicalCulture = LessonModel(
+            AppLocalizations.of(context).physicalCulture,
             TimetableIcons.physicalCulture.codePoint),
         ethics = LessonModel(AppLocalizations.of(context).ethics,
             TimetableIcons.ethics.codePoint),
@@ -133,9 +167,11 @@ class LessonTypes {
         computerArchitecture = LessonModel(
             AppLocalizations.of(context).computerArchitecture,
             TimetableIcons.computerArchitecture.codePoint),
-        operatingSystems = LessonModel(AppLocalizations.of(context).operatingSystems,
+        operatingSystems = LessonModel(
+            AppLocalizations.of(context).operatingSystems,
             TimetableIcons.operatingSystems.codePoint),
-        computerGraphic = LessonModel(AppLocalizations.of(context).computerGraphic,
+        computerGraphic = LessonModel(
+            AppLocalizations.of(context).computerGraphic,
             TimetableIcons.computerGraphic.codePoint),
         projectDevelopment = LessonModel(
             AppLocalizations.of(context).projectDevelopment,
