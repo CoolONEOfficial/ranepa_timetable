@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class TimetableDataProvider extends ContentProvider {
 
     /** The authority of this content provider. */
-    public static final String AUTHORITY = "com.example.android.ranepatimetable.provider";
+    public static final String AUTHORITY = "ru.coolone.ranepatimetable.provider";
 
     /** The URI for the Timeline table. */
     public static final Uri URI_TIMELINE = Uri.parse(
@@ -54,12 +54,12 @@ public class TimetableDataProvider extends ContentProvider {
             if (context == null) {
                 return null;
             }
-            TimelineDao cheese = TimetableDatabase.getInstance(context).cheese();
+            TimelineDao timetable = TimetableDatabase.getInstance(context).timetable();
             final Cursor cursor;
             if (code == CODE_TIMELINE_DIR) {
-                cursor = cheese.selectAll();
+                cursor = timetable.selectAll();
             } else {
-                cursor = cheese.selectById(ContentUris.parseId(uri));
+                cursor = timetable.selectById(ContentUris.parseId(uri));
             }
             cursor.setNotificationUri(context.getContentResolver(), uri);
             return cursor;
@@ -90,7 +90,7 @@ public class TimetableDataProvider extends ContentProvider {
                 if (context == null) {
                     return null;
                 }
-                final long id = TimetableDatabase.getInstance(context).cheese()
+                final long id = TimetableDatabase.getInstance(context).timetable()
                         .insert(Timeline.fromContentValues(values));
                 context.getContentResolver().notifyChange(uri, null);
                 return ContentUris.withAppendedId(uri, id);
@@ -112,7 +112,7 @@ public class TimetableDataProvider extends ContentProvider {
                 if (context == null) {
                     return 0;
                 }
-                final int count = TimetableDatabase.getInstance(context).cheese()
+                final int count = TimetableDatabase.getInstance(context).timetable()
                         .deleteById(ContentUris.parseId(uri));
                 context.getContentResolver().notifyChange(uri, null);
                 return count;
@@ -134,7 +134,7 @@ public class TimetableDataProvider extends ContentProvider {
                 }
                 final Timeline timeline = Timeline.fromContentValues(values);
                 timeline.id = ContentUris.parseId(uri);
-                final int count = TimetableDatabase.getInstance(context).cheese()
+                final int count = TimetableDatabase.getInstance(context).timetable()
                         .update(timeline);
                 context.getContentResolver().notifyChange(uri, null);
                 return count;
@@ -176,7 +176,7 @@ public class TimetableDataProvider extends ContentProvider {
                 for (int i = 0; i < valuesArray.length; i++) {
                     timelines[i] = Timeline.fromContentValues(valuesArray[i]);
                 }
-                return database.cheese().insertAll(timelines).length;
+                return database.timetable().insertAll(timelines).length;
             case CODE_TIMELINE_ITEM:
                 throw new IllegalArgumentException("Invalid URI, cannot insert with ID: " + uri);
             default:

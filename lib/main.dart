@@ -46,7 +46,7 @@ class _MainWidgetState extends State<MainWidget> {
   static const channel = const BasicMessageChannel(
       'ru.coolone.ranepatimetable/jsonChannel', StringCodec());
 
-  Future<void> _get([dynamic args]) async {
+  Future<void> channelSet([dynamic args]) async {
     var resp;
     List<String> jsons = [];
 
@@ -265,7 +265,8 @@ class _MainWidgetState extends State<MainWidget> {
               tabViews.add(TimetableWidget(lessons: mTab));
             }
 
-            if (tabsLessonsList.isNotEmpty) _get(tabsLessonsList.first);
+            if (tabsLessonsList.isNotEmpty)
+              channelSet(tabsLessonsList.expand((f) => f).toList());
 
             return DefaultTabController(
                 length: tabCount,

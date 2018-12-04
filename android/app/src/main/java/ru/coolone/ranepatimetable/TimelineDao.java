@@ -8,14 +8,13 @@ import android.database.Cursor;
 
 @Dao
 public interface TimelineDao {
-
     /**
-     * Counts the number of cheeses in the table.
+     * Counts the number of timetables in the table.
      *
-     * @return The number of cheeses.
+     * @return The number of timetables.
      */
     @Query("SELECT COUNT(*) FROM " + Timeline.TABLE_NAME)
-    int count();
+    public int count();
 
     /**
      * Inserts a timeline into the table.
@@ -24,7 +23,7 @@ public interface TimelineDao {
      * @return The row ID of the newly inserted timeline.
      */
     @Insert
-    long insert(Timeline timeline);
+    public long insert(Timeline timeline);
 
     /**
      * Inserts multiple timelines into the database
@@ -33,41 +32,49 @@ public interface TimelineDao {
      * @return The row IDs of the newly inserted timelines.
      */
     @Insert
-    long[] insertAll(Timeline[] timelines);
+    public long[] insertAll(Timeline[] timelines);
 
     /**
-     * Select all cheeses.
+     * Select all timetables.
      *
-     * @return A {@link Cursor} of all the cheeses in the table.
+     * @return A {@link Cursor} of all the timetables in the table.
      */
     @Query("SELECT * FROM " + Timeline.TABLE_NAME)
-    Cursor selectAll();
+    public Cursor selectAll();
 
     /**
-     * Select a cheese by the ID.
+     * Select a timetable by the ID.
      *
      * @param id The row ID.
-     * @return A {@link Cursor} of the selected cheese.
+     * @return A {@link Cursor} of the selected timetable.
      */
     @Query("SELECT * FROM " + Timeline.TABLE_NAME + " WHERE " + Timeline.COLUMN_ID + " = :id")
-    Cursor selectById(long id);
+    public Cursor selectById(long id);
 
     /**
-     * Delete a cheese by the ID.
+     * Select a timetable by the Date.
+     *
+     * @param date The row Date.
+     * @return A {@link Cursor} of the selected timetable.
+     */
+    @Query("SELECT * FROM " + Timeline.TABLE_NAME + " WHERE " + Timeline.COLUMN_DATE + " = :date")
+    public Cursor selectByDate(long date);
+
+    /**
+     * Delete a timetable by the ID.
      *
      * @param id The row ID.
-     * @return A number of cheeses deleted. This should always be {@code 1}.
+     * @return A number of timetables deleted. This should always be {@code 1}.
      */
     @Query("DELETE FROM " + Timeline.TABLE_NAME + " WHERE " + Timeline.COLUMN_ID + " = :id")
-    int deleteById(long id);
+    public int deleteById(long id);
 
     /**
      * Update the timeline. The timeline is identified by the row ID.
      *
      * @param timeline The timeline to update.
-     * @return A number of cheeses updated. This should always be {@code 1}.
+     * @return A number of timetables updated. This should always be {@code 1}.
      */
     @Update
-    int update(Timeline timeline);
-
+    public int update(Timeline timeline);
 }

@@ -13,68 +13,15 @@ import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 
-import static ru.coolone.ranepatimetable.LessonModel.COLUMN_LESSON_ICON;
-import static ru.coolone.ranepatimetable.LessonModel.COLUMN_LESSON_TITLE;
-import static ru.coolone.ranepatimetable.RoomModel.COLUMN_ROOM_LOCATION;
-import static ru.coolone.ranepatimetable.RoomModel.COLUMN_ROOM_NUMBER;
-import static ru.coolone.ranepatimetable.TeacherModel.COLUMN_TEACHER_NAME;
-import static ru.coolone.ranepatimetable.TeacherModel.COLUMN_TEACHER_PATRONYMIC;
-import static ru.coolone.ranepatimetable.TeacherModel.COLUMN_TEACHER_SURNAME;
-import static ru.coolone.ranepatimetable.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR;
-import static ru.coolone.ranepatimetable.TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE;
-
-@AllArgsConstructor
-class TeacherModel {
-    public static final String COLUMN_TEACHER_NAME = "name";
-    public static final String COLUMN_TEACHER_SURNAME = "surname";
-    public static final String COLUMN_TEACHER_PATRONYMIC = "patronymic";
-
-    final String name, surname, patronymic;
-}
-
-@AllArgsConstructor
-class TimeOfDayModel {
-    public static final String COLUMN_TIMEOFDAY_HOUR = "hour";
-    public static final String COLUMN_TIMEOFDAY_MINUTE = "minute";
-
-    final int hour, minute;
-}
-
-@AllArgsConstructor
-class LessonModel {
-    public static final String COLUMN_LESSON_TITLE = "title";
-    public static final String COLUMN_LESSON_ICON = "icon";
-
-    final String title;
-    final int iconCodePoint;
-}
-
-@AllArgsConstructor
-class RoomModel {
-    public static final String COLUMN_ROOM_NUMBER = "number";
-    public static final String COLUMN_ROOM_LOCATION = "location";
-
-    enum Location {
-        Academy,
-        Hotel,
-        StudyHostel
-    }
-
-    final int number;
-
-    @TypeConverters(RoomModel.class)
-    final Location location;
-
-    @TypeConverter
-    public static Location toLocation(int numeral) {
-        return Location.values()[numeral];
-    }
-
-    @TypeConverter
-    public static int fromLocation(Location status) {
-        return status.ordinal();
-    }
-}
+import static ru.coolone.ranepatimetable.Timeline.LessonModel.COLUMN_LESSON_ICON;
+import static ru.coolone.ranepatimetable.Timeline.LessonModel.COLUMN_LESSON_TITLE;
+import static ru.coolone.ranepatimetable.Timeline.RoomModel.COLUMN_ROOM_LOCATION;
+import static ru.coolone.ranepatimetable.Timeline.RoomModel.COLUMN_ROOM_NUMBER;
+import static ru.coolone.ranepatimetable.Timeline.TeacherModel.COLUMN_TEACHER_NAME;
+import static ru.coolone.ranepatimetable.Timeline.TeacherModel.COLUMN_TEACHER_PATRONYMIC;
+import static ru.coolone.ranepatimetable.Timeline.TeacherModel.COLUMN_TEACHER_SURNAME;
+import static ru.coolone.ranepatimetable.Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR;
+import static ru.coolone.ranepatimetable.Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE;
 
 /**
  * Represents one record of the Timeline table.
@@ -82,10 +29,54 @@ class RoomModel {
 @AllArgsConstructor
 @Entity(tableName = Timeline.TABLE_NAME)
 public class Timeline {
+
+    enum Location {
+        Academy,
+        Hotel,
+        StudyHostel
+    }
+
+    @AllArgsConstructor
+    static public class TeacherModel {
+        public static final String COLUMN_TEACHER_NAME = "name";
+        public static final String COLUMN_TEACHER_SURNAME = "surname";
+        public static final String COLUMN_TEACHER_PATRONYMIC = "patronymic";
+
+        final String name, surname, patronymic;
+    }
+
+    @AllArgsConstructor
+    static public class TimeOfDayModel {
+        public static final String COLUMN_TIMEOFDAY_HOUR = "hour";
+        public static final String COLUMN_TIMEOFDAY_MINUTE = "minute";
+
+        final int hour, minute;
+    }
+
+    @AllArgsConstructor
+    static public class LessonModel {
+        public static final String COLUMN_LESSON_TITLE = "title";
+        public static final String COLUMN_LESSON_ICON = "icon";
+
+        final String title;
+        final int iconCodePoint;
+    }
+
+    @AllArgsConstructor
+    static public class RoomModel {
+        public static final String COLUMN_ROOM_NUMBER = "number";
+        public static final String COLUMN_ROOM_LOCATION = "location";
+
+        final int number;
+
+        @TypeConverters(Timeline.class)
+        final Location location;
+    }
+
     /**
      * The name of the Timeline table.
      */
-    public static final String TABLE_NAME = "cheeses";
+    public static final String TABLE_NAME = "timelines";
 
     public static final String COLUMN_ID = BaseColumns._ID;
     public static final String COLUMN_DATE = "date";
@@ -133,6 +124,16 @@ public class Timeline {
         return date == null ? null : date.getTime();
     }
 
+    @TypeConverter
+    public static Location toLocation(int numeral) {
+        return Location.values()[numeral];
+    }
+
+    @TypeConverter
+    public static int fromLocation(Location status) {
+        return status.ordinal();
+    }
+
     public static Timeline fromContentValues(ContentValues values) {
         return new Timeline(
                 values.getAsLong(COLUMN_ID),
@@ -142,7 +143,7 @@ public class Timeline {
                 ),
                 new RoomModel(
                         values.getAsInteger(PREFIX_ROOM + COLUMN_ROOM_NUMBER),
-                        RoomModel.Location.values()[
+                        Location.values()[
                                 values.getAsInteger(PREFIX_ROOM + COLUMN_ROOM_LOCATION)
                                 ]
                 ),

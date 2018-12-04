@@ -15,9 +15,11 @@ public abstract class TimetableDatabase extends RoomDatabase {
      * @return The DAO for the Timeline table.
      */
     @SuppressWarnings("WeakerAccess")
-    public abstract TimelineDao cheese();
+    public abstract TimelineDao timetable();
 
-    /** The only instance */
+    /**
+     * The only instance
+     */
     private static TimetableDatabase sInstance;
 
     /**
@@ -29,9 +31,13 @@ public abstract class TimetableDatabase extends RoomDatabase {
     public static synchronized TimetableDatabase getInstance(Context context) {
         if (sInstance == null) {
             sInstance = Room
-                    .databaseBuilder(context.getApplicationContext(), TimetableDatabase.class, "ex")
+                    .databaseBuilder(
+                            context.getApplicationContext(),
+                            TimetableDatabase.class,
+                            "ex"
+                    )
                     .build();
-            sInstance.populateInitialData();
+//            sInstance.populateInitialData();
         }
         return sInstance;
     }
@@ -50,45 +56,45 @@ public abstract class TimetableDatabase extends RoomDatabase {
     /**
      * Inserts the dummy data into the database if it is currently empty.
      */
-    private void populateInitialData() {
-        if (cheese().count() == 0) {
-            beginTransaction();
-            try {
-                for (int i = 0; i < 5; i++) {
-                    cheese().insert(
-                            new Timeline(
-                                    i,
-                                    new LessonModel(
-                                            "lesson",
-                                            123
-                                    ),
-                                    new RoomModel(
-                                            312,
-                                            RoomModel.Location.Hotel
-                                    ),
-                                    new Date(0),
-                                    "Иб-021",
-                                    new TeacherModel(
-                                            "Николай",
-                                            "Трухин",
-                                            "Александрович"
-                                    ),
-                                    new TimeOfDayModel(
-                                            12,
-                                            30
-                                    ),
-                                    new TimeOfDayModel(
-                                            13,
-                                            50
-                                    )
-                            )
-                    );
-                }
-                setTransactionSuccessful();
-            } finally {
-                endTransaction();
-            }
-        }
-    }
+//    private void populateInitialData() {
+//        if (timetable().count() == 0) {
+//            beginTransaction();
+//            try {
+//                for (int i = 0; i < 5; i++) {
+//                    timetable().insert(
+//                            new Timeline(
+//                                    i,
+//                                    new Timeline.LessonModel(
+//                                            "lesson",
+//                                            123
+//                                    ),
+//                                    new Timeline.RoomModel(
+//                                            312,
+//                                            Timeline.Location.Hotel
+//                                    ),
+//                                    new Date(0),
+//                                    "Иб-021",
+//                                    new Timeline.TeacherModel(
+//                                            "Николай",
+//                                            "Трухин",
+//                                            "Александрович"
+//                                    ),
+//                                    new Timeline.TimeOfDayModel(
+//                                            12,
+//                                            30
+//                                    ),
+//                                    new Timeline.TimeOfDayModel(
+//                                            13,
+//                                            50
+//                                    )
+//                            )
+//                    );
+//                }
+//                setTransactionSuccessful();
+//            } finally {
+//                endTransaction();
+//            }
+//        }
+//    }
 
 }
