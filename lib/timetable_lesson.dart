@@ -31,7 +31,6 @@ LessonType parseLessonType(String str) {
           : null;
 }
 
-// ignore: undefined_annotation
 @JsonSerializable(nullable: false)
 class LessonModel {
   final String title;
@@ -67,7 +66,7 @@ class LessonModel {
       model = types.chemistry;
     else if (str.contains("литератур"))
       model = types.literature;
-    else if (str.contains("английск"))
+    else if (str.contains("иностранн") || str.contains("английск"))
       model = types.english;
     else if (str.contains("информатик"))
       model = types.informatics;

@@ -65,9 +65,7 @@ class TimelineComponentState extends State<TimelineComponent>
         itemCount: widget.timelineList.length,
         itemBuilder: (_, index) {
           return TimelineElement(
-            model: widget.timelineList[index],
-            firstElement: index == 0,
-            lastElement: widget.timelineList.length == index + 1,
+            model: widget.timelineList[index]
           );
         },
       ),

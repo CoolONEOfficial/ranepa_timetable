@@ -3,6 +3,7 @@ package ru.coolone.ranepatimetable;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -14,66 +15,28 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.widget.RemoteViews;
 
+import lombok.extern.java.Log;
 import lombok.var;
-
-/**
- * Our data observer just notifies an update for all weather widgets when it detects a change.
- */
-class WidgetDataProviderObserver extends ContentObserver {
-    private AppWidgetManager mAppWidgetManager;
-    private ComponentName mComponentName;
-
-    WidgetDataProviderObserver(AppWidgetManager mgr, ComponentName cn, Handler h) {
-        super(h);
-        mAppWidgetManager = mgr;
-        mComponentName = cn;
-    }
-
-    @Override
-    public void onChange(boolean selfChange) {
-        // The data has changed, so notify the widget that the collection view needs to be updated.
-        // In response, the factory's onDataSetChanged() will be called which will requery the
-        // cursor for the new data.
-        mAppWidgetManager.notifyAppWidgetViewDataChanged(
-                mAppWidgetManager.getAppWidgetIds(mComponentName), R.id.weather_list);
-    }
-}
 
 /**
  * The weather widget's AppWidgetProvider.
  */
+@Log
 public class WidgetProvider extends AppWidgetProvider {
     public static String CLICK_ACTION = "ru.coolone.ranepatimetable.CLICK";
     public static String REFRESH_ACTION = "ru.coolone.ranepatimetable.REFRESH";
     public static String EXTRA_DAY_ID = "ru.coolone.ranepatimetable.day";
-    private static Handler sWorkerQueue;
-    private static WidgetDataProviderObserver sDataObserver;
 
     public WidgetProvider() {
-        // Start the worker thread
-        HandlerThread sWorkerThread = new HandlerThread("WidgetProvider-worker");
-        sWorkerThread.start();
-        sWorkerQueue = new Handler(sWorkerThread.getLooper());
     }
 
     @Override
     public void onEnabled(Context context) {
-        // Register for external updates to the data to trigger an update of the widget.  When using
-        // content providers, the data is often updated via a background service, or in response to
-        // user interaction in the main app.  To ensure that the widget always reflects the current
-        // state of the data, we must listen for changes and update ourselves accordingly.
-        final ContentResolver r = context.getContentResolver();
-        if (sDataObserver == null) {
-            final AppWidgetManager mgr = AppWidgetManager.getInstance(context);
-            final ComponentName cn = new ComponentName(context, WidgetProvider.class);
-            sDataObserver = new WidgetDataProviderObserver(mgr, cn, sWorkerQueue);
-            r.registerContentObserver(TimetableDataProvider.URI_TIMELINE, true, sDataObserver);
-        }
     }
 
     @Override
     public void onReceive(Context ctx, Intent intent) {
-        final String action = intent.getAction();
+//        final String action = intent.getAction();
 //        if (action.equals(REFRESH_ACTION)) {
 //            // BroadcastReceivers have a limited amount of time to do work, so for this sample, we
 //            // are triggering an update of the data on another thread.  In practice, this update
@@ -114,19 +77,27 @@ public class WidgetProvider extends AppWidgetProvider {
         super.onReceive(ctx, intent);
     }
 
-    private RemoteViews buildLayout(Context context, int appWidgetId) {
+    public static int globalwidth, globalheight;
+
+    private RemoteViews buildLayout(Context context, int appWidgetId, int width, int height) {
+
+        log.severe("build layout: w" + width + " h" + height);
+        globalwidth = width;
+        globalheight = height;
 
         // Specify the service to provide data for the collection widget.  Note that we need to
         // embed the appWidgetId via the data otherwise it will be ignored.
         var intent = new Intent(context, WidgetService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        intent.putExtra(WidgetRemoteViewsFactory.INTENT_WIDTH, width);
+        intent.putExtra(WidgetRemoteViewsFactory.INTENT_HEIGHT, height);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-
         var rv = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
         rv.setRemoteAdapter(R.id.weather_list, intent);
         // Set the empty view to be displayed if the collection is empty.  It must be a sibling
         // view of the collection view.
         rv.setEmptyView(R.id.weather_list, R.id.empty_view);
+
         // Bind a click listener template for the contents of the weather list.  Note that we
         // need to update the intent's data if we set an extra, since the extras will be
         // ignored otherwise.
@@ -137,12 +108,14 @@ public class WidgetProvider extends AppWidgetProvider {
         var onClickPendingIntent = PendingIntent.getBroadcast(context, 0,
                 onClickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         rv.setPendingIntentTemplate(R.id.weather_list, onClickPendingIntent);
+
         // Bind the click intent for the refresh button on the widget
         var refreshIntent = new Intent(context, WidgetProvider.class);
         refreshIntent.setAction(WidgetProvider.REFRESH_ACTION);
         var refreshPendingIntent = PendingIntent.getBroadcast(context, 0,
                 refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         rv.setOnClickPendingIntent(R.id.refresh, refreshPendingIntent);
+
         // Restore the minimal header
         rv.setTextViewText(R.id.city_name, context.getString(R.string.city_name));
 
@@ -153,7 +126,14 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // Update each of the widgets with the remote adapter
         for (int appWidgetId : appWidgetIds) {
-            RemoteViews layout = buildLayout(context, appWidgetId);
+            // See the dimensions and
+            Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
+
+            // Get min width and height.
+            int minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+            int minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
+
+            RemoteViews layout = buildLayout(context, appWidgetId, minWidth, minHeight);
             appWidgetManager.updateAppWidget(appWidgetId, layout);
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
@@ -162,7 +142,13 @@ public class WidgetProvider extends AppWidgetProvider {
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager,
                                           int appWidgetId, Bundle newOptions) {
-        RemoteViews layout = buildLayout(context, appWidgetId);
-        appWidgetManager.updateAppWidget(appWidgetId, layout);
+        // See the dimensions and
+        Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
+
+        // Get min width and height.
+        int minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+        int minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
+
+        appWidgetManager.updateAppWidget(appWidgetId, buildLayout(context, appWidgetId, minWidth, minHeight));
     }
 }

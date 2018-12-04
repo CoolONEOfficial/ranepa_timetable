@@ -20,13 +20,10 @@ import 'package:ranepa_timetable/timetable_icons.dart';
 import 'package:ranepa_timetable/timetable_room.dart';
 
 class TimelinePainter extends CustomPainter {
-  final bool firstElement;
-  final bool lastElement;
   final TimelineModel model;
   final BuildContext context;
 
-  TimelinePainter(this.context, this.model,
-      {this.firstElement = false, this.lastElement = false});
+  TimelinePainter(this.context, this.model);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -34,6 +31,8 @@ class TimelinePainter extends CustomPainter {
   }
 
   static const rectMargins = 8.0;
+  static const iconSize = 15.0;
+  static const circleRadius = 23.0;
 
   void _centerElementPaint(Canvas canvas, Size size) {
     Paint lineStroke = Paint()
@@ -50,36 +49,29 @@ class TimelinePainter extends CustomPainter {
           ..strokeWidth = 2.0
           ..style = PaintingStyle.fill);
 
-    final iconSize = 15.0;
-    final circleSize = 23.0;
     final circleOffset = Offset(
-        rectMargins * 2 + circleSize + 70, (size.height + rectMargins) / 2);
+        rectMargins * 2 + circleRadius + 70, (size.height + rectMargins) / 2);
 
-    if (firstElement && lastElement) {
-      // Do nothing
-    } else if (firstElement) {
-      final offsetCenter = circleOffset.translate(0.0, circleSize / 2);
-      final offsetBottom = Offset(circleOffset.dx, size.height);
-      canvas.drawLine(offsetCenter, offsetBottom, lineStroke);
-    } else if (lastElement) {
-      final offsetCenter = circleOffset.translate(0.0, -circleSize / 2);
-      final offsetTop = Offset(circleOffset.dx, 0);
-      canvas.drawLine(offsetCenter, offsetTop, lineStroke);
-    } else {
-      final offsetTop = Offset(circleOffset.dx, 0);
-      final offsetBottom = Offset(circleOffset.dx, size.height);
-      canvas.drawLine(offsetTop, offsetBottom, lineStroke);
+    if (!(model.first && model.last)) {
+      if (model.first || !model.last) {
+        canvas.drawLine(circleOffset.translate(0.0, circleRadius / 2),
+            Offset(circleOffset.dx, size.height), lineStroke);
+      }
+      if (model.last || !model.first) {
+        canvas.drawLine(circleOffset.translate(0.0, -circleRadius / 2),
+            Offset(circleOffset.dx, 0), lineStroke);
+      }
     }
 
     canvas.drawCircle(
         circleOffset,
-        circleSize,
+        circleRadius,
         Paint()
           ..color = Colors.white
           ..style = PaintingStyle.fill);
     canvas.drawCircle(
         circleOffset,
-        circleSize,
+        circleRadius,
         Paint()
           ..color = Theme.of(context).accentColor
           ..style = PaintingStyle.stroke
@@ -101,7 +93,7 @@ class TimelinePainter extends CustomPainter {
         textDirection: TextDirection.ltr);
     lessonIconTextPainter.layout(minWidth: iconSize * 2);
     lessonIconTextPainter.paint(
-        canvas, circleOffset.translate(-iconSize, -(circleSize / 3 * 2)));
+        canvas, circleOffset.translate(-iconSize, -(circleRadius / 3 * 2)));
 
     final lessonTypeSpan = TextSpan(
       style: TextStyle(

@@ -224,7 +224,9 @@ class _MainWidgetState extends State<MainWidget> {
 
             var mDate = today;
             var mTabId = 0;
-            for (var mItem in itemArr) {
+            for (var mItemId = 0; mItemId < itemArr.length; mItemId++) {
+              var mItem = itemArr[mItemId];
+
               final mItemTimeStart =
                   mItem.children[TimetableResponseIndexes.TimeStart.index].text;
               final mItemTimeFinish = mItem
@@ -232,7 +234,8 @@ class _MainWidgetState extends State<MainWidget> {
               final mItemDate = DateTime.parse(
                   mItem.children[TimetableResponseIndexes.Date.index].text);
 
-              if (mItemDate != mDate) {
+              var dateAppend = mItemDate != mDate;
+              if (dateAppend) {
                 mTabId++;
                 do {
                   mDate = mDate.add(Duration(days: 1));
@@ -257,16 +260,23 @@ class _MainWidgetState extends State<MainWidget> {
                       mItem.children[TimetableResponseIndexes.Group.index].text,
                   lesson: LessonModel.fromString(context,
                       mItem.children[TimetableResponseIndexes.Name.index].text),
-                  teacher: TeacherModel.fromString(mItem.children[TimetableResponseIndexes.Name.index].text)));
+                  teacher: TeacherModel.fromString(mItem.children[TimetableResponseIndexes.Name.index].text) ));
             }
+
+            for(var mTab in tabsLessonsList) {
+              mTab.first.first = true;
+              mTab.last.last = true;
+
+              // TODO: detect lesson merge etc.
+            }
+
+            if (tabsLessonsList.isNotEmpty)
+              channelSet(tabsLessonsList.expand((f) => f).toList());
 
             final tabViews = List<Widget>();
             for (var mTab in tabsLessonsList) {
               tabViews.add(TimetableWidget(lessons: mTab));
             }
-
-            if (tabsLessonsList.isNotEmpty)
-              channelSet(tabsLessonsList.expand((f) => f).toList());
 
             return DefaultTabController(
                 length: tabCount,

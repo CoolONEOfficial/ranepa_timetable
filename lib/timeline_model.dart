@@ -25,11 +25,10 @@ part 'timeline_model.g.dart';
 class TimelineModel {
   final LessonModel lesson;
   final RoomModel room;
-
   final DateTime date;
-
   final String group;
   final TeacherModel teacher;
+  bool first, last;
 
   @JsonKey(fromJson: _timeOfDayFromIntList, toJson: _timeOfDayToIntList)
   final TimeOfDay start, finish;
@@ -40,7 +39,7 @@ class TimelineModel {
   static Map<String, int> _timeOfDayToIntList(TimeOfDay timeOfDay) =>
   {"hour": timeOfDay.hour, "minute": timeOfDay.minute};
 
-  const TimelineModel({
+  TimelineModel({
     @required this.date,
     @required this.start,
     @required this.finish,
@@ -48,6 +47,8 @@ class TimelineModel {
     @required this.group,
     @required this.lesson,
     @required this.teacher,
+    this.first = false,
+    this.last = false
   });
 
   factory TimelineModel.fromJson(Map<String, dynamic> json) =>

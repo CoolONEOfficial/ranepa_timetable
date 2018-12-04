@@ -16,11 +16,15 @@ TimelineModel _$TimelineModelFromJson(Map<String, dynamic> json) {
       room: RoomModel.fromJson(json['room'] as Map<String, dynamic>),
       group: json['group'] as String,
       lesson: LessonModel.fromJson(json['lesson'] as Map<String, dynamic>),
-      teacher: TeacherModel.fromJson(json['teacher'] as Map<String, dynamic>));
+      teacher: TeacherModel.fromJson(json['teacher'] as Map<String, dynamic>),
+      first: json['first'] as bool,
+      last: json['last'] as bool);
 }
 
 Map<String, dynamic> _$TimelineModelToJson(TimelineModel instance) =>
     <String, dynamic>{
+      'first': instance.first,
+      'last': instance.last,
       'lesson': instance.lesson,
       'room': instance.room,
       'date': instance.date.toIso8601String(),

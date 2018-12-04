@@ -70,6 +70,14 @@ public interface TimelineDao {
     public int deleteById(long id);
 
     /**
+     * Delete all timetables.
+     *
+     * @return A number of timetables deleted. This should always be {@code 1}.
+     */
+    @Query("DELETE FROM " + Timeline.TABLE_NAME)
+    public int delete();
+
+    /**
      * Update the timeline. The timeline is identified by the row ID.
      *
      * @param timeline The timeline to update.

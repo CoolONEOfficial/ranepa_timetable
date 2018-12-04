@@ -18,20 +18,15 @@ import 'package:ranepa_timetable/timeline_painter.dart';
 
 class TimelineElement extends StatelessWidget {
   final TimelineModel model;
-  final bool firstElement;
-  final bool lastElement;
 
   TimelineElement(
-      {@required this.model,
-      this.firstElement = false,
-      this.lastElement = false});
+      {@required this.model});
 
   Widget _buildLine(BuildContext context) {
     return SizedBox.expand(
         child: Container(
       child: CustomPaint(
-        painter: TimelinePainter(context, model,
-            firstElement: firstElement, lastElement: lastElement),
+        painter: TimelinePainter(context, model),
       ),
     ));
   }

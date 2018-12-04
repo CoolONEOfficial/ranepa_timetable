@@ -56,7 +56,7 @@ public class Timeline {
     @AllArgsConstructor
     static public class LessonModel {
         public static final String COLUMN_LESSON_TITLE = "title";
-        public static final String COLUMN_LESSON_ICON = "icon";
+        public static final String COLUMN_LESSON_ICON = "iconCodePoint";
 
         final String title;
         final int iconCodePoint;
@@ -81,6 +81,8 @@ public class Timeline {
     public static final String COLUMN_ID = BaseColumns._ID;
     public static final String COLUMN_DATE = "date";
     public static final String COLUMN_GROUP = "group";
+    public static final String COLUMN_FIRST = "first";
+    public static final String COLUMN_LAST = "last";
 
     public static final String PREFIX_LESSON = "lesson_";
     public static final String PREFIX_ROOM = "room_";
@@ -104,6 +106,12 @@ public class Timeline {
 
     @ColumnInfo(name = COLUMN_GROUP)
     final String group;
+
+    @ColumnInfo(name = COLUMN_FIRST)
+    final boolean first;
+
+    @ColumnInfo(name = COLUMN_LAST)
+    final boolean last;
 
     @Embedded(prefix = PREFIX_TEACHER)
     final TeacherModel teacher;
@@ -132,36 +140,5 @@ public class Timeline {
     @TypeConverter
     public static int fromLocation(Location status) {
         return status.ordinal();
-    }
-
-    public static Timeline fromContentValues(ContentValues values) {
-        return new Timeline(
-                values.getAsLong(COLUMN_ID),
-                new LessonModel(
-                        values.getAsString(PREFIX_LESSON + COLUMN_LESSON_TITLE),
-                        values.getAsInteger(PREFIX_LESSON + COLUMN_LESSON_ICON)
-                ),
-                new RoomModel(
-                        values.getAsInteger(PREFIX_ROOM + COLUMN_ROOM_NUMBER),
-                        Location.values()[
-                                values.getAsInteger(PREFIX_ROOM + COLUMN_ROOM_LOCATION)
-                                ]
-                ),
-                new Date(values.getAsLong(COLUMN_DATE)),
-                values.getAsString(COLUMN_GROUP),
-                new TeacherModel(
-                        values.getAsString(PREFIX_TEACHER + COLUMN_TEACHER_NAME),
-                        values.getAsString(PREFIX_TEACHER + COLUMN_TEACHER_SURNAME),
-                        values.getAsString(PREFIX_TEACHER + COLUMN_TEACHER_PATRONYMIC)
-                ),
-                new TimeOfDayModel(
-                        values.getAsInteger(PREFIX_START + COLUMN_TIMEOFDAY_HOUR),
-                        values.getAsInteger(PREFIX_START + COLUMN_TIMEOFDAY_MINUTE)
-                ),
-                new TimeOfDayModel(
-                        values.getAsInteger(PREFIX_FINISH + COLUMN_TIMEOFDAY_HOUR),
-                        values.getAsInteger(PREFIX_FINISH + COLUMN_TIMEOFDAY_MINUTE)
-                )
-        );
     }
 }

@@ -6,8 +6,6 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 import android.support.annotation.VisibleForTesting;
 
-import java.sql.Date;
-
 @Database(entities = {Timeline.class}, version = 1, exportSchema = false)
 public abstract class TimetableDatabase extends RoomDatabase {
 
@@ -37,7 +35,6 @@ public abstract class TimetableDatabase extends RoomDatabase {
                             "ex"
                     )
                     .build();
-//            sInstance.populateInitialData();
         }
         return sInstance;
     }
@@ -52,49 +49,5 @@ public abstract class TimetableDatabase extends RoomDatabase {
         sInstance = Room.inMemoryDatabaseBuilder(context.getApplicationContext(),
                 TimetableDatabase.class).build();
     }
-
-    /**
-     * Inserts the dummy data into the database if it is currently empty.
-     */
-//    private void populateInitialData() {
-//        if (timetable().count() == 0) {
-//            beginTransaction();
-//            try {
-//                for (int i = 0; i < 5; i++) {
-//                    timetable().insert(
-//                            new Timeline(
-//                                    i,
-//                                    new Timeline.LessonModel(
-//                                            "lesson",
-//                                            123
-//                                    ),
-//                                    new Timeline.RoomModel(
-//                                            312,
-//                                            Timeline.Location.Hotel
-//                                    ),
-//                                    new Date(0),
-//                                    "Иб-021",
-//                                    new Timeline.TeacherModel(
-//                                            "Николай",
-//                                            "Трухин",
-//                                            "Александрович"
-//                                    ),
-//                                    new Timeline.TimeOfDayModel(
-//                                            12,
-//                                            30
-//                                    ),
-//                                    new Timeline.TimeOfDayModel(
-//                                            13,
-//                                            50
-//                                    )
-//                            )
-//                    );
-//                }
-//                setTransactionSuccessful();
-//            } finally {
-//                endTransaction();
-//            }
-//        }
-//    }
 
 }

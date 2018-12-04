@@ -4,12 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="80dp"
     android:gravity="center_vertical"
-    android:background="#F0F0F0"
+    android:background="@android:color/holo_red_dark"
     >
     <ImageView
+        android:id="@+id/widget_item_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/example_appwidget_preview"/>
+        android:background="@android:color/holo_purple"/>
 
     <TextView
         android:id="@+id/widget_item_text"
@@ -18,5 +19,6 @@
         android:layout_marginLeft="140dp"
         android:layout_marginStart="140dp"
         android:layout_marginTop="16dp"
+        android:background="@android:color/holo_green_dark"
         style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"/>
 </FrameLayout>

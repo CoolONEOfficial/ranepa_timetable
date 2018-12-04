@@ -36,8 +36,9 @@ public class MainActivity extends FlutterActivity {
 
         @Override
         protected Void doInBackground(Timeline[]... params) {
-            TimetableDatabase.getInstance(weakContext.get()).timetable()
-                    .insertAll(params[0]);
+            var timetable = TimetableDatabase.getInstance(weakContext.get()).timetable();
+            timetable.delete();
+            timetable.insertAll(params[0]);
             return null;
         }
     }
