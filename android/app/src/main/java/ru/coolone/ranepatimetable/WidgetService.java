@@ -2,6 +2,7 @@ package ru.coolone.ranepatimetable;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 
 import lombok.extern.java.Log;
 
+import android.util.DisplayMetrics;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -65,35 +67,49 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         return cursor.getCount();
     }
 
+    /**
+     * This method converts dp unit to equivalent pixels, depending on device density.
+     *
+     * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @return A float value to represent px equivalent to dp depending on device density
+     */
+    private float dpToPixel(float dp){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return px;
+    }
+
     private static final int rectMargins = 8;
-    private static final int iconSize = 15;
+    private static final int iconSize = 29;
     private static final int circleRadius = 23;
 
     private Bitmap buildItemBitmap(Context context, float w, float h) {
-        var bitmap = Bitmap.createBitmap((int) w, (int) h, Bitmap.Config.ARGB_8888);
+        var bitmap = Bitmap.createBitmap((int) dpToPixel(w), (int) dpToPixel(h), Bitmap.Config.ARGB_8888);
         var canvas = new Canvas(bitmap);
         var paint = new Paint();
         paint.setAntiAlias(true);
 
-        var circleX = rectMargins * 2 + 70 + circleRadius;
-        var circleY = (80 + rectMargins) / 2;
+        var circleX = dpToPixel(rectMargins * 2 + 70 + circleRadius);
+        var circleY = dpToPixel((80 + rectMargins) / 2);
 
-        paint.setStrokeWidth(2);
+        paint.setStrokeWidth(dpToPixel(2));
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.WHITE);
         var first = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_FIRST)) != 0;
         var last = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_LAST)) != 0;
         if(!(first && last)) {
             if (first || !last) {
                 canvas.drawLine(
-                        circleX, circleY + circleRadius / 2,
-                        circleX, h,
+                        circleX, circleY + dpToPixel(circleRadius / 2),
+                        circleX, dpToPixel(h),
                         paint
                 );
             }
             if (last || !first) {
                 canvas.drawLine(
-                        circleX, circleY - circleRadius / 2,
+                        circleX, circleY - dpToPixel(circleRadius / 2),
                         circleX, 0,
                         paint
                 );
@@ -105,11 +121,24 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         canvas.drawCircle(
                 circleX,
                 circleY,
-                circleRadius,
+                dpToPixel(circleRadius),
                 paint);
 
-        paint.setTextSize(30);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.BLUE);
+        canvas.drawCircle(
+                circleX,
+                circleY,
+                dpToPixel(circleRadius),
+                paint
+        );
+
+        paint.reset();
+        paint.setColor(Color.BLACK);
+        paint.setStrokeWidth(0);
+        paint.setTextSize(dpToPixel(iconSize));
         paint.setTextAlign(Paint.Align.CENTER);
+        paint.setAntiAlias(true);
         paint.setSubpixelText(true);
         paint.setTypeface(
                 Typeface.createFromAsset(
@@ -117,7 +146,6 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                         "fonts/TimetableIcons.ttf"
                 )
         );
-        paint.setColor(Color.WHITE);
         canvas.drawText(
                 String.valueOf(
                         Character.toChars(
@@ -127,7 +155,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                                                         + Timeline.LessonModel.COLUMN_LESSON_ICON)
                                 )
                         )
-                ), 40, 40, paint);
+                ), circleX, circleY + dpToPixel(10), paint);
 
 
         return bitmap;

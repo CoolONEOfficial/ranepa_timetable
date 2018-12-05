@@ -34,6 +34,7 @@ class TimelinePainter extends CustomPainter {
   static const iconSize = 15.0;
   static const circleRadius = 23.0;
 
+
   void _centerElementPaint(Canvas canvas, Size size) {
     Paint lineStroke = Paint()
       ..color = Theme.of(context).accentColor
@@ -78,7 +79,6 @@ class TimelinePainter extends CustomPainter {
           ..strokeWidth = lineStroke.strokeWidth);
 
     final fontFamily = TimetableIcons.databases.fontFamily;
-
     final lessonIconSpan = TextSpan(
       style: TextStyle(
         fontFamily: fontFamily,
