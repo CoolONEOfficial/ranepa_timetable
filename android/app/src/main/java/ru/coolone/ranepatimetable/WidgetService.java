@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 
 import lombok.extern.java.Log;
@@ -76,24 +77,41 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
     private float dpToPixel(float dp){
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
-        float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-        return px;
+        return dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
     private static final int rectMargins = 8;
     private static final int iconSize = 29;
     private static final int circleRadius = 23;
+    private static final int rectRound = 5;
 
     private Bitmap buildItemBitmap(Context context, float w, float h) {
-        var bitmap = Bitmap.createBitmap((int) dpToPixel(w), (int) dpToPixel(h), Bitmap.Config.ARGB_8888);
+        float dpScale = dpToPixel(1);
+        w *= dpScale;
+        h *= dpScale;
+
+        var bitmap = Bitmap.createBitmap((int) w, (int) h, Bitmap.Config.ARGB_8888);
         var canvas = new Canvas(bitmap);
         var paint = new Paint();
         paint.setAntiAlias(true);
 
-        var circleX = dpToPixel(rectMargins * 2 + 70 + circleRadius);
-        var circleY = dpToPixel((80 + rectMargins) / 2);
+        var circleX = dpScale * (rectMargins * 2 + 70 + circleRadius);
+        var circleY = dpScale * ((80 + rectMargins) / 2);
 
-        paint.setStrokeWidth(dpToPixel(2));
+        paint.setStrokeWidth(dpScale * 2);
+        paint.setColor(0xFF9999FF);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            canvas.drawRoundRect(
+                    dpScale * rectMargins, dpScale * rectMargins,
+                    w - rectMargins * dpScale, h,
+                    dpScale * rectRound, dpScale * rectRound, paint
+            );
+        else canvas.drawRect(
+                dpScale * rectMargins, dpScale * rectMargins,
+                w - rectMargins * dpScale, h,
+                paint
+        );
+
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.WHITE);
@@ -102,14 +120,14 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         if(!(first && last)) {
             if (first || !last) {
                 canvas.drawLine(
-                        circleX, circleY + dpToPixel(circleRadius / 2),
-                        circleX, dpToPixel(h),
+                        circleX, circleY + dpScale * (circleRadius / 2),
+                        circleX, dpScale * h,
                         paint
                 );
             }
             if (last || !first) {
                 canvas.drawLine(
-                        circleX, circleY - dpToPixel(circleRadius / 2),
+                        circleX, circleY - dpScale * (circleRadius / 2),
                         circleX, 0,
                         paint
                 );
@@ -121,7 +139,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         canvas.drawCircle(
                 circleX,
                 circleY,
-                dpToPixel(circleRadius),
+                dpScale * circleRadius,
                 paint);
 
         paint.setStyle(Paint.Style.STROKE);
@@ -129,14 +147,14 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         canvas.drawCircle(
                 circleX,
                 circleY,
-                dpToPixel(circleRadius),
+                dpScale * circleRadius,
                 paint
         );
 
         paint.reset();
         paint.setColor(Color.BLACK);
         paint.setStrokeWidth(0);
-        paint.setTextSize(dpToPixel(iconSize));
+        paint.setTextSize(dpScale * iconSize);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setAntiAlias(true);
         paint.setSubpixelText(true);
@@ -155,7 +173,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                                                         + Timeline.LessonModel.COLUMN_LESSON_ICON)
                                 )
                         )
-                ), circleX, circleY + dpToPixel(10), paint);
+                ), circleX, circleY + dpScale * 10, paint);
 
 
         return bitmap;
@@ -167,9 +185,24 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         if (cursor.moveToPosition(position)) {
             var date = new Date(cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_DATE)));
             var lesson = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_LESSON + Timeline.LessonModel.COLUMN_LESSON_TITLE));
+            var teacher =
+                    cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_SURNAME))
+            + " " + cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_NAME))
+            + " " + cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_PATRONYMIC));
+            var start = new Timeline.TimeOfDayModel(
+                    cursor.getInt(cursor.getColumnIndex(Timeline.PREFIX_START + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR)),
+                    cursor.getInt(cursor.getColumnIndex(Timeline.PREFIX_START + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE))
+            );
+            var finish = new Timeline.TimeOfDayModel(
+                    cursor.getInt(cursor.getColumnIndex(Timeline.PREFIX_FINISH + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR)),
+                    cursor.getInt(cursor.getColumnIndex(Timeline.PREFIX_FINISH + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE))
+            );
 
             var rv = new RemoteViews(context.getPackageName(), R.layout.widget_item);
-            rv.setTextViewText(R.id.widget_item_text, lesson);
+            rv.setTextViewText(R.id.widget_item_lesson_title, lesson);
+            rv.setTextViewText(R.id.widget_item_teacher, teacher);
+            rv.setTextViewText(R.id.widget_item_start, start.hour + ":" + start.minute);
+            rv.setTextViewText(R.id.widget_item_finish, finish.hour + ":" + finish.minute);
             rv.setImageViewBitmap(
                     R.id.widget_item_image,
                     buildItemBitmap(

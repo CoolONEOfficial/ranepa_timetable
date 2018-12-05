@@ -43,6 +43,14 @@ public class Timeline {
         public static final String COLUMN_TEACHER_PATRONYMIC = "patronymic";
 
         final String name, surname, patronymic;
+
+        public static TeacherModel fromContentValues(ContentValues values, String prefix) {
+            return new TeacherModel(
+                    values.getAsString(prefix + COLUMN_TEACHER_NAME),
+                    values.getAsString(prefix + COLUMN_TEACHER_SURNAME),
+                    values.getAsString(prefix + COLUMN_TEACHER_PATRONYMIC)
+            );
+        }
     }
 
     @AllArgsConstructor
@@ -51,6 +59,13 @@ public class Timeline {
         public static final String COLUMN_TIMEOFDAY_MINUTE = "minute";
 
         final int hour, minute;
+
+        public static TimeOfDayModel fromContentValues(ContentValues values, String prefix) {
+            return new TimeOfDayModel(
+                    values.getAsInteger(prefix + COLUMN_TIMEOFDAY_HOUR),
+                    values.getAsInteger(prefix + COLUMN_TIMEOFDAY_MINUTE)
+            );
+        }
     }
 
     @AllArgsConstructor
@@ -60,6 +75,13 @@ public class Timeline {
 
         final String title;
         final int iconCodePoint;
+
+        public static LessonModel fromContentValues(ContentValues values, String prefix) {
+            return new LessonModel(
+                    values.getAsString(prefix + COLUMN_LESSON_TITLE),
+                    values.getAsInteger(prefix + COLUMN_LESSON_ICON)
+            );
+        }
     }
 
     @AllArgsConstructor
@@ -71,6 +93,15 @@ public class Timeline {
 
         @TypeConverters(Timeline.class)
         final Location location;
+
+        public static RoomModel fromContentValues(ContentValues values, String prefix) {
+            return new RoomModel(
+                    values.getAsInteger(prefix + COLUMN_ROOM_NUMBER),
+                    Location.values()[
+                            values.getAsInteger(prefix + COLUMN_ROOM_LOCATION)
+                            ]
+            );
+        }
     }
 
     /**
@@ -140,5 +171,20 @@ public class Timeline {
     @TypeConverter
     public static int fromLocation(Location status) {
         return status.ordinal();
+    }
+
+    public static Timeline fromContentValues(ContentValues values) {
+        return new Timeline(
+                values.getAsLong(COLUMN_ID),
+                LessonModel.fromContentValues(values, PREFIX_LESSON),
+                RoomModel.fromContentValues(values, PREFIX_ROOM),
+                new Date(values.getAsLong(COLUMN_DATE)),
+                values.getAsString(COLUMN_GROUP),
+                values.getAsInteger(COLUMN_FIRST) == 1,
+                values.getAsInteger(COLUMN_LAST) == 1,
+                TeacherModel.fromContentValues(values, PREFIX_TEACHER),
+                TimeOfDayModel.fromContentValues(values, PREFIX_START),
+                TimeOfDayModel.fromContentValues(values, PREFIX_FINISH)
+        );
     }
 }

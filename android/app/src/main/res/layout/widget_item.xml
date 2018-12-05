@@ -3,22 +3,68 @@
     android:id="@+id/widget_item"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:gravity="center_vertical"
-    android:background="@android:color/holo_red_dark"
-    >
+    android:gravity="center_vertical">
+
     <ImageView
         android:id="@+id/widget_item_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/holo_purple"/>
+        android:layout_height="match_parent" />
 
     <TextView
-        android:id="@+id/widget_item_text"
+        android:id="@+id/widget_item_lesson_title"
+        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="140dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="140dp"
-        android:layout_marginTop="16dp"
-        android:background="@android:color/holo_green_dark"
-        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"/>
+        android:layout_marginLeft="140dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="@dimen/widget_item_margins"
+        android:layout_marginRight="@dimen/widget_item_margins"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/widget_item_teacher"
+        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="140dp"
+        android:layout_marginLeft="140dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginEnd="@dimen/widget_item_margins"
+        android:layout_marginRight="@dimen/widget_item_margins"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/widget_item_room_number"
+        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/widget_item_margins"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="55dp"
+        android:gravity="end"
+        android:singleLine="true"
+        android:textAlignment="textEnd" />
+
+    <TextView
+        android:id="@+id/widget_item_start"
+        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+        android:layout_width="80dp"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/widget_item_finish"
+        style="@style/TextAppearance.AppCompat.Body2"
+        android:layout_width="80dp"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="35dp"
+        android:singleLine="true" />
 </FrameLayout>
