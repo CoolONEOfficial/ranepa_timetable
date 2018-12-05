@@ -9,19 +9,9 @@ import android.arch.persistence.room.TypeConverters;
 import android.content.ContentValues;
 import android.provider.BaseColumns;
 
-import java.sql.Date;
+import java.util.Date;
 
 import lombok.AllArgsConstructor;
-
-import static ru.coolone.ranepatimetable.Timeline.LessonModel.COLUMN_LESSON_ICON;
-import static ru.coolone.ranepatimetable.Timeline.LessonModel.COLUMN_LESSON_TITLE;
-import static ru.coolone.ranepatimetable.Timeline.RoomModel.COLUMN_ROOM_LOCATION;
-import static ru.coolone.ranepatimetable.Timeline.RoomModel.COLUMN_ROOM_NUMBER;
-import static ru.coolone.ranepatimetable.Timeline.TeacherModel.COLUMN_TEACHER_NAME;
-import static ru.coolone.ranepatimetable.Timeline.TeacherModel.COLUMN_TEACHER_PATRONYMIC;
-import static ru.coolone.ranepatimetable.Timeline.TeacherModel.COLUMN_TEACHER_SURNAME;
-import static ru.coolone.ranepatimetable.Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR;
-import static ru.coolone.ranepatimetable.Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE;
 
 /**
  * Represents one record of the Timeline table.
@@ -30,10 +20,13 @@ import static ru.coolone.ranepatimetable.Timeline.TimeOfDayModel.COLUMN_TIMEOFDA
 @Entity(tableName = Timeline.TABLE_NAME)
 public class Timeline {
 
-    enum Location {
-        Academy,
-        Hotel,
-        StudyHostel
+    @AllArgsConstructor
+    public enum Location {
+        Academy(0xe81b),
+        Hotel(0xe801),
+        StudyHostel(0xe802);
+
+        int iconCodePoint;
     }
 
     @AllArgsConstructor

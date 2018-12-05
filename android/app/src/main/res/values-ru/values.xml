@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_title">НИУ РАНХиГС (Расписание)</string>
+    <string name="widget_title_today">Сегодня</string>
+    <string name="widget_title_tomorrow">Завтра</string>
+    <string name="widget_title_next_week">На след. неделе</string>
+    <string name="monday">Понедельник (%s)</string>
+    <string name="tuesday">Вторник (%s)</string>
+    <string name="wednesday">Среда (%s)</string>
+    <string name="thursday">Четверг (%s)</string>
+    <string name="friday">Пятница (%s)</string>
+    <string name="saturday">Суббота (%s)</string>
 </resources>

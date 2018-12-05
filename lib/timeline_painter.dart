@@ -30,16 +30,17 @@ class TimelinePainter extends CustomPainter {
     _centerElementPaint(canvas, size);
   }
 
-  static const rectMargins = 8.0;
-  static const iconSize = 15.0;
-  static const circleRadius = 23.0;
-
-
   void _centerElementPaint(Canvas canvas, Size size) {
+    const rectMargins = 8.0;
+    const iconSize = 15.0;
+    const circleRadius = 23.0;
+    const locationIconSize = 20.0;
+    const lineWidth = 2.0;
+
     Paint lineStroke = Paint()
       ..color = Theme.of(context).accentColor
       ..strokeCap = StrokeCap.round
-      ..strokeWidth = 2.0
+      ..strokeWidth = lineWidth
       ..style = PaintingStyle.stroke;
     canvas.drawRRect(
         RRect.fromLTRBR(rectMargins, rectMargins, size.width - rectMargins,
@@ -47,7 +48,7 @@ class TimelinePainter extends CustomPainter {
         Paint()
           ..color = Theme.of(context).backgroundColor
           ..strokeCap = StrokeCap.round
-          ..strokeWidth = 2.0
+          ..strokeWidth = lineWidth
           ..style = PaintingStyle.fill);
 
     final circleOffset = Offset(
@@ -76,44 +77,44 @@ class TimelinePainter extends CustomPainter {
         Paint()
           ..color = Theme.of(context).accentColor
           ..style = PaintingStyle.stroke
-          ..strokeWidth = lineStroke.strokeWidth);
+          ..strokeWidth = lineWidth);
 
     final fontFamily = TimetableIcons.databases.fontFamily;
-    final lessonIconSpan = TextSpan(
-      style: TextStyle(
-        fontFamily: fontFamily,
-        color: Colors.black,
-        fontSize: iconSize * 2,
-      ),
-      text: String.fromCharCode(model.lesson.iconCodePoint),
-    );
-    final lessonIconTextPainter = TextPainter(
-        text: lessonIconSpan,
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr);
-    lessonIconTextPainter.layout(minWidth: iconSize * 2);
-    lessonIconTextPainter.paint(
-        canvas, circleOffset.translate(-iconSize, -(circleRadius / 3 * 2)));
 
-    final lessonTypeSpan = TextSpan(
-      style: TextStyle(
-        fontFamily: fontFamily,
-        color: Colors.black,
-        fontSize: 20,
-      ),
-      text: String.fromCharCode((model.room.location == Location.StudyHostel
+    TextPainter(
+        text: TextSpan(
+          style: TextStyle(
+            fontFamily: fontFamily,
+            color: Colors.black,
+            fontSize: iconSize * 2,
+          ),
+          text: String.fromCharCode(model.lesson.iconCodePoint),
+        ),
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr
+    )..layout(minWidth: iconSize * 2)..paint(
+        canvas, circleOffset.translate(-iconSize, -(circleRadius / 3 * 2))
+    );
+
+    TextPainter(
+        text: TextSpan(
+          style: TextStyle(
+            fontFamily: fontFamily,
+            color: Colors.black,
+            fontSize: locationIconSize,
+          ),
+          text: String.fromCharCode((model.room.location == Location.StudyHostel
               ? TimetableIcons.studyHostel
               : model.room.location == Location.Hotel
-                  ? TimetableIcons.hotel
-                  : TimetableIcons.academy)
-          .codePoint),
-    );
-    final lessonTypeTextPainter = TextPainter(
-        text: lessonTypeSpan,
+              ? TimetableIcons.hotel
+              : TimetableIcons.academy)
+              .codePoint),
+        ),
         textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr);
-    lessonTypeTextPainter.layout(minWidth: iconSize * 2);
-    lessonTypeTextPainter.paint(canvas, Offset(20, 52));
+        textDirection: TextDirection.ltr
+    )..layout(minWidth: iconSize * 2)..paint(
+        canvas, Offset(20, 52)
+    );
   }
 
   @override

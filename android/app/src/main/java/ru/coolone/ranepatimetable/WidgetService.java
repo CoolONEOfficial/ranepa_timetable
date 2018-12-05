@@ -19,10 +19,11 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import java.util.Date;
+import java.util.Locale;
 
 import lombok.var;
 
-import static ru.coolone.ranepatimetable.WidgetProvider.globalwidth;
+import static ru.coolone.ranepatimetable.WidgetProvider.width;
 
 /**
  * This is the service that provides the factory to be bound to the collection service.
@@ -74,16 +75,17 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
      * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
      * @return A float value to represent px equivalent to dp depending on device density
      */
-    private float dpToPixel(float dp){
+    private float dpToPixel(float dp) {
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
-        return dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
     private static final int rectMargins = 8;
     private static final int iconSize = 29;
     private static final int circleRadius = 23;
     private static final int rectRound = 5;
+    private static final int locationIconSize = 20;
 
     private Bitmap buildItemBitmap(Context context, float w, float h) {
         float dpScale = dpToPixel(1);
@@ -95,11 +97,8 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         var paint = new Paint();
         paint.setAntiAlias(true);
 
-        var circleX = dpScale * (rectMargins * 2 + 70 + circleRadius);
-        var circleY = dpScale * ((80 + rectMargins) / 2);
-
         paint.setStrokeWidth(dpScale * 2);
-        paint.setColor(0xFF9999FF);
+        paint.setColor(0x88000000);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             canvas.drawRoundRect(
                     dpScale * rectMargins, dpScale * rectMargins,
@@ -117,7 +116,9 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         paint.setColor(Color.WHITE);
         var first = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_FIRST)) != 0;
         var last = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_LAST)) != 0;
-        if(!(first && last)) {
+        var circleX = dpScale * (rectMargins * 2 + 70 + circleRadius);
+        var circleY = dpScale * ((80 + rectMargins) / 2);
+        if (!(first && last)) {
             if (first || !last) {
                 canvas.drawLine(
                         circleX, circleY + dpScale * (circleRadius / 2),
@@ -154,7 +155,6 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         paint.reset();
         paint.setColor(Color.BLACK);
         paint.setStrokeWidth(0);
-        paint.setTextSize(dpScale * iconSize);
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setAntiAlias(true);
         paint.setSubpixelText(true);
@@ -164,6 +164,8 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                         "fonts/TimetableIcons.ttf"
                 )
         );
+
+        paint.setTextSize(dpScale * iconSize);
         canvas.drawText(
                 String.valueOf(
                         Character.toChars(
@@ -173,22 +175,40 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                                                         + Timeline.LessonModel.COLUMN_LESSON_ICON)
                                 )
                         )
-                ), circleX, circleY + dpScale * 10, paint);
+                ), circleX, circleY + dpScale * 10, paint
+        );
 
+        var roomLocation = Timeline.Location.values()[cursor.getInt(cursor.getColumnIndex(
+                Timeline.PREFIX_ROOM
+                        + Timeline.RoomModel.COLUMN_ROOM_LOCATION)
+        )];
+
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(dpScale * locationIconSize);
+        canvas.drawText(
+                String.valueOf(
+                        Character.toChars(roomLocation.iconCodePoint)
+                ), dpScale * 37, dpScale * 70, paint
+        );
 
         return bitmap;
+    }
+
+    Locale getCurrentLocale() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return context.getResources().getConfiguration().getLocales().get(0);
+        } else {
+            //noinspection deprecation
+            return context.getResources().getConfiguration().locale;
+        }
     }
 
     @Override
     public RemoteViews getViewAt(int position) {
         // Get the data for this position from the content provider
         if (cursor.moveToPosition(position)) {
-            var date = new Date(cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_DATE)));
-            var lesson = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_LESSON + Timeline.LessonModel.COLUMN_LESSON_TITLE));
-            var teacher =
-                    cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_SURNAME))
-            + " " + cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_NAME))
-            + " " + cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_PATRONYMIC));
+            var date = new Date(cursor.getLong(cursor.getColumnIndex(Timeline.COLUMN_DATE)));
+
             var start = new Timeline.TimeOfDayModel(
                     cursor.getInt(cursor.getColumnIndex(Timeline.PREFIX_START + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR)),
                     cursor.getInt(cursor.getColumnIndex(Timeline.PREFIX_START + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE))
@@ -199,15 +219,31 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             );
 
             var rv = new RemoteViews(context.getPackageName(), R.layout.widget_item);
-            rv.setTextViewText(R.id.widget_item_lesson_title, lesson);
-            rv.setTextViewText(R.id.widget_item_teacher, teacher);
-            rv.setTextViewText(R.id.widget_item_start, start.hour + ":" + start.minute);
-            rv.setTextViewText(R.id.widget_item_finish, finish.hour + ":" + finish.minute);
+            rv.setTextViewText(R.id.widget_item_lesson_title,
+                    cursor.getString(
+                            cursor.getColumnIndex(
+                                    Timeline.PREFIX_LESSON
+                                            + Timeline.LessonModel.COLUMN_LESSON_TITLE
+                            )
+                    )
+            );
+            rv.setTextViewText(R.id.widget_item_teacher,
+                    cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_SURNAME))
+                            + " " + cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_NAME))
+                            + " " + cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_PATRONYMIC))
+            );
+            rv.setTextViewText(R.id.widget_item_start, String.format(getCurrentLocale(), "%02d:%02d", start.hour, start.minute));
+            rv.setTextViewText(R.id.widget_item_finish, String.format(getCurrentLocale(), "%02d:%02d", finish.hour, finish.minute));
+            rv.setTextViewText(R.id.widget_item_room_number, String.valueOf(
+                    cursor.getInt(cursor.getColumnIndex(
+                            Timeline.PREFIX_ROOM
+                                    + Timeline.RoomModel.COLUMN_ROOM_NUMBER)
+                    )));
             rv.setImageViewBitmap(
                     R.id.widget_item_image,
                     buildItemBitmap(
                             context,
-                            globalwidth,
+                            width,
                             80
                     )
             );

@@ -3,17 +3,17 @@ package ru.coolone.ranepatimetable;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.appwidget.AppWidgetProviderInfo;
-import android.content.ComponentName;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.ContentObserver;
+
+import java.util.Calendar;
+
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.widget.RemoteViews;
+
+import java.util.GregorianCalendar;
 
 import lombok.extern.java.Log;
 import lombok.var;
@@ -77,13 +77,51 @@ public class WidgetProvider extends AppWidgetProvider {
         super.onReceive(ctx, intent);
     }
 
-    public static int globalwidth, globalheight;
+    public static int width, height;
 
-    private RemoteViews buildLayout(Context context, int appWidgetId, int width, int height) {
+    private Calendar getTodayMidnight() {
+        var todayMidnight = Calendar.getInstance();
+        todayMidnight.set(Calendar.HOUR_OF_DAY, 0);
+        todayMidnight.set(Calendar.MINUTE, 0);
+        todayMidnight.set(Calendar.SECOND, 0);
+        todayMidnight.set(Calendar.MILLISECOND, 0);
 
+        return todayMidnight;
+    }
+
+    private Calendar getLessonFinish(Cursor cursor) {
+        var lastLesson = new GregorianCalendar();
+        lastLesson.setTimeInMillis(
+                cursor.getLong(
+                        cursor.getColumnIndex(Timeline.COLUMN_DATE)
+                )
+        ); // set day
+        lastLesson.set(Calendar.HOUR,
+                cursor.getInt(
+                        cursor.getColumnIndex(
+                                Timeline.PREFIX_START
+                                        + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR
+                        )
+                )
+        ); // set finish hour
+        lastLesson.set(Calendar.MINUTE,
+                cursor.getInt(
+                        cursor.getColumnIndex(
+                                Timeline.PREFIX_START
+                                        + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR
+                        )
+                )
+        ); // set finish minute
+        return lastLesson;
+    }
+
+    private RemoteViews buildLayout(Context context, int appWidgetId, AppWidgetManager appWidgetManager) {
+
+        // See the dimensions and
+        Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
+        width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+        height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
         log.severe("build layout: w" + width + " h" + height);
-        globalwidth = width;
-        globalheight = height;
 
         // Specify the service to provide data for the collection widget.  Note that we need to
         // embed the appWidgetId via the data otherwise it will be ignored.
@@ -92,11 +130,13 @@ public class WidgetProvider extends AppWidgetProvider {
         intent.putExtra(WidgetRemoteViewsFactory.INTENT_WIDTH, width);
         intent.putExtra(WidgetRemoteViewsFactory.INTENT_HEIGHT, height);
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+
         var rv = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-        rv.setRemoteAdapter(R.id.weather_list, intent);
+        rv.setInt(R.id.widget_root,  "setBackgroundResource", R.drawable.rounded_layout_light);
+        rv.setRemoteAdapter(R.id.timeline_list, intent);
         // Set the empty view to be displayed if the collection is empty.  It must be a sibling
         // view of the collection view.
-        rv.setEmptyView(R.id.weather_list, R.id.empty_view);
+        rv.setEmptyView(R.id.timeline_list, R.id.empty_view);
 
         // Bind a click listener template for the contents of the weather list.  Note that we
         // need to update the intent's data if we set an extra, since the extras will be
@@ -107,18 +147,59 @@ public class WidgetProvider extends AppWidgetProvider {
         onClickIntent.setData(Uri.parse(onClickIntent.toUri(Intent.URI_INTENT_SCHEME)));
         var onClickPendingIntent = PendingIntent.getBroadcast(context, 0,
                 onClickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        rv.setPendingIntentTemplate(R.id.weather_list, onClickPendingIntent);
+        rv.setPendingIntentTemplate(R.id.timeline_list, onClickPendingIntent);
 
         // Bind the click intent for the refresh button on the widget
-        var refreshIntent = new Intent(context, WidgetProvider.class);
-        refreshIntent.setAction(WidgetProvider.REFRESH_ACTION);
-        var refreshPendingIntent = PendingIntent.getBroadcast(context, 0,
-                refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        rv.setOnClickPendingIntent(R.id.refresh, refreshPendingIntent);
+//        var refreshIntent = new Intent(context, WidgetProvider.class);
+//        refreshIntent.setAction(WidgetProvider.REFRESH_ACTION);
+//        var refreshPendingIntent = PendingIntent.getBroadcast(context, 0,
+//                refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //rv.setOnClickPendingIntent(R.id.refresh, refreshPendingIntent);
 
-        // Restore the minimal header
-        rv.setTextViewText(R.id.city_name, context.getString(R.string.city_name));
+        var todayMidnight = getTodayMidnight();
+        var cursor = TimetableDatabase.getInstance(context)
+                .timetable()
+                .selectByDate(todayMidnight.getTimeInMillis());
+        if(cursor.moveToLast()) {
+            var lastLessonFinish = getLessonFinish(cursor);
 
+            int dayDescId = R.string.widget_title_today;
+
+            var findDate = Calendar.getInstance();
+            if(lastLessonFinish.compareTo(findDate) < 0) {
+                findDate.add(Calendar.DATE, 1);
+                dayDescId = R.string.widget_title_tomorrow;
+            }
+            String dayOfWeek;
+            switch (findDate.get(Calendar.DAY_OF_WEEK)) {
+                case Calendar.MONDAY:
+                    dayOfWeek = context.getString(R.string.monday);
+                    break;
+                case Calendar.TUESDAY:
+                    dayOfWeek = context.getString(R.string.tuesday);
+                    break;
+                case Calendar.WEDNESDAY:
+                    dayOfWeek = context.getString(R.string.wednesday);
+                    break;
+                case Calendar.THURSDAY:
+                    dayOfWeek = context.getString(R.string.thursday);
+                    break;
+                case Calendar.FRIDAY:
+                    dayOfWeek = context.getString(R.string.friday);
+                    break;
+                case Calendar.SATURDAY:
+                    dayOfWeek = context.getString(R.string.saturday);
+                    break;
+                default: // sunday
+                    dayOfWeek = context.getString(R.string.monday);
+                    findDate.add(Calendar.DATE, 1);
+                    dayDescId = R.string.widget_title_next_week;
+                    break;
+            }
+            rv.setTextViewText(R.id.widget_title,
+                    String.format(dayOfWeek, context.getString(dayDescId))
+            );
+        }
         return rv;
     }
 
@@ -126,15 +207,10 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // Update each of the widgets with the remote adapter
         for (int appWidgetId : appWidgetIds) {
-            // See the dimensions and
-            Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
-
-            // Get min width and height.
-            int minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
-            int minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
-
-            RemoteViews layout = buildLayout(context, appWidgetId, minWidth, minHeight);
-            appWidgetManager.updateAppWidget(appWidgetId, layout);
+            appWidgetManager.updateAppWidget(
+                    appWidgetId,
+                    buildLayout(context, appWidgetId, appWidgetManager)
+            );
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
@@ -142,13 +218,13 @@ public class WidgetProvider extends AppWidgetProvider {
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager,
                                           int appWidgetId, Bundle newOptions) {
-        // See the dimensions and
-        Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
-
-        // Get min width and height.
-        int minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
-        int minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
-
-        appWidgetManager.updateAppWidget(appWidgetId, buildLayout(context, appWidgetId, minWidth, minHeight));
+        appWidgetManager.updateAppWidget(
+                appWidgetId,
+                buildLayout(
+                        context,
+                        appWidgetId,
+                        appWidgetManager
+                )
+        );
     }
 }

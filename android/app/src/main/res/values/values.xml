@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_title">NRU RANEPA (Timetable)</string>
-    <string name="empty_view_text" translatable="false">No cities found...</string>
-    <string name="toast_format_string" translatable="false">%1$s!</string>
-    <string name="item_format_string" translatable="false">%1$s\u00B0 on %2$s</string>
-    <string name="header_format_string" translatable="false">%1$s\u00B0 in %2$s</string>
-    <string name="refresh" translatable="false">Refresh</string>
-    <string name="city_name" translatable="false">San Francisco</string>
+    <string name="widget_title_today">Today</string>
+    <string name="widget_title_tomorrow">Tomorrow</string>
+    <string name="widget_title_next_week">On next week</string>
+    <string name="monday">Monday (%s)</string>
+    <string name="tuesday">Tuesday (%s)</string>
+    <string name="wednesday">Wednesday (%s)</string>
+    <string name="thursday">Thursday (%s)</string>
+    <string name="friday">Friday (%s)</string>
+    <string name="saturday">Saturday (%s)</string>
 </resources>

@@ -9,6 +9,8 @@ import android.support.annotation.VisibleForTesting;
 @Database(entities = {Timeline.class}, version = 1, exportSchema = false)
 public abstract class TimetableDatabase extends RoomDatabase {
 
+    public static final String NAME = "TimetableDatabase";
+
     /**
      * @return The DAO for the Timeline table.
      */
@@ -32,8 +34,9 @@ public abstract class TimetableDatabase extends RoomDatabase {
                     .databaseBuilder(
                             context.getApplicationContext(),
                             TimetableDatabase.class,
-                            "ex"
+                            NAME
                     )
+                    .allowMainThreadQueries()
                     .build();
         }
         return sInstance;
@@ -46,8 +49,10 @@ public abstract class TimetableDatabase extends RoomDatabase {
      */
     @VisibleForTesting
     public static void switchToInMemory(Context context) {
-        sInstance = Room.inMemoryDatabaseBuilder(context.getApplicationContext(),
-                TimetableDatabase.class).build();
+        sInstance = Room.inMemoryDatabaseBuilder(
+                context.getApplicationContext(),
+                TimetableDatabase.class
+        ).build();
     }
 
 }
