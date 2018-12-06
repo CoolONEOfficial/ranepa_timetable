@@ -19,8 +19,7 @@ import 'package:ranepa_timetable/timeline_painter.dart';
 class TimelineElement extends StatelessWidget {
   final TimelineModel model;
 
-  TimelineElement(
-      {@required this.model});
+  TimelineElement({@required this.model});
 
   Widget _buildLine(BuildContext context) {
     return SizedBox.expand(
@@ -32,24 +31,29 @@ class TimelineElement extends StatelessWidget {
   }
 
   Widget _buildContentColumn(BuildContext context) {
+    final teacher = model.teacher.toString();
+
     return Stack(
       children: <Widget>[
         Container(
-          padding: EdgeInsets.only(top: 20.0, left: 140.0),
-          child: Text(
-            model.lesson.title,
-            style: Theme.of(context).textTheme.title,
+          padding: EdgeInsets.only(top: 20.0, left: 140.0, right: 15),
+          child: Tooltip(
+            message: model.lesson.title,
+            child: Text(
+              model.lesson.title,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.title,
+            ),
           ),
         ),
-        Padding(
+        Container(
           padding: EdgeInsets.only(top: 45.0, left: 140.0, right: 15),
-          child: new SizedBox(
-            height: 22,
-            child: new SingleChildScrollView(
-              child: new Text(
-                model.teacher.toString(),
-                style: Theme.of(context).textTheme.title,
-              ),
+          child: Tooltip(
+            message: teacher,
+            child: Text(
+              teacher,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.title,
             ),
           ),
         ),
@@ -57,6 +61,7 @@ class TimelineElement extends StatelessWidget {
           padding: EdgeInsets.only(top: 55.0, left: 50.0),
           child: Text(
             model.room.number.toString(),
+            overflow: TextOverflow.fade,
             style: Theme.of(context).textTheme.subtitle,
           ),
         ),

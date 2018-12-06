@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-12-01T01:13:09.499661",
+  "@@last_modified": "2018-12-06T19:37:15.404026",
   "title": "NRU RANEPA (Timetable)",
   "@title": {
     "description": "The application title",
@@ -178,6 +178,21 @@
   },
   "saturday": "Sa",
   "@saturday": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "timetable": "Timetable",
+  "@timetable": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "preferences": "Preferences",
+  "@preferences": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "close": "Close",
+  "@close": {
     "type": "text",
     "placeholders": {}
   }

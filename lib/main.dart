@@ -1,74 +1,70 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:ranepa_timetable/drawer_timetable.dart';
 import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/drawer_settings.dart';
+import 'package:ranepa_timetable/drawer_preferences.dart';
 
 class MainWidget extends StatelessWidget {
   static const ROUTE = "timetable";
   BuildContext _context;
+  Drawer drawer;
+  DrawerTimetable drawerTimetable;
 
-  void _drawerTap(Widget w) {
-    Navigator.of(_context).pop();
-    Navigator.push(
-        _context,
-        new PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
-          return w;
-        }, transitionsBuilder:
-            (_, Animation<double> animation, __, Widget child) {
-          return new FadeTransition(opacity: animation, child: child);
-        }));
-  }
-
-  Widget buildDrawer() {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          DrawerHeader(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.end,
-            ),
-            decoration: BoxDecoration(
-                color: Theme.of(_context).accentColor,
-                image: DecorationImage(
-                    image: AssetImage('assets/images/icon-foreground.png'))),
-          ),
-          ListTile(
-            leading: Icon(Icons.line_style),
-            title: Text('Timetable'),
-            onTap: () => _drawerTap(new MainWidget()),
-          ),
-          ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Settings'),
-            onTap: () => _drawerTap(new DrawerSettings()),
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.close),
-            title: Text('Close'),
-            onTap: () {
-              Navigator.pop(_context);
-            },
-          ),
-        ],
-      ),
-    );
+  void _drawerTap(String route) {
+    Navigator.popAndPushNamed(_context, route);
   }
 
   @override
   Widget build(BuildContext context) {
     this._context = context;
+
+    if (drawer == null)
+      drawer = Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+              ),
+              decoration: BoxDecoration(
+                  color: Theme.of(_context).accentColor,
+                  image: DecorationImage(
+                      image: AssetImage('assets/images/icon-foreground.png'))),
+            ),
+            ListTile(
+              leading: Icon(Icons.line_style),
+              title: Text(AppLocalizations.of(context).timetable),
+              onTap: () => Navigator.pop(_context),
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text(AppLocalizations.of(context).preferences),
+              onTap: () => _drawerTap(DrawerPreferences.ROUTE),
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.close),
+              title: Text(AppLocalizations.of(context).close),
+              onTap: () => SystemNavigator.pop(),
+            ),
+          ],
+        ),
+      );
+
+    if (drawerTimetable == null) drawerTimetable = DrawerTimetable(drawer);
+
     return Scaffold(
-      drawer: buildDrawer(),
+      body: drawerTimetable,
+      drawer: drawer,
     );
   }
-
 }
 
 Future main() async {
@@ -87,5 +83,8 @@ Future main() async {
     title: 'Flutter View',
     theme: ThemeData.light(),
     home: MainWidget(),
+    routes: <String, WidgetBuilder>{
+      DrawerPreferences.ROUTE: (BuildContext context) => DrawerPreferences()
+    },
   ));
 }

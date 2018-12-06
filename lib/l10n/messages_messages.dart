@@ -22,6 +22,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static _notInlinedMessages(_) => <String, Function> {
     "biology" : MessageLookupByLibrary.simpleMessage("Biology"),
     "chemistry" : MessageLookupByLibrary.simpleMessage("Chemistry"),
+    "close" : MessageLookupByLibrary.simpleMessage("Close"),
     "computerArchitecture" : MessageLookupByLibrary.simpleMessage("Сomputer Architecture"),
     "computerGraphic" : MessageLookupByLibrary.simpleMessage("Computer Graphic"),
     "databases" : MessageLookupByLibrary.simpleMessage("Databases"),
@@ -45,6 +46,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "philosophy" : MessageLookupByLibrary.simpleMessage("Philosophy"),
     "physicalCulture" : MessageLookupByLibrary.simpleMessage("Physical Culture"),
     "physics" : MessageLookupByLibrary.simpleMessage("Physics"),
+    "preferences" : MessageLookupByLibrary.simpleMessage("Preferences"),
     "projectDevelopment" : MessageLookupByLibrary.simpleMessage("Project Development"),
     "saturday" : MessageLookupByLibrary.simpleMessage("Sa"),
     "searchResults" : MessageLookupByLibrary.simpleMessage("Web search results"),
@@ -53,6 +55,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "softwareDevelopment" : MessageLookupByLibrary.simpleMessage("Software Development"),
     "speechCulture" : MessageLookupByLibrary.simpleMessage("Culture of Speech"),
     "thursday" : MessageLookupByLibrary.simpleMessage("Th"),
+    "timetable" : MessageLookupByLibrary.simpleMessage("Timetable"),
     "title" : MessageLookupByLibrary.simpleMessage("NRU RANEPA (Timetable)"),
     "tuesday" : MessageLookupByLibrary.simpleMessage("Tu"),
     "wednesday" : MessageLookupByLibrary.simpleMessage("We")

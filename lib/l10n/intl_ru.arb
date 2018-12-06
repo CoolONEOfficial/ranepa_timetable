@@ -181,5 +181,20 @@
   "@saturday": {
     "type": "text",
     "placeholders": {}
+  },
+  "timetable": "Расписание",
+  "@timetable": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "preferences": "Настройки",
+  "@preferences": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "close": "Выход",
+  "@close": {
+    "type": "text",
+    "placeholders": {}
   }
 }

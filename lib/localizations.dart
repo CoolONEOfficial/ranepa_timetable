@@ -200,6 +200,21 @@ class AppLocalizations {
     return Intl.message('Sa',
         name: 'saturday');
   }
+
+  String get timetable{
+    return Intl.message('Timetable',
+        name: 'timetable');
+  }
+
+  String get preferences{
+    return Intl.message('Preferences',
+        name: 'preferences');
+  }
+
+  String get close{
+    return Intl.message('Close',
+        name: 'close');
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

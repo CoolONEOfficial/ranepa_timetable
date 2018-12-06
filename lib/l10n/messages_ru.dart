@@ -22,6 +22,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static _notInlinedMessages(_) => <String, Function> {
     "biology" : MessageLookupByLibrary.simpleMessage("Биология"),
     "chemistry" : MessageLookupByLibrary.simpleMessage("Химия"),
+    "close" : MessageLookupByLibrary.simpleMessage("Выход"),
     "computerArchitecture" : MessageLookupByLibrary.simpleMessage("Архитектура ПК"),
     "computerGraphic" : MessageLookupByLibrary.simpleMessage("Компьютерная графика"),
     "databases" : MessageLookupByLibrary.simpleMessage("Базы данных"),
@@ -45,6 +46,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "philosophy" : MessageLookupByLibrary.simpleMessage("Философия"),
     "physicalCulture" : MessageLookupByLibrary.simpleMessage("Физ-ра"),
     "physics" : MessageLookupByLibrary.simpleMessage("Физика"),
+    "preferences" : MessageLookupByLibrary.simpleMessage("Настройки"),
     "projectDevelopment" : MessageLookupByLibrary.simpleMessage("Проектная разработка"),
     "saturday" : MessageLookupByLibrary.simpleMessage("Сб"),
     "searchResults" : MessageLookupByLibrary.simpleMessage("Результаты веб-поиска"),
@@ -53,6 +55,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "softwareDevelopment" : MessageLookupByLibrary.simpleMessage("Разработка ПО"),
     "speechCulture" : MessageLookupByLibrary.simpleMessage("Культура речи"),
     "thursday" : MessageLookupByLibrary.simpleMessage("Чт"),
+    "timetable" : MessageLookupByLibrary.simpleMessage("Расписание"),
     "title" : MessageLookupByLibrary.simpleMessage("НИУ РАНХиГС (Расписание)"),
     "tuesday" : MessageLookupByLibrary.simpleMessage("Вт"),
     "wednesday" : MessageLookupByLibrary.simpleMessage("Ср")
