@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-12-06T19:37:15.404026",
+  "@@last_modified": "2018-12-07T00:59:55.277255",
   "title": "NRU RANEPA (Timetable)",
   "@title": {
     "description": "The application title",
@@ -193,6 +193,66 @@
   },
   "close": "Close",
   "@close": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeTitle": "Theme",
+  "@themeTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeDescription": "Color scheme of the application and widget",
+  "@themeDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "groupTitle": "Change group/teacher",
+  "@groupTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "groupDescription": "Change the default timetable for the group/teacher",
+  "@groupDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "widgetTranslucentTitle": "Widget translucency",
+  "@widgetTranslucentTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "widgetTranslucentDescription": "Translucency android widget on home screen",
+  "@widgetTranslucentDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeDark": "Dark",
+  "@themeDark": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeDarkRed": "Dark Red",
+  "@themeDarkRed": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeBlack": "Black",
+  "@themeBlack": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeBlackRed": "Black Red",
+  "@themeBlackRed": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeLight": "Light",
+  "@themeLight": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeLightRed": "Light Red",
+  "@themeLightRed": {
     "type": "text",
     "placeholders": {}
   }

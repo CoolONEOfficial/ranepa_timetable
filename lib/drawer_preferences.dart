@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/main.dart';
+import 'package:ranepa_timetable/themes.dart';
 
 class DrawerPreferences extends StatelessWidget {
   static const ROUTE = "/preferences";
@@ -55,7 +57,7 @@ class DrawerPreferences extends StatelessWidget {
             context,
             title: "Title",
             description: "Description",
-            onPressed: () {},
+            onPressed: () => bloc.add(Themes(context).themes[ThemeIds.DARK_RED.index]),
           ),
           Divider(
             height: 0,

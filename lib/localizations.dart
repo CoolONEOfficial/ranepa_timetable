@@ -8,7 +8,7 @@ import 'l10n/messages_all.dart';
 class AppLocalizations {
   static Future<AppLocalizations> load(Locale locale) {
     final String name =
-    locale.countryCode == null ? locale.languageCode : locale.toString();
+        locale.countryCode == null ? locale.languageCode : locale.toString();
     final String localeName = Intl.canonicalizedLocale(name);
 
     return initializeMessages(localeName).then((bool _) {
@@ -22,198 +22,361 @@ class AppLocalizations {
   }
 
   String get title {
-    return Intl.message('NRU RANEPA (Timetable)',
-        name: 'title', desc: 'The application title');
+    return Intl.message(
+      'NRU RANEPA (Timetable)',
+      name: 'title',
+      desc: 'The application title',
+    );
   }
 
   String get searchTip {
-    return Intl.message('Search',
-        name: 'searchTip');
+    return Intl.message(
+      'Search',
+      name: 'searchTip',
+    );
   }
 
   String get searchResults {
-    return Intl.message('Web search results',
-        name: 'searchResults');
+    return Intl.message(
+      'Web search results',
+      name: 'searchResults',
+    );
   }
 
-  String get groupEconomics{
-    return Intl.message('Economics',
-        name: 'groupEconomics');
+  String get groupEconomics {
+    return Intl.message(
+      'Economics',
+      name: 'groupEconomics',
+    );
   }
 
-  String get groupInformatics{
-    return Intl.message('Informatics',
-        name: 'groupInformatics');
+  String get groupInformatics {
+    return Intl.message(
+      'Informatics',
+      name: 'groupInformatics',
+    );
   }
 
-  String get loading{
-    return Intl.message('Loading',
-        name: 'loading');
+  String get loading {
+    return Intl.message(
+      'Loading',
+      name: 'loading',
+    );
   }
 
-  String get math{
-    return Intl.message('Mathematics',
-        name: 'math');
+  String get math {
+    return Intl.message(
+      'Mathematics',
+      name: 'math',
+    );
   }
 
-  String get economics{
-    return Intl.message('Economics',
-        name: 'economics');
+  String get economics {
+    return Intl.message(
+      'Economics',
+      name: 'economics',
+    );
   }
 
-  String get informationTheory{
-    return Intl.message('Information theory',
-        name: 'informationTheory');
+  String get informationTheory {
+    return Intl.message(
+      'Information theory',
+      name: 'informationTheory',
+    );
   }
 
-  String get philosophy{
-    return Intl.message('Philosophy',
-        name: 'philosophy');
+  String get philosophy {
+    return Intl.message(
+      'Philosophy',
+      name: 'philosophy',
+    );
   }
 
-  String get speechCulture{
-    return Intl.message('Culture of Speech',
-        name: 'speechCulture');
+  String get speechCulture {
+    return Intl.message(
+      'Culture of Speech',
+      name: 'speechCulture',
+    );
   }
 
-  String get physics{
-    return Intl.message('Physics',
-        name: 'physics');
+  String get physics {
+    return Intl.message(
+      'Physics',
+      name: 'physics',
+    );
   }
 
-  String get chemistry{
-    return Intl.message('Chemistry',
-        name: 'chemistry');
+  String get chemistry {
+    return Intl.message(
+      'Chemistry',
+      name: 'chemistry',
+    );
   }
 
-  String get literature{
-    return Intl.message('Literature',
-        name: 'literature');
+  String get literature {
+    return Intl.message(
+      'Literature',
+      name: 'literature',
+    );
   }
 
-  String get english{
-    return Intl.message('English',
-        name: 'english');
+  String get english {
+    return Intl.message(
+      'English',
+      name: 'english',
+    );
   }
 
-  String get informatics{
-    return Intl.message('Informatics',
-        name: 'informatics');
+  String get informatics {
+    return Intl.message(
+      'Informatics',
+      name: 'informatics',
+    );
   }
 
-  String get geography{
-    return Intl.message('Geography',
-        name: 'geography');
+  String get geography {
+    return Intl.message(
+      'Geography',
+      name: 'geography',
+    );
   }
 
-  String get history{
-    return Intl.message('History',
-        name: 'history');
+  String get history {
+    return Intl.message(
+      'History',
+      name: 'history',
+    );
   }
 
-  String get lifeSafety{
-    return Intl.message('Basics of life safety',
-        name: 'lifeSafety');
+  String get lifeSafety {
+    return Intl.message(
+      'Basics of life safety',
+      name: 'lifeSafety',
+    );
   }
 
-  String get biology{
-    return Intl.message('Biology',
-        name: 'biology');
+  String get biology {
+    return Intl.message(
+      'Biology',
+      name: 'biology',
+    );
   }
 
-  String get socialStudies{
-    return Intl.message('Social Studies',
-        name: 'socialStudies');
+  String get socialStudies {
+    return Intl.message(
+      'Social Studies',
+      name: 'socialStudies',
+    );
   }
 
-  String get physicalCulture{
-    return Intl.message('Physical Culture',
-        name: 'physicalCulture');
+  String get physicalCulture {
+    return Intl.message(
+      'Physical Culture',
+      name: 'physicalCulture',
+    );
   }
 
-  String get ethics{
-    return Intl.message('Ethics',
-        name: 'ethics');
+  String get ethics {
+    return Intl.message(
+      'Ethics',
+      name: 'ethics',
+    );
   }
 
-  String get management{
-    return Intl.message('Management',
-        name: 'management');
+  String get management {
+    return Intl.message(
+      'Management',
+      name: 'management',
+    );
   }
 
-  String get softwareDevelopment{
-    return Intl.message('Software Development',
-        name: 'softwareDevelopment');
+  String get softwareDevelopment {
+    return Intl.message(
+      'Software Development',
+      name: 'softwareDevelopment',
+    );
   }
 
-  String get computerArchitecture{
-    return Intl.message('Сomputer Architecture',
-        name: 'computerArchitecture');
+  String get computerArchitecture {
+    return Intl.message(
+      'Сomputer Architecture',
+      name: 'computerArchitecture',
+    );
   }
 
-  String get operatingSystems{
-    return Intl.message('Operating Systems',
-        name: 'operatingSystems');
+  String get operatingSystems {
+    return Intl.message(
+      'Operating Systems',
+      name: 'operatingSystems',
+    );
   }
 
-  String get computerGraphic{
-    return Intl.message('Computer Graphic',
-        name: 'computerGraphic');
+  String get computerGraphic {
+    return Intl.message(
+      'Computer Graphic',
+      name: 'computerGraphic',
+    );
   }
 
-  String get projectDevelopment{
-    return Intl.message('Project Development',
-        name: 'projectDevelopment');
+  String get projectDevelopment {
+    return Intl.message(
+      'Project Development',
+      name: 'projectDevelopment',
+    );
   }
 
-  String get databases{
-    return Intl.message('Databases',
-        name: 'databases');
+  String get databases {
+    return Intl.message(
+      'Databases',
+      name: 'databases',
+    );
   }
 
-  String get monday{
-    return Intl.message('Mo',
-        name: 'monday');
+  String get monday {
+    return Intl.message(
+      'Mo',
+      name: 'monday',
+    );
   }
 
-  String get tuesday{
-    return Intl.message('Tu',
-        name: 'tuesday');
+  String get tuesday {
+    return Intl.message(
+      'Tu',
+      name: 'tuesday',
+    );
   }
 
-  String get wednesday{
-    return Intl.message('We',
-        name: 'wednesday');
+  String get wednesday {
+    return Intl.message(
+      'We',
+      name: 'wednesday',
+    );
   }
 
-  String get thursday{
-    return Intl.message('Th',
-        name: 'thursday');
+  String get thursday {
+    return Intl.message(
+      'Th',
+      name: 'thursday',
+    );
   }
 
-  String get friday{
-    return Intl.message('Fr',
-        name: 'friday');
+  String get friday {
+    return Intl.message(
+      'Fr',
+      name: 'friday',
+    );
   }
 
-  String get saturday{
-    return Intl.message('Sa',
-        name: 'saturday');
+  String get saturday {
+    return Intl.message(
+      'Sa',
+      name: 'saturday',
+    );
   }
 
-  String get timetable{
-    return Intl.message('Timetable',
-        name: 'timetable');
+  String get timetable {
+    return Intl.message(
+      'Timetable',
+      name: 'timetable',
+    );
   }
 
-  String get preferences{
-    return Intl.message('Preferences',
-        name: 'preferences');
+  String get preferences {
+    return Intl.message(
+      'Preferences',
+      name: 'preferences',
+    );
   }
 
-  String get close{
-    return Intl.message('Close',
-        name: 'close');
+  String get close {
+    return Intl.message(
+      'Close',
+      name: 'close',
+    );
+  }
+
+  String get themeTitle {
+    return Intl.message(
+      'Theme',
+      name: 'themeTitle',
+    );
+  }
+
+  String get themeDescription {
+    return Intl.message(
+      'Color scheme of the application and widget',
+      name: 'themeDescription',
+    );
+  }
+
+  String get groupTitle {
+    return Intl.message(
+      'Change group/teacher',
+      name: 'groupTitle',
+    );
+  }
+
+  String get groupDescription {
+    return Intl.message(
+      'Change the default timetable for the group/teacher',
+      name: 'groupDescription',
+    );
+  }
+
+  String get widgetTranslucentTitle {
+    return Intl.message(
+      'Widget translucency',
+      name: 'widgetTranslucentTitle',
+    );
+  }
+
+  String get widgetTranslucentDescription {
+    return Intl.message(
+      'Translucency android widget on home screen',
+      name: 'widgetTranslucentDescription',
+    );
+  }
+
+  String get themeDark {
+    return Intl.message(
+      'Dark',
+      name: 'themeDark',
+    );
+  }
+
+  String get themeDarkRed {
+    return Intl.message(
+      'Dark Red',
+      name: 'themeDarkRed',
+    );
+  }
+
+  String get themeBlack {
+    return Intl.message(
+      'Black',
+      name: 'themeBlack',
+    );
+  }
+
+  String get themeBlackRed {
+    return Intl.message(
+      'Black Red',
+      name: 'themeBlackRed',
+    );
+  }
+
+  String get themeLight {
+    return Intl.message(
+      'Light',
+      name: 'themeLight',
+    );
+  }
+
+  String get themeLightRed {
+    return Intl.message(
+      'Light Red',
+      name: 'themeLightRed',
+    );
   }
 }
 

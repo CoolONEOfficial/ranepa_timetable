@@ -9,8 +9,8 @@
   },
   "searchTip": "Поиск",
   "@searchTip": {
-   "type": "text",
-   "placeholders": {}
+    "type": "text",
+    "placeholders": {}
   },
   "searchResults": "Результаты веб-поиска",
   "@searchResults": {
@@ -194,6 +194,66 @@
   },
   "close": "Выход",
   "@close": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeTitle": "Тема",
+  "@themeTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeDescription": "Цветовая схема приложения и виджета",
+  "@themeDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "groupTitle": "Изменить группу/преподавателя",
+  "@groupTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "groupDescription": "Изменить группу/преподавателя для которой(-го) при запуске загружается расписание",
+  "@groupDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "widgetTranslucentTitle": "Полупрозрачность виджета",
+  "@widgetTranslucentTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "widgetTranslucentDescription": "Полупрозрачность виджета на домашнем экране",
+  "@widgetTranslucentDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeDark": "Темная",
+  "@themeDark": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeDarkRed": "Темно-красная",
+  "@themeDarkRed": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeBlack": "Черная",
+  "@themeBlack": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeBlackRed": "Черно-красная",
+  "@themeBlackRed": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeLight": "Светлая",
+  "@themeLight": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeLightRed": "Светло-красная",
+  "@themeLightRed": {
     "type": "text",
     "placeholders": {}
   }

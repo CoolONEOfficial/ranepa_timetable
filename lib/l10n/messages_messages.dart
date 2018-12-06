@@ -31,8 +31,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "ethics" : MessageLookupByLibrary.simpleMessage("Ethics"),
     "friday" : MessageLookupByLibrary.simpleMessage("Fr"),
     "geography" : MessageLookupByLibrary.simpleMessage("Geography"),
+    "groupDescription" : MessageLookupByLibrary.simpleMessage("Change the default timetable for the group/teacher"),
     "groupEconomics" : MessageLookupByLibrary.simpleMessage("Economics"),
     "groupInformatics" : MessageLookupByLibrary.simpleMessage("Informatics"),
+    "groupTitle" : MessageLookupByLibrary.simpleMessage("Change group/teacher"),
     "history" : MessageLookupByLibrary.simpleMessage("History"),
     "informatics" : MessageLookupByLibrary.simpleMessage("Informatics"),
     "informationTheory" : MessageLookupByLibrary.simpleMessage("Information theory"),
@@ -54,10 +56,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "socialStudies" : MessageLookupByLibrary.simpleMessage("Social Studies"),
     "softwareDevelopment" : MessageLookupByLibrary.simpleMessage("Software Development"),
     "speechCulture" : MessageLookupByLibrary.simpleMessage("Culture of Speech"),
+    "themeBlack" : MessageLookupByLibrary.simpleMessage("Black"),
+    "themeBlackRed" : MessageLookupByLibrary.simpleMessage("Black Red"),
+    "themeDark" : MessageLookupByLibrary.simpleMessage("Dark"),
+    "themeDarkRed" : MessageLookupByLibrary.simpleMessage("Dark Red"),
+    "themeDescription" : MessageLookupByLibrary.simpleMessage("Color scheme of the application and widget"),
+    "themeLight" : MessageLookupByLibrary.simpleMessage("Light"),
+    "themeLightRed" : MessageLookupByLibrary.simpleMessage("Light Red"),
+    "themeTitle" : MessageLookupByLibrary.simpleMessage("Theme"),
     "thursday" : MessageLookupByLibrary.simpleMessage("Th"),
     "timetable" : MessageLookupByLibrary.simpleMessage("Timetable"),
     "title" : MessageLookupByLibrary.simpleMessage("NRU RANEPA (Timetable)"),
     "tuesday" : MessageLookupByLibrary.simpleMessage("Tu"),
-    "wednesday" : MessageLookupByLibrary.simpleMessage("We")
+    "wednesday" : MessageLookupByLibrary.simpleMessage("We"),
+    "widgetTranslucentDescription" : MessageLookupByLibrary.simpleMessage("Translucency android widget on home screen"),
+    "widgetTranslucentTitle" : MessageLookupByLibrary.simpleMessage("Widget translucency")
   };
 }

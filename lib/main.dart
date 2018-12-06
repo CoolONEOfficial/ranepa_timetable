@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ranepa_timetable/drawer_timetable.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/drawer_preferences.dart';
+import 'package:ranepa_timetable/themes.dart';
 
 class MainWidget extends StatelessWidget {
   static const ROUTE = "timetable";
@@ -67,24 +68,50 @@ class MainWidget extends StatelessWidget {
   }
 }
 
+class BaseWidget extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _BaseWidgetState();
+  }
+}
+
+class _BaseWidgetState extends State<BaseWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<ThemeModel>(
+      stream: bloc.stream,
+      initialData: new ThemeModel("", ThemeData.dark()),
+      builder: (context, snapshot) {
+        setState(() {
+
+        });
+        return MaterialApp(
+          localizationsDelegates: [
+            AppLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate
+          ],
+          supportedLocales: [
+            const Locale('en', 'US'), // English
+            const Locale('ru', 'RU'), // Русский
+          ],
+          onGenerateTitle: (BuildContext context) =>
+              AppLocalizations.of(context).title,
+          title: 'Flutter View',
+          theme: ThemeData.light(),
+          home: MainWidget(),
+          routes: <String, WidgetBuilder>{
+            DrawerPreferences.ROUTE: (BuildContext context) =>
+                DrawerPreferences()
+          },
+        );
+      },
+    );
+  }
+}
+
+final bloc = StreamController<ThemeModel>();
+
 Future main() async {
-  return runApp(MaterialApp(
-    localizationsDelegates: [
-      AppLocalizationsDelegate(),
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate
-    ],
-    supportedLocales: [
-      const Locale('en', 'US'), // English
-      const Locale('ru', 'RU'), // Русский
-    ],
-    onGenerateTitle: (BuildContext context) =>
-        AppLocalizations.of(context).title,
-    title: 'Flutter View',
-    theme: ThemeData.light(),
-    home: MainWidget(),
-    routes: <String, WidgetBuilder>{
-      DrawerPreferences.ROUTE: (BuildContext context) => DrawerPreferences()
-    },
-  ));
+  return runApp(BaseWidget());
 }
