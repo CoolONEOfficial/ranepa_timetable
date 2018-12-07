@@ -121,23 +121,7 @@ class DrawerTimetable extends StatelessWidget {
                       break;
                     case ConnectionState.done:
                       if (snapshot.hasError)
-                        return Container(
-                          padding: EdgeInsets.all(20.0),
-                          child: Column(
-                            children: <Widget>[
-                              Expanded(
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Icon(Icons.error, size: 140),
-                                ),
-                              ),
-                              RichText(
-                                  text: TextSpan(
-                                      text: "${snapshot.error}",
-                                      style: TextStyle(color: Colors.black)))
-                            ],
-                          ),
-                        );
+                        return WidgetTemplates.buildErrorMessage(context, snapshot.error);
 
                       final itemArr = xml
                           .parse(snapshot.data)

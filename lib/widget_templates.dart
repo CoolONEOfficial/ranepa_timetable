@@ -54,4 +54,47 @@ class WidgetTemplates {
       ),
     );
   }
+
+  static Widget buildErrorMessage(BuildContext context, String error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Icon(Icons.error, size: 140),
+          ),
+          Container(height: 5),
+          Text(
+            error,
+            style: Theme.of(context).textTheme.subtitle,
+          )
+        ],
+      ),
+    );
+  }
+
+  static Widget buildFutureBuilder<T>(
+      {@required Future future,
+      @required AsyncWidgetBuilder<T> builder,
+      Widget loading,
+      Widget error}) {
+    return FutureBuilder<T>(
+        future: future,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.active:
+            case ConnectionState.waiting:
+              return loading ?? WidgetTemplates.buildLoading(context);
+              break;
+            case ConnectionState.done:
+              if (snapshot.hasError)
+                return error ??
+                    WidgetTemplates.buildErrorMessage(context, snapshot.error);
+              return builder(context, snapshot);
+          }
+        });
+  }
 }
