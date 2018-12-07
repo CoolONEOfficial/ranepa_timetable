@@ -1,68 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:ranepa_timetable/localizations.dart';
 
-class Themes {
-  static Themes _singleton;
+class ThemeTitles {
+  static ThemeTitles _singleton;
 
-  static Color redAccent = Color(0xaf120b);
-
-  factory Themes(BuildContext context) {
-    if (_singleton == null) _singleton = Themes._internal(context);
+  factory ThemeTitles(BuildContext context) {
+    if (_singleton == null) _singleton = ThemeTitles._internal(context);
     return _singleton;
   }
 
-  Themes._internal(this.context)
-      : themes = <ThemeModel>[
-    ThemeModel(
-      // LIGHT
-      AppLocalizations
-          .of(context)
-          .themeLight,
-      ThemeData(
-        brightness: Brightness.light,
-      ),
-    ),
-    ThemeModel(
-      // LIGHT_RED
-      AppLocalizations
-          .of(context)
-          .themeLight,
-      ThemeData(
-          brightness: Brightness.light,
-          accentColor: redAccent,
-      ),
-    ),
-    ThemeModel(
-      // DARK
-      AppLocalizations
-          .of(context)
-          .themeLight,
-      ThemeData(
-        brightness: Brightness.dark,
-      ),
-    ),
-    ThemeModel(
-      // DARK_RED
-      AppLocalizations
-          .of(context)
-          .themeLight,
-      ThemeData(
-        brightness: Brightness.dark,
-        accentColor: redAccent,
-      ),
-    ),
-  ];
+  final List<String> titles;
 
-  final BuildContext context;
+  ThemeTitles._internal(BuildContext context)
+      : titles = <String>[
+          // LIGHT
+          AppLocalizations.of(context).themeLight,
 
-  List<ThemeModel> themes;
+          // LIGHT_RED
+          AppLocalizations.of(context).themeLightRed,
+
+          // DARK
+          AppLocalizations.of(context).themeDark,
+
+          // DARK_RED
+          AppLocalizations.of(context).themeDarkRed,
+        ];
+}
+
+class Themes {
+  static Themes _singleton;
+
+  static Color redAccent = Color(0xffaf120b);
+
+  factory Themes() {
+    if (_singleton == null) _singleton = Themes._internal();
+    return _singleton;
+  }
+
+  Themes._internal()
+      : themes = <ThemeData>[
+          // LIGHT
+          ThemeData(
+            brightness: Brightness.light,
+          ),
+
+          // LIGHT_RED
+          ThemeData(
+            brightness: Brightness.light,
+            accentColor: redAccent,
+            primaryColor: redAccent,
+          ),
+
+          // DARK
+          ThemeData(
+            brightness: Brightness.dark,
+          ),
+
+          // DARK_RED
+          ThemeData(
+            brightness: Brightness.dark,
+            accentColor: redAccent,
+            primaryColor: redAccent,
+          ),
+        ];
+
+  final themes;
 }
 
 enum ThemeIds { LIGHT, LIGHT_RED, DARK, DARK_RED }
-
-class ThemeModel {
-  final String title;
-  final ThemeData data;
-
-  ThemeModel(this.title, this.data);
-}

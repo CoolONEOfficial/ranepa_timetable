@@ -17,6 +17,7 @@ dependencies:
   xml: ^3.2.3
   shared_preferences: ^0.4.3
   json_serializable: ^2.0.0
+  numberpicker: ^0.1.7
 
 dev_dependencies:
   flutter_test:

@@ -103,8 +103,8 @@ class LessonModel {
     else if (str.contains("баз") && str.contains("данн"))
       return types.databases;
     else
-      model = LessonModel(
-          parseLessonTitle(str), Icons.book.codePoint); // Use original title
+      model = LessonModel(parseLessonTitle(str),
+          TimetableIcons.unknownLesson.codePoint); // Use original title
 
     model.type = parseLessonType(str);
 

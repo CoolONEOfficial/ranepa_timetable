@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:ranepa_timetable/drawer_preferences.dart';
 import 'package:ranepa_timetable/drawer_timetable.dart';
 import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/drawer_preferences.dart';
 import 'package:ranepa_timetable/themes.dart';
 
 class MainWidget extends StatelessWidget {
@@ -14,6 +14,10 @@ class MainWidget extends StatelessWidget {
   BuildContext _context;
   Drawer drawer;
   DrawerTimetable drawerTimetable;
+
+  final int darkThemeEnabled;
+
+  MainWidget({Key key, this.darkThemeEnabled}) : super(key: key);
 
   void _drawerTap(String route) {
     Navigator.popAndPushNamed(_context, route);
@@ -59,7 +63,8 @@ class MainWidget extends StatelessWidget {
         ),
       );
 
-    if (drawerTimetable == null) drawerTimetable = DrawerTimetable(drawer);
+    if (drawerTimetable == null)
+      drawerTimetable = DrawerTimetable(drawer: drawer);
 
     return Scaffold(
       body: drawerTimetable,
@@ -68,49 +73,39 @@ class MainWidget extends StatelessWidget {
   }
 }
 
-class BaseWidget extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _BaseWidgetState();
-  }
-}
-
-class _BaseWidgetState extends State<BaseWidget> {
+class BaseWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<ThemeModel>(
-      stream: bloc.stream,
-      initialData: new ThemeModel("", ThemeData.dark()),
-      builder: (context, snapshot) {
-        setState(() {
-
-        });
-        return MaterialApp(
-          localizationsDelegates: [
-            AppLocalizationsDelegate(),
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate
-          ],
-          supportedLocales: [
-            const Locale('en', 'US'), // English
-            const Locale('ru', 'RU'), // Русский
-          ],
-          onGenerateTitle: (BuildContext context) =>
-              AppLocalizations.of(context).title,
-          title: 'Flutter View',
-          theme: ThemeData.light(),
-          home: MainWidget(),
-          routes: <String, WidgetBuilder>{
-            DrawerPreferences.ROUTE: (BuildContext context) =>
-                DrawerPreferences()
-          },
-        );
-      },
+    return StreamBuilder(
+      stream: themeIdBloc.stream,
+      initialData: 0,
+      builder: (context, snapshot) => MaterialApp(
+            localizationsDelegates: [
+              AppLocalizationsDelegate(),
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate
+            ],
+            supportedLocales: [
+              const Locale('en', 'US'), // English
+              const Locale('ru', 'RU'), // Русский
+            ],
+            onGenerateTitle: (BuildContext context) =>
+                AppLocalizations.of(context).title,
+            title: 'Flutter View',
+            theme: Themes().themes[snapshot.data],
+            home: MainWidget(
+              darkThemeEnabled: snapshot.data,
+            ),
+            routes: <String, WidgetBuilder>{
+              DrawerPreferences.ROUTE: (BuildContext context) =>
+                  DrawerPreferences()
+            },
+          ),
     );
   }
 }
 
-final bloc = StreamController<ThemeModel>();
+final themeIdBloc = StreamController<int>.broadcast();
 
 Future main() async {
   return runApp(BaseWidget());

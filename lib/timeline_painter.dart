@@ -31,17 +31,13 @@ class TimelinePainter extends CustomPainter {
   }
 
   void _centerElementPaint(Canvas canvas, Size size) {
-    const rectMargins = 8.0;
-    const iconSize = 15.0;
-    const circleRadius = 23.0;
-    const locationIconSize = 20.0;
-    const lineWidth = 2.0;
+    const rectMargins = 8.0,
+        iconSize = 15.0,
+        circleRadius = 23.0,
+        circleMargin = 5.0,
+        locationIconSize = 20.0,
+        lineWidth = 2.0;
 
-    Paint lineStroke = Paint()
-      ..color = Theme.of(context).accentColor
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = lineWidth
-      ..style = PaintingStyle.stroke;
     canvas.drawRRect(
         RRect.fromLTRBR(rectMargins, rectMargins, size.width - rectMargins,
             size.height, Radius.circular(5)),
@@ -51,17 +47,28 @@ class TimelinePainter extends CustomPainter {
           ..strokeWidth = lineWidth
           ..style = PaintingStyle.fill);
 
-    final circleOffset = Offset(
+    var circleOffset = Offset(
         rectMargins * 2 + circleRadius + 70, (size.height + rectMargins) / 2);
+
+    Paint lineStroke = Paint()
+      ..color = Theme.of(context).accentColor
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = lineWidth;
 
     if (!(model.first && model.last)) {
       if (model.first || !model.last) {
-        canvas.drawLine(circleOffset.translate(0.0, circleRadius / 2),
-            Offset(circleOffset.dx, size.height), lineStroke);
+        circleOffset = circleOffset.translate(0, -circleMargin);
+        canvas.drawRect(
+            Rect.fromLTRB(circleOffset.dx - circleRadius, circleOffset.dy,
+                circleOffset.dx + circleRadius, size.height),
+            lineStroke);
       }
       if (model.last || !model.first) {
-        canvas.drawLine(circleOffset.translate(0.0, -circleRadius / 2),
-            Offset(circleOffset.dx, 0), lineStroke);
+        circleOffset = circleOffset.translate(0, circleMargin);
+        canvas.drawRect(
+            Rect.fromLTRB(circleOffset.dx - circleRadius, 0,
+                circleOffset.dx + circleRadius, circleOffset.dy),
+            lineStroke);
       }
     }
 
@@ -69,52 +76,50 @@ class TimelinePainter extends CustomPainter {
         circleOffset,
         circleRadius,
         Paint()
-          ..color = Colors.white
-          ..style = PaintingStyle.fill);
-    canvas.drawCircle(
-        circleOffset,
-        circleRadius,
-        Paint()
           ..color = Theme.of(context).accentColor
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = lineWidth);
+          ..style = PaintingStyle.fill);
 
     final fontFamily = TimetableIcons.databases.fontFamily;
 
     TextPainter(
-        text: TextSpan(
-          style: TextStyle(
+      text: TextSpan(
+        style: TextStyle(
             fontFamily: fontFamily,
-            color: Colors.black,
-            fontSize: iconSize * 2,
-          ),
-          text: String.fromCharCode(model.lesson.iconCodePoint),
-        ),
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr
-    )..layout(minWidth: iconSize * 2)..paint(
-        canvas, circleOffset.translate(-iconSize, -(circleRadius / 3 * 2))
-    );
+            color: Theme.of(context).accentTextTheme.body1.color,
+            fontSize: iconSize * 2),
+        text: String.fromCharCode(model.lesson.iconCodePoint),
+      ),
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    )
+      ..layout(minWidth: iconSize * 2)
+      ..paint(
+          canvas,
+          circleOffset.translate(
+              -iconSize,
+              -(circleRadius / 3 * 2) +
+                  (model.last
+                      ? -circleMargin
+                      : (model.first ? circleMargin : 0))));
 
     TextPainter(
         text: TextSpan(
           style: TextStyle(
             fontFamily: fontFamily,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.body1.color,
             fontSize: locationIconSize,
           ),
           text: String.fromCharCode((model.room.location == Location.StudyHostel
-              ? TimetableIcons.studyHostel
-              : model.room.location == Location.Hotel
-              ? TimetableIcons.hotel
-              : TimetableIcons.academy)
+                  ? TimetableIcons.studyHostel
+                  : model.room.location == Location.Hotel
+                      ? TimetableIcons.hotel
+                      : TimetableIcons.academy)
               .codePoint),
         ),
         textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr
-    )..layout(minWidth: iconSize * 2)..paint(
-        canvas, Offset(20, 52)
-    );
+        textDirection: TextDirection.ltr)
+      ..layout(minWidth: iconSize * 2)
+      ..paint(canvas, Offset(20, 52));
   }
 
   @override
