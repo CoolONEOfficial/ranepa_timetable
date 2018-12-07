@@ -30,7 +30,7 @@ class ThemeTitles {
 class Themes {
   static Themes _singleton;
 
-  static Color redAccent = Color(0xffaf120b);
+  static MaterialColor redAccent = Colors.red;
 
   factory Themes() {
     if (_singleton == null) _singleton = Themes._internal();
@@ -47,8 +47,7 @@ class Themes {
           // LIGHT_RED
           ThemeData(
             brightness: Brightness.light,
-            accentColor: redAccent,
-            primaryColor: redAccent,
+            primarySwatch: redAccent,
           ),
 
           // DARK
@@ -59,8 +58,10 @@ class Themes {
           // DARK_RED
           ThemeData(
             brightness: Brightness.dark,
-            accentColor: redAccent,
             primaryColor: redAccent,
+            primaryColorDark: redAccent.shade700,
+            toggleableActiveColor: redAccent.shade600,
+            accentColor: redAccent.shade500,
           ),
         ];
 

@@ -12,8 +12,6 @@ import 'package:ranepa_timetable/themes.dart';
 class MainWidget extends StatelessWidget {
   static const ROUTE = "timetable";
   BuildContext _context;
-  Drawer drawer;
-  DrawerTimetable drawerTimetable;
 
   final int darkThemeEnabled;
 
@@ -27,8 +25,7 @@ class MainWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     this._context = context;
 
-    if (drawer == null)
-      drawer = Drawer(
+    final drawer = Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
@@ -39,7 +36,7 @@ class MainWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
               ),
               decoration: BoxDecoration(
-                  color: Theme.of(_context).accentColor,
+                  color: Theme.of(_context).primaryColor,
                   image: DecorationImage(
                       image: AssetImage('assets/images/icon-foreground.png'))),
             ),
@@ -63,11 +60,8 @@ class MainWidget extends StatelessWidget {
         ),
       );
 
-    if (drawerTimetable == null)
-      drawerTimetable = DrawerTimetable(drawer: drawer);
-
     return Scaffold(
-      body: drawerTimetable,
+      body: DrawerTimetable(drawer: drawer),
       drawer: drawer,
     );
   }
