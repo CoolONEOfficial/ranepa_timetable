@@ -187,8 +187,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "preferences": "Настройки",
-  "@preferences": {
+  "prefs": "Настройки",
+  "@prefs": {
     "type": "text",
     "placeholders": {}
   },

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ranepa_timetable/drawer_prefs.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart' as xml;
 
 class SearchItemType {
@@ -10,33 +12,52 @@ class SearchItemType {
   const SearchItemType(this.icon);
 }
 
-class SearchItemTypes {
-  static const UNKNOWN = const SearchItemType(Icons.insert_drive_file);
-  static const TEACHER = const SearchItemType(Icons.person);
-  static const GROUP = const SearchItemType(Icons.group);
-}
+enum SearchItemTypeId { UNKNOWN, TEACHER, GROUP }
+
+const SEARCH_ITEM_TYPES = const <SearchItemType>[
+  const SearchItemType(Icons.insert_drive_file), // UNKNOWN
+  const SearchItemType(Icons.person), // TEACHER
+  const SearchItemType(Icons.group) // GROUP
+];
 
 abstract class SearchItemBase {
   const SearchItemBase();
 }
 
 class SearchItem extends SearchItemBase {
-  const SearchItem(this.type, this.id, this.title);
+  const SearchItem(this.typeId, this.id, this.title);
 
-  final SearchItemType type;
+  static const PREFERENCES_TYPE_ID = "type";
+  static const PREFERENCES_ID = "id";
+  static const PREFERENCES_TITLE = "title";
+
+  final SearchItemTypeId typeId;
   final int id;
   final String title;
 
   @override
-  String toString() {
-    return "Search item: type - " +
-        type.toString() +
-        ", id - " +
-        id.toString() +
-        ", title - " +
-        title +
-        ".\n";
+  String toString() =>
+      "Search item: type - " +
+      typeId.toString() +
+      ", id - " +
+      id.toString() +
+      ", title - " +
+      title +
+      ".\n";
+
+  void toPrefs(SharedPreferences prefs) {
+    prefs.setInt(
+        PrefsIds.SEARCH_ITEM_PREFIX + PREFERENCES_TYPE_ID, typeId.index);
+    prefs.setInt(PrefsIds.SEARCH_ITEM_PREFIX + PREFERENCES_ID, id);
+    prefs.setString(PrefsIds.SEARCH_ITEM_PREFIX + PREFERENCES_TITLE, title);
   }
+
+  factory SearchItem.fromPrefs(SharedPreferences prefs) => SearchItem(
+        SearchItemTypeId.values[
+            prefs.getInt(PrefsIds.SEARCH_ITEM_PREFIX + PREFERENCES_TYPE_ID)],
+        prefs.getInt(PrefsIds.SEARCH_ITEM_PREFIX + PREFERENCES_ID),
+        prefs.getString(PrefsIds.SEARCH_ITEM_PREFIX + PREFERENCES_TITLE),
+      );
 }
 
 class SearchDivider extends SearchItemBase {
@@ -59,19 +80,19 @@ class Search extends SearchDelegate<SearchItem> {
   Search(BuildContext context)
       : predefinedSuggestions = [
           SearchDivider(AppLocalizations.of(context).groupInformatics),
-          SearchItem(SearchItemTypes.GROUP, 15034, "Иб-011"),
-          SearchItem(SearchItemTypes.GROUP, 15035, "Иб-012"),
-          SearchItem(SearchItemTypes.GROUP, 15016, "Иб-021"),
-          SearchItem(SearchItemTypes.GROUP, 15024, "Иб-031"),
-          SearchItem(SearchItemTypes.GROUP, 15030, "Иб-041"),
-          SearchItem(SearchItemTypes.GROUP, 15031, "Иб-042"),
+          SearchItem(SearchItemTypeId.GROUP, 15034, "Иб-011"),
+          SearchItem(SearchItemTypeId.GROUP, 15035, "Иб-012"),
+          SearchItem(SearchItemTypeId.GROUP, 15016, "Иб-021"),
+          SearchItem(SearchItemTypeId.GROUP, 15024, "Иб-031"),
+          SearchItem(SearchItemTypeId.GROUP, 15030, "Иб-041"),
+          SearchItem(SearchItemTypeId.GROUP, 15031, "Иб-042"),
           SearchDivider(AppLocalizations.of(context).groupEconomics),
-          SearchItem(SearchItemTypes.GROUP, 15122, "Эб-011"),
-          SearchItem(SearchItemTypes.GROUP, 15123, "Эб-012"),
-          SearchItem(SearchItemTypes.GROUP, 15022, "Эб-021"),
-          SearchItem(SearchItemTypes.GROUP, 15023, "Эб-022"),
-          SearchItem(SearchItemTypes.GROUP, 15113, "Эб-031"),
-          SearchItem(SearchItemTypes.GROUP, 15112, "Эб-032"),
+          SearchItem(SearchItemTypeId.GROUP, 15122, "Эб-011"),
+          SearchItem(SearchItemTypeId.GROUP, 15123, "Эб-012"),
+          SearchItem(SearchItemTypeId.GROUP, 15022, "Эб-021"),
+          SearchItem(SearchItemTypeId.GROUP, 15023, "Эб-022"),
+          SearchItem(SearchItemTypeId.GROUP, 15113, "Эб-031"),
+          SearchItem(SearchItemTypeId.GROUP, 15112, "Эб-032"),
           SearchDivider(AppLocalizations.of(context).searchResults),
         ];
 
@@ -141,7 +162,7 @@ class Search extends SearchDelegate<SearchItem> {
                 onTap: () {
                   close(context, mSearchItem);
                 },
-                leading: Icon(mSearchItem.type.icon),
+                leading: Icon(SEARCH_ITEM_TYPES[mSearchItem.typeId.index].icon),
                 title: RichText(
                     // Recent suggestion
                     text: queryIndex == 0
@@ -216,6 +237,7 @@ class Search extends SearchDelegate<SearchItem> {
     return query.isEmpty
         ? _buildSuggestions()
         : WidgetTemplates.buildFutureBuilder(
+            context,
             future: http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
                 headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
 <?xml version="1.0" encoding="utf-8"?>
@@ -238,21 +260,21 @@ class Search extends SearchDelegate<SearchItem> {
                   .children;
 
               for (var mItem in itemArr) {
-                SearchItemType mItemType;
+                SearchItemTypeId mItemTypeId;
 
                 switch (mItem.children[SearchResponseIndexes.Type.index].text) {
                   case "Prep":
-                    mItemType = SearchItemTypes.TEACHER;
+                    mItemTypeId = SearchItemTypeId.TEACHER;
                     break;
                   case "Group":
-                    mItemType = SearchItemTypes.GROUP;
+                    mItemTypeId = SearchItemTypeId.GROUP;
                     break;
                   default:
-                    mItemType = SearchItemTypes.UNKNOWN;
+                    mItemTypeId = SearchItemTypeId.UNKNOWN;
                 }
 
                 webSuggestions.add(SearchItem(
-                  mItemType,
+                  mItemTypeId,
                   int.parse(
                       mItem.children[SearchResponseIndexes.Id.index].text),
                   mItem.children[SearchResponseIndexes.Title.index].text,

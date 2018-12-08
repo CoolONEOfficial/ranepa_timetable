@@ -68,21 +68,23 @@ class WidgetTemplates {
           Container(height: 5),
           Text(
             error,
-            style: Theme.of(context).textTheme.subtitle,
+            style: MediaQuery.of(context) != null
+                ? Theme.of(context).textTheme.subtitle
+                : DefaultTextStyle.of(context),
           )
         ],
       ),
     );
   }
 
-  static Widget buildFutureBuilder<T>(
+  static Widget buildFutureBuilder<T>(BuildContext context,
       {@required Future future,
       @required AsyncWidgetBuilder<T> builder,
       Widget loading,
       Widget error}) {
     return FutureBuilder<T>(
         future: future,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
+        builder: (BuildContext _, AsyncSnapshot snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.active:

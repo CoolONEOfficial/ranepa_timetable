@@ -14,21 +14,26 @@ import 'package:ranepa_timetable/timetable_lesson.dart';
 import 'package:ranepa_timetable/timetable_room.dart';
 import 'package:ranepa_timetable/timetable_teacher.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart' as xml;
 
 class DrawerTimetable extends StatelessWidget {
   final Drawer drawer;
 
   Search _searchDelegate;
+  final SharedPreferences prefs;
 
   static const channel = const BasicMessageChannel(
-      'ru.coolone.ranepatimetable/jsonChannel', StringCodec());
+    'ru.coolone.ranepatimetable/jsonChannel',
+    StringCodec(),
+  );
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   static const tabCount = 6;
 
-  DrawerTimetable({Key key, this.drawer}) : super(key: key);
+  DrawerTimetable({Key key, @required this.drawer, @required this.prefs})
+      : super(key: key);
 
   Future<void> channelSet([dynamic args]) async {
     var resp;
@@ -90,7 +95,8 @@ class DrawerTimetable extends StatelessWidget {
       length: tabCount,
       child: StreamBuilder<SearchItem>(
         stream: timetableIdBloc.stream,
-        initialData: _searchDelegate.predefinedSuggestions[3],
+        initialData: SearchItem.fromPrefs(prefs) ??
+            _searchDelegate.predefinedSuggestions[3],
         builder: (context, snapshot) => Scaffold(
               drawer: drawer,
               key: _scaffoldKey,
@@ -121,7 +127,8 @@ class DrawerTimetable extends StatelessWidget {
                       break;
                     case ConnectionState.done:
                       if (snapshot.hasError)
-                        return WidgetTemplates.buildErrorMessage(context, snapshot.error);
+                        return WidgetTemplates.buildErrorMessage(
+                            context, snapshot.error);
 
                       final itemArr = xml
                           .parse(snapshot.data)

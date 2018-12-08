@@ -281,10 +281,10 @@ class AppLocalizations {
     );
   }
 
-  String get preferences {
+  String get prefs {
     return Intl.message(
-      'Preferences',
-      name: 'preferences',
+      'Prefs',
+      name: 'prefs',
     );
   }
 

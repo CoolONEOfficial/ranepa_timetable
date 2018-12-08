@@ -65,7 +65,7 @@ class Themes {
           ),
         ];
 
-  final themes;
+  final List<ThemeData> themes;
 }
 
 enum ThemeIds { LIGHT, LIGHT_RED, DARK, DARK_RED }
