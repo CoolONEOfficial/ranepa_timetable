@@ -12,6 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -50,10 +51,14 @@ class TimelinePainter extends CustomPainter {
     var circleOffset = Offset(
         rectMargins * 2 + circleRadius + 70, (size.height + rectMargins) / 2);
 
-    Paint lineStroke = Paint()
+    final lineStroke = Paint()
       ..color = Theme.of(context).accentColor
       ..strokeCap = StrokeCap.round
       ..strokeWidth = lineWidth;
+
+    final arcStroke = Paint()
+      ..color = Theme.of(context).accentColor
+      ..style = PaintingStyle.fill;
 
     if (!(model.first && model.last)) {
       if (model.first || !model.last) {
@@ -70,14 +75,29 @@ class TimelinePainter extends CustomPainter {
                 circleOffset.dx + circleRadius, circleOffset.dy),
             lineStroke);
       }
-    }
 
-    canvas.drawCircle(
-        circleOffset,
-        circleRadius,
-        Paint()
-          ..color = Theme.of(context).accentColor
-          ..style = PaintingStyle.fill);
+      if (model.first) {
+        canvas.drawArc(
+            Rect.fromCircle(center: circleOffset, radius: circleRadius),
+            -pi,
+            pi,
+            false,
+            arcStroke);
+      } else if (model.last) {
+        canvas.drawArc(
+            Rect.fromCircle(center: circleOffset, radius: circleRadius),
+            -pi,
+            -pi,
+            false,
+            arcStroke);
+      }
+    } else
+      canvas.drawCircle(
+          circleOffset,
+          circleRadius,
+          Paint()
+            ..color = Theme.of(context).accentColor
+            ..style = PaintingStyle.fill);
 
     final fontFamily = TimetableIcons.databases.fontFamily;
 
