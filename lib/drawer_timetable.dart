@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:ranepa_timetable/drawer_prefs.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/timeline_model.dart';
@@ -19,8 +20,6 @@ import 'package:xml/xml.dart' as xml;
 
 class DrawerTimetable extends StatelessWidget {
   final Drawer drawer;
-
-  Search _searchDelegate;
   final SharedPreferences prefs;
 
   static const channel = const BasicMessageChannel(
@@ -28,23 +27,16 @@ class DrawerTimetable extends StatelessWidget {
     StringCodec(),
   );
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   static const tabCount = 6;
 
-  DrawerTimetable({Key key, @required this.drawer, @required this.prefs})
+  const DrawerTimetable({Key key, @required this.drawer, @required this.prefs})
       : super(key: key);
 
   Future<void> channelSet([dynamic args]) async {
     var resp;
     List<String> jsons = [];
 
-    for (var mArg in args) {
-      final str = json.encode(mArg);
-      print('Call add on: ' + str);
-
-      jsons.add(str);
-    }
+    for (var mArg in args) jsons.add(json.encode(mArg));
 
     try {
       debugPrint("Channel req.. args: ${jsons.toString()}");
@@ -58,8 +50,6 @@ class DrawerTimetable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _searchDelegate = Search(context);
-
     final now = DateTime.now();
     final today = DateTime(now.year, now.month,
         now.weekday == DateTime.sunday ? now.day + 1 : now.day); // skip sunday
@@ -95,147 +85,150 @@ class DrawerTimetable extends StatelessWidget {
       length: tabCount,
       child: StreamBuilder<SearchItem>(
         stream: timetableIdBloc.stream,
-        initialData: SearchItem.fromPrefs(prefs) ??
-            _searchDelegate.predefinedSuggestions[3],
-        builder: (context, snapshot) => Scaffold(
-              drawer: drawer,
-              key: _scaffoldKey,
-              body: FutureBuilder(
-                future: http.post(
-                    'http://test.ranhigs-nn.ru/api/WebService.asmx',
-                    headers: {'Content-Type': 'text/xml; charset=utf-8'},
-                    body: '''
+        initialData: SearchItem.fromPrefs(prefs),
+        builder: (context, ssSearchItem) {
+          final scaffoldKey = GlobalKey<ScaffoldState>();
+          final getType = ssSearchItem.data.typeId == SearchItemTypeId.GROUP
+              ? "Group"
+              : "Prep";
+          return Scaffold(
+            drawer: drawer,
+            key: scaffoldKey,
+            body: WidgetTemplates.buildFutureBuilder(
+              context,
+              future: http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
+                  headers: {'Content-Type': 'text/xml; charset=utf-8'},
+                  body: '''
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
-    <GetRaspGroup xmlns="http://tempuri.org/">
+    <GetRasp$getType xmlns="http://tempuri.org/">
       <d1>${today.toIso8601String()}</d1>
       <d2>${today.add(Duration(days: tabCount - 1)).toIso8601String()}</d2>
-      <id>${snapshot.data.id}</id>
-    </GetRaspGroup>
+      <id>${ssSearchItem.data.id}</id>
+    </GetRasp$getType>
   </soap:Body>
 </soap:Envelope>
 ''').then((response) => response.body),
-                builder: (context, snapshot) {
-                  debugPrint("started builder: " +
-                      snapshot.connectionState.toString());
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                    case ConnectionState.active:
-                    case ConnectionState.waiting:
-                      return WidgetTemplates.buildLoading(context);
-                      break;
-                    case ConnectionState.done:
-                      if (snapshot.hasError)
-                        return WidgetTemplates.buildErrorMessage(
-                            context, snapshot.error);
+              builder: (context, ssResp) {
+                final itemArr = xml
+                    .parse(ssResp.data)
+                    .children[1]
+                    .firstChild
+                    .firstChild
+                    .firstChild
+                    .children;
 
-                      final itemArr = xml
-                          .parse(snapshot.data)
-                          .children[1]
-                          .firstChild
-                          .firstChild
-                          .firstChild
-                          .children;
+                final List<List<TimelineModel>> tabsLessonsList = [];
+                for (int mTabId = 0; mTabId < tabCount; mTabId++) {
+                  tabsLessonsList.add(List<TimelineModel>());
+                }
 
-                      final List<List<TimelineModel>> tabsLessonsList = [];
-                      for (int mTabId = 0; mTabId < tabCount; mTabId++) {
-                        tabsLessonsList.add(List<TimelineModel>());
-                      }
+                var mDate = today;
+                var mTabId = 0;
+                for (var mItemId = 0; mItemId < itemArr.length; mItemId++) {
+                  var mItem = itemArr[mItemId];
 
-                      var mDate = today;
-                      var mTabId = 0;
-                      for (var mItemId = 0;
-                          mItemId < itemArr.length;
-                          mItemId++) {
-                        var mItem = itemArr[mItemId];
+                  final mItemTimeStart = mItem
+                      .children[TimetableResponseIndexes.TimeStart.index].text;
+                  final mItemTimeFinish = mItem
+                      .children[TimetableResponseIndexes.TimeFinish.index].text;
+                  final mItemDate = DateTime.parse(
+                      mItem.children[TimetableResponseIndexes.Date.index].text);
 
-                        final mItemTimeStart = mItem
-                            .children[TimetableResponseIndexes.TimeStart.index]
-                            .text;
-                        final mItemTimeFinish = mItem
-                            .children[TimetableResponseIndexes.TimeFinish.index]
-                            .text;
-                        final mItemDate = DateTime.parse(mItem
-                            .children[TimetableResponseIndexes.Date.index]
-                            .text);
-
-                        var dateAppend = mItemDate != mDate;
-                        if (dateAppend) {
-                          mTabId++;
-                          do {
-                            mDate = mDate.add(Duration(days: 1));
-                          } while (mItemDate != mDate); // skips sundays
-                        }
-
-                        tabsLessonsList[mTabId].add(TimelineModel(
-                            date: mItemDate,
-                            start: TimeOfDay(
-                                hour: int.parse(mItemTimeStart.substring(
-                                    0, mItemTimeStart.length - 3)),
-                                minute: int.parse(mItemTimeStart.substring(
-                                    mItemTimeStart.length - 2,
-                                    mItemTimeStart.length))),
-                            finish: TimeOfDay(
-                                hour: int.parse(mItemTimeFinish.substring(
-                                    0, mItemTimeFinish.length - 3)),
-                                minute: int.parse(
-                                    mItemTimeFinish.substring(mItemTimeFinish.length - 2, mItemTimeFinish.length))),
-                            room: RoomModel.fromString(mItem.children[TimetableResponseIndexes.Room.index].text),
-                            group: mItem.children[TimetableResponseIndexes.Group.index].text,
-                            lesson: LessonModel.fromString(context, mItem.children[TimetableResponseIndexes.Name.index].text),
-                            teacher: TeacherModel.fromString(mItem.children[TimetableResponseIndexes.Name.index].text)));
-                      }
-
-                      for (var mTab in tabsLessonsList) {
-                        mTab.first.first = true;
-                        mTab.last.last = true;
-
-                        // TODO: detect lesson merge etc.
-                      }
-
-                      if (tabsLessonsList.isNotEmpty)
-                        channelSet(tabsLessonsList.expand((f) => f).toList());
-
-                      final tabViews = List<Widget>();
-                      for (var mTab in tabsLessonsList) {
-                        tabViews.add(TimetableWidget(lessons: mTab));
-                      }
-
-                      return TabBarView(children: tabViews);
+                  var dateAppend = mItemDate != mDate;
+                  if (dateAppend) {
+                    mTabId++;
+                    do {
+                      mDate = mDate.add(Duration(days: 1));
+                    } while (mItemDate != mDate); // skips sundays
                   }
-                  return null; // unreachable
-                },
-              ),
-              appBar: AppBar(
-                elevation:
-                    defaultTargetPlatform == TargetPlatform.android ? 5 : 0,
-                title: Text(snapshot.data.title),
-                actions: <Widget>[
-                  IconButton(
-                    tooltip: AppLocalizations.of(context).searchTip,
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    tooltip: AppLocalizations.of(context).searchTip,
-                    icon: const Icon(Icons.alarm),
-                    onPressed: () {},
-                  ),
-                  IconButton(
-                    tooltip: AppLocalizations.of(context).searchTip,
-                    icon: const Icon(Icons.search),
-                    onPressed: () => showSearch<SearchItem>(
-                          context: context,
-                          delegate: _searchDelegate,
-                        ),
-                  ),
-                ],
-                bottom: TabBar(
-                  tabs: tabs,
+
+                  tabsLessonsList[mTabId].add(
+                    TimelineModel(
+                      date: mItemDate,
+                      start: TimeOfDay(
+                          hour: int.parse(mItemTimeStart.substring(
+                              0, mItemTimeStart.length - 3)),
+                          minute: int.parse(mItemTimeStart.substring(
+                              mItemTimeStart.length - 2,
+                              mItemTimeStart.length))),
+                      finish: TimeOfDay(
+                          hour: int.parse(mItemTimeFinish.substring(
+                              0, mItemTimeFinish.length - 3)),
+                          minute: int.parse(mItemTimeFinish.substring(
+                              mItemTimeFinish.length - 2,
+                              mItemTimeFinish.length))),
+                      room: RoomModel.fromString(mItem
+                          .children[TimetableResponseIndexes.Room.index].text),
+                      group: mItem
+                          .children[TimetableResponseIndexes.Group.index].text,
+                      lesson: LessonModel.fromString(
+                          context,
+                          mItem.children[TimetableResponseIndexes.Name.index]
+                              .text),
+                      teacher: TeacherModel.fromString(
+                          ssSearchItem.data.typeId == SearchItemTypeId.GROUP
+                              ? mItem
+                                  .children[TimetableResponseIndexes.Name.index]
+                                  .text
+                              : ssSearchItem.data.title),
+                    ),
+                  );
+                }
+
+                for (var mTab in tabsLessonsList) {
+                  if (mTab.isEmpty) continue;
+
+                  mTab.first.first = true;
+                  mTab.last.last = true;
+
+                  // TODO: detect lesson merge etc.
+                }
+
+                if (tabsLessonsList.isNotEmpty)
+                  channelSet(tabsLessonsList.expand((f) => f).toList());
+
+                final tabViews = List<Widget>();
+                for (var mTab in tabsLessonsList) {
+                  tabViews.add(TimetableWidget(lessons: mTab));
+                }
+
+                return TabBarView(children: tabViews);
+                // unreachable
+              },
+            ),
+            appBar: AppBar(
+              elevation:
+                  defaultTargetPlatform == TargetPlatform.android ? 5 : 0,
+              title: Text(ssSearchItem.data.title),
+              actions: <Widget>[
+                IconButton(
+                  tooltip: AppLocalizations.of(context).searchTip,
+                  icon: const Icon(Icons.calendar_today),
+                  onPressed: () {},
                 ),
+                IconButton(
+                  tooltip: AppLocalizations.of(context).searchTip,
+                  icon: const Icon(Icons.alarm),
+                  onPressed: () {},
+                ),
+                IconButton(
+                  tooltip: AppLocalizations.of(context).searchTip,
+                  icon: const Icon(Icons.search),
+                  onPressed: () => showSearchItemSelect(
+                        context,
+                        prefs,
+                        toPrefs: false,
+                      ),
+                ),
+              ],
+              bottom: TabBar(
+                tabs: tabs,
               ),
             ),
+          );
+        },
       ),
     );
   }

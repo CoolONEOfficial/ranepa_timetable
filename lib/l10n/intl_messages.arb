@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-12-07T00:59:55.277255",
+  "@@last_modified": "2018-12-09T02:15:53.542239",
   "title": "NRU RANEPA (Timetable)",
   "@title": {
     "description": "The application title",
@@ -253,6 +253,26 @@
   },
   "themeLightRed": "Light Red",
   "@themeLightRed": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introGroupTitle": "Group or teacher by default",
+  "@introGroupTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introGroupDescription": "For this group or teacher, the schedule will be loaded at startup.",
+  "@introGroupDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introThemeTitle": "Color scheme",
+  "@introThemeTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introThemeDescription": "The selected theme will be used when drawing the schedule and everything else.",
+  "@introThemeDescription": {
     "type": "text",
     "placeholders": {}
   }

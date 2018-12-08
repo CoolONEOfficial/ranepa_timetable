@@ -31,6 +31,7 @@ class Themes {
   static Themes _singleton;
 
   static MaterialColor redAccent = Colors.red;
+  static const DEFAULT_THEME_ID = ThemeIds.LIGHT_RED;
 
   factory Themes() {
     if (_singleton == null) _singleton = Themes._internal();

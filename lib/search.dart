@@ -12,10 +12,9 @@ class SearchItemType {
   const SearchItemType(this.icon);
 }
 
-enum SearchItemTypeId { UNKNOWN, TEACHER, GROUP }
+enum SearchItemTypeId { TEACHER, GROUP }
 
 const SEARCH_ITEM_TYPES = const <SearchItemType>[
-  const SearchItemType(Icons.insert_drive_file), // UNKNOWN
   const SearchItemType(Icons.person), // TEACHER
   const SearchItemType(Icons.group) // GROUP
 ];
@@ -151,76 +150,76 @@ class Search extends SearchDelegate<SearchItem> {
 
     return ListView.builder(
         itemBuilder: (context, index) {
-          final mBaseItem = suggestions[index];
+          final mItem = suggestions[index];
 
-          if (mBaseItem is SearchItem) {
-            final SearchItem mSearchItem = mBaseItem;
+          final ThemeData theme = Theme.of(context);
+          if (mItem is SearchItem) {
             final queryIndex =
-                mSearchItem.title.indexOf(RegExp(query, caseSensitive: false));
+                    mItem.title.indexOf(RegExp(query, caseSensitive: false)),
+                selectColor = theme.textSelectionColor,
+                normalColor = theme.textTheme.title.color;
 
             return ListTile(
                 onTap: () {
-                  close(context, mSearchItem);
+                  close(context, mItem);
                 },
-                leading: Icon(SEARCH_ITEM_TYPES[mSearchItem.typeId.index].icon),
+                leading: Icon(SEARCH_ITEM_TYPES[mItem.typeId.index].icon),
                 title: RichText(
-                    // Recent suggestion
-                    text: queryIndex == 0
-                        ? TextSpan(
-                            text: mSearchItem.title.substring(
-                              0,
-                              query.length,
+                  // Recent suggestion
+                  text: queryIndex == 0
+                      ? TextSpan(
+                          text: mItem.title.substring(
+                            0,
+                            query.length,
+                          ),
+                          style: TextStyle(
+                            color: selectColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: mItem.title.substring(query.length),
+                              style: TextStyle(
+                                  color: normalColor,
+                                  fontWeight: FontWeight.normal),
+                            )
+                          ],
+                        )
+                      : TextSpan(
+                          text: mItem.title.substring(
+                            0,
+                            queryIndex,
+                          ),
+                          style: TextStyle(
+                              color: normalColor,
+                              fontWeight: FontWeight.normal),
+                          children: [
+                            TextSpan(
+                              text: mItem.title.substring(
+                                  queryIndex, queryIndex + query.length),
+                              style: TextStyle(
+                                  color: selectColor,
+                                  fontWeight: FontWeight.bold),
                             ),
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            children: [
-                              TextSpan(
-                                  text:
-                                      mSearchItem.title.substring(query.length),
-                                  style: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.normal))
-                            ],
-                          )
-                        : TextSpan(
-                            text: mSearchItem.title.substring(
-                              0,
-                              queryIndex,
-                            ),
-                            style: TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.normal),
-                            children: [
-                              TextSpan(
-                                  text: mSearchItem.title.substring(
-                                      queryIndex, queryIndex + query.length),
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold)),
-                              TextSpan(
-                                  text: mSearchItem.title
-                                      .substring(queryIndex + query.length),
-                                  style: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.normal))
-                            ],
-                          ))
+                            TextSpan(
+                              text: mItem.title
+                                  .substring(queryIndex + query.length),
+                              style: TextStyle(
+                                  color: normalColor,
+                                  fontWeight: FontWeight.normal),
+                            )
+                          ],
+                        ),
+                )
                 // Recent suggestion
                 );
-          } else if (mBaseItem is SearchDivider) {
-            final SearchDivider mDivider = mBaseItem;
-
+          } else if (mItem is SearchDivider) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(left: 15, top: 15),
-                  child: RichText(
-                      text: TextSpan(
-                          text: mDivider.title,
-                          style: TextStyle(color: Colors.grey))),
+                  child: Text(mItem.title, style: theme.textTheme.caption),
                 ),
                 Divider(),
               ],
@@ -270,7 +269,7 @@ class Search extends SearchDelegate<SearchItem> {
                     mItemTypeId = SearchItemTypeId.GROUP;
                     break;
                   default:
-                    mItemTypeId = SearchItemTypeId.UNKNOWN;
+                    mItemTypeId = null;
                 }
 
                 webSuggestions.add(SearchItem(
@@ -304,5 +303,19 @@ class Search extends SearchDelegate<SearchItem> {
   @override
   Widget buildResults(BuildContext context) {
     return Container();
+  }
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
+    return theme.brightness == Brightness.light
+        ? super.appBarTheme(context)
+        : theme.copyWith(
+            primaryColor: theme.primaryColor,
+            primaryIconTheme: theme.primaryIconTheme,
+            primaryColorBrightness: theme.primaryColorBrightness,
+            primaryTextTheme: theme.primaryTextTheme,
+          );
   }
 }

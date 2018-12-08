@@ -378,6 +378,34 @@ class AppLocalizations {
       name: 'themeLightRed',
     );
   }
+
+  String get introGroupTitle {
+    return Intl.message(
+      'Group or teacher by default',
+      name: 'introGroupTitle',
+    );
+  }
+
+  String get introGroupDescription {
+    return Intl.message(
+      'For this group or teacher, the schedule will be loaded at startup.',
+      name: 'introGroupDescription',
+    );
+  }
+
+  String get introThemeTitle {
+    return Intl.message(
+      'Color scheme',
+      name: 'introThemeTitle',
+    );
+  }
+
+  String get introThemeDescription {
+    return Intl.message(
+      'The selected theme will be used when drawing the schedule and everything else.',
+      name: 'introThemeDescription',
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

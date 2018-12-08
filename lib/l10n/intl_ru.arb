@@ -256,5 +256,25 @@
   "@themeLightRed": {
     "type": "text",
     "placeholders": {}
+  },
+  "introGroupTitle": "Группа или преподаватель по умолчанию",
+  "@introGroupTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introGroupDescription": "Для этой группы или преподавателя будет показываться расписание в будущем.",
+  "@introGroupDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introThemeTitle": "Тема",
+  "@introThemeTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introThemeDescription": "Выбранная тема будет использоваться для отрисовки расписания и всего остального.",
+  "@introThemeDescription": {
+    "type": "text",
+    "placeholders": {}
   }
 }
