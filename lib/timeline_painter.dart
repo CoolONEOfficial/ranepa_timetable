@@ -60,8 +60,11 @@ class TimelinePainter extends CustomPainter {
       ..color = Theme.of(context).accentColor
       ..style = PaintingStyle.fill;
 
+    var translateIcon = 0.0;
+
     if (!(model.first && model.last)) {
       if (model.first || !model.last) {
+        translateIcon = circleMargin;
         circleOffset = circleOffset.translate(0, -circleMargin);
         canvas.drawRect(
             Rect.fromLTRB(circleOffset.dx - circleRadius, circleOffset.dy,
@@ -69,6 +72,7 @@ class TimelinePainter extends CustomPainter {
             lineStroke);
       }
       if (model.last || !model.first) {
+        translateIcon = -circleMargin;
         circleOffset = circleOffset.translate(0, circleMargin);
         canvas.drawRect(
             Rect.fromLTRB(circleOffset.dx - circleRadius, 0,
@@ -117,10 +121,7 @@ class TimelinePainter extends CustomPainter {
           canvas,
           circleOffset.translate(
               -iconSize,
-              -(circleRadius / 3 * 2) +
-                  (model.last
-                      ? -circleMargin
-                      : (model.first ? circleMargin : 0))));
+              -(circleRadius / 3 * 2) + translateIcon));
 
     TextPainter(
         text: TextSpan(
