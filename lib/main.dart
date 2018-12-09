@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intro_views_flutter/Models/page_view_model.dart';
-import 'package:intro_views_flutter/intro_views_flutter.dart';
 import 'package:ranepa_timetable/drawer_prefs.dart';
 import 'package:ranepa_timetable/drawer_timetable.dart';
 import 'package:ranepa_timetable/intro.dart';
@@ -14,7 +12,6 @@ import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/themes.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class BaseWidget extends StatelessWidget {
   Widget buildBase(BuildContext context, SharedPreferences prefs) {
