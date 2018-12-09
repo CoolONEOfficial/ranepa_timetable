@@ -16,32 +16,15 @@ library timeline;
 
 import 'package:flutter/material.dart';
 import 'package:ranepa_timetable/timeline_element.dart';
-import 'package:ranepa_timetable/timeline_model.dart';
+import 'package:ranepa_timetable/timeline_models.dart';
 
 class TimelineComponent extends StatefulWidget {
   final List<TimelineModel> timelineList;
 
-  final Color lineColor;
-
-  final Color backgroundColor;
-
-  final Color headingColor;
-
-  final Color descriptionColor;
-
-  const TimelineComponent(
-      {Key key,
-        this.timelineList,
-        this.lineColor,
-        this.backgroundColor,
-        this.headingColor,
-        this.descriptionColor})
-      : super(key: key);
+  const TimelineComponent({Key key, @required this.timelineList}) : super(key: key);
 
   @override
-  TimelineComponentState createState() {
-    return TimelineComponentState();
-  }
+  TimelineComponentState createState() => TimelineComponentState();
 }
 
 class TimelineComponentState extends State<TimelineComponent>

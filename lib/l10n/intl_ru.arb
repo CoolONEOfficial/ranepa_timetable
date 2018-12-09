@@ -272,8 +272,43 @@
     "type": "text",
     "placeholders": {}
   },
-  "introThemeDescription": "Выбранная тема будет использоваться для отрисовки расписания и всего остального.",
+  "introThemeDescription": "Выбранная тема будет использоваться для отрисовки расписания и всего остального. Тему можно поменять в настройках.",
   "@introThemeDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introWelcomeTitle": "Добро пожаловать",
+  "@introWelcomeTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introWelcomeDescription": "Это приложение является неофициальным клиентом сайта РАНХиГС Нижнего Новгорода и не имеет ничего общего с его админинстрацией.",
+  "@introWelcomeDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introTimetableTitle": "Пример расписания",
+  "@introTimetableTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introTimetableDescription": "Так будет выглядеть расписание. При необходимости можно вернуться назад и сменить цветовую схему.",
+  "@introTimetableDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomLocationAcademy": "Академия",
+  "@roomLocationAcademy": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomLocationStudyHostel": "Студенческое общежитие",
+  "@roomLocationStudyHostel": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomLocationHotel": "Гостиница (ул. Пушкина, 8)",
+  "@roomLocationHotel": {
     "type": "text",
     "placeholders": {}
   }

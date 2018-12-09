@@ -16,9 +16,8 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:ranepa_timetable/timeline_model.dart';
+import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
-import 'package:ranepa_timetable/timetable_room.dart';
 
 class TimelinePainter extends CustomPainter {
   final TimelineModel model;
@@ -49,7 +48,7 @@ class TimelinePainter extends CustomPainter {
           ..style = PaintingStyle.fill);
 
     var circleOffset = Offset(
-        rectMargins * 2 + circleRadius + 70, (size.height + rectMargins) / 2);
+        rectMargins * 2 + circleRadius + 68, (size.height + rectMargins) / 2);
 
     final lineStroke = Paint()
       ..color = Theme.of(context).accentColor
@@ -80,25 +79,24 @@ class TimelinePainter extends CustomPainter {
             lineStroke);
       }
 
-      if (model.first) {
+      if (model.first)
         canvas.drawArc(
             Rect.fromCircle(center: circleOffset, radius: circleRadius),
             -pi,
             pi,
             false,
             arcStroke);
-      } else if (model.last) {
+      else if (model.last)
         canvas.drawArc(
             Rect.fromCircle(center: circleOffset, radius: circleRadius),
             -pi,
             -pi,
             false,
             arcStroke);
-      }
     } else
       canvas.drawCircle(
           circleOffset,
-          circleRadius,
+          circleRadius + 3,
           Paint()
             ..color = Theme.of(context).accentColor
             ..style = PaintingStyle.fill);
@@ -120,8 +118,7 @@ class TimelinePainter extends CustomPainter {
       ..paint(
           canvas,
           circleOffset.translate(
-              -iconSize,
-              -(circleRadius / 3 * 2) + translateIcon));
+              -iconSize, -(circleRadius / 3 * 2) + translateIcon));
 
     TextPainter(
         text: TextSpan(
@@ -130,12 +127,13 @@ class TimelinePainter extends CustomPainter {
             color: Theme.of(context).textTheme.body1.color,
             fontSize: locationIconSize,
           ),
-          text: String.fromCharCode((model.room.location == Location.StudyHostel
-                  ? TimetableIcons.studyHostel
-                  : model.room.location == Location.Hotel
-                      ? TimetableIcons.hotel
-                      : TimetableIcons.academy)
-              .codePoint),
+          text: String.fromCharCode(
+              (model.room.location == RoomLocation.StudyHostel
+                      ? TimetableIcons.studyHostel
+                      : model.room.location == RoomLocation.Hotel
+                          ? TimetableIcons.hotel
+                          : TimetableIcons.academy)
+                  .codePoint),
         ),
         textAlign: TextAlign.center,
         textDirection: TextDirection.ltr)

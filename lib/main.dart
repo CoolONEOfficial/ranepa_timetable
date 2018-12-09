@@ -29,7 +29,9 @@ class BaseWidget extends StatelessWidget {
               decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor,
                   image: DecorationImage(
-                      image: AssetImage('assets/images/icon-foreground.png'))),
+                      image: AssetImage('assets/images/icon-foreground.png'),
+                  ),
+              ),
             ),
             ListTile(
               leading: Icon(Icons.line_style),

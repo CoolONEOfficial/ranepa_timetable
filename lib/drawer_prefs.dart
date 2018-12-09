@@ -143,7 +143,7 @@ class DrawerPrefs extends StatelessWidget {
               Divider(
                 height: 0,
               ),
-              new StreamBuilder<bool>(
+              StreamBuilder<bool>(
                 initialData:
                     prefs.getBool(PrefsIds.WIDGET_TRANSLUCENT) ?? false,
                 stream: widgetTranslucent.stream,

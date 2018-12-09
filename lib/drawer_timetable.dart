@@ -9,14 +9,13 @@ import 'package:http/http.dart' as http;
 import 'package:ranepa_timetable/drawer_prefs.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/search.dart';
-import 'package:ranepa_timetable/timeline_model.dart';
-import 'package:ranepa_timetable/timetable.dart';
-import 'package:ranepa_timetable/timetable_lesson.dart';
-import 'package:ranepa_timetable/timetable_room.dart';
-import 'package:ranepa_timetable/timetable_teacher.dart';
+import 'package:ranepa_timetable/timeline.dart';
+import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart' as xml;
+
+enum TimetableResponseIndexes { Date, TimeStart, TimeFinish, Name, Room, Group }
 
 class DrawerTimetable extends StatelessWidget {
   final Drawer drawer;
@@ -47,6 +46,9 @@ class DrawerTimetable extends StatelessWidget {
 
     debugPrint("Get resp: " + resp.toString());
   }
+
+  DateTime toDateTime(TimeOfDay tod) =>
+      DateTime(2018, 1, 1, tod.hour, tod.minute);
 
   @override
   Widget build(BuildContext context) {
@@ -146,34 +148,40 @@ class DrawerTimetable extends StatelessWidget {
 
                   tabsLessonsList[mTabId].add(
                     TimelineModel(
-                      date: mItemDate,
-                      start: TimeOfDay(
-                          hour: int.parse(mItemTimeStart.substring(
-                              0, mItemTimeStart.length - 3)),
-                          minute: int.parse(mItemTimeStart.substring(
-                              mItemTimeStart.length - 2,
-                              mItemTimeStart.length))),
-                      finish: TimeOfDay(
-                          hour: int.parse(mItemTimeFinish.substring(
-                              0, mItemTimeFinish.length - 3)),
-                          minute: int.parse(mItemTimeFinish.substring(
-                              mItemTimeFinish.length - 2,
-                              mItemTimeFinish.length))),
-                      room: RoomModel.fromString(mItem
-                          .children[TimetableResponseIndexes.Room.index].text),
-                      group: mItem
-                          .children[TimetableResponseIndexes.Group.index].text,
-                      lesson: LessonModel.fromString(
-                          context,
-                          mItem.children[TimetableResponseIndexes.Name.index]
-                              .text),
-                      teacher: TeacherModel.fromString(
-                          ssSearchItem.data.typeId == SearchItemTypeId.GROUP
-                              ? mItem
-                                  .children[TimetableResponseIndexes.Name.index]
-                                  .text
-                              : ssSearchItem.data.title),
-                    ),
+                        date: mItemDate,
+                        start: TimeOfDay(
+                            hour: int.parse(mItemTimeStart.substring(
+                                0, mItemTimeStart.length - 3)),
+                            minute: int.parse(mItemTimeStart.substring(
+                                mItemTimeStart.length - 2,
+                                mItemTimeStart.length))),
+                        finish: TimeOfDay(
+                            hour: int.parse(mItemTimeFinish.substring(
+                                0, mItemTimeFinish.length - 3)),
+                            minute: int.parse(mItemTimeFinish.substring(
+                                mItemTimeFinish.length - 2,
+                                mItemTimeFinish.length))),
+                        room: RoomModel.fromString(mItem
+                            .children[TimetableResponseIndexes.Room.index]
+                            .text),
+                        group: mItem
+                            .children[TimetableResponseIndexes.Group.index]
+                            .text,
+                        lesson: LessonModel.fromString(
+                            context,
+                            mItem.children[TimetableResponseIndexes.Name.index]
+                                .text),
+                        teacher: TeacherModel.fromString(ssSearchItem
+                                    .data.typeId ==
+                                SearchItemTypeId.GROUP
+                            ? mItem
+                                .children[TimetableResponseIndexes.Name.index]
+                                .text
+                            : ssSearchItem.data.title),
+                        user:
+                            ssSearchItem.data.typeId == SearchItemTypeId.TEACHER
+                                ? TimelineUser.TEACHER
+                                : TimelineUser.STUDENT),
                   );
                 }
 
@@ -183,7 +191,17 @@ class DrawerTimetable extends StatelessWidget {
                   mTab.first.first = true;
                   mTab.last.last = true;
 
-                  // TODO: detect lesson merge etc.
+                  for (var mItemId = 0; mItemId < mTab.length - 1; mItemId++) {
+                    final mItem = mTab[mItemId],
+                        mNextItem = mTab[mItemId+ 1],
+                        diff = toDateTime(mTab[mItemId].finish).difference(toDateTime(mTab[mItemId + 1].start));
+                    if (diff > Duration(minutes: 10)) {
+                      mItem.last = true;
+                      mNextItem.first = true;
+                    }
+                  }
+
+                  // TODO: merging
                 }
 
                 if (tabsLessonsList.isNotEmpty)
@@ -191,17 +209,18 @@ class DrawerTimetable extends StatelessWidget {
 
                 final tabViews = List<Widget>();
                 for (var mTab in tabsLessonsList) {
-                  tabViews.add(TimetableWidget(lessons: mTab));
+                  tabViews.add(TimelineComponent(timelineList: mTab));
                 }
 
                 return TabBarView(children: tabViews);
-                // unreachable
               },
             ),
             appBar: AppBar(
               elevation:
                   defaultTargetPlatform == TargetPlatform.android ? 5 : 0,
-              title: Text(ssSearchItem.data.title),
+              title: Text(ssSearchItem.data.typeId == SearchItemTypeId.TEACHER
+                  ? TeacherModel.fromString(ssSearchItem.data.title).initials()
+                  : ssSearchItem.data.title),
               actions: <Widget>[
                 IconButton(
                   tooltip: AppLocalizations.of(context).searchTip,

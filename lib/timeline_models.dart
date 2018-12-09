@@ -1,21 +1,100 @@
+/* Copyright 2018 Rejish Radhakrishnan
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. */
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
 
-part 'timetable_lesson.g.dart';
+part 'timeline_models.g.dart';
+
+enum TimelineUser { STUDENT, TEACHER }
+
+abstract class TimelineParent {
+  final TimelineUser user;
+  final DateTime date;
+
+  TimelineParent(this.user, this.date);
+}
+
+@JsonSerializable(nullable: false)
+class TimelineModel extends TimelineParent{
+  final LessonModel lesson;
+  final RoomModel room;
+  final String group;
+  final TeacherModel teacher;
+
+  bool first, last;
+
+  @JsonKey(fromJson: _timeOfDayFromIntList, toJson: _timeOfDayToIntList)
+  final TimeOfDay start, finish;
+
+  static TimeOfDay _timeOfDayFromIntList(Map<String, int> map) =>
+      TimeOfDay(hour: map["hour"], minute: map["minute"]);
+
+  static Map<String, int> _timeOfDayToIntList(TimeOfDay timeOfDay) =>
+      {"hour": timeOfDay.hour, "minute": timeOfDay.minute};
+
+  TimelineModel(
+      {@required DateTime date,
+      @required this.start,
+      @required this.finish,
+      @required this.room,
+      @required this.group,
+      @required this.lesson,
+      @required this.teacher,
+      @required TimelineUser user,
+      this.first = false,
+      this.last = false}) : super(user, date);
+
+  factory TimelineModel.fromJson(Map<String, dynamic> json) =>
+      _$TimelineModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TimelineModelToJson(this);
+}
+
+enum RoomLocation { Academy, Hotel, StudyHostel }
+
+@JsonSerializable(nullable: false)
+class RoomModel {
+  final int number;
+  final RoomLocation location;
+
+  const RoomModel(this.number, this.location);
+
+  factory RoomModel.fromJson(Map<String, dynamic> json) =>
+      _$RoomModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RoomModelToJson(this);
+
+  factory RoomModel.fromString(String str) {
+    return RoomModel(
+        int.parse(RegExp(r"\d{3}").stringMatch(str).toString()),
+        str.startsWith("СО")
+            ? RoomLocation.StudyHostel
+            : str.startsWith("П8") ? RoomLocation.Hotel : RoomLocation.Academy);
+  }
+}
 
 enum LessonType { Theory, Practice }
 
 String parseLessonTitle(String str) {
-  final openBracketIndex = str.indexOf('(');
-  assert(openBracketIndex != -1);
-
-  final closeBracketIndex = str.indexOf(')');
-  assert(closeBracketIndex != -1);
-
-  return str.substring(openBracketIndex + 1, closeBracketIndex);
+  final openBracketIndex = str.indexOf('('),
+      title = str.substring(
+          0, openBracketIndex != -1 ? openBracketIndex : str.length - 1);
+  return title[0].toUpperCase() + title.substring(1);
 }
 
 LessonType parseLessonType(String str) {
@@ -52,7 +131,7 @@ class LessonModel {
 
     if (str.contains("математик"))
       model = types.math;
-    else if (str.contains("экономик"))
+    else if (str.contains("экономик") || (str.contains("экономическ") && str.contains("теори")))
       model = types.economics;
     else if (str.contains("теори") && str.contains("информаци"))
       return types.informationTheory;
@@ -204,4 +283,27 @@ class LessonTypes {
       computerGraphic,
       projectDevelopment,
       databases;
+}
+
+@JsonSerializable(nullable: false)
+class TeacherModel {
+  const TeacherModel(this.name, this.surname, this.patronymic);
+
+  final String name, surname, patronymic;
+
+  factory TeacherModel.fromJson(Map<String, dynamic> json) =>
+      _$TeacherModelFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TeacherModelToJson(this);
+
+  factory TeacherModel.fromString(String respName) {
+    final words = respName.substring(respName.lastIndexOf('>') + 1).split(" ");
+    return TeacherModel(words[words.length - 2], words[words.length - 3],
+        words[words.length - 1]);
+  }
+
+  @override
+  String toString() => "$surname $name $patronymic";
+
+  String initials() => "$surname ${name[0]}. ${patronymic[0]}.";
 }

@@ -402,8 +402,57 @@ class AppLocalizations {
 
   String get introThemeDescription {
     return Intl.message(
-      'The selected theme will be used when drawing the schedule and everything else.',
+      'The selected theme will be used when drawing the schedule and everything else. The theme can be changed in the settings.',
       name: 'introThemeDescription',
+    );
+  }
+
+  String get introWelcomeTitle {
+    return Intl.message(
+      'Welcome',
+      name: 'introWelcomeTitle',
+    );
+  }
+
+  String get introWelcomeDescription {
+    return Intl.message(
+      'This application is an unofficial client of the site of the Nizhny Novgorod RANEPA and has no relation to its administration.',
+      name: 'introWelcomeDescription',
+    );
+  }
+
+  String get introTimetableTitle {
+    return Intl.message(
+      'Shedule example',
+      name: 'introTimetableTitle',
+    );
+  }
+
+  String get introTimetableDescription {
+    return Intl.message(
+      'So the schedule will look. If necessary, you can go back and change the theme.',
+      name: 'introTimetableDescription',
+    );
+  }
+
+  String get roomLocationAcademy {
+    return Intl.message(
+      'Academy',
+      name: 'roomLocationAcademy',
+    );
+  }
+
+  String get roomLocationStudyHostel {
+    return Intl.message(
+      'Study hostel',
+      name: 'roomLocationStudyHostel',
+    );
+  }
+
+  String get roomLocationHotel {
+    return Intl.message(
+      'Hotel (St. Pushkin, 8)',
+      name: 'roomLocationHotel',
     );
   }
 }

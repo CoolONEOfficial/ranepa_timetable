@@ -210,9 +210,7 @@ class Search extends SearchDelegate<SearchItem> {
                             )
                           ],
                         ),
-                )
-                // Recent suggestion
-                );
+                ));
           } else if (mItem is SearchDivider) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,

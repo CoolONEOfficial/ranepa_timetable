@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-12-09T02:15:53.542239",
+  "@@last_modified": "2018-12-09T22:08:47.172787",
   "title": "NRU RANEPA (Timetable)",
   "@title": {
     "description": "The application title",
@@ -271,8 +271,43 @@
     "type": "text",
     "placeholders": {}
   },
-  "introThemeDescription": "The selected theme will be used when drawing the schedule and everything else.",
+  "introThemeDescription": "The selected theme will be used when drawing the schedule and everything else. The theme can be changed in the settings.",
   "@introThemeDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introWelcomeTitle": "Welcome",
+  "@introWelcomeTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introWelcomeDescription": "This application is an unofficial client of the site of the Nizhny Novgorod RANEPA and has no relation to its administration.",
+  "@introWelcomeDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introTimetableTitle": "Shedule example",
+  "@introTimetableTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introTimetableDescription": "So the schedule will look. If necessary, you can go back and change the theme.",
+  "@introTimetableDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomLocationAcademy": "Academy",
+  "@roomLocationAcademy": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomLocationStudyHostel": "Study hostel",
+  "@roomLocationStudyHostel": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomLocationHotel": "Hotel (St. Pushkin, 8)",
+  "@roomLocationHotel": {
     "type": "text",
     "placeholders": {}
   }
