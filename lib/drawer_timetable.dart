@@ -66,9 +66,10 @@ class DrawerTimetable extends StatelessWidget {
     ];
 
     final tabs = List<Tab>();
+    var mDay = today.subtract(Duration(days: 1));
     for (int mTabId = 0; mTabId < tabCount; mTabId++) {
       debugPrint("mTabId: " + mTabId.toString());
-      final mDay = today.add(Duration(days: mTabId));
+      mDay = mDay.add(Duration(days: 1));
       debugPrint("mDay: " + mDay.day.toString());
       debugPrint("mWeekday: " + mDay.weekday.toString());
       if (mDay.weekday == DateTime.sunday) {
