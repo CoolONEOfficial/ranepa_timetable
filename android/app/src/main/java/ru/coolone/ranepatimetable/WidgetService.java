@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -258,7 +257,12 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             var teacherName = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_NAME));
             var teacherSurname = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_SURNAME));
             var teacherPatronymic = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_PATRONYMIC));
-            rv.setTextViewText(R.id.widget_item_teacher, teacherSurname + ' ' + teacherName.charAt(0) + ". " + teacherPatronymic.charAt(0) + '.');
+            var group = cursor.getString(cursor.getColumnIndex(Timeline.COLUMN_GROUP));
+            var user = Timeline.User.values()[cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_USER))];
+            rv.setTextViewText(R.id.widget_item_teacher_or_group,
+                    user == Timeline.User.Teacher
+                    ? group
+                    : teacherSurname + ' ' + teacherName.charAt(0) + ". " + teacherPatronymic.charAt(0) + '.');
             rv.setTextViewText(R.id.widget_item_start, String.format(getCurrentLocale(), "%d:%02d", start.hour, start.minute));
             rv.setTextViewText(R.id.widget_item_finish, String.format(getCurrentLocale(), "%d:%02d", finish.hour, finish.minute));
             rv.setTextViewText(R.id.widget_item_room_number, String.valueOf(

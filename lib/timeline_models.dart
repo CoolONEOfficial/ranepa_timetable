@@ -24,12 +24,8 @@ enum TimelineUser { Student, Teacher }
 
 @JsonSerializable(nullable: false)
 class TimelineParent {
-  @JsonKey(fromJson: _userFromInt, toJson: _userToInt)
   final TimelineUser user;
   final DateTime date;
-
-  static TimelineUser _userFromInt(int i) => TimelineUser.values[i];
-  static int _userToInt(TimelineUser timeOfDay) => timeOfDay.index;
 
   TimelineParent(this.user, this.date);
 }

@@ -23,7 +23,7 @@
         android:singleLine="true" />
 
     <TextView
-        android:id="@+id/widget_item_teacher"
+        android:id="@+id/widget_item_teacher_or_group"
         style="@style/TextAppearance.AppCompat.Title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -7,15 +7,33 @@ part of 'timeline_models.dart';
 // **************************************************************************
 
 TimelineParent _$TimelineParentFromJson(Map<String, dynamic> json) {
-  return TimelineParent(TimelineParent._userFromInt(json['user'] as int),
+  return TimelineParent(_$enumDecode(_$TimelineUserEnumMap, json['user']),
       DateTime.parse(json['date'] as String));
 }
 
 Map<String, dynamic> _$TimelineParentToJson(TimelineParent instance) =>
     <String, dynamic>{
-      'user': TimelineParent._userToInt(instance.user),
+      'user': _$TimelineUserEnumMap[instance.user],
       'date': instance.date.toIso8601String()
     };
+
+T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
+  if (source == null) {
+    throw ArgumentError('A value must be provided. Supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+  return enumValues.entries
+      .singleWhere((e) => e.value == source,
+          orElse: () => throw ArgumentError(
+              '`$source` is not one of the supported values: '
+              '${enumValues.values.join(', ')}'))
+      .key;
+}
+
+const _$TimelineUserEnumMap = <TimelineUser, dynamic>{
+  TimelineUser.Student: 'Student',
+  TimelineUser.Teacher: 'Teacher'
+};
 
 TimelineModel _$TimelineModelFromJson(Map<String, dynamic> json) {
   return TimelineModel(
@@ -28,14 +46,14 @@ TimelineModel _$TimelineModelFromJson(Map<String, dynamic> json) {
       group: json['group'] as String,
       lesson: LessonModel.fromJson(json['lesson'] as Map<String, dynamic>),
       teacher: TeacherModel.fromJson(json['teacher'] as Map<String, dynamic>),
-      user: TimelineParent._userFromInt(json['user'] as int),
+      user: _$enumDecode(_$TimelineUserEnumMap, json['user']),
       first: json['first'] as bool,
       last: json['last'] as bool);
 }
 
 Map<String, dynamic> _$TimelineModelToJson(TimelineModel instance) =>
     <String, dynamic>{
-      'user': TimelineParent._userToInt(instance.user),
+      'user': _$TimelineUserEnumMap[instance.user],
       'date': instance.date.toIso8601String(),
       'lesson': instance.lesson,
       'room': instance.room,
@@ -56,19 +74,6 @@ Map<String, dynamic> _$RoomModelToJson(RoomModel instance) => <String, dynamic>{
       'number': instance.number,
       'location': _$RoomLocationEnumMap[instance.location]
     };
-
-T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
-  if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return enumValues.entries
-      .singleWhere((e) => e.value == source,
-          orElse: () => throw ArgumentError(
-              '`$source` is not one of the supported values: '
-              '${enumValues.values.join(', ')}'))
-      .key;
-}
 
 const _$RoomLocationEnumMap = <RoomLocation, dynamic>{
   RoomLocation.Academy: 'Academy',
