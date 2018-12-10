@@ -1,13 +1,10 @@
 package ru.coolone.ranepatimetable;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-
-import java.util.Calendar;
-
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -15,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import lombok.AllArgsConstructor;
@@ -28,9 +26,7 @@ import lombok.var;
 @Log
 @NoArgsConstructor
 public class WidgetProvider extends AppWidgetProvider {
-    public static String CLICK_ACTION = "ru.coolone.ranepatimetable.CLICK";
     public static String REFRESH_ACTION = "ru.coolone.ranepatimetable.REFRESH";
-    public static String EXTRA_DAY_ID = "ru.coolone.ranepatimetable.day";
 
     @Override
     public void onEnabled(Context context) {
@@ -94,6 +90,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     public static final int DEFAULT_THEME_ID = 0;
     private static final String FLUTTER_PREFIX = "flutter.";
+
     @AllArgsConstructor
     enum PrefsIds {
         WidgetTranslucent(FLUTTER_PREFIX.concat("widget_translucent")),
@@ -141,7 +138,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     private RemoteViews buildLayout(Context context, int appWidgetId, AppWidgetManager appWidgetManager) {
         prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
-        theme = Theme.values()[(int)prefs.getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
+        theme = Theme.values()[(int) prefs.getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
 
         // See the dimensions and
         Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
@@ -155,12 +152,12 @@ public class WidgetProvider extends AppWidgetProvider {
                 .timetable()
                 .selectByDate(getTodayMidnight().getTimeInMillis());
         var findDate = Calendar.getInstance();
-        if(cursor.moveToLast()) {
+        if (cursor.moveToLast()) {
             var lastLessonFinish = getLessonFinish(cursor);
 
             int dayDescId = R.string.widget_title_today;
 
-            if(lastLessonFinish.compareTo(findDate) < 0) {
+            if (lastLessonFinish.compareTo(findDate) < 0) {
                 findDate.add(Calendar.DATE, 1);
                 dayDescId = R.string.widget_title_tomorrow;
             }
@@ -203,7 +200,23 @@ public class WidgetProvider extends AppWidgetProvider {
         intent.putExtra(WidgetRemoteViewsFactory.THEME_ID, theme.ordinal());
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
-        rv.setInt(R.id.widget_root,  "setBackgroundResource", R.drawable.rounded_layout_light);
+        int resId = -1;
+        var translucent = prefs.getBoolean(PrefsIds.WidgetTranslucent.prefId, true);
+        switch (theme) {
+            case Dark:
+            case DarkRed:
+                resId = translucent
+                        ? R.drawable.rounded_layout_dark_translucent
+                        : R.drawable.rounded_layout_dark;
+                break;
+            case Light:
+            case LightRed:
+                resId = translucent
+                        ? R.drawable.rounded_layout_light_translucent
+                        : R.drawable.rounded_layout_light;
+                break;
+        }
+        rv.setInt(R.id.widget_root, "setBackgroundResource", resId);
         rv.setRemoteAdapter(R.id.timeline_list, intent);
         // Set the empty view to be displayed if the collection is empty.  It must be a sibling
         // view of the collection view.
@@ -212,13 +225,13 @@ public class WidgetProvider extends AppWidgetProvider {
         // Bind a click listener template for the contents of the weather list.  Note that we
         // need to update the intent's data if we set an extra, since the extras will be
         // ignored otherwise.
-        var onClickIntent = new Intent(context, WidgetProvider.class);
-        onClickIntent.setAction(WidgetProvider.CLICK_ACTION);
-        onClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        onClickIntent.setData(Uri.parse(onClickIntent.toUri(Intent.URI_INTENT_SCHEME)));
-        var onClickPendingIntent = PendingIntent.getBroadcast(context, 0,
-                onClickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        rv.setPendingIntentTemplate(R.id.timeline_list, onClickPendingIntent);
+//        var onClickIntent = new Intent(context, WidgetProvider.class);
+//        onClickIntent.setAction(WidgetProvider.CLICK_ACTION);
+//        onClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+//        onClickIntent.setData(Uri.parse(onClickIntent.toUri(Intent.URI_INTENT_SCHEME)));
+//        var onClickPendingIntent = PendingIntent.getBroadcast(context, 0,
+//                onClickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        rv.setPendingIntentTemplate(R.id.timeline_list, onClickPendingIntent);
 
         // Bind the click intent for the refresh button on the widget
 //        var refreshIntent = new Intent(context, WidgetProvider.class);
