@@ -2,7 +2,7 @@ package ru.coolone.ranepatimetable;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -13,13 +13,16 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 
 import android.util.DisplayMetrics;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import lombok.var;
@@ -43,12 +46,18 @@ public class WidgetService extends RemoteViewsService {
 class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private Context context;
     private Cursor cursor;
+    private long dateMillis;
+    private WidgetProvider.Theme theme;
 
-    public static final String INTENT_WIDTH = "intent_width";
-    public static final String INTENT_HEIGHT = "intent_width";
+    public static final String DATE = "date";
+    public static final String THEME_ID = "themeId";
 
     public WidgetRemoteViewsFactory(Context context, Intent intent) {
         this.context = context;
+        var intentDateMillis = intent.getLongExtra(DATE, -1);
+        if (intentDateMillis != -1) dateMillis = intentDateMillis;
+        var themeId = intent.getIntExtra(THEME_ID, -1);
+        if (themeId != -1) theme = WidgetProvider.Theme.values()[themeId];
     }
 
     @Override
@@ -77,8 +86,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
      * @return A float value to represent px equivalent to dp depending on device density
      */
     private float dpToPixel(float dp) {
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
+        var metrics = context.getResources().getDisplayMetrics();
         return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
@@ -101,7 +109,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                 w - rectMargins * dpScale, h);
         var bgRectPaint = new Paint();
         bgRectPaint.setAntiAlias(true);
-        bgRectPaint.setColor(0x88000000);
+        bgRectPaint.setColor(theme.background);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             canvas.drawRoundRect(rect, dpScale * rectRound, dpScale * rectRound, bgRectPaint);
         else canvas.drawRect(rect, bgRectPaint);
@@ -117,14 +125,14 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         if (!(first && last)) {
             var rectPaint = new Paint();
             rectPaint.setAntiAlias(true);
-            rectPaint.setColor(Color.GREEN);
+            rectPaint.setColor(theme.accent);
 
             // Rect round
             if (first || !last) {
                 translateIcon = circleMargin;
                 circleY -= circleMargin;
                 canvas.drawRect(
-                        circleX - circleRadius * dpScale, circleY,
+                        circleX - circleRadius * dpScale, circleY - 1,
                         circleX + circleRadius * dpScale, dpScale * h,
                         rectPaint
                 );
@@ -134,7 +142,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                 circleY += circleMargin;
                 canvas.drawRect(
                         circleX - circleRadius * dpScale, 0,
-                        circleX + circleRadius * dpScale, circleY,
+                        circleX + circleRadius * dpScale, circleY + 1,
                         rectPaint
                 );
             }
@@ -146,7 +154,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             );
             var arcPaint = new Paint();
             arcPaint.setAntiAlias(true);
-            arcPaint.setColor(Color.RED);
+            arcPaint.setColor(theme.accent);
 
             if (first)
                 canvas.drawArc(
@@ -168,7 +176,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             // Draw circle
             var circlePaint = new Paint();
             circlePaint.setAntiAlias(true);
-            circlePaint.setColor(Color.BLUE);
+            circlePaint.setColor(theme.accent);
             circlePaint.setStyle(Paint.Style.FILL);
 
             canvas.drawCircle(
@@ -193,6 +201,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
 
         // Draw lesson icon
         iconPaint.setTextSize(dpScale * iconSize);
+        iconPaint.setColor(theme.textPrimary);
         canvas.drawText(
                 String.valueOf(
                         Character.toChars(
@@ -210,7 +219,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                 Timeline.PREFIX_ROOM
                         + Timeline.RoomModel.COLUMN_ROOM_LOCATION)
         )];
-        iconPaint.setColor(Color.WHITE);
+        iconPaint.setColor(theme.textAccent);
         iconPaint.setTextSize(dpScale * 20);
         canvas.drawText(
                 String.valueOf(
@@ -234,7 +243,8 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
     public RemoteViews getViewAt(int position) {
         // Get the data for this position from the content provider
         if (cursor.moveToPosition(position)) {
-            var date = new Date(cursor.getLong(cursor.getColumnIndex(Timeline.COLUMN_DATE)));
+            var date = new GregorianCalendar();
+            date.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(Timeline.COLUMN_DATE)));
 
             var start = new Timeline.TimeOfDayModel(
                     cursor.getInt(cursor.getColumnIndex(Timeline.PREFIX_START + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR)),
@@ -261,8 +271,8 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             var user = Timeline.User.values()[cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_USER))];
             rv.setTextViewText(R.id.widget_item_teacher_or_group,
                     user == Timeline.User.Teacher
-                    ? group
-                    : teacherSurname + ' ' + teacherName.charAt(0) + ". " + teacherPatronymic.charAt(0) + '.');
+                            ? group
+                            : teacherSurname + ' ' + teacherName.charAt(0) + ". " + teacherPatronymic.charAt(0) + '.');
             rv.setTextViewText(R.id.widget_item_start, String.format(getCurrentLocale(), "%d:%02d", start.hour, start.minute));
             rv.setTextViewText(R.id.widget_item_finish, String.format(getCurrentLocale(), "%d:%02d", finish.hour, finish.minute));
             rv.setTextViewText(R.id.widget_item_room_number, String.valueOf(
@@ -270,6 +280,13 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                             Timeline.PREFIX_ROOM
                                     + Timeline.RoomModel.COLUMN_ROOM_NUMBER)
                     )));
+
+            rv.setTextColor(R.id.widget_item_lesson_title, theme.textAccent);
+            rv.setTextColor(R.id.widget_item_teacher_or_group, theme.textAccent);
+            rv.setTextColor(R.id.widget_item_start, theme.textAccent);
+            rv.setTextColor(R.id.widget_item_finish, theme.textAccent);
+            rv.setTextColor(R.id.widget_item_room_number, theme.textAccent);
+
             rv.setImageViewBitmap(
                     R.id.widget_item_image,
                     buildItemBitmap(
@@ -318,6 +335,17 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         if (cursor != null) {
             cursor.close();
         }
-        cursor = TimetableDatabase.getInstance(context).timetable().selectAll();
+
+//        Calendar cal = new GregorianCalendar();
+//        cal.setTimeInMillis(dateMillis);
+//        log.severe("find time: " + String.valueOf(cal.getTimeInMillis()) + " | " + cal.getTime());
+
+        cursor = TimetableDatabase.getInstance(context).timetable().selectByDate(dateMillis);
+
+//        while (cursor.moveToNext()) {
+//            Calendar mCal = new GregorianCalendar();
+//            mCal.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(Timeline.COLUMN_DATE)));
+//            log.severe("mTime: " + String.valueOf(mCal.getTimeInMillis()) + " | " + cal.getTime());
+//        }
     }
 }

@@ -8,13 +8,17 @@ import android.content.Intent;
 
 import java.util.Calendar;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 
 import java.util.GregorianCalendar;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.var;
 
@@ -22,13 +26,11 @@ import lombok.var;
  * The weather widget's AppWidgetProvider.
  */
 @Log
+@NoArgsConstructor
 public class WidgetProvider extends AppWidgetProvider {
     public static String CLICK_ACTION = "ru.coolone.ranepatimetable.CLICK";
     public static String REFRESH_ACTION = "ru.coolone.ranepatimetable.REFRESH";
     public static String EXTRA_DAY_ID = "ru.coolone.ranepatimetable.day";
-
-    public WidgetProvider() {
-    }
 
     @Override
     public void onEnabled(Context context) {
@@ -78,15 +80,37 @@ public class WidgetProvider extends AppWidgetProvider {
     }
 
     public static int width, height;
+    public Theme theme;
+    public static SharedPreferences prefs;
+
+    @AllArgsConstructor
+    enum Theme {
+        Light(Color.BLUE, 0xFF2196F3, Color.WHITE, Color.BLACK, 0xFF90CAF9),
+        LightRed(Color.RED, 0xFFF44336, Color.WHITE, Color.BLACK, 0xFFEF9A9A),
+        Dark(0xFF212121, 0xFF64FFDA, Color.BLACK, Color.WHITE, 0xFF616161),
+        DarkRed(0xFF212121, 0xFFF44336, Color.WHITE, Color.WHITE, 0xFF616161);
+        final int primary, accent, textPrimary, textAccent, background;
+    }
+
+    public static final int DEFAULT_THEME_ID = 0;
+    private static final String FLUTTER_PREFIX = "flutter.";
+    @AllArgsConstructor
+    enum PrefsIds {
+        WidgetTranslucent(FLUTTER_PREFIX.concat("widget_translucent")),
+        ThemeId(FLUTTER_PREFIX.concat("theme_id"));
+        final String prefId;
+    }
+
+    private Calendar getMidnight(Calendar calendar) {
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar;
+    }
 
     private Calendar getTodayMidnight() {
-        var todayMidnight = Calendar.getInstance();
-        todayMidnight.set(Calendar.HOUR_OF_DAY, 0);
-        todayMidnight.set(Calendar.MINUTE, 0);
-        todayMidnight.set(Calendar.SECOND, 0);
-        todayMidnight.set(Calendar.MILLISECOND, 0);
-
-        return todayMidnight;
+        return getMidnight(Calendar.getInstance());
     }
 
     private Calendar getLessonFinish(Cursor cursor) {
@@ -116,6 +140,8 @@ public class WidgetProvider extends AppWidgetProvider {
     }
 
     private RemoteViews buildLayout(Context context, int appWidgetId, AppWidgetManager appWidgetManager) {
+        prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
+        theme = Theme.values()[(int)prefs.getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
 
         // See the dimensions and
         Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
@@ -123,49 +149,17 @@ public class WidgetProvider extends AppWidgetProvider {
         height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
         log.severe("build layout: w" + width + " h" + height);
 
-        // Specify the service to provide data for the collection widget.  Note that we need to
-        // embed the appWidgetId via the data otherwise it will be ignored.
-        var intent = new Intent(context, WidgetService.class);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        intent.putExtra(WidgetRemoteViewsFactory.INTENT_WIDTH, width);
-        intent.putExtra(WidgetRemoteViewsFactory.INTENT_HEIGHT, height);
-        intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-
         var rv = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-        rv.setInt(R.id.widget_root,  "setBackgroundResource", R.drawable.rounded_layout_light);
-        rv.setRemoteAdapter(R.id.timeline_list, intent);
-        // Set the empty view to be displayed if the collection is empty.  It must be a sibling
-        // view of the collection view.
-        rv.setEmptyView(R.id.timeline_list, R.id.empty_view);
 
-        // Bind a click listener template for the contents of the weather list.  Note that we
-        // need to update the intent's data if we set an extra, since the extras will be
-        // ignored otherwise.
-        var onClickIntent = new Intent(context, WidgetProvider.class);
-        onClickIntent.setAction(WidgetProvider.CLICK_ACTION);
-        onClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        onClickIntent.setData(Uri.parse(onClickIntent.toUri(Intent.URI_INTENT_SCHEME)));
-        var onClickPendingIntent = PendingIntent.getBroadcast(context, 0,
-                onClickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        rv.setPendingIntentTemplate(R.id.timeline_list, onClickPendingIntent);
-
-        // Bind the click intent for the refresh button on the widget
-//        var refreshIntent = new Intent(context, WidgetProvider.class);
-//        refreshIntent.setAction(WidgetProvider.REFRESH_ACTION);
-//        var refreshPendingIntent = PendingIntent.getBroadcast(context, 0,
-//                refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        //rv.setOnClickPendingIntent(R.id.refresh, refreshPendingIntent);
-
-        var todayMidnight = getTodayMidnight();
         var cursor = TimetableDatabase.getInstance(context)
                 .timetable()
-                .selectByDate(todayMidnight.getTimeInMillis());
+                .selectByDate(getTodayMidnight().getTimeInMillis());
+        var findDate = Calendar.getInstance();
         if(cursor.moveToLast()) {
             var lastLessonFinish = getLessonFinish(cursor);
 
             int dayDescId = R.string.widget_title_today;
 
-            var findDate = Calendar.getInstance();
             if(lastLessonFinish.compareTo(findDate) < 0) {
                 findDate.add(Calendar.DATE, 1);
                 dayDescId = R.string.widget_title_tomorrow;
@@ -200,6 +194,39 @@ public class WidgetProvider extends AppWidgetProvider {
                     String.format(dayOfWeek, context.getString(dayDescId))
             );
         }
+
+        // Specify the service to provide data for the collection widget.  Note that we need to
+        // embed the appWidgetId via the data otherwise it will be ignored.
+        var intent = new Intent(context, WidgetService.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        intent.putExtra(WidgetRemoteViewsFactory.DATE, getMidnight(findDate).getTimeInMillis());
+        intent.putExtra(WidgetRemoteViewsFactory.THEME_ID, theme.ordinal());
+        intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+
+        rv.setInt(R.id.widget_root,  "setBackgroundResource", R.drawable.rounded_layout_light);
+        rv.setRemoteAdapter(R.id.timeline_list, intent);
+        // Set the empty view to be displayed if the collection is empty.  It must be a sibling
+        // view of the collection view.
+        rv.setEmptyView(R.id.timeline_list, R.id.empty_view);
+
+        // Bind a click listener template for the contents of the weather list.  Note that we
+        // need to update the intent's data if we set an extra, since the extras will be
+        // ignored otherwise.
+        var onClickIntent = new Intent(context, WidgetProvider.class);
+        onClickIntent.setAction(WidgetProvider.CLICK_ACTION);
+        onClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        onClickIntent.setData(Uri.parse(onClickIntent.toUri(Intent.URI_INTENT_SCHEME)));
+        var onClickPendingIntent = PendingIntent.getBroadcast(context, 0,
+                onClickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        rv.setPendingIntentTemplate(R.id.timeline_list, onClickPendingIntent);
+
+        // Bind the click intent for the refresh button on the widget
+//        var refreshIntent = new Intent(context, WidgetProvider.class);
+//        refreshIntent.setAction(WidgetProvider.REFRESH_ACTION);
+//        var refreshPendingIntent = PendingIntent.getBroadcast(context, 0,
+//                refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //rv.setOnClickPendingIntent(R.id.refresh, refreshPendingIntent);
+
         return rv;
     }
 

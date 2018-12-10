@@ -18,46 +18,22 @@ import 'package:flutter/material.dart';
 import 'package:ranepa_timetable/timeline_element.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 
-class TimelineComponent extends StatefulWidget {
+class TimelineComponent extends StatelessWidget {
   final List<TimelineModel> timelineList;
 
   const TimelineComponent({Key key, @required this.timelineList}) : super(key: key);
 
   @override
-  TimelineComponentState createState() => TimelineComponentState();
-}
-
-class TimelineComponentState extends State<TimelineComponent>
-    with SingleTickerProviderStateMixin {
-  Animation<double> animation;
-  AnimationController controller;
-  double fraction = 0.0;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = AnimationController(
-        duration: const Duration(milliseconds: 1000), vsync: this);
-    controller.forward();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
       child: ListView.builder(
-        itemCount: widget.timelineList.length,
+        itemCount: timelineList.length,
         itemBuilder: (_, index) {
           return TimelineElement(
-            model: widget.timelineList[index]
+              model: timelineList[index]
           );
         },
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
   }
 }

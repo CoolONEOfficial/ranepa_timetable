@@ -27,6 +27,8 @@ class ThemeTitles {
         ];
 }
 
+enum ThemeIds { LIGHT, LIGHT_RED, DARK, DARK_RED }
+
 class Themes {
   static Themes _singleton;
 
@@ -68,5 +70,3 @@ class Themes {
 
   final List<ThemeData> themes;
 }
-
-enum ThemeIds { LIGHT, LIGHT_RED, DARK, DARK_RED }
