@@ -300,7 +300,7 @@ class TeacherModel {
   Map<String, dynamic> toJson() => _$TeacherModelToJson(this);
 
   factory TeacherModel.fromString(String respName) {
-    final words = respName.substring(respName.lastIndexOf('>') + 1).split(" ");
+    final words = respName.substring(respName.lastIndexOf('>') + 1).split(new RegExp(r"\s+"));
     return TeacherModel(words[words.length - 2], words[words.length - 3],
         words[words.length - 1]);
   }
