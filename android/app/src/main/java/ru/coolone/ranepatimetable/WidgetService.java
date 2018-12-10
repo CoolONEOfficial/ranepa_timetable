@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -81,11 +83,11 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
-    private static final int rectMargins = 8;
-    private static final int iconSize = 29;
-    private static final int circleRadius = 23;
-    private static final int rectRound = 5;
-    private static final int locationIconSize = 20;
+    private static final int rectMargins = 8,
+            iconSize = 29,
+            circleRadius = 23,
+            rectRound = 5,
+            circleMargin = 5;
 
     private Bitmap buildItemBitmap(Context context, float w, float h) {
         float dpScale = dpToPixel(1);
@@ -94,78 +96,104 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
 
         var bitmap = Bitmap.createBitmap((int) w, (int) h, Bitmap.Config.ARGB_8888);
         var canvas = new Canvas(bitmap);
-        var paint = new Paint();
-        paint.setAntiAlias(true);
 
-        paint.setStrokeWidth(dpScale * 2);
-        paint.setColor(0x88000000);
+        // Background rect draw
+        var rect = new RectF(dpScale * rectMargins, dpScale * rectMargins,
+                w - rectMargins * dpScale, h);
+        var bgRectPaint = new Paint();
+        bgRectPaint.setAntiAlias(true);
+        bgRectPaint.setColor(0x88000000);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            canvas.drawRoundRect(
-                    dpScale * rectMargins, dpScale * rectMargins,
-                    w - rectMargins * dpScale, h,
-                    dpScale * rectRound, dpScale * rectRound, paint
-            );
-        else canvas.drawRect(
-                dpScale * rectMargins, dpScale * rectMargins,
-                w - rectMargins * dpScale, h,
-                paint
-        );
+            canvas.drawRoundRect(rect, dpScale * rectRound, dpScale * rectRound, bgRectPaint);
+        else canvas.drawRect(rect, bgRectPaint);
 
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.WHITE);
         var first = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_FIRST)) != 0;
         var last = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_LAST)) != 0;
+
         var circleX = dpScale * (rectMargins * 2 + 70 + circleRadius);
         var circleY = dpScale * ((80 + rectMargins) / 2);
+
+        var translateIcon = 0.0f;
+
         if (!(first && last)) {
+            var rectPaint = new Paint();
+            rectPaint.setAntiAlias(true);
+            rectPaint.setColor(Color.GREEN);
+
+            // Rect round
             if (first || !last) {
-                canvas.drawLine(
-                        circleX, circleY + dpScale * (circleRadius / 2),
-                        circleX, dpScale * h,
-                        paint
+                translateIcon = circleMargin;
+                circleY -= circleMargin;
+                canvas.drawRect(
+                        circleX - circleRadius * dpScale, circleY,
+                        circleX + circleRadius * dpScale, dpScale * h,
+                        rectPaint
                 );
             }
             if (last || !first) {
-                canvas.drawLine(
-                        circleX, circleY - dpScale * (circleRadius / 2),
-                        circleX, 0,
-                        paint
+                translateIcon = -circleMargin;
+                circleY += circleMargin;
+                canvas.drawRect(
+                        circleX - circleRadius * dpScale, 0,
+                        circleX + circleRadius * dpScale, circleY,
+                        rectPaint
                 );
             }
+
+            // Arc draw
+            var arcRect = new RectF(
+                    circleX - circleRadius * dpScale, circleY - circleRadius * dpScale,
+                    circleX + circleRadius * dpScale, circleY + circleRadius * dpScale
+            );
+            var arcPaint = new Paint();
+            arcPaint.setAntiAlias(true);
+            arcPaint.setColor(Color.RED);
+
+            if (first)
+                canvas.drawArc(
+                        arcRect,
+                        180f,
+                        180f,
+                        false,
+                        arcPaint
+                );
+            else if (last)
+                canvas.drawArc(
+                        arcRect,
+                        0f,
+                        180f,
+                        false,
+                        arcPaint
+                );
+        } else {
+            // Draw circle
+            var circlePaint = new Paint();
+            circlePaint.setAntiAlias(true);
+            circlePaint.setColor(Color.BLUE);
+            circlePaint.setStyle(Paint.Style.FILL);
+
+            canvas.drawCircle(
+                    circleX,
+                    circleY,
+                    dpScale * (circleRadius + 3),
+                    circlePaint
+            );
         }
 
-        paint.setColor(Color.WHITE);
-        paint.setStyle(Paint.Style.FILL);
-        canvas.drawCircle(
-                circleX,
-                circleY,
-                dpScale * circleRadius,
-                paint);
-
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.BLUE);
-        canvas.drawCircle(
-                circleX,
-                circleY,
-                dpScale * circleRadius,
-                paint
-        );
-
-        paint.reset();
-        paint.setColor(Color.BLACK);
-        paint.setStrokeWidth(0);
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setAntiAlias(true);
-        paint.setSubpixelText(true);
-        paint.setTypeface(
+        // Draw icons
+        var iconPaint = new Paint();
+        iconPaint.setAntiAlias(true);
+        iconPaint.setSubpixelText(true);
+        iconPaint.setTextAlign(Paint.Align.CENTER);
+        iconPaint.setTypeface(
                 Typeface.createFromAsset(
                         context.getAssets(),
                         "fonts/TimetableIcons.ttf"
                 )
         );
 
-        paint.setTextSize(dpScale * iconSize);
+        // Draw lesson icon
+        iconPaint.setTextSize(dpScale * iconSize);
         canvas.drawText(
                 String.valueOf(
                         Character.toChars(
@@ -175,20 +203,20 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                                                         + Timeline.LessonModel.COLUMN_LESSON_ICON)
                                 )
                         )
-                ), circleX, circleY + dpScale * 10, paint
+                ), circleX, circleY + dpScale * (10 + translateIcon), iconPaint
         );
 
+        // Draw room location icon
         var roomLocation = Timeline.Location.values()[cursor.getInt(cursor.getColumnIndex(
                 Timeline.PREFIX_ROOM
                         + Timeline.RoomModel.COLUMN_ROOM_LOCATION)
         )];
-
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(dpScale * locationIconSize);
+        iconPaint.setColor(Color.WHITE);
+        iconPaint.setTextSize(dpScale * 20);
         canvas.drawText(
                 String.valueOf(
                         Character.toChars(roomLocation.iconCodePoint)
-                ), dpScale * 37, dpScale * 70, paint
+                ), dpScale * 37, dpScale * 70, iconPaint
         );
 
         return bitmap;
@@ -227,13 +255,12 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                             )
                     )
             );
-            rv.setTextViewText(R.id.widget_item_teacher,
-                    cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_SURNAME))
-                            + " " + cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_NAME))
-                            + " " + cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_PATRONYMIC))
-            );
-            rv.setTextViewText(R.id.widget_item_start, String.format(getCurrentLocale(), "%02d:%02d", start.hour, start.minute));
-            rv.setTextViewText(R.id.widget_item_finish, String.format(getCurrentLocale(), "%02d:%02d", finish.hour, finish.minute));
+            var teacherName = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_NAME));
+            var teacherSurname = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_SURNAME));
+            var teacherPatronymic = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_PATRONYMIC));
+            rv.setTextViewText(R.id.widget_item_teacher, teacherSurname + ' ' + teacherName.charAt(0) + ". " + teacherPatronymic.charAt(0) + '.');
+            rv.setTextViewText(R.id.widget_item_start, String.format(getCurrentLocale(), "%d:%02d", start.hour, start.minute));
+            rv.setTextViewText(R.id.widget_item_finish, String.format(getCurrentLocale(), "%d:%02d", finish.hour, finish.minute));
             rv.setTextViewText(R.id.widget_item_room_number, String.valueOf(
                     cursor.getInt(cursor.getColumnIndex(
                             Timeline.PREFIX_ROOM

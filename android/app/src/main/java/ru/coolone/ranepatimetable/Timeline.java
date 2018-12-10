@@ -29,6 +29,8 @@ public class Timeline {
         int iconCodePoint;
     }
 
+    public enum User {Student, Teacher}
+
     @AllArgsConstructor
     static public class TeacherModel {
         public static final String COLUMN_TEACHER_NAME = "name";
@@ -107,6 +109,7 @@ public class Timeline {
     public static final String COLUMN_GROUP = "group";
     public static final String COLUMN_FIRST = "first";
     public static final String COLUMN_LAST = "last";
+    public static final String COLUMN_USER = "user";
 
     public static final String PREFIX_LESSON = "lesson_";
     public static final String PREFIX_ROOM = "room_";
@@ -127,6 +130,10 @@ public class Timeline {
     @ColumnInfo(name = COLUMN_DATE)
     @TypeConverters(Timeline.class)
     final Date date;
+
+    @ColumnInfo(name = COLUMN_USER)
+    @TypeConverters(Timeline.class)
+    final User user;
 
     @ColumnInfo(name = COLUMN_GROUP)
     final String group;
@@ -166,18 +173,28 @@ public class Timeline {
         return status.ordinal();
     }
 
-    public static Timeline fromContentValues(ContentValues values) {
-        return new Timeline(
-                values.getAsLong(COLUMN_ID),
-                LessonModel.fromContentValues(values, PREFIX_LESSON),
-                RoomModel.fromContentValues(values, PREFIX_ROOM),
-                new Date(values.getAsLong(COLUMN_DATE)),
-                values.getAsString(COLUMN_GROUP),
-                values.getAsInteger(COLUMN_FIRST) == 1,
-                values.getAsInteger(COLUMN_LAST) == 1,
-                TeacherModel.fromContentValues(values, PREFIX_TEACHER),
-                TimeOfDayModel.fromContentValues(values, PREFIX_START),
-                TimeOfDayModel.fromContentValues(values, PREFIX_FINISH)
-        );
+    @TypeConverter
+    public static User toUser(int numeral) {
+        return User.values()[numeral];
     }
+
+    @TypeConverter
+    public static int fromUser(User status) {
+        return status.ordinal();
+    }
+
+//    public static Timeline fromContentValues(ContentValues values) {
+//        return new Timeline(
+//                values.getAsLong(COLUMN_ID),
+//                LessonModel.fromContentValues(values, PREFIX_LESSON),
+//                RoomModel.fromContentValues(values, PREFIX_ROOM),
+//                new Date(values.getAsLong(COLUMN_DATE)),
+//                values.getAsString(COLUMN_GROUP),
+//                values.getAsInteger(COLUMN_FIRST) == 1,
+//                values.getAsInteger(COLUMN_LAST) == 1,
+//                TeacherModel.fromContentValues(values, PREFIX_TEACHER),
+//                TimeOfDayModel.fromContentValues(values, PREFIX_START),
+//                TimeOfDayModel.fromContentValues(values, PREFIX_FINISH)
+//        );
+//    }
 }

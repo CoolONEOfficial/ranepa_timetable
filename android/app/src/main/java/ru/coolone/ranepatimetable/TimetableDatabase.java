@@ -41,18 +41,4 @@ public abstract class TimetableDatabase extends RoomDatabase {
         }
         return sInstance;
     }
-
-    /**
-     * Switches the internal implementation with an empty in-memory database.
-     *
-     * @param context The context.
-     */
-    @VisibleForTesting
-    public static void switchToInMemory(Context context) {
-        sInstance = Room.inMemoryDatabaseBuilder(
-                context.getApplicationContext(),
-                TimetableDatabase.class
-        ).build();
-    }
-
 }

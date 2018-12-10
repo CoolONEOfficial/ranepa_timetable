@@ -47,11 +47,11 @@ class TimelineElement extends StatelessWidget {
             padding: EdgeInsets.only(top: 45.0, left: 140.0, right: 15),
             child: Tooltip(
               message:
-              model.user == TimelineUser.STUDENT
+              model.user == TimelineUser.Student
               ? model.teacher.toString()
               : model.group,
               child: Text(
-                model.user == TimelineUser.STUDENT
+                model.user == TimelineUser.Student
                     ? model.teacher.initials()
                     : model.group,
                 overflow: TextOverflow.ellipsis,

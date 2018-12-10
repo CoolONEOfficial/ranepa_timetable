@@ -18,6 +18,8 @@
          FlutterApplication and put your custom class here.
     -->
 
+    <permission android:name="ru.coolone.ranepatimetable.provider.READ_WRITE"/>
+
     <application
         android:allowBackup="true"
         android:name="io.flutter.app.FlutterApplication"
@@ -70,7 +72,8 @@
             android:name=".TimetableDataProvider"
             android:authorities="ru.coolone.ranepatimetable.provider"
             android:exported="true"
-            tools:ignore="ExportedContentProvider" />
+            tools:ignore="ExportedContentProvider"
+            android:permission="ru.coolone.ranepatimetable.provider.READ_WRITE" />
     </application>
 
 </manifest>

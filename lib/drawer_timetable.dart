@@ -26,8 +26,6 @@ class DrawerTimetable extends StatelessWidget {
     StringCodec(),
   );
 
-  static const tabCount = 6;
-
   const DrawerTimetable({Key key, @required this.drawer, @required this.prefs})
       : super(key: key);
 
@@ -50,6 +48,8 @@ class DrawerTimetable extends StatelessWidget {
   DateTime toDateTime(TimeOfDay tod) =>
       DateTime(2018, 1, 1, tod.hour, tod.minute);
 
+  static const tabCount = 6;
+
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
@@ -66,8 +66,7 @@ class DrawerTimetable extends StatelessWidget {
     ];
 
     final tabs = List<Tab>();
-    var _tabCount = tabCount;
-    for (int mTabId = 0; mTabId < _tabCount; mTabId++) {
+    for (int mTabId = 0; mTabId < tabCount; mTabId++) {
       debugPrint("mTabId: " + mTabId.toString());
       final mDay = today.add(Duration(days: mTabId));
       debugPrint("mDay: " + mDay.day.toString());
@@ -75,7 +74,7 @@ class DrawerTimetable extends StatelessWidget {
       if (mDay.weekday == DateTime.sunday) {
         debugPrint("Skippin sunday");
         // Skip day
-        _tabCount++;
+        mTabId--;
         continue;
       }
       tabs.add(Tab(
@@ -180,8 +179,8 @@ class DrawerTimetable extends StatelessWidget {
                             : ssSearchItem.data.title),
                         user:
                             ssSearchItem.data.typeId == SearchItemTypeId.TEACHER
-                                ? TimelineUser.TEACHER
-                                : TimelineUser.STUDENT),
+                                ? TimelineUser.Teacher
+                                : TimelineUser.Student),
                   );
                 }
 
@@ -193,8 +192,9 @@ class DrawerTimetable extends StatelessWidget {
 
                   for (var mItemId = 0; mItemId < mTab.length - 1; mItemId++) {
                     final mItem = mTab[mItemId],
-                        mNextItem = mTab[mItemId+ 1],
-                        diff = toDateTime(mTab[mItemId].finish).difference(toDateTime(mTab[mItemId + 1].start));
+                        mNextItem = mTab[mItemId + 1],
+                        diff = toDateTime(mTab[mItemId].finish)
+                            .difference(toDateTime(mTab[mItemId + 1].start));
                     if (diff > Duration(minutes: 10)) {
                       mItem.last = true;
                       mNextItem.first = true;

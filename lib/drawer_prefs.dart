@@ -11,9 +11,10 @@ import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefsIds {
-  static const WIDGET_TRANSLUCENT = "widget_translucent";
-  static const THEME_ID = "theme_id";
-  static const SEARCH_ITEM_PREFIX = "search_item_";
+  static const WIDGET_TRANSLUCENT = "widget_translucent",
+      THEME_ID = "theme_id",
+      SEARCH_ITEM_PREFIX = "search_item_",
+      TAB_COUNT = "tab_count";
 }
 
 void showSearchItemSelect(BuildContext context, SharedPreferences prefs,
@@ -59,29 +60,36 @@ void showThemeSelect(BuildContext context, SharedPreferences prefs) {
 class DrawerPrefs extends StatelessWidget {
   static const ROUTE = "/prefs";
 
+  static const TAB_COUNT_DEFAULT = 6, TAB_COUNT_MIN = 3, TAB_COUNT_MAX = 12;
+
   final widgetTranslucent = StreamController<bool>();
 
   static Widget buildPreferenceButton(BuildContext context,
       {@required String title,
       @required String description,
       VoidCallback onPressed,
-      Widget rightWidget}) {
+      Widget rightWidget,
+      Widget bottomWidget}) {
+    var expandedChildren = <Widget>[
+      Text(
+        title,
+        style: Theme.of(context).textTheme.subhead,
+      ),
+      Container(
+        height: 2,
+      ),
+      Text(
+        description,
+        style: Theme.of(context).textTheme.caption,
+      ),
+    ];
+
+    if(bottomWidget != null) expandedChildren.add(bottomWidget);
+
     var rowChildren = <Widget>[
       Expanded(
           child: ListBody(
-        children: <Widget>[
-          Text(
-            title,
-            style: Theme.of(context).textTheme.subhead,
-          ),
-          Container(
-            height: 2,
-          ),
-          Text(
-            description,
-            style: Theme.of(context).textTheme.caption,
-          ),
-        ],
+        children: expandedChildren
       )),
     ];
 
