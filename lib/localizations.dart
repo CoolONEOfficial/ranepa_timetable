@@ -21,6 +21,8 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
+  // App title
+
   String get title {
     return Intl.message(
       'NRU RANEPA (Timetable)',
@@ -28,6 +30,8 @@ class AppLocalizations {
       desc: 'The application title',
     );
   }
+
+  // Search strings
 
   String get searchTip {
     return Intl.message(
@@ -42,6 +46,8 @@ class AppLocalizations {
       name: 'searchResults',
     );
   }
+
+  // Lessons titles
 
   String get groupEconomics {
     return Intl.message(
@@ -232,6 +238,50 @@ class AppLocalizations {
     );
   }
 
+  String get documentManagementSupport {
+    return Intl.message(
+      'Document management support',
+      name: 'documentManagementSupport',
+    );
+  }
+
+  String get accounting {
+    return Intl.message(
+      'Accounting',
+      name: 'accounting',
+    );
+  }
+
+  String get budgetCalculations {
+    return Intl.message(
+      'Budget calculations',
+      name: 'budgetCalculations',
+    );
+  }
+
+  String get taxation {
+    return Intl.message(
+      'Taxation',
+      name: 'taxation',
+    );
+  }
+
+  String get businessPlanning {
+    return Intl.message(
+      'Business planning',
+      name: 'businessPlanning',
+    );
+  }
+
+  String get inventory {
+    return Intl.message(
+      'Inventarization',
+      name: 'inventory',
+    );
+  }
+
+  // Days of week
+
   String get monday {
     return Intl.message(
       'Mo',
@@ -274,6 +324,8 @@ class AppLocalizations {
     );
   }
 
+  // Drawer titles
+
   String get timetable {
     return Intl.message(
       'Timetable',
@@ -294,6 +346,8 @@ class AppLocalizations {
       name: 'close',
     );
   }
+
+  // Drawer preferences buttons
 
   String get themeTitle {
     return Intl.message(
@@ -337,6 +391,8 @@ class AppLocalizations {
     );
   }
 
+  // Themes titles
+
   String get themeDark {
     return Intl.message(
       'Dark',
@@ -378,6 +434,8 @@ class AppLocalizations {
       name: 'themeLightRed',
     );
   }
+
+  // Intro strings
 
   String get introGroupTitle {
     return Intl.message(
@@ -434,6 +492,8 @@ class AppLocalizations {
       name: 'introTimetableDescription',
     );
   }
+
+  // Room location titles
 
   String get roomLocationAcademy {
     return Intl.message(

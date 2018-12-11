@@ -152,6 +152,36 @@
     "type": "text",
     "placeholders": {}
   },
+  "documentManagementSupport": "ДОУ (Документационное обеспечение управление)",
+  "@documentManagementSupport": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "accounting": "Бухучет",
+  "@accounting": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "budgetCalculations": "Расчеты с бюджетом",
+  "@budgetCalculations": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "taxation": "Налогообложение",
+  "@taxation": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "businessPlanning": "Бизнес-планирование",
+  "@businessPlanning": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "inventory": "Инвентаризация",
+  "@inventory": {
+    "type": "text",
+    "placeholders": {}
+  },
   "monday": "Пн",
   "@monday": {
     "type": "text",

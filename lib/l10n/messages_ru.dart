@@ -20,12 +20,16 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
+    "accounting" : MessageLookupByLibrary.simpleMessage("Бухучет"),
     "biology" : MessageLookupByLibrary.simpleMessage("Биология"),
+    "budgetCalculations" : MessageLookupByLibrary.simpleMessage("Расчеты с бюджетом"),
+    "businessPlanning" : MessageLookupByLibrary.simpleMessage("Бизнес-планирование"),
     "chemistry" : MessageLookupByLibrary.simpleMessage("Химия"),
     "close" : MessageLookupByLibrary.simpleMessage("Выход"),
     "computerArchitecture" : MessageLookupByLibrary.simpleMessage("Архитектура ПК"),
     "computerGraphic" : MessageLookupByLibrary.simpleMessage("Компьютерная графика"),
     "databases" : MessageLookupByLibrary.simpleMessage("Базы данных"),
+    "documentManagementSupport" : MessageLookupByLibrary.simpleMessage("ДОУ (Документационное обеспечение управление)"),
     "economics" : MessageLookupByLibrary.simpleMessage("Экономика"),
     "english" : MessageLookupByLibrary.simpleMessage("Английский язык"),
     "ethics" : MessageLookupByLibrary.simpleMessage("Этика"),
@@ -46,6 +50,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "introTimetableTitle" : MessageLookupByLibrary.simpleMessage("Пример расписания"),
     "introWelcomeDescription" : MessageLookupByLibrary.simpleMessage("Это приложение является неофициальным клиентом сайта РАНХиГС Нижнего Новгорода и не имеет ничего общего с его админинстрацией."),
     "introWelcomeTitle" : MessageLookupByLibrary.simpleMessage("Добро пожаловать"),
+    "inventory" : MessageLookupByLibrary.simpleMessage("Инвентаризация"),
     "lifeSafety" : MessageLookupByLibrary.simpleMessage("ОБЖ"),
     "literature" : MessageLookupByLibrary.simpleMessage("Литература"),
     "loading" : MessageLookupByLibrary.simpleMessage("Загрузка"),
@@ -67,6 +72,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "socialStudies" : MessageLookupByLibrary.simpleMessage("Обществознание"),
     "softwareDevelopment" : MessageLookupByLibrary.simpleMessage("Разработка ПО"),
     "speechCulture" : MessageLookupByLibrary.simpleMessage("Культура речи"),
+    "taxation" : MessageLookupByLibrary.simpleMessage("Налогообложение"),
     "themeBlack" : MessageLookupByLibrary.simpleMessage("Черная"),
     "themeBlackRed" : MessageLookupByLibrary.simpleMessage("Черно-красная"),
     "themeDark" : MessageLookupByLibrary.simpleMessage("Темная"),

@@ -90,8 +90,8 @@ class Search extends SearchDelegate<SearchItem> {
           SearchItem(SearchItemTypeId.GROUP, 15123, "Эб-012"),
           SearchItem(SearchItemTypeId.GROUP, 15022, "Эб-021"),
           SearchItem(SearchItemTypeId.GROUP, 15023, "Эб-022"),
-          SearchItem(SearchItemTypeId.GROUP, 15113, "Эб-031"),
-          SearchItem(SearchItemTypeId.GROUP, 15112, "Эб-032"),
+          SearchItem(SearchItemTypeId.GROUP, 15112, "Эб-031"),
+          SearchItem(SearchItemTypeId.GROUP, 15113, "Эб-032"),
           SearchDivider(AppLocalizations.of(context).searchResults),
         ];
 

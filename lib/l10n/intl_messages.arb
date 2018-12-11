@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-12-09T22:51:46.104720",
+  "@@last_modified": "2018-12-11T16:04:34.298632",
   "title": "NRU RANEPA (Timetable)",
   "@title": {
     "description": "The application title",
@@ -148,6 +148,36 @@
   },
   "databases": "Databases",
   "@databases": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "documentManagementSupport": "Document management support",
+  "@documentManagementSupport": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "accounting": "Accounting",
+  "@accounting": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "budgetCalculations": "Budget calculations",
+  "@budgetCalculations": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "taxation": "Taxation",
+  "@taxation": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "businessPlanning": "Business planning",
+  "@businessPlanning": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "inventory": "Inventarization",
+  "@inventory": {
     "type": "text",
     "placeholders": {}
   },

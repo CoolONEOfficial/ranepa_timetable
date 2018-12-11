@@ -66,7 +66,8 @@ class DrawerPrefs extends StatelessWidget {
 
   final widgetTranslucent = StreamController<bool>();
 
-  Widget _buildThemePreferenceButton(BuildContext context, SharedPreferences prefs) {
+  Widget _buildThemePreferenceButton(
+      BuildContext context, SharedPreferences prefs) {
     return WidgetTemplates.buildPreferenceButton(
       context,
       title: AppLocalizations.of(context).themeTitle,
@@ -74,34 +75,30 @@ class DrawerPrefs extends StatelessWidget {
       onPressed: () => showThemeSelect(context, prefs),
       rightWidget: StreamBuilder<int>(
         stream: themeIdBloc.stream,
-        initialData: prefs.getInt(PrefsIds.THEME_ID) ??
-            Themes.DEFAULT_THEME_ID.index,
+        initialData:
+            prefs.getInt(PrefsIds.THEME_ID) ?? Themes.DEFAULT_THEME_ID.index,
         builder: (context, snapshot) =>
             Text(ThemeTitles(context).titles[snapshot.data]),
       ),
     );
   }
 
-  Widget _buildWidgetTranslucentPreferenceButton(BuildContext context, SharedPreferences prefs) {
+  Widget _buildWidgetTranslucentPreferenceButton(
+      BuildContext context, SharedPreferences prefs) {
     return StreamBuilder<bool>(
-      initialData:
-      prefs.getBool(PrefsIds.WIDGET_TRANSLUCENT) ?? true,
+      initialData: prefs.getBool(PrefsIds.WIDGET_TRANSLUCENT) ?? true,
       stream: widgetTranslucent.stream,
-      builder: (context, snapshot) =>
-          WidgetTemplates.buildPreferenceButton(
+      builder: (context, snapshot) => WidgetTemplates.buildPreferenceButton(
             context,
-            title:
-            AppLocalizations.of(context).widgetTranslucentTitle,
-            description: AppLocalizations.of(context)
-                .widgetTranslucentDescription,
+            title: AppLocalizations.of(context).widgetTranslucentTitle,
+            description:
+                AppLocalizations.of(context).widgetTranslucentDescription,
             rightWidget: Checkbox(
               value: snapshot.data,
               onChanged: (value) {
                 widgetTranslucent.add(value);
-                prefs
-                    .setBool(PrefsIds.WIDGET_TRANSLUCENT, value)
-                    .then(
-                      (_) {
+                prefs.setBool(PrefsIds.WIDGET_TRANSLUCENT, value).then(
+                  (_) {
                     PlatformChannels.refreshWidget();
                   },
                 );
@@ -111,7 +108,8 @@ class DrawerPrefs extends StatelessWidget {
     );
   }
 
-  Widget _buildSearchItemPreferenceButton(BuildContext context, SharedPreferences prefs) {
+  Widget _buildSearchItemPreferenceButton(
+      BuildContext context, SharedPreferences prefs) {
     return WidgetTemplates.buildPreferenceButton(
       context,
       title: AppLocalizations.of(context).groupTitle,

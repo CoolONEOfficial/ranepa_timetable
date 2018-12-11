@@ -40,7 +40,9 @@ class TimetableIcons {
   static const IconData management = const IconData(0xe811, fontFamily: _kFontFam);
   static const IconData softwareDevelopment = const IconData(0xe812, fontFamily: _kFontFam);
   static const IconData unknownLesson = const IconData(0xe813, fontFamily: _kFontFam);
+  static const IconData documentManagementSupport = const IconData(0xe814, fontFamily: _kFontFam);
   static const IconData computerGraphic = const IconData(0xe815, fontFamily: _kFontFam);
+  static const IconData businessPlanning = const IconData(0xe816, fontFamily: _kFontFam);
   static const IconData databases = const IconData(0xe817, fontFamily: _kFontFam);
   static const IconData english = const IconData(0xe818, fontFamily: _kFontFam);
   static const IconData economics = const IconData(0xe819, fontFamily: _kFontFam);
@@ -48,4 +50,8 @@ class TimetableIcons {
   static const IconData academy = const IconData(0xe81b, fontFamily: _kFontFam);
   static const IconData projectDevelopment = const IconData(0xe81c, fontFamily: _kFontFam);
   static const IconData operatingSystems = const IconData(0xe81d, fontFamily: _kFontFam);
+  static const IconData taxation = const IconData(0xe81e, fontFamily: _kFontFam);
+  static const IconData inventory = const IconData(0xe81f, fontFamily: _kFontFam);
+  static const IconData accounting = const IconData(0xe820, fontFamily: _kFontFam);
+  static const IconData budgetCalculations = const IconData(0xe821, fontFamily: _kFontFam);
 }

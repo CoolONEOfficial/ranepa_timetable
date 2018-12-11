@@ -116,12 +116,10 @@ class DrawerTimetable extends StatelessWidget {
                   final mItemDate = DateTime.parse(
                       mItem.children[TimetableResponseIndexes.Date.index].text);
 
-                  var dateAppend = mItemDate != mDate;
-                  if (dateAppend) {
-                    mTabId++;
-                    do {
-                      mDate = mDate.add(Duration(days: 1));
-                    } while (mItemDate != mDate); // skips sundays
+                  while (mItemDate != mDate) {
+                    mDate = mDate.add(Duration(days: 1));
+                    if (mDate.weekday != DateTime.sunday) // skips sundays
+                      mTabId++;
                   }
 
                   tabsLessonsList[mTabId].add(
@@ -184,7 +182,8 @@ class DrawerTimetable extends StatelessWidget {
                 }
 
                 if (tabsLessonsList.isNotEmpty)
-                  PlatformChannels.updateDb(tabsLessonsList.expand((f) => f).toList());
+                  PlatformChannels.updateDb(
+                      tabsLessonsList.expand((f) => f).toList());
 
                 final tabViews = List<Widget>();
                 for (var mTab in tabsLessonsList) {

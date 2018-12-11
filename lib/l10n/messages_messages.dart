@@ -20,12 +20,16 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
+    "accounting" : MessageLookupByLibrary.simpleMessage("Accounting"),
     "biology" : MessageLookupByLibrary.simpleMessage("Biology"),
+    "budgetCalculations" : MessageLookupByLibrary.simpleMessage("Budget calculations"),
+    "businessPlanning" : MessageLookupByLibrary.simpleMessage("Business planning"),
     "chemistry" : MessageLookupByLibrary.simpleMessage("Chemistry"),
     "close" : MessageLookupByLibrary.simpleMessage("Close"),
     "computerArchitecture" : MessageLookupByLibrary.simpleMessage("Сomputer Architecture"),
     "computerGraphic" : MessageLookupByLibrary.simpleMessage("Computer Graphic"),
     "databases" : MessageLookupByLibrary.simpleMessage("Databases"),
+    "documentManagementSupport" : MessageLookupByLibrary.simpleMessage("Document management support"),
     "economics" : MessageLookupByLibrary.simpleMessage("Economics"),
     "english" : MessageLookupByLibrary.simpleMessage("English"),
     "ethics" : MessageLookupByLibrary.simpleMessage("Ethics"),
@@ -46,6 +50,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "introTimetableTitle" : MessageLookupByLibrary.simpleMessage("Shedule example"),
     "introWelcomeDescription" : MessageLookupByLibrary.simpleMessage("This application is an unofficial client of the site of the Nizhny Novgorod RANEPA and has no relation to its administration."),
     "introWelcomeTitle" : MessageLookupByLibrary.simpleMessage("Welcome"),
+    "inventory" : MessageLookupByLibrary.simpleMessage("Inventarization"),
     "lifeSafety" : MessageLookupByLibrary.simpleMessage("Basics of life safety"),
     "literature" : MessageLookupByLibrary.simpleMessage("Literature"),
     "loading" : MessageLookupByLibrary.simpleMessage("Loading"),
@@ -67,6 +72,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "socialStudies" : MessageLookupByLibrary.simpleMessage("Social Studies"),
     "softwareDevelopment" : MessageLookupByLibrary.simpleMessage("Software Development"),
     "speechCulture" : MessageLookupByLibrary.simpleMessage("Culture of Speech"),
+    "taxation" : MessageLookupByLibrary.simpleMessage("Taxation"),
     "themeBlack" : MessageLookupByLibrary.simpleMessage("Black"),
     "themeBlackRed" : MessageLookupByLibrary.simpleMessage("Black Red"),
     "themeDark" : MessageLookupByLibrary.simpleMessage("Dark"),

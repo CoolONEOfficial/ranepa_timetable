@@ -31,7 +31,7 @@ class TimelineParent {
 }
 
 @JsonSerializable(nullable: false)
-class TimelineModel extends TimelineParent{
+class TimelineModel extends TimelineParent {
   final LessonModel lesson;
   final RoomModel room;
   final String group;
@@ -58,7 +58,8 @@ class TimelineModel extends TimelineParent{
       @required this.teacher,
       @required TimelineUser user,
       this.first = false,
-      this.last = false}) : super(user, date);
+      this.last = false})
+      : super(user, date);
 
   factory TimelineModel.fromJson(Map<String, dynamic> json) =>
       _$TimelineModelFromJson(json);
@@ -130,11 +131,10 @@ class LessonModel {
 
     LessonModel model;
 
-    // TODO: dou
-
     if (str.contains("математик"))
       model = types.math;
-    else if (str.contains("экономик") || (str.contains("экономическ") && str.contains("теори")))
+    else if (str.contains("экономик") ||
+        (str.contains("экономическ") && str.contains("теори")))
       model = types.economics;
     else if (str.contains("теори") && str.contains("информаци"))
       return types.informationTheory;
@@ -175,15 +175,29 @@ class LessonModel {
       model = types.softwareDevelopment;
     else if (str.contains("архитектур") &&
         (str.contains("эвм") || str.contains("пк")))
-      return types.computerArchitecture;
+      model = types.computerArchitecture;
     else if (str.contains("операционн") && str.contains("систем"))
-      return types.operatingSystems;
+      model = types.operatingSystems;
     else if (str.contains("компьютерн") && str.contains("график"))
-      return types.computerGraphic;
+      model = types.computerGraphic;
     else if (str.contains("проектн"))
       model = types.projectDevelopment;
     else if (str.contains("баз") && str.contains("данн"))
-      return types.databases;
+      model = types.databases;
+    else if (str.contains("обеспеч") &&
+        str.contains("управл") &&
+        str.contains("документ"))
+      model = types.documentManagementSupport;
+    else if (str.contains("инвентар"))
+      model = types.inventory;
+    else if (str.contains("бухучет"))
+      model = types.accounting;
+    else if (str.contains("планирован") && str.contains("бизнес"))
+      model = types.businessPlanning;
+    else if (str.contains("налогообложен"))
+      model = types.taxation;
+    else if (str.contains("расчет") && str.contains("бюдж"))
+      model = types.budgetCalculations;
     else
       model = LessonModel(parseLessonTitle(str),
           TimetableIcons.unknownLesson.codePoint); // Use original title
@@ -258,7 +272,22 @@ class LessonTypes {
             AppLocalizations.of(context).projectDevelopment,
             TimetableIcons.projectDevelopment.codePoint),
         databases = LessonModel(AppLocalizations.of(context).databases,
-            TimetableIcons.databases.codePoint);
+            TimetableIcons.databases.codePoint),
+        documentManagementSupport = LessonModel(
+            AppLocalizations.of(context).documentManagementSupport,
+            TimetableIcons.documentManagementSupport.codePoint),
+        accounting = LessonModel(AppLocalizations.of(context).accounting,
+            TimetableIcons.accounting.codePoint),
+        budgetCalculations = LessonModel(
+            AppLocalizations.of(context).budgetCalculations,
+            TimetableIcons.budgetCalculations.codePoint),
+        taxation = LessonModel(AppLocalizations.of(context).taxation,
+            TimetableIcons.taxation.codePoint),
+        businessPlanning = LessonModel(
+            AppLocalizations.of(context).businessPlanning,
+            TimetableIcons.businessPlanning.codePoint),
+        inventory = LessonModel(AppLocalizations.of(context).inventory,
+            TimetableIcons.inventory.codePoint);
 
   final BuildContext context;
 
@@ -285,7 +314,13 @@ class LessonTypes {
       operatingSystems,
       computerGraphic,
       projectDevelopment,
-      databases;
+      databases,
+      documentManagementSupport,
+      accounting,
+      budgetCalculations,
+      taxation,
+      businessPlanning,
+      inventory;
 }
 
 @JsonSerializable(nullable: false)
@@ -300,7 +335,9 @@ class TeacherModel {
   Map<String, dynamic> toJson() => _$TeacherModelToJson(this);
 
   factory TeacherModel.fromString(String respName) {
-    final words = respName.substring(respName.lastIndexOf('>') + 1).split(new RegExp(r"\s+"));
+    final words = respName
+        .substring(respName.lastIndexOf('>') + 1)
+        .split(new RegExp(r"\s+"));
     return TeacherModel(words[words.length - 2], words[words.length - 3],
         words[words.length - 1]);
   }
