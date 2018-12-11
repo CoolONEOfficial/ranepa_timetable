@@ -231,6 +231,8 @@ public class WidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        log.severe("widget onUpdate");
+
         // Update each of the widgets with the remote adapter
         for (int appWidgetId : appWidgetIds) {
             appWidgetManager.updateAppWidget(
@@ -244,6 +246,8 @@ public class WidgetProvider extends AppWidgetProvider {
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager,
                                           int appWidgetId, Bundle newOptions) {
+        log.severe("widget onAppWidgetOptionsChanged");
+
         appWidgetManager.updateAppWidget(
                 appWidgetId,
                 buildLayout(
@@ -252,5 +256,7 @@ public class WidgetProvider extends AppWidgetProvider {
                         appWidgetManager
                 )
         );
+
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.timeline_list);
     }
 }

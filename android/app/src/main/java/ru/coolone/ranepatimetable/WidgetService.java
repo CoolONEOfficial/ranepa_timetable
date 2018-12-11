@@ -97,7 +97,9 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             circleMargin = 5;
 
     private Bitmap buildItemBitmap(Context context, float w, float h) {
-        float dpScale = dpToPixel(1);
+        log.severe("w: " + w + ", h: " + h);
+
+        var dpScale = dpToPixel(1);
         w *= dpScale;
         h *= dpScale;
 
@@ -329,17 +331,6 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         if (cursor != null) {
             cursor.close();
         }
-
-//        Calendar cal = new GregorianCalendar();
-//        cal.setTimeInMillis(dateMillis);
-//        log.severe("find time: " + String.valueOf(cal.getTimeInMillis()) + " | " + cal.getTime());
-
         cursor = TimetableDatabase.getInstance(context).timetable().selectByDate(dateMillis);
-
-//        while (cursor.moveToNext()) {
-//            Calendar mCal = new GregorianCalendar();
-//            mCal.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(Timeline.COLUMN_DATE)));
-//            log.severe("mTime: " + String.valueOf(mCal.getTimeInMillis()) + " | " + cal.getTime());
-//        }
     }
 }
