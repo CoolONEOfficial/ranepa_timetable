@@ -135,7 +135,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                 circleY -= circleMargin;
                 canvas.drawRect(
                         circleX - circleRadius * dpScale, circleY - 1,
-                        circleX + circleRadius * dpScale, dpScale * h,
+                        circleX + circleRadius * dpScale, dpScale * h + 1,
                         rectPaint
                 );
             }
@@ -143,7 +143,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                 translateIcon = -circleMargin;
                 circleY += circleMargin;
                 canvas.drawRect(
-                        circleX - circleRadius * dpScale, 0,
+                        circleX - circleRadius * dpScale, -1,
                         circleX + circleRadius * dpScale, circleY + 1,
                         rectPaint
                 );

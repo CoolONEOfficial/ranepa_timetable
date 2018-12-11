@@ -20,7 +20,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="@dimen/widget_item_margins"
         android:layout_marginRight="@dimen/widget_item_margins"
-        android:singleLine="true" />
+        android:maxLines="1" />
 
     <TextView
         android:id="@+id/widget_item_teacher_or_group"
@@ -32,7 +32,7 @@
         android:layout_marginTop="45dp"
         android:layout_marginEnd="@dimen/widget_item_margins"
         android:layout_marginRight="@dimen/widget_item_margins"
-        android:singleLine="true" />
+        android:maxLines="1" />
 
     <TextView
         android:id="@+id/widget_item_room_number"
@@ -42,7 +42,7 @@
         android:layout_marginStart="55dp"
         android:layout_marginLeft="55dp"
         android:layout_marginTop="55dp"
-        android:singleLine="true" />
+        android:maxLines="1" />
 
     <TextView
         android:id="@+id/widget_item_start"
@@ -53,7 +53,16 @@
         android:layout_marginStart="15dp"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="13dp"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit ="marquee_forever"
+        android:scrollHorizontally="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:duplicateParentState="true">
+        <requestFocus android:focusable="true" android:focusableInTouchMode="true"
+            android:duplicateParentState="true" />
+    </TextView>
 
     <TextView
         android:id="@+id/widget_item_finish"
@@ -64,5 +73,5 @@
         android:layout_marginStart="15dp"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="33dp"
-        android:singleLine="true" />
+        android:maxLines="1" />
 </FrameLayout>
