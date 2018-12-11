@@ -283,7 +283,7 @@ class AppLocalizations {
 
   String get prefs {
     return Intl.message(
-      'Prefs',
+      'Preferences',
       name: 'prefs',
     );
   }

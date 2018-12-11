@@ -56,7 +56,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "philosophy" : MessageLookupByLibrary.simpleMessage("Philosophy"),
     "physicalCulture" : MessageLookupByLibrary.simpleMessage("Physical Culture"),
     "physics" : MessageLookupByLibrary.simpleMessage("Physics"),
-    "prefs" : MessageLookupByLibrary.simpleMessage("Prefs"),
+    "prefs" : MessageLookupByLibrary.simpleMessage("Preferences"),
     "projectDevelopment" : MessageLookupByLibrary.simpleMessage("Project Development"),
     "roomLocationAcademy" : MessageLookupByLibrary.simpleMessage("Academy"),
     "roomLocationHotel" : MessageLookupByLibrary.simpleMessage("Hotel (St. Pushkin, 8)"),

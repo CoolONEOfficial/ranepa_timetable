@@ -241,6 +241,8 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
 
     @Override
     public RemoteViews getViewAt(int position) {
+        var rv = new RemoteViews(context.getPackageName(), R.layout.widget_item);
+
         // Get the data for this position from the content provider
         if (cursor.moveToPosition(position)) {
             var date = new GregorianCalendar();
@@ -255,7 +257,6 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                     cursor.getInt(cursor.getColumnIndex(Timeline.PREFIX_FINISH + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE))
             );
 
-            var rv = new RemoteViews(context.getPackageName(), R.layout.widget_item);
             rv.setTextViewText(R.id.widget_item_lesson_title,
                     cursor.getString(
                             cursor.getColumnIndex(
@@ -295,16 +296,9 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                             80
                     )
             );
-
-            // Set the click intent so that we can handle it and show a toast message
-            var fillInIntent = new Intent();
-            var extras = new Bundle();
-            extras.putString(WidgetProvider.EXTRA_DAY_ID, date.toString());
-            fillInIntent.putExtras(extras);
-            rv.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
-            return rv;
         }
-        return null;
+
+        return rv;
     }
 
     @Override

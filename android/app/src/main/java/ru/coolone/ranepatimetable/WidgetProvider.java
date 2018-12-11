@@ -190,6 +190,7 @@ public class WidgetProvider extends AppWidgetProvider {
             rv.setTextViewText(R.id.widget_title,
                     String.format(dayOfWeek, context.getString(dayDescId))
             );
+            rv.setTextColor(R.id.widget_title, theme.textAccent);
         }
 
         // Specify the service to provide data for the collection widget.  Note that we need to
@@ -200,45 +201,30 @@ public class WidgetProvider extends AppWidgetProvider {
         intent.putExtra(WidgetRemoteViewsFactory.THEME_ID, theme.ordinal());
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
-        int resId = -1;
+        int rootsLayoutResId = -1;
         var translucent = prefs.getBoolean(PrefsIds.WidgetTranslucent.prefId, true);
         switch (theme) {
             case Dark:
             case DarkRed:
-                resId = translucent
+                rootsLayoutResId = translucent
                         ? R.drawable.rounded_layout_dark_translucent
                         : R.drawable.rounded_layout_dark;
                 break;
             case Light:
             case LightRed:
-                resId = translucent
+                rootsLayoutResId = translucent
                         ? R.drawable.rounded_layout_light_translucent
                         : R.drawable.rounded_layout_light;
                 break;
         }
-        rv.setInt(R.id.widget_root, "setBackgroundResource", resId);
+        rv.setInt(R.id.widget_root, "setBackgroundResource", rootsLayoutResId);
+        rv.setInt(R.id.floating_panel_root, "setBackgroundResource", rootsLayoutResId);
+
+
         rv.setRemoteAdapter(R.id.timeline_list, intent);
         // Set the empty view to be displayed if the collection is empty.  It must be a sibling
         // view of the collection view.
         rv.setEmptyView(R.id.timeline_list, R.id.empty_view);
-
-        // Bind a click listener template for the contents of the weather list.  Note that we
-        // need to update the intent's data if we set an extra, since the extras will be
-        // ignored otherwise.
-//        var onClickIntent = new Intent(context, WidgetProvider.class);
-//        onClickIntent.setAction(WidgetProvider.CLICK_ACTION);
-//        onClickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-//        onClickIntent.setData(Uri.parse(onClickIntent.toUri(Intent.URI_INTENT_SCHEME)));
-//        var onClickPendingIntent = PendingIntent.getBroadcast(context, 0,
-//                onClickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//        rv.setPendingIntentTemplate(R.id.timeline_list, onClickPendingIntent);
-
-        // Bind the click intent for the refresh button on the widget
-//        var refreshIntent = new Intent(context, WidgetProvider.class);
-//        refreshIntent.setAction(WidgetProvider.REFRESH_ACTION);
-//        var refreshPendingIntent = PendingIntent.getBroadcast(context, 0,
-//                refreshIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        //rv.setOnClickPendingIntent(R.id.refresh, refreshPendingIntent);
 
         return rv;
     }

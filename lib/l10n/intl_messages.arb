@@ -186,7 +186,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "prefs": "Prefs",
+  "prefs": "Preferences",
   "@prefs": {
     "type": "text",
     "placeholders": {}

@@ -54,6 +54,7 @@
             android:visibility="gone" />
 
         <LinearLayout
+            android:id="@+id/floating_panel_root"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
@@ -71,7 +72,6 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
                 android:src="@drawable/ic_calendar" />
-
 
             <ImageButton
                 android:id="@+id/add_alarm"

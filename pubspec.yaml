@@ -17,8 +17,8 @@ dependencies:
   xml: ^3.2.3
   shared_preferences: ^0.4.3
   json_serializable: ^2.0.0
-  numberpicker: ^0.1.7
   intro_views_flutter: ^2.4.0
+  android_intent: ^0.2.1
 
 dev_dependencies:
   flutter_test:

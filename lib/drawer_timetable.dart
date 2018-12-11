@@ -1,13 +1,12 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:ranepa_timetable/drawer_prefs.dart';
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/platform_channels.dart';
 import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/timeline.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
@@ -21,29 +20,8 @@ class DrawerTimetable extends StatelessWidget {
   final Drawer drawer;
   final SharedPreferences prefs;
 
-  static const channel = const BasicMessageChannel(
-    'ru.coolone.ranepatimetable/jsonChannel',
-    StringCodec(),
-  );
-
   const DrawerTimetable({Key key, @required this.drawer, @required this.prefs})
       : super(key: key);
-
-  Future<void> channelSet([dynamic args]) async {
-    var resp;
-    List<String> jsons = [];
-
-    for (var mArg in args) jsons.add(json.encode(mArg));
-
-    try {
-      debugPrint("Channel req.. args: ${jsons.toString()}");
-      resp = await channel.send(jsons.toString());
-    } on PlatformException catch (e) {
-      resp = e.message;
-    }
-
-    debugPrint("Get resp: " + resp.toString());
-  }
 
   DateTime toDateTime(TimeOfDay tod) =>
       DateTime(2018, 1, 1, tod.hour, tod.minute);
@@ -206,7 +184,7 @@ class DrawerTimetable extends StatelessWidget {
                 }
 
                 if (tabsLessonsList.isNotEmpty)
-                  channelSet(tabsLessonsList.expand((f) => f).toList());
+                  PlatformChannels.updateDb(tabsLessonsList.expand((f) => f).toList());
 
                 final tabViews = List<Widget>();
                 for (var mTab in tabsLessonsList) {

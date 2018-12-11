@@ -1,31 +1,30 @@
 package ru.coolone.ranepatimetable;
 
-import android.app.Activity;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.lang.ref.WeakReference;
-import java.text.DateFormat;
 
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.BasicMessageChannel;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.StringCodec;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 import lombok.AllArgsConstructor;
 import lombok.var;
 
-import static ru.coolone.ranepatimetable.Timeline.LessonModel.*;
-import static ru.coolone.ranepatimetable.Timeline.RoomModel.*;
-import static ru.coolone.ranepatimetable.Timeline.TeacherModel.*;
-import static ru.coolone.ranepatimetable.Timeline.TimeOfDayModel.*;
-import static ru.coolone.ranepatimetable.Timeline.*;
+import static ru.coolone.ranepatimetable.Timeline.COLUMN_ID;
+import static ru.coolone.ranepatimetable.Timeline.LessonModel.COLUMN_LESSON_TITLE;
+import static ru.coolone.ranepatimetable.Timeline.PREFIX_LESSON;
 
 public class MainActivity extends FlutterActivity {
 
@@ -61,16 +60,23 @@ public class MainActivity extends FlutterActivity {
                         );
 
                         new AgentAsyncTask(new WeakReference<>(getApplicationContext())).execute(arr);
+                    }
+                }
+        );
 
-//                        ContentValues[] valuesArr = new ContentValues[arr.length];
-//                        for(int mArrId = 0; mArrId < arr.length; mArrId++) {
-//                            var mTimeline = arr[mArrId];
-//                            var mValues = new ContentValues();
-//                            mValues.put(COLUMN_ID, mArrId);
-//                            mValues.put(PREFIX_LESSON + COLUMN_LESSON_TITLE, mTimeline.);
-//                            valuesArr[mArrId] = mValues;
-//                        }
-//                        getContentResolver().bulkInsert(TimetableDataProvider.URI_TIMELINE, valuesArr);
+        new MethodChannel(getFlutterView(), "ru.coolone.ranepatimetable/methodChannel").setMethodCallHandler(
+                new MethodChannel.MethodCallHandler() {
+                    @Override
+                    public void onMethodCall(MethodCall methodCall, MethodChannel.Result result) {
+                        if(methodCall.method.equals("refreshWidget")) {
+                            var intent = new Intent(MainActivity.this, WidgetProvider.class);
+                            intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                            var ids = AppWidgetManager.getInstance(getApplication())
+                                    .getAppWidgetIds(new ComponentName(getApplication(), WidgetProvider.class));
+                            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                            sendBroadcast(intent);
+                            result.success(new Object());
+                        } else result.notImplemented();
                     }
                 }
         );
