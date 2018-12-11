@@ -85,7 +85,7 @@ class DrawerPrefs extends StatelessWidget {
   Widget _buildWidgetTranslucentPreferenceButton(BuildContext context, SharedPreferences prefs) {
     return StreamBuilder<bool>(
       initialData:
-      prefs.getBool(PrefsIds.WIDGET_TRANSLUCENT) ?? false,
+      prefs.getBool(PrefsIds.WIDGET_TRANSLUCENT) ?? true,
       stream: widgetTranslucent.stream,
       builder: (context, snapshot) =>
           WidgetTemplates.buildPreferenceButton(

@@ -88,7 +88,7 @@ public class WidgetProvider extends AppWidgetProvider {
         final int primary, accent, textPrimary, textAccent, background;
     }
 
-    public static final int DEFAULT_THEME_ID = 0;
+    public static final int DEFAULT_THEME_ID = Theme.LightRed.ordinal();
     private static final String FLUTTER_PREFIX = "flutter.";
 
     @AllArgsConstructor

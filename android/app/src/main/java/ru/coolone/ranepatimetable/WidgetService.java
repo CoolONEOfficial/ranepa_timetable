@@ -56,8 +56,8 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         this.context = context;
         var intentDateMillis = intent.getLongExtra(DATE, -1);
         if (intentDateMillis != -1) dateMillis = intentDateMillis;
-        var themeId = intent.getIntExtra(THEME_ID, -1);
-        if (themeId != -1) theme = WidgetProvider.Theme.values()[themeId];
+        var themeId = intent.getIntExtra(THEME_ID, WidgetProvider.DEFAULT_THEME_ID);
+        theme = WidgetProvider.Theme.values()[themeId];
     }
 
     @Override

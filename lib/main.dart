@@ -27,10 +27,10 @@ class BaseWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
               ),
               decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  image: DecorationImage(
-                      image: AssetImage('assets/images/icon-foreground.png'),
-                  ),
+                color: Theme.of(context).primaryColor,
+                image: DecorationImage(
+                  image: AssetImage('assets/images/icon-foreground.png'),
+                ),
               ),
             ),
             ListTile(
