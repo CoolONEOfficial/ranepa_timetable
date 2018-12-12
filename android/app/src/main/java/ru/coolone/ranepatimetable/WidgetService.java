@@ -93,7 +93,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
     private static final int rectMargins = 8,
             iconSize = 29,
             circleRadius = 23,
-            rectRound = 5,
+            rectRound = 10,
             circleMargin = 5;
 
     private Bitmap buildItemBitmap(Context context, float w, float h) {

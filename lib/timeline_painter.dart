@@ -34,7 +34,7 @@ class TimelinePainter extends CustomPainter {
     const rectMargins = 8.0,
         iconSize = 15.0,
         circleRadius = 23.0,
-        rectRound = 5.0,
+        rectRound = 10.0,
         circleMargin = 5.0;
 
     canvas.drawRRect(

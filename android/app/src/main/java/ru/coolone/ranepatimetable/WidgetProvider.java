@@ -2,7 +2,6 @@ package ru.coolone.ranepatimetable;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -201,25 +200,37 @@ public class WidgetProvider extends AppWidgetProvider {
         intent.putExtra(WidgetRemoteViewsFactory.THEME_ID, theme.ordinal());
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
-        int rootsLayoutResId = -1;
         var translucent = prefs.getBoolean(PrefsIds.WidgetTranslucent.prefId, true);
+        var bodyLayoutResLight = translucent
+                ? R.drawable.rounded_body_layout_light_translucent
+                : R.drawable.rounded_body_layout_light;
+        var bodyLayoutResDark = translucent
+                ? R.drawable.rounded_body_layout_dark_translucent
+                : R.drawable.rounded_body_layout_dark;
+        var headLayoutResLight = translucent
+                ? R.drawable.rounded_head_layout_light_translucent
+                : R.drawable.rounded_head_layout_light;
+        var headLayoutResDark = translucent
+                ? R.drawable.rounded_head_layout_dark_translucent
+                : R.drawable.rounded_head_layout_dark;
+
+        int bodyLayoutResId = -1;
+        int headLayoutResId = -1;
+
         switch (theme) {
             case Dark:
             case DarkRed:
-                rootsLayoutResId = translucent
-                        ? R.drawable.rounded_layout_dark_translucent
-                        : R.drawable.rounded_layout_dark;
+                bodyLayoutResId = bodyLayoutResDark;
+                headLayoutResId = headLayoutResDark;
                 break;
             case Light:
             case LightRed:
-                rootsLayoutResId = translucent
-                        ? R.drawable.rounded_layout_light_translucent
-                        : R.drawable.rounded_layout_light;
+                bodyLayoutResId = bodyLayoutResLight;
+                headLayoutResId = headLayoutResLight;
                 break;
         }
-        rv.setInt(R.id.widget_root, "setBackgroundResource", rootsLayoutResId);
-        rv.setInt(R.id.floating_panel_root, "setBackgroundResource", rootsLayoutResId);
-
+        rv.setInt(R.id.widget_body, "setBackgroundResource", bodyLayoutResId);
+        rv.setInt(R.id.widget_head, "setBackgroundResource", headLayoutResId);
 
         rv.setRemoteAdapter(R.id.timeline_list, intent);
         // Set the empty view to be displayed if the collection is empty.  It must be a sibling
