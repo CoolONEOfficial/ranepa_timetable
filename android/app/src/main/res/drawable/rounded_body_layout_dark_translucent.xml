@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:top="@dimen/widget_head_height">
+        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+            <solid android:color="#88303030" />
+            <corners
+                android:bottomLeftRadius="@dimen/widget_item_round"
+                android:bottomRightRadius="@dimen/widget_item_round" />
+            <padding
+                android:bottom="0dp"
+                android:left="0dp"
+                android:right="0dp"
+                android:top="0dp" />
+        </shape>
+    </item>
+</layer-list>
