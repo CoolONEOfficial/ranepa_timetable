@@ -28,7 +28,7 @@
             android:layout_height="match_parent"
             android:dividerHeight="0dp"
             android:divider="@null"
-            android:paddingTop="45dp"
+            android:paddingTop="40dp"
             android:paddingBottom="8dp"
             android:clipToPadding="false"
             android:scrollbars="none" />

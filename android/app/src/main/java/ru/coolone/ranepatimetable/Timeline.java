@@ -12,14 +12,17 @@ import android.provider.BaseColumns;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 /**
  * Represents one record of the Timeline table.
  */
+@NoArgsConstructor
 @AllArgsConstructor
 @Entity(tableName = Timeline.TABLE_NAME)
 public class Timeline {
 
+    @NoArgsConstructor
     @AllArgsConstructor
     public enum Location {
         Academy(0xe81b),
@@ -31,13 +34,16 @@ public class Timeline {
 
     public enum User {Student, Teacher}
 
+    public enum LessonType {Theory, Practice}
+
+    @NoArgsConstructor
     @AllArgsConstructor
     static public class TeacherModel {
         public static final String COLUMN_TEACHER_NAME = "name";
         public static final String COLUMN_TEACHER_SURNAME = "surname";
         public static final String COLUMN_TEACHER_PATRONYMIC = "patronymic";
 
-        final String name, surname, patronymic;
+        String name, surname, patronymic;
 
         public static TeacherModel fromContentValues(ContentValues values, String prefix) {
             return new TeacherModel(
@@ -48,12 +54,13 @@ public class Timeline {
         }
     }
 
+    @NoArgsConstructor
     @AllArgsConstructor
     static public class TimeOfDayModel {
         public static final String COLUMN_TIMEOFDAY_HOUR = "hour";
         public static final String COLUMN_TIMEOFDAY_MINUTE = "minute";
 
-        final int hour, minute;
+        int hour, minute;
 
         public static TimeOfDayModel fromContentValues(ContentValues values, String prefix) {
             return new TimeOfDayModel(
@@ -64,39 +71,64 @@ public class Timeline {
     }
 
     @AllArgsConstructor
+    @NoArgsConstructor
     static public class LessonModel {
         public static final String COLUMN_LESSON_TITLE = "title";
         public static final String COLUMN_LESSON_ICON = "iconCodePoint";
+        public static final String COLUMN_LESSON_TYPE = "type";
 
-        final String title;
-        final int iconCodePoint;
+        String title;
+        int iconCodePoint;
+        @TypeConverters(LessonModel.class)
+        LessonType type;
 
         public static LessonModel fromContentValues(ContentValues values, String prefix) {
             return new LessonModel(
                     values.getAsString(prefix + COLUMN_LESSON_TITLE),
-                    values.getAsInteger(prefix + COLUMN_LESSON_ICON)
+                    values.getAsInteger(prefix + COLUMN_LESSON_ICON),
+                    LessonType.values()[values.getAsInteger(prefix + COLUMN_LESSON_TYPE)]
             );
+        }
+
+        @TypeConverter
+        public static LessonType toLessonType(int numeral) {
+            return LessonType.values()[numeral];
+        }
+
+        @TypeConverter
+        public static int fromLessonType(LessonType type) {
+            return type.ordinal();
         }
     }
 
+    @NoArgsConstructor
     @AllArgsConstructor
     static public class RoomModel {
         public static final String COLUMN_ROOM_NUMBER = "number";
         public static final String COLUMN_ROOM_LOCATION = "location";
 
-        final int number;
+        String number;
 
-        @TypeConverters(Timeline.class)
-        final Location location;
+        @TypeConverters(RoomModel.class)
+        Location location;
 
         public static RoomModel fromContentValues(ContentValues values, String prefix) {
             return new RoomModel(
-                    values.getAsInteger(prefix + COLUMN_ROOM_NUMBER),
-                    Location.values()[
-                            values.getAsInteger(prefix + COLUMN_ROOM_LOCATION)
-                            ]
+                    values.getAsString(prefix + COLUMN_ROOM_NUMBER),
+                    Location.values()[values.getAsInteger(prefix + COLUMN_ROOM_LOCATION)]
             );
         }
+
+        @TypeConverter
+        public static Location toLocation(int numeral) {
+            return Location.values()[numeral];
+        }
+
+        @TypeConverter
+        public static int fromLocation(Location status) {
+            return status.ordinal();
+        }
+
     }
 
     /**
@@ -122,36 +154,36 @@ public class Timeline {
     public long id;
 
     @Embedded(prefix = PREFIX_LESSON)
-    final LessonModel lesson;
+    LessonModel lesson;
 
     @Embedded(prefix = PREFIX_ROOM)
-    final RoomModel room;
+    RoomModel room;
 
     @ColumnInfo(name = COLUMN_DATE)
     @TypeConverters(Timeline.class)
-    final Date date;
+    Date date;
 
     @ColumnInfo(name = COLUMN_USER)
     @TypeConverters(Timeline.class)
-    final User user;
+    User user;
 
     @ColumnInfo(name = COLUMN_GROUP)
-    final String group;
+    String group;
 
     @ColumnInfo(name = COLUMN_FIRST)
-    final boolean first;
+    boolean first;
 
     @ColumnInfo(name = COLUMN_LAST)
-    final boolean last;
+    boolean last;
 
     @Embedded(prefix = PREFIX_TEACHER)
-    final TeacherModel teacher;
+    TeacherModel teacher;
 
     @Embedded(prefix = PREFIX_START)
-    final TimeOfDayModel start;
+    TimeOfDayModel start;
 
     @Embedded(prefix = PREFIX_FINISH)
-    final TimeOfDayModel finish;
+    TimeOfDayModel finish;
 
     @TypeConverter
     public static Date toDate(Long dateLong) {
@@ -161,16 +193,6 @@ public class Timeline {
     @TypeConverter
     public static Long fromDate(Date date) {
         return date == null ? null : date.getTime();
-    }
-
-    @TypeConverter
-    public static Location toLocation(int numeral) {
-        return Location.values()[numeral];
-    }
-
-    @TypeConverter
-    public static int fromLocation(Location status) {
-        return status.ordinal();
     }
 
     @TypeConverter
@@ -189,6 +211,7 @@ public class Timeline {
 //                LessonModel.fromContentValues(values, PREFIX_LESSON),
 //                RoomModel.fromContentValues(values, PREFIX_ROOM),
 //                new Date(values.getAsLong(COLUMN_DATE)),
+//                Timeline.User.values()
 //                values.getAsString(COLUMN_GROUP),
 //                values.getAsInteger(COLUMN_FIRST) == 1,
 //                values.getAsInteger(COLUMN_LAST) == 1,

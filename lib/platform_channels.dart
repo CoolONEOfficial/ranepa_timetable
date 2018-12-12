@@ -2,12 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:ranepa_timetable/timeline_models.dart';
 
 class PlatformChannels {
-  static const jsonChannel = const BasicMessageChannel(
-    'ru.coolone.ranepatimetable/jsonChannel',
-    StringCodec(),
-  );
+  static const methodChannel =
+  const MethodChannel('ru.coolone.ranepatimetable/methodChannel');
 
   static void updateDb([dynamic args]) async {
     var resp;
@@ -17,16 +16,26 @@ class PlatformChannels {
 
     try {
       debugPrint("Channel req.. args: ${jsons.toString()}");
-      resp = await jsonChannel.send(jsons.toString());
+      resp = await methodChannel.invokeMethod("updateDb", jsons.toString());
     } on PlatformException catch (e) {
       resp = e.message;
     }
 
     debugPrint("Get resp: " + resp.toString());
+
+    await PlatformChannels.getDb();
   }
 
-  static const methodChannel =
-      const MethodChannel('ru.coolone.ranepatimetable/methodChannel');
+  static Future<List<List<TimelineModel>>> getDb() =>
+      methodChannel.invokeMethod("getDb").then((jsonStr) {
+        var listLessons = List<TimelineModel>();
+        for(var mLessonStr in json.decode(jsonStr)) {
+          listLessons.add(TimelineModel.fromJson(mLessonStr));
+        }
+
+        var d = 5;
+        return List<List<TimelineModel>>();
+      });
 
   static void refreshWidget() {
     methodChannel.invokeMethod("refreshWidget");

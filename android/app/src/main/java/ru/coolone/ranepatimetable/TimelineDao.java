@@ -6,6 +6,8 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 import android.database.Cursor;
 
+import java.util.List;
+
 @Dao
 public interface TimelineDao {
     /**
@@ -33,6 +35,14 @@ public interface TimelineDao {
      */
     @Insert
     public long[] insertAll(Timeline[] timelines);
+
+    /**
+     * Get all timetables.
+     *
+     * @return A {@link List} of all the timetables in the table.
+     */
+    @Query("SELECT * FROM " + Timeline.TABLE_NAME)
+    public Timeline[] getAll();
 
     /**
      * Select all timetables.

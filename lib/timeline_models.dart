@@ -42,10 +42,10 @@ class TimelineModel extends TimelineParent {
   @JsonKey(fromJson: _timeOfDayFromIntList, toJson: _timeOfDayToIntList)
   final TimeOfDay start, finish;
 
-  static TimeOfDay _timeOfDayFromIntList(Map<String, int> map) =>
+  static TimeOfDay _timeOfDayFromIntList(Map<String, dynamic> map) =>
       TimeOfDay(hour: map["hour"], minute: map["minute"]);
 
-  static Map<String, int> _timeOfDayToIntList(TimeOfDay timeOfDay) =>
+  static Map<String, dynamic> _timeOfDayToIntList(TimeOfDay timeOfDay) =>
       {"hour": timeOfDay.hour, "minute": timeOfDay.minute};
 
   TimelineModel(
@@ -100,16 +100,16 @@ String parseLessonTitle(String str) {
 }
 
 LessonType parseLessonType(String str) {
-  final openBracketIndex = str.indexOf('(');
-  assert(openBracketIndex != -1);
-  final lowerTitle = str.toLowerCase();
+  var openBracketIndex = str.indexOf('(');
+  if(openBracketIndex == -1) openBracketIndex = 0;
+  final lowerTitle = str.toLowerCase().substring(openBracketIndex);
 
-  return lowerTitle.contains("практ", openBracketIndex) ||
+  return lowerTitle.contains("практ") ||
           lowerTitle.contains("семин")
       ? LessonType.Practice
-      : lowerTitle.contains("лекци", openBracketIndex)
+      : lowerTitle.contains("лекци")
           ? LessonType.Theory
-          : null;
+          : LessonType.Practice;
 }
 
 @JsonSerializable(nullable: false)
@@ -203,6 +203,7 @@ class LessonModel {
           TimetableIcons.unknownLesson.codePoint); // Use original title
 
     model.type = parseLessonType(str);
+    debugPrint("mType: " + (model.type != null ? model.type.toString() : "NUULLLL SHITT"));
 
     return model;
   }

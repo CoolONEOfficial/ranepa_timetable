@@ -39,9 +39,9 @@ TimelineModel _$TimelineModelFromJson(Map<String, dynamic> json) {
   return TimelineModel(
       date: DateTime.parse(json['date'] as String),
       start: TimelineModel._timeOfDayFromIntList(
-          json['start'] as Map<String, int>),
+          json['start'] as Map<String, dynamic>),
       finish: TimelineModel._timeOfDayFromIntList(
-          json['finish'] as Map<String, int>),
+          json['finish'] as Map<String, dynamic>),
       room: RoomModel.fromJson(json['room'] as Map<String, dynamic>),
       group: json['group'] as String,
       lesson: LessonModel.fromJson(json['lesson'] as Map<String, dynamic>),

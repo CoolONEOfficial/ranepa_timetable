@@ -33,44 +33,6 @@ public class WidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context ctx, Intent intent) {
-//        final String action = intent.getAction();
-//        if (action.equals(REFRESH_ACTION)) {
-//            // BroadcastReceivers have a limited amount of time to do work, so for this sample, we
-//            // are triggering an update of the data on another thread.  In practice, this update
-//            // can be triggered from a background service, or perhaps as a result of user actions
-//            // inside the main application.
-//            final Context context = ctx;
-//            sWorkerQueue.removeMessages(0);
-//            sWorkerQueue.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    final ContentResolver r = context.getContentResolver();
-//                    final Cursor c = r.query(TimetableDataProvider.CONTENT_URI, null, null, null,
-//                            null);
-//                    final int count = c.getCount();
-//                    c.close();
-//                    // We disable the data changed observer temporarily since each of the updates
-//                    // will trigger an onChange() in our data observer.
-//                    r.unregisterContentObserver(sDataObserver);
-//                    for (int i = 0; i < count; ++i) {
-//                        final Uri uri = ContentUris.withAppendedId(TimetableDataProvider.CONTENT_URI, i);
-//                        final ContentValues values = new ContentValues();
-//                        values.put(TimetableDataProvider.Columns.TEMPERATURE,
-//                                new Random().nextInt(sMaxDegrees));
-//                        r.update(uri, values, null, null);
-//                    }
-//                    r.registerContentObserver(TimetableDataProvider.CONTENT_URI, true, sDataObserver);
-//                    final AppWidgetManager mgr = AppWidgetManager.getInstance(context);
-//                    final ComponentName cn = new ComponentName(context, WidgetProvider.class);
-//                    mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.weather_list);
-//                }
-//            });
-//        } else if (action.equals(CLICK_ACTION)) {
-//            // Show a toast
-//            final String day = intent.getStringExtra(EXTRA_DAY_ID);
-//            final String formatStr = ctx.getResources().getString(R.string.toast_format_string);
-//            Toast.makeText(ctx, String.format(formatStr, day), Toast.LENGTH_SHORT).show();
-//        }
         super.onReceive(ctx, intent);
     }
 

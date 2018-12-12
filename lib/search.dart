@@ -8,15 +8,16 @@ import 'package:xml/xml.dart' as xml;
 
 class SearchItemType {
   final IconData icon;
+  final String getStr;
 
-  const SearchItemType(this.icon);
+  const SearchItemType(this.icon, this.getStr);
 }
 
 enum SearchItemTypeId { TEACHER, GROUP }
 
 const SEARCH_ITEM_TYPES = const <SearchItemType>[
-  const SearchItemType(Icons.person), // TEACHER
-  const SearchItemType(Icons.group) // GROUP
+  const SearchItemType(Icons.person, "Prep"), // TEACHER
+  const SearchItemType(Icons.group, "Group") // GROUP
 ];
 
 abstract class SearchItemBase {
