@@ -26,7 +26,7 @@ class PlatformChannels {
   }
 
   static const methodChannel =
-      const MethodChannel('ru.coolone.ranepatimetable/jsonChannel');
+      const MethodChannel('ru.coolone.ranepatimetable/methodChannel');
 
   static void refreshWidget() {
     methodChannel.invokeMethod("refreshWidget");

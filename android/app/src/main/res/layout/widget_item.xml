@@ -39,15 +39,15 @@
         style="@style/TextAppearance.AppCompat.Body2"
         android:layout_width="40dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="55dp"
-        android:layout_marginLeft="55dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
         android:layout_marginTop="55dp"
         android:maxLines="1" />
 
     <TextView
         android:id="@+id/widget_item_start"
         style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="80dp"
+        android:layout_width="65dp"
         android:textAlignment="center"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
@@ -67,7 +67,7 @@
     <TextView
         android:id="@+id/widget_item_finish"
         style="@style/TextAppearance.AppCompat.Body2"
-        android:layout_width="80dp"
+        android:layout_width="65dp"
         android:textAlignment="center"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"

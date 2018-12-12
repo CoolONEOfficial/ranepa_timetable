@@ -226,7 +226,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         canvas.drawText(
                 String.valueOf(
                         Character.toChars(roomLocation.iconCodePoint)
-                ), dpScale * 37, dpScale * 70, iconPaint
+                ), dpScale * 25, dpScale * 70, iconPaint
         );
 
         return bitmap;
