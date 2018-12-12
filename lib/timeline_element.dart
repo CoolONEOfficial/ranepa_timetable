@@ -46,10 +46,9 @@ class TimelineElement extends StatelessWidget {
           Container(
             padding: EdgeInsets.only(top: 45.0, left: 140.0, right: 15),
             child: Tooltip(
-              message:
-              model.user == TimelineUser.Student
-              ? model.teacher.toString()
-              : model.group,
+              message: model.user == TimelineUser.Student
+                  ? model.teacher.toString()
+                  : model.group,
               child: Text(
                 model.user == TimelineUser.Student
                     ? model.teacher.initials()
@@ -62,7 +61,7 @@ class TimelineElement extends StatelessWidget {
           Container(
             padding: EdgeInsets.only(top: 55.0, left: 50.0),
             child: Text(
-              model.room.number.toString(),
+              model.room.number,
               overflow: TextOverflow.fade,
               style: Theme.of(context).textTheme.subtitle,
             ),

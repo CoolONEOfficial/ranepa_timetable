@@ -279,7 +279,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             rv.setTextViewText(R.id.widget_item_start, String.format(getCurrentLocale(), "%d:%02d", start.hour, start.minute));
             rv.setTextViewText(R.id.widget_item_finish, String.format(getCurrentLocale(), "%d:%02d", finish.hour, finish.minute));
             rv.setTextViewText(R.id.widget_item_room_number, String.valueOf(
-                    cursor.getInt(cursor.getColumnIndex(
+                    cursor.getString(cursor.getColumnIndex(
                             Timeline.PREFIX_ROOM
                                     + Timeline.RoomModel.COLUMN_ROOM_NUMBER)
                     )));

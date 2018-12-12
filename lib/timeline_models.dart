@@ -71,7 +71,7 @@ enum RoomLocation { Academy, Hotel, StudyHostel }
 
 @JsonSerializable(nullable: false)
 class RoomModel {
-  final int number;
+  final String number;
   final RoomLocation location;
 
   const RoomModel(this.number, this.location);
@@ -83,7 +83,7 @@ class RoomModel {
 
   factory RoomModel.fromString(String str) {
     return RoomModel(
-        int.parse(RegExp(r"\d{3}").stringMatch(str).toString()),
+        RegExp(r"(\d{3}[А-я]?)").stringMatch(str),
         str.startsWith("СО")
             ? RoomLocation.StudyHostel
             : str.startsWith("П8") ? RoomLocation.Hotel : RoomLocation.Academy);

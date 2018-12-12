@@ -66,7 +66,7 @@ Map<String, dynamic> _$TimelineModelToJson(TimelineModel instance) =>
     };
 
 RoomModel _$RoomModelFromJson(Map<String, dynamic> json) {
-  return RoomModel(json['number'] as int,
+  return RoomModel(json['number'] as String,
       _$enumDecode(_$RoomLocationEnumMap, json['location']));
 }
 
