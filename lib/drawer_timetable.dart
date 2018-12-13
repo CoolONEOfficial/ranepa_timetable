@@ -186,8 +186,9 @@ class DrawerTimetable extends StatelessWidget {
             key: scaffoldKey,
             body: WidgetTemplates.buildFutureBuilder(
               context,
-              future: loadTimetable(context, today,
-                  today.add(Duration(days: dayCount - 1)), ssSearchItem.data),
+              future: PlatformChannels.getDb(),
+//              loadTimetable(context, today,
+//                  today.add(Duration(days: dayCount - 1)), ssSearchItem.data),
               builder: (context, ssResp) {
                 final tabViews = List<Widget>();
                 for (var mTab in timetable) {

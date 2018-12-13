@@ -76,10 +76,12 @@ public class MainActivity extends FlutterActivity {
                                         .timetable()
                                         .getAll();
 
+                                var arrStr = g.toJson(
+                                        arr
+                                );
+
                                 result.success(
-                                        g.toJson(
-                                                arr
-                                        )
+                                        arrStr
                                 );
                                 log.severe("getDb success");
                                 break;

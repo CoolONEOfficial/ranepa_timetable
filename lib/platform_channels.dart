@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:ranepa_timetable/drawer_timetable.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 
 class PlatformChannels {
@@ -22,19 +23,21 @@ class PlatformChannels {
     }
 
     debugPrint("Get resp: " + resp.toString());
-
-    await PlatformChannels.getDb();
   }
 
   static Future<List<List<TimelineModel>>> getDb() =>
       methodChannel.invokeMethod("getDb").then((jsonStr) {
-        var listLessons = List<TimelineModel>();
+        var listDays = List<List<TimelineModel>>.generate(
+            DrawerTimetable.dayCount, (_) => List<TimelineModel>());
+        var mLessonDay;
+        var mTimtetableId = -1;
         for (var mLessonStr in json.decode(jsonStr)) {
-          listLessons.add(TimelineModel.fromJson(mLessonStr));
+          var mLesson = TimelineModel.fromJson(mLessonStr);
+          if (mLesson.date.day != mLessonDay) mTimtetableId++;
+          listDays[mTimtetableId].add(mLesson);
         }
 
-        var d = 5;
-        return <List<TimelineModel>>[listLessons];
+        return listDays;
       });
 
   static void refreshWidget() {
