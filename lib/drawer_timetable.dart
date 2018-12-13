@@ -64,6 +64,7 @@ class DrawerTimetable extends StatelessWidget {
           var mDate = today;
           var mDayId = 0;
           for (var mItemId = 0; mItemId < itemArr.length; mItemId++) {
+            debugPrint("mItemId: $mItemId");
             var mItem = itemArr[mItemId];
 
             final mItemTimeStart =
@@ -106,6 +107,8 @@ class DrawerTimetable extends StatelessWidget {
                       ? TimelineUser.Teacher
                       : TimelineUser.Student),
             );
+
+            debugPrint("mDay: $mDayId");
           }
 
           for (var mDay in timetable) {
@@ -191,7 +194,8 @@ class DrawerTimetable extends StatelessWidget {
                   tabViews.add(TimelineComponent(timelineList: mTab));
                 }
                 if (timetable.isNotEmpty) {
-                  PlatformChannels.updateDb(timetable.expand((f) => f).toList());
+                  PlatformChannels.updateDb(
+                      timetable.expand((f) => f).toList());
                 }
                 return TabBarView(children: tabViews);
               },

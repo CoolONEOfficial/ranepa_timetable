@@ -96,7 +96,7 @@ public class MainActivity extends FlutterActivity {
                                 var timetable = TimetableDatabase.getInstance(getApplicationContext()).timetable();
                                 timetable.insertAll(arr);
                                 log.severe("updateDb success");
-                                result.success(new Object());
+                                result.success(null);
                                 break;
                             }
                             default:

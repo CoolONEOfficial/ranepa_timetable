@@ -34,7 +34,7 @@ public class Timeline {
 
     public enum User {Student, Teacher}
 
-    public enum LessonType {Theory, Practice}
+    public enum LessonType {None, Theory, Practice}
 
     @NoArgsConstructor
     @AllArgsConstructor
@@ -75,12 +75,12 @@ public class Timeline {
     static public class LessonModel {
         public static final String COLUMN_LESSON_TITLE = "title";
         public static final String COLUMN_LESSON_ICON = "iconCodePoint";
-        public static final String COLUMN_LESSON_TYPE = "type";
+        public static final String COLUMN_LESSON_TYPE = "lessonType";
 
         String title;
         int iconCodePoint;
         @TypeConverters(LessonModel.class)
-        LessonType type;
+        LessonType lessonType;
 
         public static LessonModel fromContentValues(ContentValues values, String prefix) {
             return new LessonModel(

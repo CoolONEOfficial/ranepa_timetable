@@ -6,7 +6,7 @@ import 'package:ranepa_timetable/timeline_models.dart';
 
 class PlatformChannels {
   static const methodChannel =
-  const MethodChannel('ru.coolone.ranepatimetable/methodChannel');
+      const MethodChannel('ru.coolone.ranepatimetable/methodChannel');
 
   static void updateDb([dynamic args]) async {
     var resp;
@@ -29,12 +29,12 @@ class PlatformChannels {
   static Future<List<List<TimelineModel>>> getDb() =>
       methodChannel.invokeMethod("getDb").then((jsonStr) {
         var listLessons = List<TimelineModel>();
-        for(var mLessonStr in json.decode(jsonStr)) {
+        for (var mLessonStr in json.decode(jsonStr)) {
           listLessons.add(TimelineModel.fromJson(mLessonStr));
         }
 
         var d = 5;
-        return List<List<TimelineModel>>();
+        return <List<TimelineModel>>[listLessons];
       });
 
   static void refreshWidget() {

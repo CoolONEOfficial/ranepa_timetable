@@ -15,6 +15,8 @@ import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 
+import lombok.var;
+
 
 public class TimetableDataProvider extends ContentProvider {
 
@@ -50,11 +52,11 @@ public class TimetableDataProvider extends ContentProvider {
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         final int code = MATCHER.match(uri);
         if (code == CODE_TIMELINE_DIR || code == CODE_TIMELINE_ITEM) {
-            final Context context = getContext();
-            if (context == null) {
-                return null;
-            }
-            TimelineDao timetable = TimetableDatabase.getInstance(context).timetable();
+            var context = getContext();
+            if (context == null) return null;
+
+            var timetable = TimetableDatabase.getInstance(context).timetable();
+
             final Cursor cursor;
             if (code == CODE_TIMELINE_DIR) {
                 cursor = timetable.selectAll();
@@ -62,6 +64,7 @@ public class TimetableDataProvider extends ContentProvider {
                 cursor = timetable.selectById(ContentUris.parseId(uri));
             }
             cursor.setNotificationUri(context.getContentResolver(), uri);
+
             return cursor;
         } else {
             throw new IllegalArgumentException("Unknown URI: " + uri);

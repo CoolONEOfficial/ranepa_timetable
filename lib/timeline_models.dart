@@ -90,7 +90,7 @@ class RoomModel {
   }
 }
 
-enum LessonType { Theory, Practice }
+enum LessonType { None, Theory, Practice }
 
 String parseLessonTitle(String str) {
   final openBracketIndex = str.indexOf('('),
@@ -101,24 +101,23 @@ String parseLessonTitle(String str) {
 
 LessonType parseLessonType(String str) {
   var openBracketIndex = str.indexOf('(');
-  if(openBracketIndex == -1) openBracketIndex = 0;
-  final lowerTitle = str.toLowerCase().substring(openBracketIndex);
+  if (openBracketIndex == -1) openBracketIndex = 0;
+  final lowerTitle = str.substring(openBracketIndex).toLowerCase();
+  debugPrint("m lower title: $lowerTitle");
 
-  return lowerTitle.contains("практ") ||
-          lowerTitle.contains("семин")
+  return (lowerTitle.contains("практ") || lowerTitle.contains("семин"))
       ? LessonType.Practice
-      : lowerTitle.contains("лекци")
-          ? LessonType.Theory
-          : LessonType.Practice;
+      : (lowerTitle.contains("лекци") ? LessonType.Theory : LessonType.None);
 }
 
 @JsonSerializable(nullable: false)
 class LessonModel {
   final String title;
   final int iconCodePoint;
-  LessonType type;
+  LessonType lessonType;
 
-  LessonModel(this.title, this.iconCodePoint, {this.type});
+  LessonModel(this.title, this.iconCodePoint,
+      {this.lessonType = LessonType.None});
 
   factory LessonModel.fromJson(Map<String, dynamic> json) =>
       _$LessonModelFromJson(json);
@@ -127,83 +126,83 @@ class LessonModel {
 
   factory LessonModel.fromString(BuildContext context, String str) {
     final types = LessonTypes(context);
-    str = str.toLowerCase();
+    final lowerStr = str.toLowerCase();
 
     LessonModel model;
 
-    if (str.contains("математик"))
+    if (lowerStr.contains("математик"))
       model = types.math;
-    else if (str.contains("экономик") ||
-        (str.contains("экономическ") && str.contains("теори")))
+    else if (lowerStr.contains("экономик") ||
+        (lowerStr.contains("экономическ") && lowerStr.contains("теори")))
       model = types.economics;
-    else if (str.contains("теори") && str.contains("информаци"))
+    else if (lowerStr.contains("теори") && lowerStr.contains("информаци"))
       return types.informationTheory;
-    else if (str.contains("философи"))
+    else if (lowerStr.contains("философи"))
       model = types.philosophy;
-    else if (str.contains("культур") && str.contains("реч"))
+    else if (lowerStr.contains("культур") && lowerStr.contains("реч"))
       return types.speechCulture;
-    else if (str.contains("физик"))
+    else if (lowerStr.contains("физик"))
       model = types.physics;
-    else if (str.contains("хими"))
+    else if (lowerStr.contains("хими"))
       model = types.chemistry;
-    else if (str.contains("литератур"))
+    else if (lowerStr.contains("литератур"))
       model = types.literature;
-    else if (str.contains("иностранн") || str.contains("английск"))
+    else if (lowerStr.contains("иностранн") || lowerStr.contains("английск"))
       model = types.english;
-    else if (str.contains("информатик"))
+    else if (lowerStr.contains("информатик"))
       model = types.informatics;
-    else if (str.contains("географи"))
+    else if (lowerStr.contains("географи"))
       model = types.geography;
-    else if (str.contains("истори"))
+    else if (lowerStr.contains("истори"))
       model = types.history;
-    else if (str.contains("обж") ||
-        (str.contains("безопасност") && str.contains("жизнедеятельност")))
+    else if (lowerStr.contains("обж") ||
+        (lowerStr.contains("безопасност") &&
+            lowerStr.contains("жизнедеятельност")))
       return types.lifeSafety;
-    else if (str.contains("биологи"))
+    else if (lowerStr.contains("биологи"))
       model = types.biology;
-    else if (str.contains("общество"))
+    else if (lowerStr.contains("общество"))
       model = types.socialStudies;
-    else if (str.contains("физ") && str.contains("культур"))
+    else if (lowerStr.contains("физ") && lowerStr.contains("культур"))
       return types.physicalCulture;
-    else if (str.contains("этик"))
+    else if (lowerStr.contains("этик"))
       model = types.ethics;
-    else if (str.contains("менеджмент"))
+    else if (lowerStr.contains("менеджмент"))
       model = types.management;
-    else if (str.contains("разработ") &&
-        ((str.contains("програмн") && str.contains("обеспечени")) ||
-            str.contains("ПО")))
+    else if (lowerStr.contains("разработ") &&
+        ((lowerStr.contains("програмн") && lowerStr.contains("обеспечени")) ||
+            lowerStr.contains("ПО")))
       model = types.softwareDevelopment;
-    else if (str.contains("архитектур") &&
-        (str.contains("эвм") || str.contains("пк")))
+    else if (lowerStr.contains("архитектур") &&
+        (lowerStr.contains("эвм") || lowerStr.contains("пк")))
       model = types.computerArchitecture;
-    else if (str.contains("операционн") && str.contains("систем"))
+    else if (lowerStr.contains("операционн") && lowerStr.contains("систем"))
       model = types.operatingSystems;
-    else if (str.contains("компьютерн") && str.contains("график"))
+    else if (lowerStr.contains("компьютерн") && lowerStr.contains("график"))
       model = types.computerGraphic;
-    else if (str.contains("проектн"))
+    else if (lowerStr.contains("проектн"))
       model = types.projectDevelopment;
-    else if (str.contains("баз") && str.contains("данн"))
+    else if (lowerStr.contains("баз") && lowerStr.contains("данн"))
       model = types.databases;
-    else if (str.contains("обеспеч") &&
-        str.contains("управл") &&
-        str.contains("документ"))
+    else if (lowerStr.contains("обеспеч") &&
+        lowerStr.contains("управл") &&
+        lowerStr.contains("документ"))
       model = types.documentManagementSupport;
-    else if (str.contains("инвентар"))
+    else if (lowerStr.contains("инвентар"))
       model = types.inventory;
-    else if (str.contains("бухучет"))
+    else if (lowerStr.contains("бухучет"))
       model = types.accounting;
-    else if (str.contains("планирован") && str.contains("бизнес"))
+    else if (lowerStr.contains("планирован") && lowerStr.contains("бизнес"))
       model = types.businessPlanning;
-    else if (str.contains("налогообложен"))
+    else if (lowerStr.contains("налогообложен"))
       model = types.taxation;
-    else if (str.contains("расчет") && str.contains("бюдж"))
+    else if (lowerStr.contains("расчет") && lowerStr.contains("бюдж"))
       model = types.budgetCalculations;
     else
-      model = LessonModel(parseLessonTitle(str),
+      model = LessonModel(parseLessonTitle(lowerStr),
           TimetableIcons.unknownLesson.codePoint); // Use original title
 
-    model.type = parseLessonType(str);
-    debugPrint("mType: " + (model.type != null ? model.type.toString() : "NUULLLL SHITT"));
+    model.lessonType = parseLessonType(str);
 
     return model;
   }
