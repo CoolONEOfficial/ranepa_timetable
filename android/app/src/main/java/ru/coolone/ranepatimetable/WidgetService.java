@@ -75,7 +75,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
 
     @Override
     public int getCount() {
-        log.severe("Widget columns count: " + cursor.getCount());
+        log.info("Widget columns count: " + cursor.getCount());
         return cursor.getCount();
     }
 
@@ -97,7 +97,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             circleMargin = 5;
 
     private Bitmap buildItemBitmap(Context context, float w, float h) {
-        log.severe("w: " + w + ", h: " + h);
+        log.info("w: " + w + ", h: " + h);
 
         var dpScale = dpToPixel(1);
         w *= dpScale;

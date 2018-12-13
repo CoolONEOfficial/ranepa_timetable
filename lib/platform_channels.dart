@@ -9,36 +9,39 @@ class PlatformChannels {
   static const methodChannel =
       const MethodChannel('ru.coolone.ranepatimetable/methodChannel');
 
-  static void updateDb([dynamic args]) async {
-    var resp;
-    List<String> jsons = [];
-
+  static Future<void> updateDb([dynamic args]) async {
+    final jsons = List<String>();
     for (var mArg in args) jsons.add(json.encode(mArg));
 
     try {
       debugPrint("Channel req.. args: ${jsons.toString()}");
-      resp = await methodChannel.invokeMethod("updateDb", jsons.toString());
+      await methodChannel.invokeMethod("updateDb", jsons.toString());
     } on PlatformException catch (e) {
-      resp = e.message;
+      debugPrint("Update db platform exception! (${e.message})");
     }
-
-    debugPrint("Get resp: " + resp.toString());
   }
 
-  static Future<List<List<TimelineModel>>> getDb() =>
-      methodChannel.invokeMethod("getDb").then((jsonStr) {
-        var listDays = List<List<TimelineModel>>.generate(
-            DrawerTimetable.dayCount, (_) => List<TimelineModel>());
-        var mLessonDay;
-        var mTimtetableId = -1;
-        for (var mLessonStr in json.decode(jsonStr)) {
-          var mLesson = TimelineModel.fromJson(mLessonStr);
-          if (mLesson.date.day != mLessonDay) mTimtetableId++;
-          listDays[mTimtetableId].add(mLesson);
-        }
+  static Future<List<List<TimelineModel>>> getDb() async {
+    final jsonStr = await methodChannel.invokeMethod("getDb");
 
-        return listDays;
-      });
+    if (jsonStr == "") return null;
+
+    var listDays = List<List<TimelineModel>>.generate(
+        DrawerTimetable.dayCount, (_) => List<TimelineModel>());
+    List jsonArr = json.decode(jsonStr);
+    DateTime mLessonDate = TimelineModel.fromJson(jsonArr.first).date;
+    var mTimtetableId = 0;
+    for (var mLessonStr in jsonArr) {
+      var mLesson = TimelineModel.fromJson(mLessonStr);
+      while (mLesson.date != mLessonDate) {
+        mTimtetableId++;
+        mLessonDate = mLessonDate.add(Duration(days: 1));
+      }
+      listDays[mTimtetableId].add(mLesson);
+    }
+
+    return listDays;
+  }
 
   static void refreshWidget() {
     methodChannel.invokeMethod("refreshWidget");

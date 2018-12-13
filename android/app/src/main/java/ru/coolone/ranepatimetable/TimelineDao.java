@@ -36,6 +36,9 @@ public interface TimelineDao {
     @Insert
     public long[] insertAll(Timeline[] timelines);
 
+    @Query("DELETE FROM " + Timeline.TABLE_NAME + " WHERE strftime('%Y-%m-%d', date) < strftime('%Y-%m-%d', 'now')")
+    public int deleteOld();
+
     /**
      * Get all timetables.
      *

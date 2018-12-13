@@ -1,5 +1,7 @@
 package ru.coolone.ranepatimetable;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
@@ -25,14 +27,57 @@ import lombok.var;
 @Log
 @NoArgsConstructor
 public class WidgetProvider extends AppWidgetProvider {
-    public static String REFRESH_ACTION = "ru.coolone.ranepatimetable.REFRESH";
+    public static final String DELETE_OLD = "ru.coolone.ranepatimetable.DELETE_OLD";
+
+    AlarmManager manager;
+    PendingIntent updatePendingIntent, deleteOldPendingIntent;
+
+    @Override
+    public void onDisabled(Context context) {
+        if (manager != null && updatePendingIntent != null)
+            manager.cancel(updatePendingIntent);
+    }
 
     @Override
     public void onEnabled(Context context) {
+        manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        updatePendingIntent = PendingIntent.getBroadcast(
+                context,
+                0,
+                new Intent(context, WidgetProvider.class),
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        manager.setRepeating(
+                AlarmManager.RTC,
+                getTodayMidnight().getTimeInMillis(),
+                1000 * 60 * 60 * 24,
+                updatePendingIntent
+        );
+
+        deleteOldPendingIntent = PendingIntent.getBroadcast(
+                context,
+                0,
+                new Intent(DELETE_OLD),
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        manager.setRepeating(
+                AlarmManager.RTC,
+                getTodayMidnight().getTimeInMillis(),
+                1000 * 60 * 60 * 24,
+                deleteOldPendingIntent
+        );
     }
 
     @Override
     public void onReceive(Context ctx, Intent intent) {
+        if (intent.getAction() != null)
+            switch (intent.getAction()) {
+                case DELETE_OLD:
+                    TimetableDatabase.getInstance(ctx).timetable().deleteOld();
+                    break;
+            }
+
         super.onReceive(ctx, intent);
     }
 
@@ -105,7 +150,7 @@ public class WidgetProvider extends AppWidgetProvider {
         Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
         width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
         height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
-        log.severe("build layout: w" + width + " h" + height);
+        log.info("build layout: w" + width + " h" + height);
 
         var rv = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
 
@@ -204,7 +249,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        log.severe("widget onUpdate");
+        log.info("widget onUpdate");
 
         // Update each of the widgets with the remote adapter
         for (int appWidgetId : appWidgetIds) {
@@ -219,7 +264,7 @@ public class WidgetProvider extends AppWidgetProvider {
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager,
                                           int appWidgetId, Bundle newOptions) {
-        log.severe("widget onAppWidgetOptionsChanged");
+        log.info("widget onAppWidgetOptionsChanged");
 
         appWidgetManager.updateAppWidget(
                 appWidgetId,
