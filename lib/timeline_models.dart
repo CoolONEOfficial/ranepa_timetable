@@ -198,6 +198,8 @@ class LessonModel {
       model = types.taxation;
     else if (lowerStr.contains("расчет") && lowerStr.contains("бюдж"))
       model = types.budgetCalculations;
+    else if(lowerStr.contains("анализ") && lowerStr.contains("бухгалтер"))
+      model = types.accountingAnalysis;
     else
       model = LessonModel(parseLessonTitle(lowerStr),
           TimetableIcons.unknownLesson.codePoint); // Use original title
@@ -278,6 +280,8 @@ class LessonTypes {
             TimetableIcons.documentManagementSupport.codePoint),
         accounting = LessonModel(AppLocalizations.of(context).accounting,
             TimetableIcons.accounting.codePoint),
+        accountingAnalysis = LessonModel(AppLocalizations.of(context).accountingAnalysis,
+            TimetableIcons.accountingAnalysis.codePoint),
         budgetCalculations = LessonModel(
             AppLocalizations.of(context).budgetCalculations,
             TimetableIcons.budgetCalculations.codePoint),
@@ -317,6 +321,7 @@ class LessonTypes {
       databases,
       documentManagementSupport,
       accounting,
+      accountingAnalysis,
       budgetCalculations,
       taxation,
       businessPlanning,

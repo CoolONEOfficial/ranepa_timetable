@@ -28,15 +28,24 @@ class PlatformChannels {
     debugPrint("get db method from java: $jsonStr as ${jsonStr.runtimeType}");
 
     var dbTimetable = Map<DateTime, List<TimelineModel>>();
-    List jsonArr = json.decode(jsonStr);
-    if (jsonArr.isEmpty) return null;
-    DateTime mLessonDate = DrawerTimetable.today.subtract(Duration(days: 1));
+    List<TimelineModel> dbLessons = (json.decode(jsonStr) as List)
+        .map((f) => TimelineModel.fromJson(f))
+        .toList();
+    if (dbLessons.isEmpty) return null;
+
+    // Remove invalid lessons
+    dbLessons.removeWhere(
+      (mLesson) => mLesson.date.isBefore(DrawerTimetable.todayMidnight),
+    );
+
+    DateTime mLessonDate =
+        DrawerTimetable.todayMidnight.subtract(Duration(days: 1));
     var mTimetableId = -1;
-    for (var mLessonStr in jsonArr) {
-      var mLesson = TimelineModel.fromJson(mLessonStr);
+    for (final mLesson in dbLessons) {
       while (mLesson.date != mLessonDate) {
         mLessonDate = mLessonDate.add(Duration(days: 1));
-        if (mLessonDate.weekday != DateTime.sunday) { // skip sunday
+        if (mLessonDate.weekday != DateTime.sunday) {
+          // skip sunday
           dbTimetable.addAll({mLessonDate: List<TimelineModel>()});
           mTimetableId++;
         }

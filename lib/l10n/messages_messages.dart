@@ -21,6 +21,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "accounting" : MessageLookupByLibrary.simpleMessage("Accounting"),
+    "accountingAnalysis" : MessageLookupByLibrary.simpleMessage("Accounting analysis"),
     "biology" : MessageLookupByLibrary.simpleMessage("Biology"),
     "budgetCalculations" : MessageLookupByLibrary.simpleMessage("Budget calculations"),
     "businessPlanning" : MessageLookupByLibrary.simpleMessage("Business planning"),
@@ -33,6 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "economics" : MessageLookupByLibrary.simpleMessage("Economics"),
     "english" : MessageLookupByLibrary.simpleMessage("English"),
     "ethics" : MessageLookupByLibrary.simpleMessage("Ethics"),
+    "freeDay" : MessageLookupByLibrary.simpleMessage("Free day"),
     "friday" : MessageLookupByLibrary.simpleMessage("Fr"),
     "geography" : MessageLookupByLibrary.simpleMessage("Geography"),
     "groupDescription" : MessageLookupByLibrary.simpleMessage("Change the default timetable for the group/teacher"),
@@ -57,6 +59,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "management" : MessageLookupByLibrary.simpleMessage("Management"),
     "math" : MessageLookupByLibrary.simpleMessage("Mathematics"),
     "monday" : MessageLookupByLibrary.simpleMessage("Mo"),
+    "noInternetConnection" : MessageLookupByLibrary.simpleMessage("No internet connection"),
     "operatingSystems" : MessageLookupByLibrary.simpleMessage("Operating Systems"),
     "philosophy" : MessageLookupByLibrary.simpleMessage("Philosophy"),
     "physicalCulture" : MessageLookupByLibrary.simpleMessage("Physical Culture"),
@@ -83,7 +86,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "themeTitle" : MessageLookupByLibrary.simpleMessage("Theme"),
     "thursday" : MessageLookupByLibrary.simpleMessage("Th"),
     "timetable" : MessageLookupByLibrary.simpleMessage("Timetable"),
-    "title" : MessageLookupByLibrary.simpleMessage("NRU RANEPA (Timetable)"),
+    "title" : MessageLookupByLibrary.simpleMessage("RANEPA (Timetable)"),
     "tuesday" : MessageLookupByLibrary.simpleMessage("Tu"),
     "wednesday" : MessageLookupByLibrary.simpleMessage("We"),
     "widgetTranslucentDescription" : MessageLookupByLibrary.simpleMessage("Translucency android widget on home screen"),

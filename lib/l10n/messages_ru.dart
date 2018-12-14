@@ -21,6 +21,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "accounting" : MessageLookupByLibrary.simpleMessage("Бухучет"),
+    "accountingAnalysis" : MessageLookupByLibrary.simpleMessage("Анализ бухгалтерской отчетности"),
     "biology" : MessageLookupByLibrary.simpleMessage("Биология"),
     "budgetCalculations" : MessageLookupByLibrary.simpleMessage("Расчеты с бюджетом"),
     "businessPlanning" : MessageLookupByLibrary.simpleMessage("Бизнес-планирование"),
@@ -33,6 +34,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "economics" : MessageLookupByLibrary.simpleMessage("Экономика"),
     "english" : MessageLookupByLibrary.simpleMessage("Английский язык"),
     "ethics" : MessageLookupByLibrary.simpleMessage("Этика"),
+    "freeDay" : MessageLookupByLibrary.simpleMessage("Свободный день"),
     "friday" : MessageLookupByLibrary.simpleMessage("Пт"),
     "geography" : MessageLookupByLibrary.simpleMessage("География"),
     "groupDescription" : MessageLookupByLibrary.simpleMessage("Изменить группу/преподавателя для которой(-го) при запуске загружается расписание"),
@@ -57,6 +59,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "management" : MessageLookupByLibrary.simpleMessage("Менеджмент"),
     "math" : MessageLookupByLibrary.simpleMessage("Математика"),
     "monday" : MessageLookupByLibrary.simpleMessage("Пн"),
+    "noInternetConnection" : MessageLookupByLibrary.simpleMessage("Отсутствует соединение с интернетом"),
     "operatingSystems" : MessageLookupByLibrary.simpleMessage("Операционные системы"),
     "philosophy" : MessageLookupByLibrary.simpleMessage("Философия"),
     "physicalCulture" : MessageLookupByLibrary.simpleMessage("Физ-ра"),
@@ -83,7 +86,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "themeTitle" : MessageLookupByLibrary.simpleMessage("Тема"),
     "thursday" : MessageLookupByLibrary.simpleMessage("Чт"),
     "timetable" : MessageLookupByLibrary.simpleMessage("Расписание"),
-    "title" : MessageLookupByLibrary.simpleMessage("НИУ РАНХиГС (Расписание)"),
+    "title" : MessageLookupByLibrary.simpleMessage("РАНХиГС (Расписание)"),
     "tuesday" : MessageLookupByLibrary.simpleMessage("Вт"),
     "wednesday" : MessageLookupByLibrary.simpleMessage("Ср"),
     "widgetTranslucentDescription" : MessageLookupByLibrary.simpleMessage("Полупрозрачность виджета на домашнем экране"),

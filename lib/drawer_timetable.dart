@@ -47,22 +47,22 @@ class DrawerTimetable extends StatelessWidget {
     debugPrint("started get timetable");
 
     final dbTimetable = await PlatformChannels.getDb();
-    final today = DrawerTimetable.today;
+    final today = DrawerTimetable.todayMidnight;
 
     if (dbTimetable != null) {
       timetable.clear();
       timetable.addAll(dbTimetable);
+
+      final endCache = timetable.keys.last;
+      final endCacheWeekDiff =
+      endCache.difference(today.add(Duration(days: dayCount - 1)));
+      if (endCacheWeekDiff.inMilliseconds != 0) {
+        await loadTimetable(context, endCache,
+            today.add(Duration(days: dayCount - 1)), searchItem);
+      }
     } else {
       await loadTimetable(
           context, today, today.add(Duration(days: dayCount - 1)), searchItem);
-    }
-
-    final endCache = timetable.keys.last;
-    final endWeekDiff =
-        endCache.difference(today.add(Duration(days: dayCount - 1)));
-    if (endWeekDiff.inMilliseconds != 0) {
-      await loadTimetable(context, endCache,
-          today.add(Duration(days: dayCount - 1)), searchItem);
     }
 
     debugPrint("ended get timetable");
@@ -90,7 +90,7 @@ class DrawerTimetable extends StatelessWidget {
     DateTime to,
     SearchItem searchItem,
   ) async {
-    if(!await checkInternetConnection()) return;
+    if (!await checkInternetConnection()) return;
 
     final response = await buildHttpRequest(searchItem, from, to);
 
@@ -106,7 +106,7 @@ class DrawerTimetable extends StatelessWidget {
         .firstChild
         .children;
 
-    DateTime mDate = today.subtract(Duration(days: 1));
+    DateTime mDate = todayMidnight.subtract(Duration(days: 1));
     var mDayId = -1;
     var startDayId = -1;
     for (var mItemId = 0; mItemId < itemArr.length; mItemId++) {
@@ -176,7 +176,7 @@ class DrawerTimetable extends StatelessWidget {
                 .difference(toDateTime(mDay[mItemId + 1].start));
 
         debugPrint("mDiff: $diff");
-        if (diff > Duration(minutes: 10)) {
+        if (diff.inMinutes > 10) {
           mItem.last = true;
           mNextItem.first = true;
         }
@@ -192,20 +192,20 @@ class DrawerTimetable extends StatelessWidget {
         timetable.values.toList().sublist(startDayId).expand((f) => f));
   }
 
-  static DateTime _today;
+  static DateTime _todayMidnight;
 
-  static DateTime get today {
-    if (_today == null) {
+  static DateTime get todayMidnight {
+    if (_todayMidnight == null) {
       // lazy
       var now = DateTime.now();
-      _today = DateTime(
+      _todayMidnight = DateTime(
           now.year,
           now.month,
           now.weekday == DateTime.sunday
               ? now.day + 1
               : now.day); // skip sunday
     }
-    return _today;
+    return _todayMidnight;
   }
 
   @override
@@ -221,7 +221,7 @@ class DrawerTimetable extends StatelessWidget {
     ];
 
     final tabs = List<Tab>();
-    var mDay = today.subtract(Duration(days: 1));
+    var mDay = todayMidnight.subtract(Duration(days: 1));
     for (int mTabId = 0; mTabId < dayCount; mTabId++) {
       debugPrint("mTabId: " + mTabId.toString());
       mDay = mDay.add(Duration(days: 1));
@@ -248,23 +248,30 @@ class DrawerTimetable extends StatelessWidget {
           return Scaffold(
             drawer: drawer,
             key: scaffoldKey,
-            body: WidgetTemplates.buildFutureBuilder(
-              context,
-              future: getTimetable(context, ssSearchItem.data),
-              builder: (context, _) {
-                if (timetable.values.isEmpty) return Text("timetable empty");
+            body: StreamBuilder<void>(
+              stream: timetableFutureBuilderBloc.stream,
+              builder: (context, _) => WidgetTemplates.buildFutureBuilder(
+                context,
+                future: getTimetable(context, ssSearchItem.data),
+                builder: (context, _) {
+                  if (timetable.values.isEmpty)
+                    return WidgetTemplates.buildInternetErrorNotification(
+                        context, () => timetableFutureBuilderBloc.add(null));
 
-                final tabViews = List<Widget>();
-                for (var mTabDay in timetable.values) {
-                  tabViews.add(mTabDay.isEmpty
-                      ? Text("this shit is empty")
-                      : TimelineComponent(timelineList: mTabDay));
-                }
-                while (tabViews.length < dayCount) {
-                  tabViews.add(Text("this shit is empty"));
-                }
-                return TabBarView(children: tabViews);
-              },
+                  final tabViews = List<Widget>();
+                  for (var mTabDay in timetable.values) {
+                    tabViews.add(mTabDay.isEmpty
+                        ? WidgetTemplates.buildFreeDayNotification(
+                            context, ssSearchItem.data)
+                        : TimelineComponent(timelineList: mTabDay));
+                  }
+                  while (tabViews.length < dayCount) {
+                    tabViews.add(WidgetTemplates.buildFreeDayNotification(
+                        context, ssSearchItem.data));
+                  }
+                  return TabBarView(children: tabViews);
+                },
+              ),
             ),
             appBar: AppBar(
               elevation:
@@ -304,4 +311,5 @@ class DrawerTimetable extends StatelessWidget {
   }
 }
 
+final timetableFutureBuilderBloc = StreamController<void>();
 final timetableIdBloc = StreamController<SearchItem>.broadcast();

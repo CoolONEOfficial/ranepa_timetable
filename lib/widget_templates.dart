@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/search.dart';
+import 'package:ranepa_timetable/timetable_icons.dart';
 
 class WidgetTemplates {
   static Widget buildPreferenceButton(BuildContext context,
@@ -39,37 +41,74 @@ class WidgetTemplates {
     );
   }
 
-  static Widget _buildNotification(BuildContext context, String text,
-      [IconData icon]) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          icon == null
-              ? CircularProgressIndicator()
-              : FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Icon(icon, size: 140),
-                ),
-          Container(height: 5),
-          Text(
-            text,
-            style: Theme.of(context).textTheme.subtitle,
-          )
-        ],
-      ),
-    );
-  }
+  static Widget _buildNotification(
+          BuildContext context, String text, Widget widget) =>
+      Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            widget,
+            Container(height: 20),
+            Text(
+              text,
+              style: Theme.of(context).textTheme.title,
+            )
+          ],
+        ),
+      );
+
+  static Widget _buildIconNotification(BuildContext context, String text,
+          [IconData icon]) =>
+      _buildNotification(
+        context,
+        text,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Icon(icon, size: 140),
+        ),
+      );
 
   static Widget buildLoadingNotification(BuildContext context) =>
-      _buildNotification(context, AppLocalizations.of(context).loading);
+      _buildNotification(
+        context,
+        AppLocalizations.of(context).loading,
+        CircularProgressIndicator(),
+      );
 
   static Widget buildErrorNotification(BuildContext context, String error) =>
-      _buildNotification(context, error, Icons.error);
+      _buildIconNotification(context, error, Icons.error);
 
-  static Widget buildInternetErrorNotification(BuildContext context) =>
-      buildErrorNotification(context, AppLocalizations.of(context).noInternetConnection);
+  static Widget buildInternetErrorNotification(BuildContext context, VoidCallback onRefresh) =>
+      _buildNotification(
+        context,
+        AppLocalizations.of(context).noInternetConnection,
+        RawMaterialButton(
+          onPressed: onRefresh,
+          child: Icon(
+            Icons.refresh,
+            size: 100,
+          ),
+          shape: CircleBorder(),
+          padding: const EdgeInsets.all(30),
+        ),
+      );
+
+  static Widget buildFreeDayNotification(
+      BuildContext context, SearchItem searchItem) {
+    IconData icon;
+    switch (searchItem.typeId) {
+      case SearchItemTypeId.TEACHER:
+        icon = TimetableIcons.confetti;
+        break;
+      case SearchItemTypeId.GROUP:
+        icon = TimetableIcons.beer;
+        break;
+    }
+
+    return _buildIconNotification(
+        context, AppLocalizations.of(context).freeDay, icon);
+  }
 
   static Widget buildFutureBuilder<T>(BuildContext context,
       {@required Future future,
@@ -83,12 +122,14 @@ class WidgetTemplates {
             case ConnectionState.none:
             case ConnectionState.active:
             case ConnectionState.waiting:
-              return loading ?? WidgetTemplates.buildLoadingNotification(context);
+              return loading ??
+                  WidgetTemplates.buildLoadingNotification(context);
               break;
             case ConnectionState.done:
               if (snapshot.hasError)
                 return error ??
-                    WidgetTemplates.buildErrorNotification(context, snapshot.error);
+                    WidgetTemplates.buildErrorNotification(
+                        context, snapshot.error);
               return builder(context, snapshot);
           }
         });

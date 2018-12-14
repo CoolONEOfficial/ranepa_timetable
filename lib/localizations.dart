@@ -270,6 +270,13 @@ class AppLocalizations {
     );
   }
 
+  String get accountingAnalysis {
+    return Intl.message(
+      'Accounting analysis',
+      name: 'accountingAnalysis',
+    );
+  }
+
   String get budgetCalculations {
     return Intl.message(
       'Budget calculations',

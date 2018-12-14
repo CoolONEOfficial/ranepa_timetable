@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-12-14T20:33:28.243338",
+  "@@last_modified": "2018-12-14T21:10:06.747891",
   "title": "RANEPA (Timetable)",
   "@title": {
     "description": "The application title",
@@ -168,6 +168,11 @@
   },
   "accounting": "Accounting",
   "@accounting": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "accountingAnalysis": "Accounting analysis",
+  "@accountingAnalysis": {
     "type": "text",
     "placeholders": {}
   },
