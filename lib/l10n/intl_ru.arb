@@ -1,9 +1,18 @@
 {
   "@@locale": "ru",
   "@@last_modified": "2018-11-27T20:47:48.907357",
-  "title": "НИУ РАНХиГС (Расписание)",
+  "title": "РАНХиГС (Расписание)",
   "@title": {
-    "description": "The application title",
+    "type": "text",
+    "placeholders": {}
+  },
+  "noInternetConnection": "Отсутствует соединение с интернетом",
+  "@noInternetConnection": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "freeDay": "Свободный день",
+  "@freeDay": {
     "type": "text",
     "placeholders": {}
   },

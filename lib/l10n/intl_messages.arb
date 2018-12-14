@@ -1,8 +1,18 @@
 {
-  "@@last_modified": "2018-12-11T16:04:34.298632",
-  "title": "NRU RANEPA (Timetable)",
+  "@@last_modified": "2018-12-14T20:33:28.243338",
+  "title": "RANEPA (Timetable)",
   "@title": {
     "description": "The application title",
+    "type": "text",
+    "placeholders": {}
+  },
+  "noInternetConnection": "No internet connection",
+  "@noInternetConnection": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "freeDay": "Free day",
+  "@freeDay": {
     "type": "text",
     "placeholders": {}
   },

@@ -5,10 +5,10 @@ import 'package:ranepa_timetable/localizations.dart';
 class WidgetTemplates {
   static Widget buildPreferenceButton(BuildContext context,
       {@required String title,
-        @required String description,
-        VoidCallback onPressed,
-        Widget rightWidget,
-        Widget bottomWidget}) {
+      @required String description,
+      VoidCallback onPressed,
+      Widget rightWidget,
+      Widget bottomWidget}) {
     var expandedChildren = <Widget>[
       Text(
         title,
@@ -39,16 +39,22 @@ class WidgetTemplates {
     );
   }
 
-  static Widget buildLoading(BuildContext context) {
+  static Widget _buildNotification(BuildContext context, String text,
+      [IconData icon]) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          CircularProgressIndicator(),
+          icon == null
+              ? CircularProgressIndicator()
+              : FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Icon(icon, size: 140),
+                ),
           Container(height: 5),
           Text(
-            AppLocalizations.of(context).loading,
+            text,
             style: Theme.of(context).textTheme.subtitle,
           )
         ],
@@ -56,27 +62,14 @@ class WidgetTemplates {
     );
   }
 
-  static Widget buildErrorMessage(BuildContext context, String error) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Icon(Icons.error, size: 140),
-          ),
-          Container(height: 5),
-          Text(
-            error,
-            style: MediaQuery.of(context) != null
-                ? Theme.of(context).textTheme.subtitle
-                : DefaultTextStyle.of(context),
-          )
-        ],
-      ),
-    );
-  }
+  static Widget buildLoadingNotification(BuildContext context) =>
+      _buildNotification(context, AppLocalizations.of(context).loading);
+
+  static Widget buildErrorNotification(BuildContext context, String error) =>
+      _buildNotification(context, error, Icons.error);
+
+  static Widget buildInternetErrorNotification(BuildContext context) =>
+      buildErrorNotification(context, AppLocalizations.of(context).noInternetConnection);
 
   static Widget buildFutureBuilder<T>(BuildContext context,
       {@required Future future,
@@ -90,12 +83,12 @@ class WidgetTemplates {
             case ConnectionState.none:
             case ConnectionState.active:
             case ConnectionState.waiting:
-              return loading ?? WidgetTemplates.buildLoading(context);
+              return loading ?? WidgetTemplates.buildLoadingNotification(context);
               break;
             case ConnectionState.done:
               if (snapshot.hasError)
                 return error ??
-                    WidgetTemplates.buildErrorMessage(context, snapshot.error);
+                    WidgetTemplates.buildErrorNotification(context, snapshot.error);
               return builder(context, snapshot);
           }
         });

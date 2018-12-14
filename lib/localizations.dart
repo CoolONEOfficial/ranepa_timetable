@@ -25,9 +25,27 @@ class AppLocalizations {
 
   String get title {
     return Intl.message(
-      'NRU RANEPA (Timetable)',
+      'RANEPA (Timetable)',
       name: 'title',
       desc: 'The application title',
+    );
+  }
+
+  // No internet connection message
+
+  String get noInternetConnection {
+    return Intl.message(
+      'No internet connection',
+      name: 'noInternetConnection',
+    );
+  }
+
+  // Free day message
+
+  String get freeDay {
+    return Intl.message(
+      'Free day',
+      name: 'freeDay',
     );
   }
 

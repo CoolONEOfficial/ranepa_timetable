@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -21,26 +22,29 @@ class PlatformChannels {
     }
   }
 
-  static Future<List<List<TimelineModel>>> getDb() async {
-    final jsonStr = await methodChannel.invokeMethod("getDb");
+  static Future<LinkedHashMap<DateTime, List<TimelineModel>>> getDb() async {
+    var jsonStr = await methodChannel.invokeMethod("getDb");
 
-    if (jsonStr == "") return null;
+    debugPrint("get db method from java: $jsonStr as ${jsonStr.runtimeType}");
 
-    var listDays = List<List<TimelineModel>>.generate(
-        DrawerTimetable.dayCount, (_) => List<TimelineModel>());
+    var dbTimetable = Map<DateTime, List<TimelineModel>>();
     List jsonArr = json.decode(jsonStr);
-    DateTime mLessonDate = TimelineModel.fromJson(jsonArr.first).date;
-    var mTimtetableId = 0;
+    if (jsonArr.isEmpty) return null;
+    DateTime mLessonDate = DrawerTimetable.today.subtract(Duration(days: 1));
+    var mTimetableId = -1;
     for (var mLessonStr in jsonArr) {
       var mLesson = TimelineModel.fromJson(mLessonStr);
       while (mLesson.date != mLessonDate) {
-        mTimtetableId++;
         mLessonDate = mLessonDate.add(Duration(days: 1));
+        if (mLessonDate.weekday != DateTime.sunday) { // skip sunday
+          dbTimetable.addAll({mLessonDate: List<TimelineModel>()});
+          mTimetableId++;
+        }
       }
-      listDays[mTimtetableId].add(mLesson);
+      dbTimetable.values.elementAt(mTimetableId).add(mLesson);
     }
 
-    return listDays;
+    return dbTimetable;
   }
 
   static void refreshWidget() {

@@ -132,6 +132,8 @@ class LessonModel {
 
     if (lowerStr.contains("математик"))
       model = types.math;
+    else if (lowerStr.contains("общество"))
+      model = types.socialStudies;
     else if (lowerStr.contains("экономик") ||
         (lowerStr.contains("экономическ") && lowerStr.contains("теори")))
       model = types.economics;
@@ -161,8 +163,6 @@ class LessonModel {
       return types.lifeSafety;
     else if (lowerStr.contains("биологи"))
       model = types.biology;
-    else if (lowerStr.contains("общество"))
-      model = types.socialStudies;
     else if (lowerStr.contains("физ") && lowerStr.contains("культур"))
       return types.physicalCulture;
     else if (lowerStr.contains("этик"))
