@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-12-14T21:10:06.747891",
+  "@@last_modified": "2018-12-15T02:15:48.343251",
   "title": "RANEPA (Timetable)",
   "@title": {
     "description": "The application title",
@@ -18,6 +18,16 @@
   },
   "searchTip": "Search",
   "@searchTip": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "alarmTip": "Add to alarm clock",
+  "@alarmTip": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "calendarTip": "Add to calendar",
+  "@calendarTip": {
     "type": "text",
     "placeholders": {}
   },

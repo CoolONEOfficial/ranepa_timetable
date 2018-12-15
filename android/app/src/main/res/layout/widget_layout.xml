@@ -10,6 +10,7 @@
      limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/widget_body"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -28,7 +29,7 @@
             android:layout_height="match_parent"
             android:dividerHeight="0dp"
             android:divider="@null"
-            android:paddingTop="40dp"
+            android:paddingTop="@dimen/widget_head_height"
             android:paddingBottom="8dp"
             android:clipToPadding="false"
             android:scrollbars="none" />
@@ -54,20 +55,24 @@
                 android:id="@+id/widget_title"
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="0dp"
-                android:gravity="center"
+                android:gravity="start|center_vertical"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_marginStart="@dimen/widget_item_margins"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginStart="5dp"
                 android:textColor="@android:color/white"
-                android:textSize="24sp" />
+                app:autoSizeTextType="uniform"
+                app:autoSizeMinTextSize="12sp"
+                app:autoSizeMaxTextSize="100sp"
+                app:autoSizeStepGranularity="2sp" />
 
             <ImageButton
                 android:id="@+id/add_calendar"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/widget_head_height"
                 android:layout_height="@dimen/widget_head_height"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
+                android:padding="2dp"
                 android:src="@drawable/ic_calendar" />
 
             <ImageButton
@@ -75,8 +80,7 @@
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/widget_head_height"
                 android:layout_height="@dimen/widget_head_height"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
+                android:padding="2dp"
                 android:src="@drawable/ic_alarm" />
         </LinearLayout>
     </FrameLayout>

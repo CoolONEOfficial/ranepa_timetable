@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:ranepa_timetable/drawer_timetable.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
+import 'package:ranepa_timetable/timetable.dart';
 
 class PlatformChannels {
   static const methodChannel =
@@ -35,11 +35,11 @@ class PlatformChannels {
 
     // Remove invalid lessons
     dbLessons.removeWhere(
-      (mLesson) => mLesson.date.isBefore(DrawerTimetable.todayMidnight),
+      (mLesson) => mLesson.date.isBefore(Timetable.todayMidnight),
     );
 
     DateTime mLessonDate =
-        DrawerTimetable.todayMidnight.subtract(Duration(days: 1));
+        Timetable.todayMidnight.subtract(Duration(days: 1));
     var mTimetableId = -1;
     for (final mLesson in dbLessons) {
       while (mLesson.date != mLessonDate) {
@@ -56,7 +56,11 @@ class PlatformChannels {
     return dbTimetable;
   }
 
-  static void refreshWidget() {
+  static Future<void> deleteDb() async {
+    await methodChannel.invokeMethod("deleteDb");
+  }
+
+  static Future<void> refreshWidget() async {
     methodChannel.invokeMethod("refreshWidget");
   }
 }

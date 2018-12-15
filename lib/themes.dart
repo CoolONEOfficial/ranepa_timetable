@@ -61,8 +61,6 @@ class Themes {
           // DARK_RED
           ThemeData(
             brightness: Brightness.dark,
-            primaryColor: redAccent,
-            primaryColorDark: redAccent.shade700,
             toggleableActiveColor: redAccent.shade600,
             accentColor: redAccent.shade500,
           ),

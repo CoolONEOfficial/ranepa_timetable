@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:ranepa_timetable/drawer_prefs.dart';
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart' as xml;

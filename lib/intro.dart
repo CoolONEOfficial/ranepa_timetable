@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intro_views_flutter/Models/page_view_model.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
-import 'package:ranepa_timetable/drawer_prefs.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/main.dart';
+import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/themes.dart';
 import 'package:ranepa_timetable/timeline.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
@@ -42,8 +42,8 @@ class Intro extends StatelessWidget {
             child: ShaderMask(
               shaderCallback: (Rect bounds) {
                 return LinearGradient(
-                  begin: Alignment(0.0,-0.05),
-                  end: Alignment(0.0,0.95),
+                  begin: Alignment(0.0,0),
+                  end: Alignment(0.0,1),
                   colors: <Color>[Colors.transparent, Colors.white],
                   tileMode: TileMode.mirror,
                 ).createShader(bounds);
@@ -161,9 +161,9 @@ class Intro extends StatelessWidget {
               color: backgroundColor,
             ),
             shape: CircleBorder(),
-            fillColor: themeId != ThemeIds.DARK_RED.index
+            fillColor: theme.brightness == Brightness.light
                 ? theme.backgroundColor
-                : theme.primaryColor,
+                : theme.accentColor,
             padding: const EdgeInsets.all(30),
           ),
         ),
@@ -195,9 +195,9 @@ class Intro extends StatelessWidget {
               size: 100,
             ),
             shape: CircleBorder(),
-            fillColor: themeId != ThemeIds.DARK_RED.index
-                ? theme.backgroundColor
-                : Colors.white,
+            fillColor: theme.brightness == Brightness.light
+              ? theme.backgroundColor
+              : theme.accentColor,
             padding: const EdgeInsets.all(30),
           ),
         ),

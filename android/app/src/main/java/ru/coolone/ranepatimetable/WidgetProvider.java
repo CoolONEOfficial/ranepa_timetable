@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.RemoteViews;
 
 import java.util.Calendar;
@@ -238,6 +239,8 @@ public class WidgetProvider extends AppWidgetProvider {
         }
         rv.setInt(R.id.widget_body, "setBackgroundResource", bodyLayoutResId);
         rv.setInt(R.id.widget_head, "setBackgroundResource", headLayoutResId);
+        rv.setInt(R.id.add_calendar,"setColorFilter", theme.textAccent);
+        rv.setInt(R.id.add_alarm,"setColorFilter", theme.textAccent);
 
         rv.setRemoteAdapter(R.id.timeline_list, intent);
         // Set the empty view to be displayed if the collection is empty.  It must be a sibling

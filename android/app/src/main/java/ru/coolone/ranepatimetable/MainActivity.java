@@ -71,21 +71,33 @@ public class MainActivity extends FlutterActivity {
                                         .getAll()
                                 );
 
-                                result.success(jsonArr);
                                 log.info("getDb success (db arr: " + jsonArr +")");
+                                result.success(jsonArr);
+                                break;
+                            }
+                            case "deleteDb": {
+                                log.info("deleteDb started..");
+
+                                TimetableDatabase.getInstance(getApplicationContext())
+                                        .timetable()
+                                        .delete();
+
+                                log.info("deleteDb success");
+                                result.success(null);
                                 break;
                             }
                             case "updateDb": {
                                 log.info("updateDb started..");
-                                var g = getGson();
 
+                                var g = getGson();
                                 var arr = g.fromJson(
                                         (String) methodCall.arguments,
                                         Timeline[].class
                                 );
 
-                                var timetable = TimetableDatabase.getInstance(getApplicationContext()).timetable();
-                                timetable.insertAll(arr);
+                                TimetableDatabase.getInstance(getApplicationContext()).timetable()
+                                        .insertAll(arr);
+
                                 log.info("updateDb success");
                                 result.success(null);
                                 break;

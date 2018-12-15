@@ -79,7 +79,8 @@ class WidgetTemplates {
   static Widget buildErrorNotification(BuildContext context, String error) =>
       _buildIconNotification(context, error, Icons.error);
 
-  static Widget buildInternetErrorNotification(BuildContext context, VoidCallback onRefresh) =>
+  static Widget buildInternetErrorNotification(
+          BuildContext context, VoidCallback onRefresh) =>
       _buildNotification(
         context,
         AppLocalizations.of(context).noInternetConnection,
@@ -110,11 +111,13 @@ class WidgetTemplates {
         context, AppLocalizations.of(context).freeDay, icon);
   }
 
-  static Widget buildFutureBuilder<T>(BuildContext context,
-      {@required Future future,
-      @required AsyncWidgetBuilder<T> builder,
-      Widget loading,
-      Widget error}) {
+  static Widget buildFutureBuilder<T>(
+    BuildContext context, {
+    @required Future future,
+    @required AsyncWidgetBuilder<T> builder,
+    Widget loading,
+    Widget error,
+  }) {
     return FutureBuilder<T>(
         future: future,
         builder: (BuildContext _, AsyncSnapshot snapshot) {

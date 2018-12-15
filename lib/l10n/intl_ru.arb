@@ -21,6 +21,16 @@
     "type": "text",
     "placeholders": {}
   },
+  "alarmTip": "Добавить в будильник",
+  "@alarmTip": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "calendarTip": "Добавить в календарь",
+  "@calendarTip": {
+    "type": "text",
+    "placeholders": {}
+  },
   "searchResults": "Результаты веб-поиска",
   "@searchResults": {
     "type": "text",

@@ -22,9 +22,11 @@ class MessageLookup extends MessageLookupByLibrary {
   static _notInlinedMessages(_) => <String, Function> {
     "accounting" : MessageLookupByLibrary.simpleMessage("Бухучет"),
     "accountingAnalysis" : MessageLookupByLibrary.simpleMessage("Анализ бухгалтерской отчетности"),
+    "alarmTip" : MessageLookupByLibrary.simpleMessage("Добавить в будильник"),
     "biology" : MessageLookupByLibrary.simpleMessage("Биология"),
     "budgetCalculations" : MessageLookupByLibrary.simpleMessage("Расчеты с бюджетом"),
     "businessPlanning" : MessageLookupByLibrary.simpleMessage("Бизнес-планирование"),
+    "calendarTip" : MessageLookupByLibrary.simpleMessage("Добавить в календарь"),
     "chemistry" : MessageLookupByLibrary.simpleMessage("Химия"),
     "close" : MessageLookupByLibrary.simpleMessage("Выход"),
     "computerArchitecture" : MessageLookupByLibrary.simpleMessage("Архитектура ПК"),

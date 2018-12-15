@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:ranepa_timetable/drawer_prefs.dart';
-import 'package:ranepa_timetable/drawer_timetable.dart';
 import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/themes.dart';
+import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BaseWidget extends StatelessWidget {
   Widget buildBase(BuildContext context, SharedPreferences prefs) {
-    return DrawerTimetable(
+    return Timetable(
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -42,7 +42,7 @@ class BaseWidget extends StatelessWidget {
               leading: Icon(Icons.settings),
               title: Text(AppLocalizations.of(context).prefs),
               onTap: () =>
-                  Navigator.popAndPushNamed(context, DrawerPrefs.ROUTE),
+                  Navigator.popAndPushNamed(context, Prefs.ROUTE),
             ),
             Divider(),
             ListTile(
@@ -85,7 +85,7 @@ class BaseWidget extends StatelessWidget {
                   AppLocalizations.of(context).title,
               theme: Themes().themes[themeId],
               routes: <String, WidgetBuilder>{
-                DrawerPrefs.ROUTE: (BuildContext context) => DrawerPrefs()
+                Prefs.ROUTE: (BuildContext context) => Prefs()
               },
               home: Builder(
                 builder: (context) => prefs.getInt(PrefsIds.SEARCH_ITEM_PREFIX +

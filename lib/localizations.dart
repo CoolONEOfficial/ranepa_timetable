@@ -58,6 +58,20 @@ class AppLocalizations {
     );
   }
 
+  String get alarmTip {
+    return Intl.message(
+      'Add to alarm clock',
+      name: 'alarmTip',
+    );
+  }
+
+  String get calendarTip {
+    return Intl.message(
+      'Add to calendar',
+      name: 'calendarTip',
+    );
+  }
+
   String get searchResults {
     return Intl.message(
       'Web search results',
