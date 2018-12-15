@@ -25,24 +25,6 @@ public class MainActivity extends FlutterActivity {
 
         GeneratedPluginRegistrant.registerWith(this);
 
-        new BasicMessageChannel<>(getFlutterView(), "ru.coolone.ranepatimetable/getChannel", StringCodec.INSTANCE).setMessageHandler(
-                new BasicMessageChannel.MessageHandler<String>() {
-                    @Override
-                    public void onMessage(String s, BasicMessageChannel.Reply<String> reply) {
-
-                    }
-                }
-        );
-
-        new BasicMessageChannel<>(getFlutterView(), "ru.coolone.ranepatimetable/updateChannel", StringCodec.INSTANCE).setMessageHandler(
-                new BasicMessageChannel.MessageHandler<String>() {
-                    @Override
-                    public void onMessage(String s, BasicMessageChannel.Reply<String> reply) {
-
-                    }
-                }
-        );
-
         new MethodChannel(getFlutterView(), "ru.coolone.ranepatimetable/methodChannel").setMethodCallHandler(
                 new MethodChannel.MethodCallHandler() {
                     Gson getGson() {

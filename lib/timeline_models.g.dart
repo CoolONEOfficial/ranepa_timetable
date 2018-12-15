@@ -48,7 +48,9 @@ TimelineModel _$TimelineModelFromJson(Map<String, dynamic> json) {
       teacher: TeacherModel.fromJson(json['teacher'] as Map<String, dynamic>),
       user: _$enumDecode(_$TimelineUserEnumMap, json['user']),
       first: json['first'] as bool,
-      last: json['last'] as bool);
+      last: json['last'] as bool,
+      mergeBottom: json['mergeBottom'] as bool,
+      mergeTop: json['mergeTop'] as bool);
 }
 
 Map<String, dynamic> _$TimelineModelToJson(TimelineModel instance) =>
@@ -61,6 +63,8 @@ Map<String, dynamic> _$TimelineModelToJson(TimelineModel instance) =>
       'teacher': instance.teacher,
       'first': instance.first,
       'last': instance.last,
+      'mergeBottom': instance.mergeBottom,
+      'mergeTop': instance.mergeTop,
       'start': TimelineModel._timeOfDayToIntList(instance.start),
       'finish': TimelineModel._timeOfDayToIntList(instance.finish)
     };

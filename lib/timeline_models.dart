@@ -38,6 +38,7 @@ class TimelineModel extends TimelineParent {
   final TeacherModel teacher;
 
   bool first, last;
+  bool mergeBottom, mergeTop;
 
   @JsonKey(fromJson: _timeOfDayFromIntList, toJson: _timeOfDayToIntList)
   final TimeOfDay start, finish;
@@ -48,18 +49,20 @@ class TimelineModel extends TimelineParent {
   static Map<String, dynamic> _timeOfDayToIntList(TimeOfDay timeOfDay) =>
       {"hour": timeOfDay.hour, "minute": timeOfDay.minute};
 
-  TimelineModel(
-      {@required DateTime date,
-      @required this.start,
-      @required this.finish,
-      @required this.room,
-      @required this.group,
-      @required this.lesson,
-      @required this.teacher,
-      @required TimelineUser user,
-      this.first = false,
-      this.last = false})
-      : super(user, date);
+  TimelineModel({
+    @required DateTime date,
+    @required this.start,
+    @required this.finish,
+    @required this.room,
+    @required this.group,
+    @required this.lesson,
+    @required this.teacher,
+    @required TimelineUser user,
+    this.first = false,
+    this.last = false,
+    this.mergeBottom = false,
+    this.mergeTop = false,
+  }) : super(user, date);
 
   factory TimelineModel.fromJson(Map<String, dynamic> json) =>
       _$TimelineModelFromJson(json);
@@ -198,7 +201,7 @@ class LessonModel {
       model = types.taxation;
     else if (lowerStr.contains("расчет") && lowerStr.contains("бюдж"))
       model = types.budgetCalculations;
-    else if(lowerStr.contains("анализ") && lowerStr.contains("бухгалтер"))
+    else if (lowerStr.contains("анализ") && lowerStr.contains("бухгалтер"))
       model = types.accountingAnalysis;
     else
       model = LessonModel(parseLessonTitle(lowerStr),
@@ -280,7 +283,8 @@ class LessonTypes {
             TimetableIcons.documentManagementSupport.codePoint),
         accounting = LessonModel(AppLocalizations.of(context).accounting,
             TimetableIcons.accounting.codePoint),
-        accountingAnalysis = LessonModel(AppLocalizations.of(context).accountingAnalysis,
+        accountingAnalysis = LessonModel(
+            AppLocalizations.of(context).accountingAnalysis,
             TimetableIcons.accountingAnalysis.codePoint),
         budgetCalculations = LessonModel(
             AppLocalizations.of(context).budgetCalculations,

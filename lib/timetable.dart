@@ -185,18 +185,22 @@ class Timetable extends StatelessWidget {
 
       for (var mItemId = 0; mItemId < mDay.length - 1; mItemId++) {
         final mItem = mDay[mItemId],
-            mNextItem = mDay[mItemId + 1],
-            diff = _toDateTime(mDay[mItemId].finish)
-                .difference(_toDateTime(mDay[mItemId + 1].start));
+            mNextItem = mDay[mItemId + 1];
 
-        debugPrint("mDiff: $diff");
-        if (diff.inMinutes > 10) {
-          mItem.last = true;
-          mNextItem.first = true;
+        if(mItem.start == mNextItem.start) {
+          mItem.mergeBottom = true;
+          mNextItem.mergeTop = true;
+        } else {
+          final diff = _toDateTime(mNextItem.start)
+              .difference(_toDateTime(mItem.finish));
+
+          debugPrint("mDiff: $diff");
+          if (diff.inMinutes > 10) {
+            mItem.last = true;
+            mNextItem.first = true;
+          }
         }
       }
-
-      // TODO: merging
     }
 
     debugPrint("parsing http requests end..");
@@ -259,75 +263,72 @@ class Timetable extends StatelessWidget {
         stream: timetableIdBloc.stream,
         initialData:
             Tuple2<bool, SearchItem>(true, SearchItem.fromPrefs(prefs)),
-        builder: (context, ssSearchItem) {
-          final scaffoldKey = GlobalKey<ScaffoldState>(); // TODO: optimize
-          return Scaffold(
-            drawer: drawer,
-            key: scaffoldKey,
-            body: StreamBuilder<void>(
-              stream: timetableFutureBuilderBloc.stream,
-              builder: (context, _) => WidgetTemplates.buildFutureBuilder(
-                    context,
-                    future: ssSearchItem.data.item1
-                        ? _getTimetable(context, ssSearchItem.data.item2)
-                        : _loadAllTimetable(
-                            context, ssSearchItem.data.item2, false),
-                    builder: (context, _) {
-                      if (timetable.values.isEmpty)
-                        return WidgetTemplates.buildInternetErrorNotification(
-                            context,
-                            () => timetableFutureBuilderBloc.add(null));
+        builder: (context, ssSearchItem) => Scaffold(
+              drawer: drawer,
+              key: GlobalKey<ScaffoldState>(),
+              body: StreamBuilder<void>(
+                stream: timetableFutureBuilderBloc.stream,
+                builder: (context, _) => WidgetTemplates.buildFutureBuilder(
+                      context,
+                      future: ssSearchItem.data.item1
+                          ? _getTimetable(context, ssSearchItem.data.item2)
+                          : _loadAllTimetable(
+                              context, ssSearchItem.data.item2, false),
+                      builder: (context, _) {
+                        if (timetable.values.isEmpty)
+                          return WidgetTemplates.buildInternetErrorNotification(
+                              context,
+                              () => timetableFutureBuilderBloc.add(null));
 
-                      final tabViews = List<Widget>();
-                      for (var mTabDay in timetable.values) {
-                        tabViews.add(mTabDay.isEmpty
-                            ? WidgetTemplates.buildFreeDayNotification(
-                                context, ssSearchItem.data.item2)
-                            : TimelineComponent(timelineList: mTabDay));
-                      }
-                      while (tabViews.length < dayCount) {
-                        tabViews.add(WidgetTemplates.buildFreeDayNotification(
-                            context, ssSearchItem.data.item2));
-                      }
-                      return TabBarView(children: tabViews);
-                    },
+                        final tabViews = List<Widget>();
+                        for (var mTabDay in timetable.values) {
+                          tabViews.add(mTabDay.isEmpty
+                              ? WidgetTemplates.buildFreeDayNotification(
+                                  context, ssSearchItem.data.item2)
+                              : TimelineComponent(timelineList: mTabDay));
+                        }
+                        while (tabViews.length < dayCount) {
+                          tabViews.add(WidgetTemplates.buildFreeDayNotification(
+                              context, ssSearchItem.data.item2));
+                        }
+                        return TabBarView(children: tabViews);
+                      },
+                    ),
+              ),
+              appBar: AppBar(
+                elevation:
+                    defaultTargetPlatform == TargetPlatform.android ? 5 : 0,
+                title: Text(
+                    ssSearchItem.data.item2.typeId == SearchItemTypeId.TEACHER
+                        ? TeacherModel.fromString(ssSearchItem.data.item2.title)
+                            .initials()
+                        : ssSearchItem.data.item2.title),
+                actions: <Widget>[
+                  IconButton(
+                    tooltip: AppLocalizations.of(context).calendarTip,
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () {},
                   ),
-            ),
-            appBar: AppBar(
-              elevation:
-                  defaultTargetPlatform == TargetPlatform.android ? 5 : 0,
-              title: Text(
-                  ssSearchItem.data.item2.typeId == SearchItemTypeId.TEACHER
-                      ? TeacherModel.fromString(ssSearchItem.data.item2.title)
-                          .initials()
-                      : ssSearchItem.data.item2.title),
-              actions: <Widget>[
-                IconButton(
-                  tooltip: AppLocalizations.of(context).calendarTip,
-                  icon: const Icon(Icons.calendar_today),
-                  onPressed: () {},
+                  IconButton(
+                    tooltip: AppLocalizations.of(context).alarmTip,
+                    icon: const Icon(Icons.alarm),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    tooltip: AppLocalizations.of(context).searchTip,
+                    icon: const Icon(Icons.search),
+                    onPressed: () => showSearchItemSelect(
+                          context,
+                          prefs,
+                          toPrefs: false,
+                        ),
+                  ),
+                ],
+                bottom: TabBar(
+                  tabs: tabs,
                 ),
-                IconButton(
-                  tooltip: AppLocalizations.of(context).alarmTip,
-                  icon: const Icon(Icons.alarm),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  tooltip: AppLocalizations.of(context).searchTip,
-                  icon: const Icon(Icons.search),
-                  onPressed: () => showSearchItemSelect(
-                        context,
-                        prefs,
-                        toPrefs: false,
-                      ),
-                ),
-              ],
-              bottom: TabBar(
-                tabs: tabs,
               ),
             ),
-          );
-        },
       ),
     );
   }

@@ -134,7 +134,7 @@ public class Timeline {
     /**
      * The name of the Timeline table.
      */
-    public static final String TABLE_NAME = "timelines";
+    public static final String TABLE_NAME = "lessons";
 
     public static final String COLUMN_ID = BaseColumns._ID;
     public static final String COLUMN_DATE = "date";
@@ -142,6 +142,8 @@ public class Timeline {
     public static final String COLUMN_FIRST = "first";
     public static final String COLUMN_LAST = "last";
     public static final String COLUMN_USER = "user";
+    public static final String COLUMN_MERGE_BOTTOM = "mergeBottom";
+    public static final String COLUMN_MERGE_TOP = "mergeTop";
 
     public static final String PREFIX_LESSON = "lesson_";
     public static final String PREFIX_ROOM = "room_";
@@ -175,6 +177,12 @@ public class Timeline {
 
     @ColumnInfo(name = COLUMN_LAST)
     boolean last;
+
+    @ColumnInfo(name = COLUMN_MERGE_BOTTOM)
+    boolean mergeBottom;
+
+    @ColumnInfo(name = COLUMN_MERGE_TOP)
+    boolean mergeTop;
 
     @Embedded(prefix = PREFIX_TEACHER)
     TeacherModel teacher;

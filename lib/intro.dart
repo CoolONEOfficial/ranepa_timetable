@@ -52,7 +52,7 @@ class Intro extends StatelessWidget {
                 timelineList: <TimelineModel>[
                   TimelineModel(
                     first: true,
-                    last: true,
+                    mergeBottom: true,
                     date: new DateTime(2018, 9),
                     start: TimeOfDay(hour: 8, minute: 0),
                     finish: TimeOfDay(hour: 9, minute: 30),
@@ -63,7 +63,7 @@ class Intro extends StatelessWidget {
                     user: TimelineUser.Student,
                   ),
                   TimelineModel(
-                    first: true,
+                    mergeTop: true,
                     date: new DateTime(2018, 9),
                     start: TimeOfDay(hour: 8, minute: 0),
                     finish: TimeOfDay(hour: 9, minute: 30),

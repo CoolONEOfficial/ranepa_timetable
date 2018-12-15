@@ -2,7 +2,6 @@ package ru.coolone.ranepatimetable;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -11,20 +10,14 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.os.Bundle;
-
-import lombok.AllArgsConstructor;
-import lombok.extern.java.Log;
-
 import android.util.DisplayMetrics;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import lombok.extern.java.Log;
 import lombok.var;
 
 import static ru.coolone.ranepatimetable.WidgetProvider.width;
@@ -115,6 +108,28 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             canvas.drawRoundRect(rect, dpScale * rectRound, dpScale * rectRound, bgRectPaint);
         else canvas.drawRect(rect, bgRectPaint);
+
+        var mergeTop = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_MERGE_TOP)) != 0;
+        if (mergeTop) {
+            var mergePaint = new Paint();
+            mergePaint.setAntiAlias(true);
+            mergePaint.setColor(Color.argb(
+                    Color.alpha(theme.background) / 2,
+                    Color.red(theme.background),
+                    Color.green(theme.background),
+                    Color.blue(theme.background
+                    ))
+            );
+            canvas.drawRect(
+                    new RectF(
+                            dpScale * rectRound * 2,
+                            0,
+                            w - (dpScale * rectRound * 2),
+                            dpScale * rectMargins
+                    ),
+                    mergePaint
+            );
+        }
 
         var first = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_FIRST)) != 0;
         var last = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_LAST)) != 0;

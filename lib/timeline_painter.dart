@@ -34,23 +34,44 @@ class TimelinePainter extends CustomPainter {
     const rectMargins = 8.0,
         iconSize = 15.0,
         circleRadius = 23.0,
-        rectRound = 10.0,
+        rectCornersRadius = 10.0,
         circleMargin = 5.0;
 
-    canvas.drawRRect(
-        RRect.fromLTRBR(rectMargins, rectMargins, size.width - rectMargins,
-            size.height, Radius.circular(rectRound)),
+    if (model.mergeTop)
+      canvas.drawRect(
+        Rect.fromLTRB(
+          rectCornersRadius * 2,
+          0,
+          size.width - rectCornersRadius * 2,
+          rectMargins,
+        ),
         Paint()
-          ..color = Theme.of(context).backgroundColor
+          ..color = Theme.of(context).backgroundColor.withOpacity(0.5)
           ..strokeCap = StrokeCap.round
-          ..style = PaintingStyle.fill);
+          ..style = PaintingStyle.fill,
+      );
 
+    // Background round rect
+    canvas.drawRRect(
+      RRect.fromLTRBR(
+        rectMargins,
+        rectMargins,
+        size.width - rectMargins,
+        size.height,
+        new Radius.circular(rectCornersRadius),
+      ),
+      Paint()
+        ..color = Theme.of(context).backgroundColor
+        ..strokeCap = StrokeCap.round
+        ..style = PaintingStyle.fill,
+    );
+
+    // Timeline
     var circleOffset = Offset(
         rectMargins * 2 + circleRadius + 68, (size.height + rectMargins) / 2);
-
     var translateIcon = 0.0;
-
     if (!(model.first && model.last)) {
+      // Timeline rect
       final rectPaint = Paint()
         ..color = Theme.of(context).accentColor
         ..strokeCap = StrokeCap.round;
@@ -72,25 +93,29 @@ class TimelinePainter extends CustomPainter {
             rectPaint);
       }
 
+      // Timeline border arc
       final arcPaint = Paint()
         ..color = Theme.of(context).accentColor
         ..style = PaintingStyle.fill;
 
       if (model.first)
         canvas.drawArc(
-            Rect.fromCircle(center: circleOffset, radius: circleRadius),
+            Rect.fromCircle(
+                center: circleOffset.translate(0, 0.1), radius: circleRadius),
             -pi,
             pi,
             false,
             arcPaint);
       else if (model.last)
         canvas.drawArc(
-            Rect.fromCircle(center: circleOffset, radius: circleRadius),
+            Rect.fromCircle(
+                center: circleOffset.translate(0, -0.1), radius: circleRadius),
             -pi,
             -pi,
             false,
             arcPaint);
     } else
+      // Timeline circle
       canvas.drawCircle(
           circleOffset,
           circleRadius + 3,
@@ -98,8 +123,10 @@ class TimelinePainter extends CustomPainter {
             ..color = Theme.of(context).accentColor
             ..style = PaintingStyle.fill);
 
+    // Icons
     final fontFamily = TimetableIcons.databases.fontFamily;
 
+    // Lesson icon
     TextPainter(
       text: TextSpan(
         style: TextStyle(
@@ -118,6 +145,7 @@ class TimelinePainter extends CustomPainter {
             -iconSize, -(circleRadius / 3 * 2) + translateIcon),
       );
 
+    // Location icon
     TextPainter(
         text: TextSpan(
           style: TextStyle(
