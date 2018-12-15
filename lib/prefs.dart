@@ -15,7 +15,8 @@ import 'package:tuple/tuple.dart';
 class PrefsIds {
   static const WIDGET_TRANSLUCENT = "widget_translucent",
       THEME_ID = "theme_id",
-      SEARCH_ITEM_PREFIX = "search_item_";
+      SEARCH_ITEM_PREFIX = "search_item_",
+      ALARM_POST = "alarm_post";
 }
 
 Future<SearchItem> showSearchItemSelect(BuildContext context, SharedPreferences prefs,

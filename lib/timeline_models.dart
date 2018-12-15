@@ -115,12 +115,16 @@ LessonType parseLessonType(String str) {
 
 @JsonSerializable(nullable: false)
 class LessonModel {
+  @JsonKey(ignore: true)
+  String fullTitle;
+  @JsonKey(ignore: true)
+  final List<List<String>> findWords;
   final String title;
   final int iconCodePoint;
   LessonType lessonType;
 
-  LessonModel(this.title, this.iconCodePoint,
-      {this.lessonType = LessonType.None});
+  LessonModel(this.title, this.iconCodePoint, this.findWords,
+      {this.lessonType = LessonType.None, this.fullTitle});
 
   factory LessonModel.fromJson(Map<String, dynamic> json) =>
       _$LessonModelFromJson(json);
@@ -133,84 +137,131 @@ class LessonModel {
 
     LessonModel model;
 
-    if (lowerStr.contains("математик"))
-      model = types.math;
-    else if (lowerStr.contains("общество"))
-      model = types.socialStudies;
-    else if (lowerStr.contains("экономик") ||
-        (lowerStr.contains("экономическ") && lowerStr.contains("теори")))
-      model = types.economics;
-    else if (lowerStr.contains("теори") && lowerStr.contains("информаци"))
-      return types.informationTheory;
-    else if (lowerStr.contains("философи"))
-      model = types.philosophy;
-    else if (lowerStr.contains("культур") && lowerStr.contains("реч"))
-      return types.speechCulture;
-    else if (lowerStr.contains("физик"))
-      model = types.physics;
-    else if (lowerStr.contains("хими"))
-      model = types.chemistry;
-    else if (lowerStr.contains("литератур"))
-      model = types.literature;
-    else if (lowerStr.contains("иностранн") || lowerStr.contains("английск"))
-      model = types.english;
-    else if (lowerStr.contains("информатик"))
-      model = types.informatics;
-    else if (lowerStr.contains("географи"))
-      model = types.geography;
-    else if (lowerStr.contains("истори"))
-      model = types.history;
-    else if (lowerStr.contains("обж") ||
-        (lowerStr.contains("безопасност") &&
-            lowerStr.contains("жизнедеятельност")))
-      return types.lifeSafety;
-    else if (lowerStr.contains("биологи"))
-      model = types.biology;
-    else if (lowerStr.contains("физ") && lowerStr.contains("культур"))
-      return types.physicalCulture;
-    else if (lowerStr.contains("этик"))
-      model = types.ethics;
-    else if (lowerStr.contains("менеджмент"))
-      model = types.management;
-    else if (lowerStr.contains("разработ") &&
-        ((lowerStr.contains("програмн") && lowerStr.contains("обеспечени")) ||
-            lowerStr.contains("ПО")))
-      model = types.softwareDevelopment;
-    else if (lowerStr.contains("архитектур") &&
-        (lowerStr.contains("эвм") || lowerStr.contains("пк")))
-      model = types.computerArchitecture;
-    else if (lowerStr.contains("операционн") && lowerStr.contains("систем"))
-      model = types.operatingSystems;
-    else if (lowerStr.contains("компьютерн") && lowerStr.contains("график"))
-      model = types.computerGraphic;
-    else if (lowerStr.contains("проектн"))
-      model = types.projectDevelopment;
-    else if (lowerStr.contains("баз") && lowerStr.contains("данн"))
-      model = types.databases;
-    else if (lowerStr.contains("обеспеч") &&
-        lowerStr.contains("управл") &&
-        lowerStr.contains("документ"))
-      model = types.documentManagementSupport;
-    else if (lowerStr.contains("инвентар"))
-      model = types.inventory;
-    else if (lowerStr.contains("бухучет"))
-      model = types.accounting;
-    else if (lowerStr.contains("планирован") && lowerStr.contains("бизнес"))
-      model = types.businessPlanning;
-    else if (lowerStr.contains("налогообложен"))
-      model = types.taxation;
-    else if (lowerStr.contains("расчет") && lowerStr.contains("бюдж"))
-      model = types.budgetCalculations;
-    else if (lowerStr.contains("анализ") && lowerStr.contains("бухгалтер"))
-      model = types.accountingAnalysis;
-    else
-      model = LessonModel(parseLessonTitle(lowerStr),
-          TimetableIcons.unknownLesson.codePoint); // Use original title
+    // TODO: parse lessonsss
+    for(final mLesson in types.lessons) {
+      bool strFound;
+      for(final List<String> mStrList in mLesson.findWords) {
+        for(final String mStr in mStrList) {
+          if(!lowerStr.contains(mStr)) {
 
+          }
+        }
+      }
+    }
+
+//    if (lowerStr.contains("математик"))
+//      model = types.math;
+//    else if (lowerStr.contains("общество"))
+//      model = types.socialStudies;
+//    else if (lowerStr.contains("экономик") ||
+//        (lowerStr.contains("экономическ") && lowerStr.contains("теори")))
+//      model = types.economics;
+//    else if (lowerStr.contains("теори") && lowerStr.contains("информаци"))
+//      return types.informationTheory;
+//    else if (lowerStr.contains("философи"))
+//      model = types.philosophy;
+//    else if (lowerStr.contains("культур") && lowerStr.contains("реч"))
+//      return types.speechCulture;
+//    else if (lowerStr.contains("физик"))
+//      model = types.physics;
+//    else if (lowerStr.contains("хими"))
+//      model = types.chemistry;
+//    else if (lowerStr.contains("литератур"))
+//      model = types.literature;
+//    else if (lowerStr.contains("иностранн") || lowerStr.contains("английск"))
+//      model = types.english;
+//    else if (lowerStr.contains("информатик"))
+//      model = types.informatics;
+//    else if (lowerStr.contains("географи"))
+//      model = types.geography;
+//    else if (lowerStr.contains("истори"))
+//      model = types.history;
+//    else if (lowerStr.contains("обж") ||
+//        (lowerStr.contains("безопасност") &&
+//            lowerStr.contains("жизнедеятельност")))
+//      return types.lifeSafety;
+//    else if (lowerStr.contains("биологи"))
+//      model = types.biology;
+//    else if (lowerStr.contains("физ") && lowerStr.contains("культур"))
+//      return types.physicalCulture;
+//    else if (lowerStr.contains("этик"))
+//      model = types.ethics;
+//    else if (lowerStr.contains("менеджмент"))
+//      model = types.management;
+//    else if (lowerStr.contains("разработ") &&
+//        ((lowerStr.contains("програмн") && lowerStr.contains("обеспечени")) ||
+//            lowerStr.contains("ПО")))
+//      model = types.softwareDevelopment;
+//    else if (lowerStr.contains("архитектур") &&
+//        (lowerStr.contains("эвм") || lowerStr.contains("пк")))
+//      model = types.computerArchitecture;
+//    else if (lowerStr.contains("операционн") && lowerStr.contains("систем"))
+//      model = types.operatingSystems;
+//    else if (lowerStr.contains("компьютерн") && lowerStr.contains("график"))
+//      model = types.computerGraphic;
+//    else if (lowerStr.contains("проектн"))
+//      model = types.projectDevelopment;
+//    else if (lowerStr.contains("баз") && lowerStr.contains("данн"))
+//      model = types.databases;
+//    else if (lowerStr.contains("обеспеч") &&
+//        lowerStr.contains("управл") &&
+//        lowerStr.contains("документ"))
+//      model = types.documentManagementSupport;
+//    else if (lowerStr.contains("инвентар"))
+//      model = types.inventory;
+//    else if (lowerStr.contains("бухучет"))
+//      model = types.accounting;
+//    else if (lowerStr.contains("планирован") && lowerStr.contains("бизнес"))
+//      model = types.businessPlanning;
+//    else if (lowerStr.contains("налогообложен"))
+//      model = types.taxation;
+//    else if (lowerStr.contains("расчет") && lowerStr.contains("бюдж"))
+//      model = types.budgetCalculations;
+//    else if (lowerStr.contains("анализ") && lowerStr.contains("бухгалтер"))
+//      model = types.accountingAnalysis;
+//    else
+//      model = LessonModel(parseLessonTitle(lowerStr),
+//          TimetableIcons.unknownLesson.codePoint); // Use original title
+
+    model.fullTitle = str;
     model.lessonType = parseLessonType(str);
 
     return model;
   }
+}
+
+enum LessonIds {
+  math,
+  economics,
+  informationTheory,
+  philosophy,
+  speechCulture,
+  physics,
+  chemistry,
+  literature,
+  english,
+  informatics,
+  geography,
+  history,
+  lifeSafety,
+  biology,
+  socialStudies,
+  physicalCulture,
+  ethics,
+  management,
+  softwareDevelopment,
+  computerArchitecture,
+  operatingSystems,
+  computerGraphic,
+  projectDevelopment,
+  databases,
+  documentManagementSupport,
+  accounting,
+  accountingAnalysis,
+  budgetCalculations,
+  taxation,
+  businessPlanning,
+  inventory
 }
 
 class LessonTypes {
@@ -223,113 +274,267 @@ class LessonTypes {
   }
 
   LessonTypes._internal(this.context)
-      : math = LessonModel(
-            AppLocalizations.of(context).math, TimetableIcons.math.codePoint),
-        economics = LessonModel(AppLocalizations.of(context).economics,
-            TimetableIcons.economics.codePoint),
-        informationTheory = LessonModel(
-            AppLocalizations.of(context).informationTheory,
-            TimetableIcons.informationTheory.codePoint),
-        philosophy = LessonModel(AppLocalizations.of(context).philosophy,
-            TimetableIcons.philosophy.codePoint),
-        speechCulture = LessonModel(AppLocalizations.of(context).speechCulture,
-            TimetableIcons.speechCulture.codePoint),
-        physics = LessonModel(AppLocalizations.of(context).physics,
-            TimetableIcons.physics.codePoint),
-        chemistry = LessonModel(AppLocalizations.of(context).chemistry,
-            TimetableIcons.chemistry.codePoint),
-        literature = LessonModel(AppLocalizations.of(context).literature,
-            TimetableIcons.literature.codePoint),
-        english = LessonModel(AppLocalizations.of(context).english,
-            TimetableIcons.english.codePoint),
-        informatics = LessonModel(AppLocalizations.of(context).informatics,
-            TimetableIcons.informatics.codePoint),
-        geography = LessonModel(AppLocalizations.of(context).geography,
-            TimetableIcons.geography.codePoint),
-        history = LessonModel(AppLocalizations.of(context).history,
-            TimetableIcons.history.codePoint),
-        lifeSafety = LessonModel(AppLocalizations.of(context).lifeSafety,
-            TimetableIcons.lifeSafety.codePoint),
-        biology = LessonModel(AppLocalizations.of(context).biology,
-            TimetableIcons.biology.codePoint),
-        socialStudies = LessonModel(AppLocalizations.of(context).socialStudies,
-            TimetableIcons.socialStudies.codePoint),
-        physicalCulture = LessonModel(
-            AppLocalizations.of(context).physicalCulture,
-            TimetableIcons.physicalCulture.codePoint),
-        ethics = LessonModel(AppLocalizations.of(context).ethics,
-            TimetableIcons.ethics.codePoint),
-        management = LessonModel(AppLocalizations.of(context).management,
-            TimetableIcons.management.codePoint),
-        softwareDevelopment = LessonModel(
-            AppLocalizations.of(context).softwareDevelopment,
-            TimetableIcons.softwareDevelopment.codePoint),
-        computerArchitecture = LessonModel(
-            AppLocalizations.of(context).computerArchitecture,
-            TimetableIcons.computerArchitecture.codePoint),
-        operatingSystems = LessonModel(
-            AppLocalizations.of(context).operatingSystems,
-            TimetableIcons.operatingSystems.codePoint),
-        computerGraphic = LessonModel(
-            AppLocalizations.of(context).computerGraphic,
-            TimetableIcons.computerGraphic.codePoint),
-        projectDevelopment = LessonModel(
-            AppLocalizations.of(context).projectDevelopment,
-            TimetableIcons.projectDevelopment.codePoint),
-        databases = LessonModel(AppLocalizations.of(context).databases,
-            TimetableIcons.databases.codePoint),
-        documentManagementSupport = LessonModel(
-            AppLocalizations.of(context).documentManagementSupport,
-            TimetableIcons.documentManagementSupport.codePoint),
-        accounting = LessonModel(AppLocalizations.of(context).accounting,
-            TimetableIcons.accounting.codePoint),
-        accountingAnalysis = LessonModel(
-            AppLocalizations.of(context).accountingAnalysis,
-            TimetableIcons.accountingAnalysis.codePoint),
-        budgetCalculations = LessonModel(
-            AppLocalizations.of(context).budgetCalculations,
-            TimetableIcons.budgetCalculations.codePoint),
-        taxation = LessonModel(AppLocalizations.of(context).taxation,
-            TimetableIcons.taxation.codePoint),
-        businessPlanning = LessonModel(
-            AppLocalizations.of(context).businessPlanning,
-            TimetableIcons.businessPlanning.codePoint),
-        inventory = LessonModel(AppLocalizations.of(context).inventory,
-            TimetableIcons.inventory.codePoint);
+      : lessons =
+            List<LessonModel>.generate(LessonIds.values.length, (lessonIndex) {
+          switch (LessonIds.values[lessonIndex]) {
+            case LessonIds.math:
+              return LessonModel(
+                AppLocalizations.of(context).math,
+                TimetableIcons.math.codePoint,
+                <List<String>>[
+                  <String>["математик"]
+                ],
+              );
+            case LessonIds.economics:
+              return LessonModel(
+                AppLocalizations.of(context).economics,
+                TimetableIcons.economics.codePoint,
+                <List<String>>[
+                  <String>["экономик"],
+                  <String>["экономическ", "теори"]
+                ],
+              );
+            case LessonIds.informationTheory:
+              return LessonModel(
+                AppLocalizations.of(context).informationTheory,
+                TimetableIcons.informationTheory.codePoint,
+                <List<String>>[
+                  <String>["теори", "информаци"]
+                ],
+              );
+            case LessonIds.philosophy:
+              return LessonModel(
+                AppLocalizations.of(context).philosophy,
+                TimetableIcons.philosophy.codePoint,
+                <List<String>>[
+                  <String>["философи"]
+                ],
+              );
+            case LessonIds.speechCulture:
+              return LessonModel(
+                AppLocalizations.of(context).speechCulture,
+                TimetableIcons.speechCulture.codePoint,
+                <List<String>>[
+                  <String>["культур", "реч"]
+                ],
+              );
+            case LessonIds.physics:
+              return LessonModel(
+                AppLocalizations.of(context).physics,
+                TimetableIcons.physics.codePoint,
+                <List<String>>[
+                  <String>["физик"]
+                ],
+              );
+            case LessonIds.chemistry:
+              return LessonModel(
+                AppLocalizations.of(context).chemistry,
+                TimetableIcons.chemistry.codePoint,
+                <List<String>>[
+                  <String>["хими"]
+                ],
+              );
+            case LessonIds.literature:
+              return LessonModel(
+                AppLocalizations.of(context).literature,
+                TimetableIcons.literature.codePoint,
+                <List<String>>[
+                  <String>["литератур"]
+                ],
+              );
+            case LessonIds.english:
+              return LessonModel(
+                AppLocalizations.of(context).english,
+                TimetableIcons.english.codePoint,
+                <List<String>>[
+                  <String>["иностранн"],
+                  <String>["английск"]
+                ],
+              );
+            case LessonIds.informatics:
+              return LessonModel(
+                AppLocalizations.of(context).informatics,
+                TimetableIcons.informatics.codePoint,
+                <List<String>>[
+                  <String>["информатик"]
+                ],
+              );
+            case LessonIds.geography:
+              return LessonModel(
+                AppLocalizations.of(context).geography,
+                TimetableIcons.geography.codePoint,
+                <List<String>>[
+                  <String>["географи"]
+                ],
+              );
+            case LessonIds.history:
+              return LessonModel(
+                AppLocalizations.of(context).history,
+                TimetableIcons.history.codePoint,
+                <List<String>>[
+                  <String>["истори"]
+                ],
+              );
+            case LessonIds.lifeSafety:
+              return LessonModel(
+                AppLocalizations.of(context).lifeSafety,
+                TimetableIcons.lifeSafety.codePoint,
+                <List<String>>[
+                  <String>["биологи"]
+                ],
+              );
+            case LessonIds.biology:
+              return LessonModel(
+                AppLocalizations.of(context).biology,
+                TimetableIcons.biology.codePoint,
+                <List<String>>[
+                  <String>["биологи"]
+                ],
+              );
+            case LessonIds.socialStudies:
+              return LessonModel(
+                AppLocalizations.of(context).socialStudies,
+                TimetableIcons.socialStudies.codePoint,
+                <List<String>>[
+                  <String>["общество"]
+                ],
+              );
+            case LessonIds.physicalCulture:
+              return LessonModel(
+                AppLocalizations.of(context).physicalCulture,
+                TimetableIcons.physicalCulture.codePoint,
+                <List<String>>[
+                  <String>["физ", "культур"]
+                ],
+              );
+            case LessonIds.ethics:
+              return LessonModel(
+                AppLocalizations.of(context).ethics,
+                TimetableIcons.ethics.codePoint,
+                <List<String>>[
+                  <String>["этик"]
+                ],
+              );
+            case LessonIds.management:
+              return LessonModel(
+                AppLocalizations.of(context).management,
+                TimetableIcons.management.codePoint,
+                <List<String>>[
+                  <String>["менеджмент"]
+                ],
+              );
+            case LessonIds.softwareDevelopment:
+              return LessonModel(
+                AppLocalizations.of(context).softwareDevelopment,
+                TimetableIcons.softwareDevelopment.codePoint,
+                <List<String>>[
+                  <String>["разработ", "програмн", "обеспечени"],
+                  <String>["разработ", "по"]
+                ],
+              );
+            case LessonIds.computerArchitecture:
+              return LessonModel(
+                AppLocalizations.of(context).computerArchitecture,
+                TimetableIcons.computerArchitecture.codePoint,
+                <List<String>>[
+                  <String>["архитектур", "эвм"],
+                  <String>["архитектур", "пк"]
+                ],
+              );
+            case LessonIds.operatingSystems:
+              return LessonModel(
+                AppLocalizations.of(context).operatingSystems,
+                TimetableIcons.operatingSystems.codePoint,
+                <List<String>>[
+                  <String>["операционн", "систем"]
+                ],
+              );
+            case LessonIds.computerGraphic:
+              return LessonModel(
+                AppLocalizations.of(context).computerGraphic,
+                TimetableIcons.computerGraphic.codePoint,
+                <List<String>>[
+                  <String>["компьютерн", "график"]
+                ],
+              );
+            case LessonIds.projectDevelopment:
+              return LessonModel(
+                AppLocalizations.of(context).projectDevelopment,
+                TimetableIcons.projectDevelopment.codePoint,
+                <List<String>>[
+                  <String>["проектн"]
+                ],
+              );
+            case LessonIds.databases:
+              return LessonModel(
+                AppLocalizations.of(context).databases,
+                TimetableIcons.databases.codePoint,
+                <List<String>>[
+                  <String>["баз", "данн"]
+                ],
+              );
+            case LessonIds.documentManagementSupport:
+              return LessonModel(
+                AppLocalizations.of(context).documentManagementSupport,
+                TimetableIcons.documentManagementSupport.codePoint,
+                <List<String>>[
+                  <String>["обеспеч", "управл", "документ"]
+                ],
+              );
+            case LessonIds.accounting:
+              return LessonModel(
+                AppLocalizations.of(context).accounting,
+                TimetableIcons.accounting.codePoint,
+                <List<String>>[
+                  <String>["бухучет"]
+                ],
+              );
+            case LessonIds.accountingAnalysis:
+              return LessonModel(
+                AppLocalizations.of(context).accountingAnalysis,
+                TimetableIcons.accountingAnalysis.codePoint,
+                <List<String>>[
+                  <String>["анализ", "бухгалтер"]
+                ],
+              );
+            case LessonIds.budgetCalculations:
+              return LessonModel(
+                AppLocalizations.of(context).budgetCalculations,
+                TimetableIcons.budgetCalculations.codePoint,
+                <List<String>>[
+                  <String>["расчет", "бюдж"]
+                ],
+              );
+            case LessonIds.taxation:
+              return LessonModel(
+                AppLocalizations.of(context).taxation,
+                TimetableIcons.taxation.codePoint,
+                <List<String>>[
+                  <String>["налогообложен"]
+                ],
+              );
+            case LessonIds.businessPlanning:
+              return LessonModel(
+                AppLocalizations.of(context).businessPlanning,
+                TimetableIcons.businessPlanning.codePoint,
+                <List<String>>[
+                  <String>["планирован", "бизнес"]
+                ],
+              );
+            case LessonIds.inventory:
+              return LessonModel(
+                AppLocalizations.of(context).inventory,
+                TimetableIcons.inventory.codePoint,
+                <List<String>>[
+                  <String>["инвентар"]
+                ],
+              );
+          }
+        });
 
   final BuildContext context;
 
-  final LessonModel math,
-      economics,
-      informationTheory,
-      philosophy,
-      speechCulture,
-      physics,
-      chemistry,
-      literature,
-      english,
-      informatics,
-      geography,
-      history,
-      lifeSafety,
-      biology,
-      socialStudies,
-      physicalCulture,
-      ethics,
-      management,
-      softwareDevelopment,
-      computerArchitecture,
-      operatingSystems,
-      computerGraphic,
-      projectDevelopment,
-      databases,
-      documentManagementSupport,
-      accounting,
-      accountingAnalysis,
-      budgetCalculations,
-      taxation,
-      businessPlanning,
-      inventory;
+  final List<LessonModel> lessons;
 }
 
 @JsonSerializable(nullable: false)
