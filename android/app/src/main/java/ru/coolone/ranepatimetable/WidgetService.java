@@ -105,9 +105,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         var bgRectPaint = new Paint();
         bgRectPaint.setAntiAlias(true);
         bgRectPaint.setColor(theme.background);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            canvas.drawRoundRect(rect, dpScale * rectRound, dpScale * rectRound, bgRectPaint);
-        else canvas.drawRect(rect, bgRectPaint);
+        canvas.drawRoundRect(rect, dpScale * rectRound, dpScale * rectRound, bgRectPaint);
 
         var mergeTop = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_MERGE_TOP)) != 0;
         if (mergeTop) {
