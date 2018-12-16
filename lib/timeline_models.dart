@@ -72,6 +72,35 @@ class TimelineModel extends TimelineParent {
 
 enum RoomLocation { Academy, Hotel, StudyHostel }
 
+class RoomLocationsTitles {
+  static RoomLocationsTitles _singleton;
+
+  factory RoomLocationsTitles(BuildContext context) {
+    if (_singleton == null) _singleton = RoomLocationsTitles._internal(context);
+
+    return _singleton;
+  }
+
+  RoomLocationsTitles._internal(this.context)
+      : titles = List<String>.generate(
+          RoomLocation.values.length,
+          (roomLocationIndex) {
+            final localizations = AppLocalizations.of(context);
+            switch (RoomLocation.values[roomLocationIndex]) {
+              case RoomLocation.Academy:
+                return localizations.roomLocationAcademy;
+              case RoomLocation.Hotel:
+                return localizations.roomLocationHotel;
+              case RoomLocation.StudyHostel:
+                return localizations.roomLocationStudyHostel;
+            }
+          },
+        );
+
+  final List<String> titles;
+  final BuildContext context;
+}
+
 @JsonSerializable(nullable: false)
 class RoomModel {
   final String number;
@@ -115,16 +144,22 @@ LessonType parseLessonType(String str) {
 
 @JsonSerializable(nullable: false)
 class LessonModel {
-  @JsonKey(ignore: true)
   String fullTitle;
   @JsonKey(ignore: true)
-  final List<List<String>> findWords;
+  List<List<String>> findWords;
   final String title;
   final int iconCodePoint;
   LessonType lessonType;
 
-  LessonModel(this.title, this.iconCodePoint, this.findWords,
-      {this.lessonType = LessonType.None, this.fullTitle});
+  LessonModel(
+    this.title,
+    this.iconCodePoint, [
+    this.lessonType = LessonType.None,
+    this.findWords,
+    this.fullTitle,
+  ]);
+
+  LessonModel._(this.title, this.iconCodePoint, this.findWords);
 
   factory LessonModel.fromJson(Map<String, dynamic> json) =>
       _$LessonModelFromJson(json);
@@ -137,93 +172,28 @@ class LessonModel {
 
     LessonModel model;
 
-    // TODO: parse lessonsss
-    for(final mLesson in types.lessons) {
-      bool strFound;
-      for(final List<String> mStrList in mLesson.findWords) {
-        for(final String mStr in mStrList) {
-          if(!lowerStr.contains(mStr)) {
-
+    for (final mLesson in types.lessons) {
+      bool strFound = false;
+      for (final List<String> mStrList in mLesson.findWords) {
+        strFound = true;
+        for (final String mStr in mStrList) {
+          if (!lowerStr.contains(mStr)) {
+            strFound = false;
+            break;
           }
         }
       }
+      if (strFound) {
+        model = mLesson;
+        break;
+      }
     }
 
-//    if (lowerStr.contains("математик"))
-//      model = types.math;
-//    else if (lowerStr.contains("общество"))
-//      model = types.socialStudies;
-//    else if (lowerStr.contains("экономик") ||
-//        (lowerStr.contains("экономическ") && lowerStr.contains("теори")))
-//      model = types.economics;
-//    else if (lowerStr.contains("теори") && lowerStr.contains("информаци"))
-//      return types.informationTheory;
-//    else if (lowerStr.contains("философи"))
-//      model = types.philosophy;
-//    else if (lowerStr.contains("культур") && lowerStr.contains("реч"))
-//      return types.speechCulture;
-//    else if (lowerStr.contains("физик"))
-//      model = types.physics;
-//    else if (lowerStr.contains("хими"))
-//      model = types.chemistry;
-//    else if (lowerStr.contains("литератур"))
-//      model = types.literature;
-//    else if (lowerStr.contains("иностранн") || lowerStr.contains("английск"))
-//      model = types.english;
-//    else if (lowerStr.contains("информатик"))
-//      model = types.informatics;
-//    else if (lowerStr.contains("географи"))
-//      model = types.geography;
-//    else if (lowerStr.contains("истори"))
-//      model = types.history;
-//    else if (lowerStr.contains("обж") ||
-//        (lowerStr.contains("безопасност") &&
-//            lowerStr.contains("жизнедеятельност")))
-//      return types.lifeSafety;
-//    else if (lowerStr.contains("биологи"))
-//      model = types.biology;
-//    else if (lowerStr.contains("физ") && lowerStr.contains("культур"))
-//      return types.physicalCulture;
-//    else if (lowerStr.contains("этик"))
-//      model = types.ethics;
-//    else if (lowerStr.contains("менеджмент"))
-//      model = types.management;
-//    else if (lowerStr.contains("разработ") &&
-//        ((lowerStr.contains("програмн") && lowerStr.contains("обеспечени")) ||
-//            lowerStr.contains("ПО")))
-//      model = types.softwareDevelopment;
-//    else if (lowerStr.contains("архитектур") &&
-//        (lowerStr.contains("эвм") || lowerStr.contains("пк")))
-//      model = types.computerArchitecture;
-//    else if (lowerStr.contains("операционн") && lowerStr.contains("систем"))
-//      model = types.operatingSystems;
-//    else if (lowerStr.contains("компьютерн") && lowerStr.contains("график"))
-//      model = types.computerGraphic;
-//    else if (lowerStr.contains("проектн"))
-//      model = types.projectDevelopment;
-//    else if (lowerStr.contains("баз") && lowerStr.contains("данн"))
-//      model = types.databases;
-//    else if (lowerStr.contains("обеспеч") &&
-//        lowerStr.contains("управл") &&
-//        lowerStr.contains("документ"))
-//      model = types.documentManagementSupport;
-//    else if (lowerStr.contains("инвентар"))
-//      model = types.inventory;
-//    else if (lowerStr.contains("бухучет"))
-//      model = types.accounting;
-//    else if (lowerStr.contains("планирован") && lowerStr.contains("бизнес"))
-//      model = types.businessPlanning;
-//    else if (lowerStr.contains("налогообложен"))
-//      model = types.taxation;
-//    else if (lowerStr.contains("расчет") && lowerStr.contains("бюдж"))
-//      model = types.budgetCalculations;
-//    else if (lowerStr.contains("анализ") && lowerStr.contains("бухгалтер"))
-//      model = types.accountingAnalysis;
-//    else
-//      model = LessonModel(parseLessonTitle(lowerStr),
-//          TimetableIcons.unknownLesson.codePoint); // Use original title
+    if (model == null)
+      model = LessonModel(
+          parseLessonTitle(lowerStr), TimetableIcons.unknownLesson.codePoint);
 
-    model.fullTitle = str;
+    model.fullTitle = str.substring(0, str.indexOf(')'));
     model.lessonType = parseLessonType(str);
 
     return model;
@@ -278,7 +248,7 @@ class LessonTypes {
             List<LessonModel>.generate(LessonIds.values.length, (lessonIndex) {
           switch (LessonIds.values[lessonIndex]) {
             case LessonIds.math:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).math,
                 TimetableIcons.math.codePoint,
                 <List<String>>[
@@ -286,7 +256,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.economics:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).economics,
                 TimetableIcons.economics.codePoint,
                 <List<String>>[
@@ -295,7 +265,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.informationTheory:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).informationTheory,
                 TimetableIcons.informationTheory.codePoint,
                 <List<String>>[
@@ -303,7 +273,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.philosophy:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).philosophy,
                 TimetableIcons.philosophy.codePoint,
                 <List<String>>[
@@ -311,7 +281,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.speechCulture:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).speechCulture,
                 TimetableIcons.speechCulture.codePoint,
                 <List<String>>[
@@ -319,7 +289,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.physics:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).physics,
                 TimetableIcons.physics.codePoint,
                 <List<String>>[
@@ -327,7 +297,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.chemistry:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).chemistry,
                 TimetableIcons.chemistry.codePoint,
                 <List<String>>[
@@ -335,7 +305,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.literature:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).literature,
                 TimetableIcons.literature.codePoint,
                 <List<String>>[
@@ -343,7 +313,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.english:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).english,
                 TimetableIcons.english.codePoint,
                 <List<String>>[
@@ -352,7 +322,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.informatics:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).informatics,
                 TimetableIcons.informatics.codePoint,
                 <List<String>>[
@@ -360,7 +330,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.geography:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).geography,
                 TimetableIcons.geography.codePoint,
                 <List<String>>[
@@ -368,7 +338,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.history:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).history,
                 TimetableIcons.history.codePoint,
                 <List<String>>[
@@ -376,7 +346,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.lifeSafety:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).lifeSafety,
                 TimetableIcons.lifeSafety.codePoint,
                 <List<String>>[
@@ -384,7 +354,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.biology:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).biology,
                 TimetableIcons.biology.codePoint,
                 <List<String>>[
@@ -392,7 +362,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.socialStudies:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).socialStudies,
                 TimetableIcons.socialStudies.codePoint,
                 <List<String>>[
@@ -400,7 +370,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.physicalCulture:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).physicalCulture,
                 TimetableIcons.physicalCulture.codePoint,
                 <List<String>>[
@@ -408,7 +378,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.ethics:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).ethics,
                 TimetableIcons.ethics.codePoint,
                 <List<String>>[
@@ -416,7 +386,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.management:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).management,
                 TimetableIcons.management.codePoint,
                 <List<String>>[
@@ -424,7 +394,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.softwareDevelopment:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).softwareDevelopment,
                 TimetableIcons.softwareDevelopment.codePoint,
                 <List<String>>[
@@ -433,7 +403,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.computerArchitecture:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).computerArchitecture,
                 TimetableIcons.computerArchitecture.codePoint,
                 <List<String>>[
@@ -442,7 +412,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.operatingSystems:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).operatingSystems,
                 TimetableIcons.operatingSystems.codePoint,
                 <List<String>>[
@@ -450,7 +420,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.computerGraphic:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).computerGraphic,
                 TimetableIcons.computerGraphic.codePoint,
                 <List<String>>[
@@ -458,7 +428,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.projectDevelopment:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).projectDevelopment,
                 TimetableIcons.projectDevelopment.codePoint,
                 <List<String>>[
@@ -466,7 +436,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.databases:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).databases,
                 TimetableIcons.databases.codePoint,
                 <List<String>>[
@@ -474,7 +444,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.documentManagementSupport:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).documentManagementSupport,
                 TimetableIcons.documentManagementSupport.codePoint,
                 <List<String>>[
@@ -482,7 +452,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.accounting:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).accounting,
                 TimetableIcons.accounting.codePoint,
                 <List<String>>[
@@ -490,7 +460,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.accountingAnalysis:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).accountingAnalysis,
                 TimetableIcons.accountingAnalysis.codePoint,
                 <List<String>>[
@@ -498,7 +468,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.budgetCalculations:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).budgetCalculations,
                 TimetableIcons.budgetCalculations.codePoint,
                 <List<String>>[
@@ -506,7 +476,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.taxation:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).taxation,
                 TimetableIcons.taxation.codePoint,
                 <List<String>>[
@@ -514,7 +484,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.businessPlanning:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).businessPlanning,
                 TimetableIcons.businessPlanning.codePoint,
                 <List<String>>[
@@ -522,7 +492,7 @@ class LessonTypes {
                 ],
               );
             case LessonIds.inventory:
-              return LessonModel(
+              return LessonModel._(
                 AppLocalizations.of(context).inventory,
                 TimetableIcons.inventory.codePoint,
                 <List<String>>[

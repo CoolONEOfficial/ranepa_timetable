@@ -87,7 +87,7 @@ const _$RoomLocationEnumMap = <RoomLocation, dynamic>{
 
 LessonModel _$LessonModelFromJson(Map<String, dynamic> json) {
   return LessonModel(json['title'] as String, json['iconCodePoint'] as int,
-      lessonType: _$enumDecode(_$LessonTypeEnumMap, json['lessonType']));
+      _$enumDecode(_$LessonTypeEnumMap, json['lessonType']));
 }
 
 Map<String, dynamic> _$LessonModelToJson(LessonModel instance) =>

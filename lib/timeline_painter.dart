@@ -30,13 +30,13 @@ class TimelinePainter extends CustomPainter {
     _centerElementPaint(canvas, size);
   }
 
-  void _centerElementPaint(Canvas canvas, Size size) {
-    const rectMargins = 8.0,
-        iconSize = 15.0,
-        circleRadius = 23.0,
-        rectCornersRadius = 10.0,
-        circleMargin = 5.0;
+  static const rectMargins = 8.0,
+      iconSize = 15.0,
+      circleRadius = 23.0,
+      rectCornersRadius = 10.0,
+      circleMargin = 5.0;
 
+  void _centerElementPaint(Canvas canvas, Size size) {
     if (model.mergeTop)
       canvas.drawRect(
         Rect.fromLTRB(

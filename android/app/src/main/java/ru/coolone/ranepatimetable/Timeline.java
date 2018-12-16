@@ -74,10 +74,11 @@ public class Timeline {
     @NoArgsConstructor
     static public class LessonModel {
         public static final String COLUMN_LESSON_TITLE = "title";
+        public static final String COLUMN_LESSON_FULL_TITLE = "fullTitle";
         public static final String COLUMN_LESSON_ICON = "iconCodePoint";
         public static final String COLUMN_LESSON_TYPE = "lessonType";
 
-        String title;
+        String title, fullTitle;
         int iconCodePoint;
         @TypeConverters(LessonModel.class)
         LessonType lessonType;
@@ -85,6 +86,7 @@ public class Timeline {
         public static LessonModel fromContentValues(ContentValues values, String prefix) {
             return new LessonModel(
                     values.getAsString(prefix + COLUMN_LESSON_TITLE),
+                    values.getAsString(prefix + COLUMN_LESSON_FULL_TITLE),
                     values.getAsInteger(prefix + COLUMN_LESSON_ICON),
                     LessonType.values()[values.getAsInteger(prefix + COLUMN_LESSON_TYPE)]
             );

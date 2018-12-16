@@ -50,7 +50,7 @@ class TimelineElement extends StatelessWidget {
           Container(
             padding: EdgeInsets.only(top: 20.0, left: 140.0, right: 15.0),
             child: Tooltip(
-              message: model.lesson.title,
+              message: model.lesson.fullTitle ?? model.lesson.title,
               child: Text(
                 model.lesson.title,
                 overflow: TextOverflow.ellipsis,
@@ -58,12 +58,18 @@ class TimelineElement extends StatelessWidget {
               ),
             ),
           ),
-          Container(
-            padding: EdgeInsets.only(top: 55.0, left: 40.0),
-            child: Text(
-              model.room.number,
-              overflow: TextOverflow.fade,
-              style: Theme.of(context).textTheme.subtitle,
+          Tooltip(
+            verticalOffset: 50,
+            message:
+                RoomLocationsTitles(context).titles[model.room.location.index],
+            child: Container(
+              margin: EdgeInsets.only(top: 55.0, left: TimelinePainter.rectMargins * 2),
+              padding: EdgeInsets.only(left: 40 - TimelinePainter.rectMargins * 2),
+              child: Text(
+                model.room.number,
+                overflow: TextOverflow.fade,
+                style: Theme.of(context).textTheme.subtitle,
+              ),
             ),
           ),
           Container(
