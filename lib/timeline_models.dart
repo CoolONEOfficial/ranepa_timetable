@@ -182,6 +182,7 @@ class LessonModel {
             break;
           }
         }
+        if(strFound) break;
       }
       if (strFound) {
         model = mLesson;

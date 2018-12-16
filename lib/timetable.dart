@@ -19,7 +19,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:xml/xml.dart' as xml;
 
-enum TimetableResponseIndexes { Date, TimeStart, TimeFinish, Name, Room, Group }
+enum TimetableResponseIndexes {
+  Date,
+  TimeStart,
+  TimeFinish,
+  Name,
+  Room,
+  Group,
+}
 
 class Timetable extends StatelessWidget {
   final Drawer drawer;
@@ -349,7 +356,7 @@ class Timetable extends StatelessWidget {
                 stream: timetableFutureBuilderBloc.stream,
                 builder: (context, _) => WidgetTemplates.buildFutureBuilder(
                       context,
-                      future: ssSearchItem.data.item1
+                      future: Platform.isAndroid && ssSearchItem.data.item1
                           ? _getTimetable(context, ssSearchItem.data.item2)
                           : _loadAllTimetable(
                               context, ssSearchItem.data.item2, false),

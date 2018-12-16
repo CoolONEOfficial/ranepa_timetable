@@ -148,7 +148,7 @@ public class WidgetProvider extends AppWidgetProvider {
         theme = Theme.values()[(int) prefs.getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
 
         // See the dimensions and
-        Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
+        var options = appWidgetManager.getAppWidgetOptions(appWidgetId);
         width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
         height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
         log.info("build layout: w" + width + " h" + height);
@@ -162,7 +162,7 @@ public class WidgetProvider extends AppWidgetProvider {
         if (cursor.moveToLast()) {
             var lastLessonFinish = getLessonFinish(cursor);
 
-            int dayDescId = R.string.widget_title_today;
+            var dayDescId = R.string.widget_title_today;
 
             if (lastLessonFinish.compareTo(findDate) < 0) {
                 findDate.add(Calendar.DATE, 1);

@@ -19,7 +19,8 @@ class PrefsIds {
       ALARM_POST = "alarm_post";
 }
 
-Future<SearchItem> showSearchItemSelect(BuildContext context, SharedPreferences prefs,
+Future<SearchItem> showSearchItemSelect(
+        BuildContext context, SharedPreferences prefs,
         {toPrefs = true}) =>
     showSearch<SearchItem>(
       context: context,
@@ -102,10 +103,8 @@ class Prefs extends StatelessWidget {
                 onChanged: (value) {
                   widgetTranslucent.add(value);
                   prefs.setBool(PrefsIds.WIDGET_TRANSLUCENT, value).then(
-                    (_) {
-                      PlatformChannels.refreshWidget();
-                    },
-                  );
+                        (_) => PlatformChannels.refreshWidget(),
+                      );
                 },
               ),
             ),
@@ -120,7 +119,8 @@ class Prefs extends StatelessWidget {
         onPressed: () => showSearchItemSelect(context, prefs),
         rightWidget: StreamBuilder<Tuple2<bool, SearchItem>>(
           stream: timetableIdBloc.stream,
-          initialData: Tuple2<bool, SearchItem>(null, SearchItem.fromPrefs(prefs)),
+          initialData:
+              Tuple2<bool, SearchItem>(null, SearchItem.fromPrefs(prefs)),
           builder: (context, snapshot) => Text(snapshot.data.item2.title),
         ),
       );

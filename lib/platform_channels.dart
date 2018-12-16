@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -57,10 +58,12 @@ class PlatformChannels {
   }
 
   static Future<void> deleteDb() async {
-    await methodChannel.invokeMethod("deleteDb");
+    if(Platform.isAndroid)
+      await methodChannel.invokeMethod("deleteDb");
   }
 
   static Future<void> refreshWidget() async {
-    methodChannel.invokeMethod("refreshWidget");
+    if(Platform.isAndroid)
+      methodChannel.invokeMethod("refreshWidget");
   }
 }
