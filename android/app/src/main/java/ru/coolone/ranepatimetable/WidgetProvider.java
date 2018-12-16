@@ -90,10 +90,35 @@ public class WidgetProvider extends AppWidgetProvider {
 
     @AllArgsConstructor
     enum Theme {
-        Light(Color.BLUE, 0xFF2196F3, Color.WHITE, Color.BLACK, 0xFF90CAF9),
-        LightRed(Color.RED, 0xFFF44336, Color.WHITE, Color.BLACK, 0xFFEF9A9A),
-        Dark(0xFF212121, 0xFF64FFDA, Color.BLACK, Color.WHITE, 0xFF616161),
-        DarkRed(0xFF212121, 0xFFF44336, Color.WHITE, Color.WHITE, 0xFF616161);
+        Light(
+                Color.BLUE,
+                0xFF2196F3,
+                Color.WHITE,
+                Color.BLACK,
+                0xFF90CAF9
+        ),
+        LightRed(
+                0xFF982825,
+                0xFF982825,
+                Color.WHITE,
+                Color.BLACK,
+                0xFFde7a78
+        ),
+        Dark(
+                0xFF212121,
+                0xFF64FFDA,
+                Color.BLACK,
+                Color.WHITE,
+                0xFF616161
+        ),
+        DarkRed(
+                0xFF212121,
+                0xFF982825,
+                Color.WHITE,
+                Color.WHITE,
+                0xFF616161
+        );
+
         final int primary, accent, textPrimary, textAccent, background;
     }
 

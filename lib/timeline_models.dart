@@ -194,7 +194,7 @@ class LessonModel {
       model = LessonModel(
           parseLessonTitle(lowerStr), TimetableIcons.unknownLesson.codePoint);
 
-    model.fullTitle = str.substring(0, str.indexOf(')'));
+    model.fullTitle = str.substring(0, str.indexOf(')') + 1);
     model.lessonType = parseLessonType(str);
 
     return model;

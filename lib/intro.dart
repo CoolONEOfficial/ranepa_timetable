@@ -17,8 +17,6 @@ class Intro extends StatelessWidget {
   const Intro({Key key, @required this.base, @required this.prefs})
       : super(key: key);
 
-  static const welcomeColor = Color(0xFF982825);
-
   PageViewModel _buildTimetable(BuildContext context, ThemeData theme,
       Color backgroundColor, AppLocalizations localizations) =>
       PageViewModel(
@@ -122,12 +120,12 @@ class Intro extends StatelessWidget {
       );
 
   PageViewModel _buildWelcome(ThemeData theme,
-      AppLocalizations localizations) =>
+      Color backgroundColor, AppLocalizations localizations) =>
       PageViewModel(
-        pageColor: welcomeColor,
+        pageColor: backgroundColor,
         bubble: Image(
           image: AssetImage('assets/images/icon-foreground.png'),
-          color: welcomeColor,
+          color: backgroundColor,
         ),
         body: Text(localizations.introWelcomeDescription),
         title: Text(
@@ -218,7 +216,7 @@ class Intro extends StatelessWidget {
 
           return IntroViewsFlutter(
             [
-              _buildWelcome(theme, localizations),
+              _buildWelcome(theme, backgroundColor, localizations),
               _buildTheme(context, theme, backgroundColor, snapshot.data,
                   localizations),
               _buildTimetable(context, theme, backgroundColor, localizations),
