@@ -11,16 +11,18 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.ImageButton;
 import android.widget.RemoteViews;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.var;
+
+import static java.lang.Math.toIntExact;
 
 /**
  * The weather widget's AppWidgetProvider.
@@ -105,7 +107,7 @@ public class WidgetProvider extends AppWidgetProvider {
         final String prefId;
     }
 
-    private Calendar getMidnight(Calendar calendar) {
+    private static Calendar getMidnight(Calendar calendar) {
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
@@ -113,18 +115,18 @@ public class WidgetProvider extends AppWidgetProvider {
         return calendar;
     }
 
-    private Calendar getTodayMidnight() {
+    public static Calendar getTodayMidnight() {
         return getMidnight(Calendar.getInstance());
     }
 
-    private Calendar getLessonFinish(Cursor cursor) {
-        var lastLesson = new GregorianCalendar();
-        lastLesson.setTimeInMillis(
+    private Calendar getLessonStart(Cursor cursor) {
+        var lesson = GregorianCalendar.getInstance();
+        lesson.setTimeInMillis(
                 cursor.getLong(
                         cursor.getColumnIndex(Timeline.COLUMN_DATE)
                 )
         ); // set day
-        lastLesson.set(Calendar.HOUR,
+        lesson.set(Calendar.HOUR,
                 cursor.getInt(
                         cursor.getColumnIndex(
                                 Timeline.PREFIX_START
@@ -132,7 +134,7 @@ public class WidgetProvider extends AppWidgetProvider {
                         )
                 )
         ); // set finish hour
-        lastLesson.set(Calendar.MINUTE,
+        lesson.set(Calendar.MINUTE,
                 cursor.getInt(
                         cursor.getColumnIndex(
                                 Timeline.PREFIX_START
@@ -140,7 +142,17 @@ public class WidgetProvider extends AppWidgetProvider {
                         )
                 )
         ); // set finish minute
-        return lastLesson;
+        return lesson;
+    }
+
+    public static int daysBetween(Calendar startDate, Calendar endDate) {
+        long end = endDate.getTimeInMillis();
+        long start = startDate.getTimeInMillis();
+        return safeLongToInt(TimeUnit.MILLISECONDS.toDays(Math.abs(end - start)));
+    }
+
+    public static int safeLongToInt(long l) {
+        return (int) Math.max(Math.min(Integer.MAX_VALUE, l), Integer.MIN_VALUE);
     }
 
     private RemoteViews buildLayout(Context context, int appWidgetId, AppWidgetManager appWidgetManager) {
@@ -155,21 +167,15 @@ public class WidgetProvider extends AppWidgetProvider {
 
         var rv = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
 
-        var cursor = TimetableDatabase.getInstance(context)
+        var futureLessonCursor = TimetableDatabase.getInstance(context)
                 .timetable()
-                .selectByDate(getTodayMidnight().getTimeInMillis());
-        var findDate = Calendar.getInstance();
-        if (cursor.moveToLast()) {
-            var lastLessonFinish = getLessonFinish(cursor);
+                .selectWeekday(getTodayMidnight().getTimeInMillis());
 
-            var dayDescId = R.string.widget_title_today;
+        if (futureLessonCursor.moveToFirst()) {
+            var futureLessonStart = getLessonStart(futureLessonCursor);
 
-            if (lastLessonFinish.compareTo(findDate) < 0) {
-                findDate.add(Calendar.DATE, 1);
-                dayDescId = R.string.widget_title_tomorrow;
-            }
             String dayOfWeek;
-            switch (findDate.get(Calendar.DAY_OF_WEEK)) {
+            switch (futureLessonStart.get(Calendar.DAY_OF_WEEK)) {
                 case Calendar.MONDAY:
                     dayOfWeek = context.getString(R.string.monday);
                     break;
@@ -190,10 +196,21 @@ public class WidgetProvider extends AppWidgetProvider {
                     break;
                 default: // sunday
                     dayOfWeek = context.getString(R.string.monday);
-                    findDate.add(Calendar.DATE, 1);
-                    dayDescId = R.string.widget_title_next_week;
                     break;
             }
+
+            var dayDescId = -1;
+            switch (daysBetween(getTodayMidnight(), futureLessonStart)) {
+                case 0:
+                    dayDescId = R.string.widget_title_today;
+                    break;
+                case 1:
+                    dayDescId = R.string.widget_title_tomorrow;
+                    break;
+                default:
+                    dayDescId = R.string.widget_title_next_week;
+            }
+
             rv.setTextViewText(R.id.widget_title,
                     String.format(dayOfWeek, context.getString(dayDescId))
             );
@@ -204,7 +221,11 @@ public class WidgetProvider extends AppWidgetProvider {
         // embed the appWidgetId via the data otherwise it will be ignored.
         var intent = new Intent(context, WidgetService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        intent.putExtra(WidgetRemoteViewsFactory.DATE, getMidnight(findDate).getTimeInMillis());
+        var futureLessonDate = GregorianCalendar.getInstance();
+        futureLessonDate.setTimeInMillis(
+                futureLessonCursor.getLong(futureLessonCursor.getColumnIndex(Timeline.COLUMN_DATE))
+        );
+        intent.putExtra(WidgetRemoteViewsFactory.DATE, getMidnight(futureLessonDate).getTimeInMillis());
         intent.putExtra(WidgetRemoteViewsFactory.THEME_ID, theme.ordinal());
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
@@ -239,8 +260,8 @@ public class WidgetProvider extends AppWidgetProvider {
         }
         rv.setInt(R.id.widget_body, "setBackgroundResource", bodyLayoutResId);
         rv.setInt(R.id.widget_head, "setBackgroundResource", headLayoutResId);
-        rv.setInt(R.id.add_calendar,"setColorFilter", theme.textAccent);
-        rv.setInt(R.id.add_alarm,"setColorFilter", theme.textAccent);
+        rv.setInt(R.id.add_calendar, "setColorFilter", theme.textAccent);
+        rv.setInt(R.id.add_alarm, "setColorFilter", theme.textAccent);
 
         rv.setRemoteAdapter(R.id.timeline_list, intent);
         // Set the empty view to be displayed if the collection is empty.  It must be a sibling

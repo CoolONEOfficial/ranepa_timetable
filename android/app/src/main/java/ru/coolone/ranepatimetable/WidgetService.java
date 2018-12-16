@@ -86,7 +86,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
     private static final int rectMargins = 8,
             iconSize = 29,
             circleRadius = 23,
-            rectRound = 10,
+            rectCornersRadius = 10,
             circleMargin = 5;
 
     private Bitmap buildItemBitmap(Context context, float w, float h) {
@@ -105,7 +105,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         var bgRectPaint = new Paint();
         bgRectPaint.setAntiAlias(true);
         bgRectPaint.setColor(theme.background);
-        canvas.drawRoundRect(rect, dpScale * rectRound, dpScale * rectRound, bgRectPaint);
+        canvas.drawRoundRect(rect, dpScale * rectCornersRadius, dpScale * rectCornersRadius, bgRectPaint);
 
         var mergeTop = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_MERGE_TOP)) != 0;
         if (mergeTop) {
@@ -120,9 +120,9 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             );
             canvas.drawRect(
                     new RectF(
-                            dpScale * rectRound * 2,
+                            dpScale * rectCornersRadius * 2,
                             0,
-                            w - (dpScale * rectRound * 2),
+                            w - (dpScale * rectCornersRadius * 2),
                             dpScale * rectMargins
                     ),
                     mergePaint

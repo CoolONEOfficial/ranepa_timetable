@@ -6,10 +6,14 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 import android.database.Cursor;
 
+import java.util.Calendar;
 import java.util.List;
+
+import static ru.coolone.ranepatimetable.WidgetProvider.getTodayMidnight;
 
 @Dao
 public interface TimelineDao {
+
     /**
      * Counts the number of timetables in the table.
      *
@@ -72,6 +76,17 @@ public interface TimelineDao {
      */
     @Query("SELECT * FROM " + Timeline.TABLE_NAME + " WHERE " + Timeline.COLUMN_DATE + " = :date")
     public Cursor selectByDate(long date);
+
+    //SELECT * FROM NAMES WHERE date == (SELECT date FROM NAMES WHERE date >= '1900-02-01 00:00:00' LIMIT 1)
+
+    @Query("SELECT * FROM " + Timeline.TABLE_NAME + " WHERE " + Timeline.COLUMN_DATE + " == " +
+            "(" +
+            "SELECT " + Timeline.COLUMN_DATE +
+            " FROM " + Timeline.TABLE_NAME +
+            " WHERE " + Timeline.COLUMN_DATE + " >= :now LIMIT 1" +
+            ")"
+    )
+    public Cursor selectWeekday(long now);
 
     /**
      * Delete a timetable by the ID.
