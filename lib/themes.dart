@@ -32,20 +32,22 @@ enum ThemeIds { LIGHT, LIGHT_RED, DARK, DARK_RED }
 class Themes {
   static Themes _singleton;
 
+
+  static const redAccentValue = 0xFFF44336;//0xFF982825;
   static MaterialColor redAccent =
   MaterialColor(
-  0xFF982825,
+    redAccentValue,
     <int, Color>{
-      50: Color(0xf2cbca),
-      100: Color(0xFFe8a3a1),
-      200: Color(0xFFde7a78),
-      300: Color(0xFFd4524f),
-      400: Color(0xFFc1332f),
-      500: Color(0xFF982825),
-      600: Color(0xFF8a2422),
-      700: Color(0xFF7d211e),
-      800: Color(0xFF6f1d1b),
-      900: Color(0xFF611a18),
+      50: Color(0xFFFFEBEE),
+      100: Color(0xFFFFCDD2),
+      200: Color(0xFFEF9A9A),
+      300: Color(0xFFE57373),
+      400: Color(0xFFEF5350),
+      500: Color(redAccentValue),
+      600: Color(0xFFE53935),
+      700: Color(0xFFD32F2F),
+      800: Color(0xFFC62828),
+      900: Color(0xFFB71C1C),
     },
   );
   static const DEFAULT_THEME_ID = ThemeIds.LIGHT_RED;

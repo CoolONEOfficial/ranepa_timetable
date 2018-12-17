@@ -21,7 +21,7 @@ import 'package:ranepa_timetable/timeline_models.dart';
 class TimelineComponent extends StatelessWidget {
   final List<TimelineModel> timelineList;
 
-  const TimelineComponent({Key key, @required this.timelineList}) : super(key: key);
+  const TimelineComponent(this.timelineList, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

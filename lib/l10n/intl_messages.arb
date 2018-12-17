@@ -6,8 +6,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "noInternetConnection": "No internet connection",
+  "noNetworkConnection": "No network connection",
   "@noInternetConnection": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "noCache": "Schedule  not loaded",
+  "@noCache": {
     "type": "text",
     "placeholders": {}
   },

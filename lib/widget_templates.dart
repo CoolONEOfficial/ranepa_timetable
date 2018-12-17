@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/search.dart';
+import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
 
 class WidgetTemplates {
@@ -79,15 +80,31 @@ class WidgetTemplates {
   static Widget buildErrorNotification(BuildContext context, String error) =>
       _buildIconNotification(context, error, Icons.error);
 
-  static Widget buildInternetErrorNotification(
-          BuildContext context, VoidCallback onRefresh) =>
+  static Widget buildNetworkErrorNotification(
+          BuildContext context) =>
       _buildNotification(
         context,
         AppLocalizations.of(context).noInternetConnection,
         RawMaterialButton(
-          onPressed: onRefresh,
+          onPressed: () => timetableFutureBuilderBloc.add(null),
           child: Icon(
             Icons.refresh,
+            size: 100,
+          ),
+          shape: CircleBorder(),
+          padding: const EdgeInsets.all(30),
+        ),
+      );
+
+  static Widget buildNoCacheNotification(
+      BuildContext context) =>
+      _buildNotification(
+        context,
+        AppLocalizations.of(context).noCache,
+        RawMaterialButton(
+          onPressed: () => timetableFutureBuilderBloc.add(null),
+          child: Icon(
+            Icons.cached,
             size: 100,
           ),
           shape: CircleBorder(),

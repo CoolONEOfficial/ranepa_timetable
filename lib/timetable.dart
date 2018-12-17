@@ -6,7 +6,7 @@ import 'package:android_intent/android_intent.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_picker/flutter_picker.dart';
+import 'package:flutter_duration_picker/flutter_duration_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/platform_channels.dart';
@@ -64,37 +64,46 @@ class Timetable extends StatelessWidget {
 
   static Future<void> _loadAllTimetable(
     BuildContext context,
-    SearchItem searchItem, [
+    SearchItem searchItem,
+    SharedPreferences prefs, {
     bool updateDb = true,
-  ]) {
+  }) {
     timetable.clear();
     return loadTimetable(
       context,
       Timetable.todayMidnight,
       Timetable.todayMidnight.add(Duration(days: dayCount - 1)),
       searchItem,
+      prefs,
       updateDb,
     );
   }
 
   static Future<void> _getTimetable(
-      BuildContext context, SearchItem searchItem) async {
+    BuildContext context,
+    SearchItem searchItem,
+    SharedPreferences prefs,
+  ) async {
     debugPrint("started get timetable");
 
     final dbTimetable = await PlatformChannels.getDb();
     final today = Timetable.todayMidnight;
 
     if (dbTimetable == null)
-      await _loadAllTimetable(context, searchItem);
+      await _loadAllTimetable(context, searchItem, prefs);
     else {
       timetable.clear();
       timetable.addAll(dbTimetable);
 
-      final endCache = timetable.keys.last;
-      final endCacheWeekDiff = endCache.difference(endCacheMidnight);
-      if (endCacheWeekDiff.inMilliseconds != 0) {
-        await loadTimetable(context, endCache,
-            today.add(Duration(days: dayCount - 1)), searchItem);
+      final endCache = DateTime.parse(prefs.getString(PrefsIds.END_CACHE));
+      if (endCache.compareTo(endCacheMidnight) != 0) {
+        await loadTimetable(
+          context,
+          endCache,
+          today.add(Duration(days: dayCount - 1)),
+          searchItem,
+          prefs,
+        );
       }
     }
 
@@ -121,7 +130,8 @@ class Timetable extends StatelessWidget {
     BuildContext context,
     DateTime from,
     DateTime to,
-    SearchItem searchItem, [
+    SearchItem searchItem,
+    SharedPreferences prefs, [
     bool updateDb = true,
   ]) async {
     if (!await _checkInternetConnection()) return;
@@ -235,6 +245,12 @@ class Timetable extends StatelessWidget {
               (f) => f,
             ),
       );
+
+    // Save cache end
+    prefs.setString(PrefsIds.END_CACHE, to.toIso8601String());
+
+    // Refresh widget
+    PlatformChannels.refreshWidget();
   }
 
   static DateTime _todayMidnight;
@@ -253,64 +269,43 @@ class Timetable extends StatelessWidget {
     return _todayMidnight;
   }
 
-  static void _createAlarm(BuildContext context, SharedPreferences prefs) {
-    var postAlarmStr = prefs.getString(PrefsIds.ALARM_POST);
-    if (postAlarmStr == null) {
-      new Picker(
-          adapter: NumberPickerAdapter(data: [
-            NumberPickerColumn(begin: 0, end: 8),
-            NumberPickerColumn(begin: 0, end: 59),
-          ]),
-          delimiter: [
-            PickerDelimiter(
-              child: Container(
-                width: 30.0,
-                alignment: Alignment.center,
-                child: Icon(Icons.more_vert),
-              ),
-            ),
-            PickerDelimiter(
-              child: Container(
-                width: 30.0,
-                alignment: Alignment.center,
-                child: Icon(Icons.more_vert),
-              ),
-            ),
-          ],
-          hideHeader: true,
-          title: new Text("Please Select"),
-          onConfirm: (Picker picker, List value) {
-            prefs.setString(
-              PrefsIds.ALARM_POST,
-              TimeOfDay(
-                hour: value[0],
-                minute: value[1],
-              ).format(context),
-            );
-            _createAlarm(context, prefs);
-          }).showDialog(context);
-    } else {
-      final postAlarmStrSplit = postAlarmStr.split(":");
-      final postAlarm = TimeOfDay(
-        hour: int.parse(postAlarmStrSplit[0]),
-        minute: int.parse(postAlarmStrSplit[1]),
+  static Future<Duration> showDurationSelect(BuildContext context) =>
+      showDurationPicker(
+        context: context,
+        initialTime: new Duration(minutes: 30),
+        snapToMins: 5.0,
       );
 
-      final firstLesson = timetable[todayMidnight].first;
-
-      if (Platform.isAndroid) // TODO: ios support
-        AndroidIntent(
-          action: 'android.intent.action.SET_ALARM',
-          arguments: <String, dynamic>{
-            'android.intent.extra.alarm.HOUR':
-                firstLesson.start.hour - postAlarm.hour,
-            'android.intent.extra.alarm.MINUTES':
-                firstLesson.start.minute - postAlarm.minute,
-            'android.intent.extra.alarm.SKIP_UI': true,
-            'android.intent.extra.alarm.MESSAGE': firstLesson.lesson.title,
-          },
-        ).launch();
+  static void _createAlarm(
+      BuildContext context, SharedPreferences prefs) async {
+    var beforeAlarmClockStr = prefs.getString(PrefsIds.BEFORE_ALARM_CLOCK);
+    if (beforeAlarmClockStr == null) {
+      beforeAlarmClockStr =
+          (await showDurationSelect(context)).inMinutes.toString();
+      prefs.setString(
+        PrefsIds.BEFORE_ALARM_CLOCK,
+        beforeAlarmClockStr,
+      );
     }
+    final beforeAlarmClock = Duration(minutes: int.parse(beforeAlarmClockStr));
+    final postClockHours = beforeAlarmClock.inHours;
+    final postAlarmClockMinutes =
+        beforeAlarmClock.inMinutes - postClockHours * 60;
+
+    final firstLesson = timetable[todayMidnight].first;
+
+    if (Platform.isAndroid) // TODO: ios support
+      AndroidIntent(
+        action: 'android.intent.action.SET_ALARM',
+        arguments: <String, dynamic>{
+          'android.intent.extra.alarm.HOUR':
+              firstLesson.start.hour - postClockHours,
+          'android.intent.extra.alarm.MINUTES':
+              firstLesson.start.minute - postAlarmClockMinutes,
+          'android.intent.extra.alarm.SKIP_UI': false,
+          'android.intent.extra.alarm.MESSAGE': firstLesson.lesson.title,
+        },
+      ).launch();
   }
 
   @override
@@ -357,25 +352,47 @@ class Timetable extends StatelessWidget {
                 builder: (context, _) => WidgetTemplates.buildFutureBuilder(
                       context,
                       future: Platform.isAndroid && ssSearchItem.data.item1
-                          ? _getTimetable(context, ssSearchItem.data.item2)
+                          ? _getTimetable(
+                              context, ssSearchItem.data.item2, prefs)
                           : _loadAllTimetable(
-                              context, ssSearchItem.data.item2, false),
+                              context,
+                              ssSearchItem.data.item2,
+                              prefs,
+                              updateDb: false,
+                            ),
                       builder: (context, _) {
                         if (timetable.values.isEmpty)
-                          return WidgetTemplates.buildInternetErrorNotification(
-                              context,
-                              () => timetableFutureBuilderBloc.add(null));
+                          return WidgetTemplates.buildNetworkErrorNotification(
+                              context);
 
                         final tabViews = List<Widget>();
-                        for (var mTabDay in timetable.values) {
-                          tabViews.add(mTabDay.isEmpty
-                              ? WidgetTemplates.buildFreeDayNotification(
-                                  context, ssSearchItem.data.item2)
-                              : TimelineComponent(timelineList: mTabDay));
-                        }
+                        final endCache =
+                            DateTime.parse(prefs.getString(PrefsIds.END_CACHE));
+
+                        var timetableIter = timetable.entries.iterator;
+                        var mDate = timetable.entries.first.key;
                         while (tabViews.length < dayCount) {
-                          tabViews.add(WidgetTemplates.buildFreeDayNotification(
-                              context, ssSearchItem.data.item2));
+                          Widget mWidget;
+                          if (mDate.compareTo(endCache) > 0)
+                            mWidget = WidgetTemplates.buildNoCacheNotification(
+                                context);
+                          else if (timetableIter.moveNext()) {
+                            if (timetableIter.current.value.isEmpty)
+                              mWidget =
+                                  WidgetTemplates.buildFreeDayNotification(
+                                      context, ssSearchItem.data.item2);
+                            else
+                              mWidget = TimelineComponent(
+                                  timetableIter.current.value);
+                          } else
+                            mWidget = WidgetTemplates.buildFreeDayNotification(
+                                context, ssSearchItem.data.item2);
+
+                          tabViews.add(mWidget);
+
+                          mDate.add(Duration(
+                              days:
+                                  mDate.weekday == DateTime.saturday ? 2 : 1));
                         }
                         return TabBarView(children: tabViews);
                       },
@@ -418,6 +435,8 @@ class Timetable extends StatelessWidget {
     );
   }
 }
+
+final beforeAlarmBloc = StreamController<Duration>();
 
 final timetableFutureBuilderBloc = StreamController<void>.broadcast();
 

@@ -47,7 +47,7 @@ class Intro extends StatelessWidget {
                 ).createShader(bounds);
               },
               child: TimelineComponent(
-                timelineList: <TimelineModel>[
+                <TimelineModel>[
                   TimelineModel(
                     first: true,
                     mergeBottom: true,

@@ -61,7 +61,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "management" : MessageLookupByLibrary.simpleMessage("Менеджмент"),
     "math" : MessageLookupByLibrary.simpleMessage("Математика"),
     "monday" : MessageLookupByLibrary.simpleMessage("Пн"),
-    "noInternetConnection" : MessageLookupByLibrary.simpleMessage("Отсутствует соединение с интернетом"),
     "operatingSystems" : MessageLookupByLibrary.simpleMessage("Операционные системы"),
     "philosophy" : MessageLookupByLibrary.simpleMessage("Философия"),
     "physicalCulture" : MessageLookupByLibrary.simpleMessage("Физ-ра"),

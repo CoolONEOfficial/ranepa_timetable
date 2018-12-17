@@ -31,12 +31,21 @@ class AppLocalizations {
     );
   }
 
-  // No internet connection message
+  // No network connection message
 
   String get noInternetConnection {
     return Intl.message(
-      'No internet connection',
-      name: 'noInternetConnection',
+      'No network connection',
+      name: 'noNetworkConnection',
+    );
+  }
+
+  // No cache message
+
+  String get noCache {
+    return Intl.message(
+      'Schedule not loaded',
+      name: 'noCache',
     );
   }
 

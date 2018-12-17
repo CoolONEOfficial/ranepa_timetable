@@ -20,7 +20,8 @@ dependencies:
   intro_views_flutter: ^2.4.0
   android_intent: ^0.2.1
   tuple: ^1.0.2
-  flutter_picker: ^1.0.5
+  duration: ^2.0.0
+  flutter_duration_picker: ^1.0.4
 
 dev_dependencies:
   flutter_test:
@@ -34,7 +35,8 @@ flutter_icons:
   image_path_ios: "assets/images/icon.png"
   android: true
   ios: true
-  adaptive_icon_background: "#982825"
+  adaptive_icon_background: "#F44336"
+  #"#982825"
   adaptive_icon_foreground: "assets/images/icon-foreground.png"
 
 flutter:

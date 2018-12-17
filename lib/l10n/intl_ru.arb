@@ -6,8 +6,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "noInternetConnection": "Отсутствует соединение с интернетом",
+  "noNetworkConnection": "Отсутствует подключение к сети",
   "@noInternetConnection": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "noCache": "День не загружен",
+  "@noCache": {
     "type": "text",
     "placeholders": {}
   },
