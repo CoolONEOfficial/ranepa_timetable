@@ -2,7 +2,9 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/ic_launcher_background" />
 
-    <item
-        android:gravity="center"
-        android:drawable="@drawable/logo_vector" />
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@mipmap/logo_mipmap" />
+    </item>
 </layer-list>
