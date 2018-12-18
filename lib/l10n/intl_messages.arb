@@ -1,7 +1,17 @@
 {
-  "@@last_modified": "2018-12-18T22:28:51.180632",
+  "@@last_modified": "2018-12-19T00:07:30.626546",
   "title": "RANEPA (Timetable)",
   "@title": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "calendarEventsAddSuccess": "Events successfully added to calendar",
+  "@calendarEventsAddSuccess": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "calendarEventsAddFailed": "An error occurred while adding events to the calendar",
+  "@calendarEventsAddFailed": {
     "type": "text",
     "placeholders": {}
   },

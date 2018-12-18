@@ -30,12 +30,28 @@ class AppLocalizations {
     );
   }
 
+  // Calendar notifications
+
+  String get calendarEventsAddSuccess {
+    return Intl.message(
+      'Events successfully added to calendar',
+      name: 'calendarEventsAddSuccess',
+    );
+  }
+
+  String get calendarEventsAddFailed {
+    return Intl.message(
+      'An error occurred while adding events to the calendar',
+      name: 'calendarEventsAddFailed',
+    );
+  }
+
   // Alarm notifications
 
   String get alarmAddSuccess {
     return Intl.message(
       'The alarm clock is turned on at ',
-      name: 'alarmNotification',
+      name: 'alarmAddSuccess',
     );
   }
 

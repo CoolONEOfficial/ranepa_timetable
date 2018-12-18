@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:android_intent/android_intent.dart';
+import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -34,12 +35,13 @@ class Timetable extends StatelessWidget {
   static final LinkedHashMap<DateTime, List<TimelineModel>> timetable =
       LinkedHashMap<DateTime, List<TimelineModel>>();
 
-  const Timetable({Key key, @required this.drawer, @required this.prefs})
-      : super(key: key);
+  Timetable({Key key, @required this.drawer, @required this.prefs})
+      : _deviceCalendarPlugin = DeviceCalendarPlugin(),
+        super(key: key);
 
-  static DateTime _toDateTime(TimeOfDay tod) {
-    final now = DateTime.now();
-    return DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
+  static DateTime _toDateTime(TimeOfDay tod, [DateTime date]) {
+    date ??= DateTime.now();
+    return DateTime(date.year, date.month, date.day, tod.hour, tod.minute);
   }
 
   static const dayCount = 6;
@@ -141,8 +143,6 @@ class Timetable extends StatelessWidget {
 
     debugPrint("http load end. starting parse request..");
 
-    final addedLessons = List<TimelineModel>();
-
     final itemArr = xml
         .parse(response.body)
         .children[1]
@@ -153,7 +153,6 @@ class Timetable extends StatelessWidget {
 
     var mDate = from.subtract(Duration(days: 1));
     final _startDayId = timetable.keys.length;
-    var mDayId = _startDayId - 1;
     for (var mItemId = 0; mItemId < itemArr.length; mItemId++) {
       debugPrint("mItemId: $mItemId");
       var mItem = itemArr[mItemId];
@@ -170,8 +169,6 @@ class Timetable extends StatelessWidget {
         // skip sunday
         if (mDate.weekday != DateTime.sunday) {
           timetable[mDate] = List<TimelineModel>();
-
-          mDayId++;
         }
       }
 
@@ -201,10 +198,7 @@ class Timetable extends StatelessWidget {
             : TimelineUser.Student,
       );
 
-      timetable.values.elementAt(mDayId).add(mLesson);
-      addedLessons.add(mLesson);
-
-      debugPrint("mDay: $mDayId");
+      timetable[mItemDate].add(mLesson);
     }
 
     for (var mDay in timetable.values) {
@@ -270,6 +264,15 @@ class Timetable extends StatelessWidget {
     return _todayMidnight;
   }
 
+  static DateTime get nextDayDate {
+    final todayLastLesson = timetable[todayMidnight]?.last?.finish;
+    if (todayLastLesson == null) return null;
+
+    return _toDateTime(todayLastLesson).isBefore(DateTime.now())
+        ? todayMidnight.add(Duration(days: 1))
+        : todayMidnight;
+  }
+
   static void _createAlarm(
     BuildContext context,
     SharedPreferences prefs,
@@ -281,17 +284,10 @@ class Timetable extends StatelessWidget {
     }
     final beforeAlarmClock = Duration(minutes: beforeAlarmClockStr);
 
-    final todayLastLesson = timetable[todayMidnight]?.last?.finish;
-
+    final alarmLesson = timetable[nextDayDate].first;
     String snackBarText;
 
-    if (todayLastLesson != null) {
-      final now = DateTime.now();
-      final alarmLesson = timetable[_toDateTime(todayLastLesson).isBefore(now)
-              ? todayMidnight.add(Duration(days: 1))
-              : todayMidnight]
-          .first;
-
+    if (alarmLesson != null) {
       final alarmClock =
           _toDateTime(alarmLesson.start).subtract(beforeAlarmClock);
 
@@ -318,10 +314,60 @@ class Timetable extends StatelessWidget {
     );
   }
 
-  static void _createCalendarEvents(
-      BuildContext context,
-      ) async {
+  DeviceCalendarPlugin _deviceCalendarPlugin;
 
+  static void _createCalendarEvents(
+    BuildContext context,
+    DeviceCalendarPlugin calPlugin,
+  ) async {
+    String snackBarText;
+
+    // TODO: safe code
+    var permissionsGranted = await calPlugin.hasPermissions();
+    if (permissionsGranted.isSuccess && !permissionsGranted.data) {
+      permissionsGranted = await calPlugin.requestPermissions();
+      if (permissionsGranted.isSuccess && permissionsGranted.data) {
+        final calendarArr = (await calPlugin.retrieveCalendars())?.data;
+        if (calendarArr?.isNotEmpty ?? false) {
+          final Calendar calendar = calendarArr[1];
+
+          final eventsDay = timetable[nextDayDate];
+
+          for (var mLesson in eventsDay) {
+            calPlugin.createOrUpdateEvent(
+              Event(
+                calendar.id,
+                title: mLesson.lesson.title,
+                description: mLesson.lesson.fullTitle,
+                start: _toDateTime(mLesson.start, mLesson.date),
+                end: _toDateTime(mLesson.finish, mLesson.date),
+              ),
+            );
+          }
+//          final calendarEvents = (await calPlugin.retrieveEvents(
+//            calendar.id,
+//            RetrieveEventsParams(
+//              startDate: _nextDayDate,
+//              endDate: _nextDayDate.add(
+//                Duration(days: 1),
+//              ),
+//            ),
+//          ))?.data;
+//
+
+//          calendarEvents.
+
+          snackBarText = AppLocalizations.of(context).calendarEventsAddSuccess;
+        }
+      } else
+        snackBarText = AppLocalizations.of(context).calendarEventsAddFailed;
+    }
+
+    scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: new Text(snackBarText),
+      ),
+    );
   }
 
   @override
@@ -425,7 +471,8 @@ class Timetable extends StatelessWidget {
                   IconButton(
                     tooltip: AppLocalizations.of(context).calendarTip,
                     icon: const Icon(Icons.calendar_today),
-                    onPressed: () => _createCalendarEvents(context),
+                    onPressed: () =>
+                        _createCalendarEvents(context, _deviceCalendarPlugin),
                   ),
                   IconButton(
                     tooltip: AppLocalizations.of(context).alarmTip,

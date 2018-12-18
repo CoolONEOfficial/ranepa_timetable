@@ -6,6 +6,16 @@
     "type": "text",
     "placeholders": {}
   },
+  "calendarEventsAddSuccess": "События успешно добавлены в календарь",
+  "@calendarEventsAddSuccess": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "calendarEventsAddFailed": "Произошла ошибка при добавлении событий в календарь",
+  "@calendarEventsAddFailed": {
+    "type": "text",
+    "placeholders": {}
+  },
   "alarmAddSuccess": "Будильник заведен на ",
   "@alarmAddSuccess": {
     "type": "text",
