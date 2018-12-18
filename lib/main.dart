@@ -78,8 +78,8 @@ class BaseWidget extends StatelessWidget {
                 GlobalWidgetsLocalizations.delegate
               ],
               supportedLocales: [
-                const Locale('en', 'US'), // English
-                const Locale('ru', 'RU'), // Русский
+                SupportedLocales.en,
+                SupportedLocales.ru,
               ],
               onGenerateTitle: (BuildContext context) =>
                   AppLocalizations.of(context).title,
@@ -100,6 +100,11 @@ class BaseWidget extends StatelessWidget {
       },
     );
   }
+}
+
+class SupportedLocales {
+  static const Locale en = const Locale('en', 'US');
+  static const Locale ru = const Locale('ru', 'RU');
 }
 
 final themeIdBloc = StreamController<int>.broadcast();

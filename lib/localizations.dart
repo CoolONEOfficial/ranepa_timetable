@@ -27,13 +27,28 @@ class AppLocalizations {
     return Intl.message(
       'RANEPA (Timetable)',
       name: 'title',
-      desc: 'The application title',
+    );
+  }
+
+  // Alarm notifications
+
+  String get alarmAddSuccess {
+    return Intl.message(
+      'The alarm clock is turned on at ',
+      name: 'alarmNotification',
+    );
+  }
+
+  String get alarmAddFailed {
+    return Intl.message(
+      'No lessons found',
+      name: 'alarmAddFailed',
     );
   }
 
   // No network connection message
 
-  String get noInternetConnection {
+  String get noNetworkConnection {
     return Intl.message(
       'No network connection',
       name: 'noNetworkConnection',
@@ -413,15 +428,29 @@ class AppLocalizations {
 
   String get groupTitle {
     return Intl.message(
-      'Change group/teacher',
+      'Group/teacher',
       name: 'groupTitle',
     );
   }
 
   String get groupDescription {
     return Intl.message(
-      'Change the default timetable for the group/teacher',
+      'Default timetable for the group/teacher',
       name: 'groupDescription',
+    );
+  }
+
+  String get beforeAlarmClockTitle {
+    return Intl.message(
+      'Time before alarm clock',
+      name: 'beforeAlarmClockTitle',
+    );
+  }
+
+  String get beforeAlarmClockDescription {
+    return Intl.message(
+      'How much before the first lesson you need to add an alarm clock',
+      name: 'beforeAlarmClockDescription',
     );
   }
 

@@ -20,7 +20,8 @@ dependencies:
   intro_views_flutter: ^2.4.0
   android_intent: ^0.2.1
   tuple: ^1.0.2
-  duration: ^2.0.0
+  duration:
+    path: duration
   flutter_duration_picker: ^1.0.4
 
 dev_dependencies:

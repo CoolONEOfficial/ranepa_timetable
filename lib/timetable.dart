@@ -6,7 +6,6 @@ import 'package:android_intent/android_intent.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_duration_picker/flutter_duration_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/platform_channels.dart';
@@ -38,8 +37,10 @@ class Timetable extends StatelessWidget {
   const Timetable({Key key, @required this.drawer, @required this.prefs})
       : super(key: key);
 
-  static DateTime _toDateTime(TimeOfDay tod) =>
-      DateTime(2018, 1, 1, tod.hour, tod.minute);
+  static DateTime _toDateTime(TimeOfDay tod) {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
+  }
 
   static const dayCount = 6;
 
@@ -269,43 +270,58 @@ class Timetable extends StatelessWidget {
     return _todayMidnight;
   }
 
-  static Future<Duration> showDurationSelect(BuildContext context) =>
-      showDurationPicker(
-        context: context,
-        initialTime: new Duration(minutes: 30),
-        snapToMins: 5.0,
-      );
-
   static void _createAlarm(
-      BuildContext context, SharedPreferences prefs) async {
-    var beforeAlarmClockStr = prefs.getString(PrefsIds.BEFORE_ALARM_CLOCK);
+    BuildContext context,
+    SharedPreferences prefs,
+  ) async {
+    var beforeAlarmClockStr = prefs.getInt(PrefsIds.BEFORE_ALARM_CLOCK);
     if (beforeAlarmClockStr == null) {
       beforeAlarmClockStr =
-          (await showDurationSelect(context)).inMinutes.toString();
-      prefs.setString(
-        PrefsIds.BEFORE_ALARM_CLOCK,
-        beforeAlarmClockStr,
-      );
+          (await Prefs.showBeforeAlarmClockSelect(context, prefs)).inMinutes;
     }
-    final beforeAlarmClock = Duration(minutes: int.parse(beforeAlarmClockStr));
-    final postClockHours = beforeAlarmClock.inHours;
-    final postAlarmClockMinutes =
-        beforeAlarmClock.inMinutes - postClockHours * 60;
+    final beforeAlarmClock = Duration(minutes: beforeAlarmClockStr);
 
-    final firstLesson = timetable[todayMidnight].first;
+    final todayLastLesson = timetable[todayMidnight]?.last?.finish;
 
-    if (Platform.isAndroid) // TODO: ios support
-      AndroidIntent(
-        action: 'android.intent.action.SET_ALARM',
-        arguments: <String, dynamic>{
-          'android.intent.extra.alarm.HOUR':
-              firstLesson.start.hour - postClockHours,
-          'android.intent.extra.alarm.MINUTES':
-              firstLesson.start.minute - postAlarmClockMinutes,
-          'android.intent.extra.alarm.SKIP_UI': false,
-          'android.intent.extra.alarm.MESSAGE': firstLesson.lesson.title,
-        },
-      ).launch();
+    String snackBarText;
+
+    if (todayLastLesson != null) {
+      final now = DateTime.now();
+      final alarmLesson = timetable[_toDateTime(todayLastLesson).isBefore(now)
+              ? todayMidnight.add(Duration(days: 1))
+              : todayMidnight]
+          .first;
+
+      final alarmClock =
+          _toDateTime(alarmLesson.start).subtract(beforeAlarmClock);
+
+      // TODO: ios support
+      if (Platform.isAndroid)
+        await AndroidIntent(
+          action: 'android.intent.action.SET_ALARM',
+          arguments: <String, dynamic>{
+            'android.intent.extra.alarm.HOUR': alarmClock.hour,
+            'android.intent.extra.alarm.MINUTES': alarmClock.minute,
+            'android.intent.extra.alarm.SKIP_UI': true,
+            'android.intent.extra.alarm.MESSAGE': alarmLesson.lesson.title,
+          },
+        ).launch();
+
+      snackBarText = AppLocalizations.of(context).alarmAddSuccess +
+          TimeOfDay.fromDateTime(alarmClock).format(context);
+    } else
+      snackBarText = AppLocalizations.of(context).alarmAddFailed;
+    scaffoldKey.currentState.showSnackBar(
+      SnackBar(
+        content: new Text(snackBarText),
+      ),
+    );
+  }
+
+  static void _createCalendarEvents(
+      BuildContext context,
+      ) async {
+
   }
 
   @override
@@ -346,7 +362,7 @@ class Timetable extends StatelessWidget {
             Tuple2<bool, SearchItem>(true, SearchItem.fromPrefs(prefs)),
         builder: (context, ssSearchItem) => Scaffold(
               drawer: drawer,
-              key: GlobalKey<ScaffoldState>(),
+              key: scaffoldKey,
               body: StreamBuilder<void>(
                 stream: timetableFutureBuilderBloc.stream,
                 builder: (context, _) => WidgetTemplates.buildFutureBuilder(
@@ -409,7 +425,7 @@ class Timetable extends StatelessWidget {
                   IconButton(
                     tooltip: AppLocalizations.of(context).calendarTip,
                     icon: const Icon(Icons.calendar_today),
-                    onPressed: () {},
+                    onPressed: () => _createCalendarEvents(context),
                   ),
                   IconButton(
                     tooltip: AppLocalizations.of(context).alarmTip,
@@ -436,7 +452,9 @@ class Timetable extends StatelessWidget {
   }
 }
 
-final beforeAlarmBloc = StreamController<Duration>();
+final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+final beforeAlarmBloc = StreamController<Duration>.broadcast();
 
 final timetableFutureBuilderBloc = StreamController<void>.broadcast();
 

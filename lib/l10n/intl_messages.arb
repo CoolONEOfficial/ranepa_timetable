@@ -1,17 +1,26 @@
 {
-  "@@last_modified": "2018-12-15T02:15:48.343251",
+  "@@last_modified": "2018-12-18T22:28:51.180632",
   "title": "RANEPA (Timetable)",
   "@title": {
-    "description": "The application title",
+    "type": "text",
+    "placeholders": {}
+  },
+  "alarmAddSuccess": "The alarm clock is turned on at ",
+  "@alarmAddSuccess": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "alarmAddFailed": "No lessons found",
+  "@alarmAddFailed": {
     "type": "text",
     "placeholders": {}
   },
   "noNetworkConnection": "No network connection",
-  "@noInternetConnection": {
+  "@noNetworkConnection": {
     "type": "text",
     "placeholders": {}
   },
-  "noCache": "Schedule  not loaded",
+  "noCache": "Schedule not loaded",
   "@noCache": {
     "type": "text",
     "placeholders": {}
@@ -266,13 +275,23 @@
     "type": "text",
     "placeholders": {}
   },
-  "groupTitle": "Change group/teacher",
+  "groupTitle": "Group/teacher",
   "@groupTitle": {
     "type": "text",
     "placeholders": {}
   },
-  "groupDescription": "Change the default timetable for the group/teacher",
+  "groupDescription": "Default timetable for the group/teacher",
   "@groupDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "beforeAlarmClockTitle": "Time before alarm clock",
+  "@beforeAlarmClockTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "beforeAlarmClockDescription": "How much before the first lesson you need to add an alarm clock",
+  "@beforeAlarmClockDescription": {
     "type": "text",
     "placeholders": {}
   },

@@ -84,7 +84,7 @@ class WidgetTemplates {
           BuildContext context) =>
       _buildNotification(
         context,
-        AppLocalizations.of(context).noInternetConnection,
+        AppLocalizations.of(context).noNetworkConnection,
         RawMaterialButton(
           onPressed: () => timetableFutureBuilderBloc.add(null),
           child: Icon(

@@ -1,7 +1,10 @@
 import 'dart:async';
 
+import 'package:duration/duration.dart';
+import 'package:duration/locale.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_duration_picker/flutter_duration_picker.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/platform_channels.dart';
@@ -111,22 +114,50 @@ class Prefs extends StatelessWidget {
             ),
       );
 
-  Widget _buildSearchItemPreferenceButton(
+  static Future<Duration> showBeforeAlarmClockSelect(
+          BuildContext context, SharedPreferences prefs) =>
+      showDurationPicker(
+        context: context,
+        initialTime:
+            Duration(minutes: prefs.getInt(PrefsIds.BEFORE_ALARM_CLOCK) ?? 30),
+        snapToMins: 5.0,
+      ).then((duration) {
+        prefs.setInt(
+          PrefsIds.BEFORE_ALARM_CLOCK,
+          duration.inMinutes,
+        );
+        beforeAlarmBloc.add(duration);
+
+        return duration;
+      });
+
+  Widget _buildBeforeAlarmClockPreferenceButton(
           BuildContext context, SharedPreferences prefs) =>
       WidgetTemplates.buildPreferenceButton(
         context,
-        title: AppLocalizations.of(context).groupTitle,
-        description: AppLocalizations.of(context).groupDescription,
-        onPressed: () => showSearchItemSelect(context, prefs),
-        rightWidget: StreamBuilder<Tuple2<bool, SearchItem>>(
-          stream: timetableIdBloc.stream,
+        title: AppLocalizations.of(context).beforeAlarmClockTitle,
+        description: AppLocalizations.of(context).beforeAlarmClockDescription,
+        onPressed: () => showBeforeAlarmClockSelect(context, prefs),
+        rightWidget: StreamBuilder<Duration>(
+          stream: beforeAlarmBloc.stream,
           initialData:
-              Tuple2<bool, SearchItem>(null, SearchItem.fromPrefs(prefs)),
-          builder: (context, snapshot) => Text(snapshot.data.item2.title),
+              Duration(minutes: prefs.getInt(PrefsIds.BEFORE_ALARM_CLOCK) ?? 0),
+          builder: (context, snapshot) => snapshot.data.inMicroseconds != 0
+              ? Text(
+                  printDuration(
+                    snapshot.data,
+                    delimiter: "\n",
+                    locale:
+                        Localizations.localeOf(context) == SupportedLocales.ru
+                            ? russianLocale
+                            : englishLocale,
+                  ),
+                )
+              : Container(),
         ),
       );
 
-  Widget _buildPostAlarmPreferenceButton(
+  Widget _buildSearchItemPreferenceButton(
           BuildContext context, SharedPreferences prefs) =>
       WidgetTemplates.buildPreferenceButton(
         context,
@@ -163,6 +194,10 @@ class Prefs extends StatelessWidget {
                   height: 0,
                 ),
                 _buildSearchItemPreferenceButton(context, prefs),
+                Divider(
+                  height: 0,
+                ),
+                _buildBeforeAlarmClockPreferenceButton(context, prefs),
                 Divider(
                   height: 0,
                 ),

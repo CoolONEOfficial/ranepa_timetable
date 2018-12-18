@@ -6,6 +6,16 @@
     "type": "text",
     "placeholders": {}
   },
+  "alarmAddSuccess": "Будильник заведен на ",
+  "@alarmAddSuccess": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "alarmAddFailed": "Уроков не найдено",
+  "@alarmAddFailed": {
+    "type": "text",
+    "placeholders": {}
+  },
   "noNetworkConnection": "Отсутствует подключение к сети",
   "@noInternetConnection": {
     "type": "text",
@@ -271,8 +281,18 @@
     "type": "text",
     "placeholders": {}
   },
-  "groupDescription": "Изменить группу/преподавателя для которой(-го) при запуске загружается расписание",
+  "groupDescription": "Группа/преподаватель для которой(-го) при запуске загружается расписание",
   "@groupDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "beforeAlarmClockTitle": "Время до будильника",
+  "@beforeAlarmClockTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "beforeAlarmClockDescription": "Насколько заранее нужно заводить будильник",
+  "@beforeAlarmClockDescription": {
     "type": "text",
     "placeholders": {}
   },

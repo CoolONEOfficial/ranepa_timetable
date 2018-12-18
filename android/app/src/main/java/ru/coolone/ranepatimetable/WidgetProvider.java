@@ -98,11 +98,11 @@ public class WidgetProvider extends AppWidgetProvider {
                 0xFF90CAF9
         ),
         LightRed(
-                0xFF982825,
-                0xFF982825,
+                Color.RED,
+                0xFFF44336,
                 Color.WHITE,
                 Color.BLACK,
-                0xFFde7a78
+                0xFFEF9A9A
         ),
         Dark(
                 0xFF212121,
@@ -113,7 +113,7 @@ public class WidgetProvider extends AppWidgetProvider {
         ),
         DarkRed(
                 0xFF212121,
-                0xFF982825,
+                0xFFF44336,
                 Color.WHITE,
                 Color.WHITE,
                 0xFF616161

@@ -41,7 +41,7 @@ public class MainActivity extends FlutterActivity {
                                         .getAppWidgetIds(new ComponentName(getApplication(), WidgetProvider.class));
                                 intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
                                 sendBroadcast(intent);
-                                result.success(new Object());
+                                result.success(null);
                                 break;
                             case "getDb": {
                                 log.info("getDb started..");
