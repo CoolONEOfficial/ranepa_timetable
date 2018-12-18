@@ -329,7 +329,7 @@ class Timetable extends StatelessWidget {
       if (permissionsGranted.isSuccess && permissionsGranted.data) {
         final calendarArr = (await calPlugin.retrieveCalendars())?.data;
         if (calendarArr?.isNotEmpty ?? false) {
-          final Calendar calendar = calendarArr[1];
+          final Calendar calendar = calendarArr.last;
 
           final eventsDay = timetable[nextDayDate];
 
@@ -361,7 +361,8 @@ class Timetable extends StatelessWidget {
         }
       } else
         snackBarText = AppLocalizations.of(context).calendarEventsAddFailed;
-    }
+    } else
+      snackBarText = AppLocalizations.of(context).calendarEventsAddFailed;
 
     scaffoldKey.currentState.showSnackBar(
       SnackBar(
