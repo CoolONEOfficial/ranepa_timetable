@@ -34,8 +34,6 @@ public class Timeline {
 
     public enum User {Student, Teacher}
 
-    public enum LessonType {None, Theory, Practice}
-
     @NoArgsConstructor
     @AllArgsConstructor
     static public class TeacherModel {
@@ -76,30 +74,19 @@ public class Timeline {
         public static final String COLUMN_LESSON_TITLE = "title";
         public static final String COLUMN_LESSON_FULL_TITLE = "fullTitle";
         public static final String COLUMN_LESSON_ICON = "iconCodePoint";
-        public static final String COLUMN_LESSON_TYPE = "lessonType";
+        public static final String COLUMN_LESSON_TYPE = "typeTitle";
 
         String title, fullTitle;
         int iconCodePoint;
-        @TypeConverters(LessonModel.class)
-        LessonType lessonType;
+        String typeTitle;
 
         public static LessonModel fromContentValues(ContentValues values, String prefix) {
             return new LessonModel(
                     values.getAsString(prefix + COLUMN_LESSON_TITLE),
                     values.getAsString(prefix + COLUMN_LESSON_FULL_TITLE),
                     values.getAsInteger(prefix + COLUMN_LESSON_ICON),
-                    LessonType.values()[values.getAsInteger(prefix + COLUMN_LESSON_TYPE)]
+                    values.getAsString(prefix + COLUMN_LESSON_TYPE)
             );
-        }
-
-        @TypeConverter
-        public static LessonType toLessonType(int numeral) {
-            return LessonType.values()[numeral];
-        }
-
-        @TypeConverter
-        public static int fromLessonType(LessonType type) {
-            return type.ordinal();
         }
     }
 

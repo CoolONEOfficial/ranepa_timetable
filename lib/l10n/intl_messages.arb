@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-12-19T00:07:30.626546",
+  "@@last_modified": "2018-12-19T23:08:41.044237",
   "title": "RANEPA (Timetable)",
   "@title": {
     "type": "text",
@@ -10,13 +10,13 @@
     "type": "text",
     "placeholders": {}
   },
-  "calendarEventsAddFailed": "An error occurred while adding events to the calendar",
-  "@calendarEventsAddFailed": {
+  "calendarGetFailed": "Аn error occurred while getting the calendars",
+  "@calendarGetFailed": {
     "type": "text",
     "placeholders": {}
   },
-  "calendarGetFailed": "Аn error occurred while getting the calendars",
-  "@calendarGetFailed": {
+  "calendarEventsAddFailed": "An error occurred while adding events to the calendar",
+  "@calendarEventsAddFailed": {
     "type": "text",
     "placeholders": {}
   },
@@ -62,6 +62,31 @@
   },
   "searchResults": "Web search results",
   "@searchResults": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "practice": "Practice",
+  "@practice": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "lecture": "Lecture",
+  "@lecture": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "exam": "Exam",
+  "@exam": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "examConsultation": "Exam consultation",
+  "@examConsultation": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "receptionExamination": "Reception examination",
+  "@receptionExamination": {
     "type": "text",
     "placeholders": {}
   },

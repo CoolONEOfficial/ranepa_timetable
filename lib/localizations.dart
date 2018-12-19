@@ -126,6 +126,43 @@ class AppLocalizations {
     );
   }
 
+  // Lesson types titles
+
+  String get practice {
+    return Intl.message(
+      'Practice',
+      name: 'practice',
+    );
+  }
+
+  String get lecture {
+    return Intl.message(
+      'Lecture',
+      name: 'lecture',
+    );
+  }
+
+  String get exam {
+    return Intl.message(
+      'Exam',
+      name: 'exam',
+    );
+  }
+
+  String get examConsultation {
+    return Intl.message(
+      'Exam consultation',
+      name: 'examConsultation',
+    );
+  }
+
+  String get receptionExamination {
+    return Intl.message(
+      'Reception examination',
+      name: 'receptionExamination',
+    );
+  }
+
   // Lessons titles
 
   String get groupEconomics {

@@ -23,15 +23,9 @@ part 'timeline_models.g.dart';
 enum TimelineUser { Student, Teacher }
 
 @JsonSerializable(nullable: false)
-class TimelineParent {
+class TimelineModel {
   final TimelineUser user;
   final DateTime date;
-
-  TimelineParent(this.user, this.date);
-}
-
-@JsonSerializable(nullable: false)
-class TimelineModel extends TimelineParent {
   final LessonModel lesson;
   final RoomModel room;
   final String group;
@@ -50,19 +44,19 @@ class TimelineModel extends TimelineParent {
       {"hour": timeOfDay.hour, "minute": timeOfDay.minute};
 
   TimelineModel({
-    @required DateTime date,
+    @required this.date,
     @required this.start,
     @required this.finish,
     @required this.room,
     @required this.group,
     @required this.lesson,
     @required this.teacher,
-    @required TimelineUser user,
+    @required this.user,
     this.first = false,
     this.last = false,
     this.mergeBottom = false,
     this.mergeTop = false,
-  }) : super(user, date);
+  });
 
   factory TimelineModel.fromJson(Map<String, dynamic> json) =>
       _$TimelineModelFromJson(json);
@@ -76,12 +70,12 @@ class RoomLocationsTitles {
   static RoomLocationsTitles _singleton;
 
   factory RoomLocationsTitles(BuildContext context) {
-    if (_singleton == null) _singleton = RoomLocationsTitles._internal(context);
+    if (_singleton == null) _singleton = RoomLocationsTitles._(context);
 
     return _singleton;
   }
 
-  RoomLocationsTitles._internal(this.context)
+  RoomLocationsTitles._(this.context)
       : titles = List<String>.generate(
           RoomLocation.values.length,
           (roomLocationIndex) {
@@ -122,7 +116,76 @@ class RoomModel {
   }
 }
 
-enum LessonType { None, Theory, Practice }
+@JsonSerializable(nullable: false)
+class LessonType extends Findable {
+  final String title;
+
+  const LessonType(this.title, [List<List<String>> words]) : super(words);
+
+  factory LessonType.fromJson(Map<String, dynamic> json) =>
+      _$LessonTypeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LessonTypeToJson(this);
+}
+
+class LessonTypes {
+  static LessonTypes _singleton;
+
+  factory LessonTypes(BuildContext context) {
+    if (_singleton == null) _singleton = LessonTypes._(context);
+
+    return _singleton;
+  }
+
+  final BuildContext context;
+  final List<LessonType> lessonTypes;
+
+  LessonTypes._(this.context)
+      : lessonTypes = List<LessonType>.generate(
+          LessonTypeIds.values.length,
+          (mLessonTypeIdIndex) {
+            final mLessonTypeId = LessonTypeIds.values[mLessonTypeIdIndex];
+
+            switch (mLessonTypeId) {
+              case LessonTypeIds.Exam:
+                return LessonType(
+                    AppLocalizations.of(context).exam, <List<String>>[
+                  <String>["прием", "экзамен"]
+                ]);
+              case LessonTypeIds.ExamConsultation:
+                return LessonType(
+                    AppLocalizations.of(context).examConsultation,
+                    <List<String>>[
+                      <String>["консульт", "экзамен"]
+                    ]);
+              case LessonTypeIds.Practice:
+                return LessonType(
+                    AppLocalizations.of(context).practice, <List<String>>[
+                  <String>["практ"]
+                ]);
+              case LessonTypeIds.ReceptionExamination:
+                return LessonType(
+                    AppLocalizations.of(context).receptionExamination,
+                    <List<String>>[
+                      <String>["защит", "прием"]
+                    ]);
+              case LessonTypeIds.Lecture:
+                return LessonType(
+                    AppLocalizations.of(context).lecture, <List<String>>[
+                  <String>["лекция"]
+                ]);
+            }
+          },
+        );
+}
+
+enum LessonTypeIds {
+  Lecture,
+  Practice,
+  ReceptionExamination,
+  Exam,
+  ExamConsultation,
+}
 
 String parseLessonTitle(String str) {
   final openBracketIndex = str.indexOf('('),
@@ -131,35 +194,25 @@ String parseLessonTitle(String str) {
   return title[0].toUpperCase() + title.substring(1);
 }
 
-LessonType parseLessonType(String str) {
-  var openBracketIndex = str.indexOf('(');
-  if (openBracketIndex == -1) openBracketIndex = 0;
-  final lowerTitle = str.substring(openBracketIndex).toLowerCase();
-  debugPrint("m lower title: $lowerTitle");
-
-  return (lowerTitle.contains("практ") || lowerTitle.contains("семин"))
-      ? LessonType.Practice
-      : (lowerTitle.contains("лекци") ? LessonType.Theory : LessonType.None);
-}
-
 @JsonSerializable(nullable: false)
-class LessonModel {
+class LessonModel extends Findable {
   String fullTitle;
-  @JsonKey(ignore: true)
-  List<List<String>> findWords;
   final String title;
   final int iconCodePoint;
-  LessonType lessonType;
+  LessonType type;
 
   LessonModel(
     this.title,
-    this.iconCodePoint, [
-    this.lessonType = LessonType.None,
-    this.findWords,
+    this.iconCodePoint,
     this.fullTitle,
-  ]);
+    this.type,
+  );
 
-  LessonModel._(this.title, this.iconCodePoint, this.findWords);
+  LessonModel._(
+    this.title,
+    this.iconCodePoint, [
+    List<List<String>> words,
+  ]) : super(words);
 
   factory LessonModel.fromJson(Map<String, dynamic> json) =>
       _$LessonModelFromJson(json);
@@ -167,35 +220,31 @@ class LessonModel {
   Map<String, dynamic> toJson() => _$LessonModelToJson(this);
 
   factory LessonModel.fromString(BuildContext context, String str) {
-    final types = LessonTypes(context);
     final lowerStr = str.toLowerCase();
 
     LessonModel model;
 
-    for (final mLesson in types.lessons) {
-      bool strFound = false;
-      for (final List<String> mStrList in mLesson.findWords) {
-        strFound = true;
-        for (final String mStr in mStrList) {
-          if (!lowerStr.contains(mStr)) {
-            strFound = false;
-            break;
-          }
-        }
-        if(strFound) break;
-      }
-      if (strFound) {
+    for (final mLesson in Lessons(context).lessons) {
+      if (mLesson.find(lowerStr)) {
         model = mLesson;
         break;
       }
     }
 
     if (model == null)
-      model = LessonModel(
+      model = LessonModel._(
           parseLessonTitle(lowerStr), TimetableIcons.unknownLesson.codePoint);
 
-    model.fullTitle = str.substring(0, str.indexOf(')') + 1);
-    model.lessonType = parseLessonType(str);
+    model.fullTitle =
+        str.substring(0, str.indexOf(')')).replaceFirst('(', '\n');
+    for (final mType in LessonTypes(context).lessonTypes) {
+      if (mType.find(lowerStr)) {
+        model.type = mType;
+        break;
+      }
+    }
+
+    debugPrint("model type: ${model.type.title}");
 
     return model;
   }
@@ -235,16 +284,37 @@ enum LessonIds {
   inventory
 }
 
-class LessonTypes {
-  static LessonTypes _singleton;
+abstract class Findable {
+  @JsonKey(ignore: true)
+  final List<List<String>> words;
 
-  factory LessonTypes(BuildContext context) {
-    if (_singleton == null) _singleton = LessonTypes._internal(context);
+  const Findable([this.words]);
+
+  bool find(String findStr) {
+    for (final mStrList in words) {
+      bool strFound = true;
+      for (final mStr in mStrList) {
+        if (!findStr.contains(mStr)) {
+          strFound = false;
+          break;
+        }
+      }
+      if (strFound) return true;
+    }
+    return false;
+  }
+}
+
+class Lessons {
+  static Lessons _singleton;
+
+  factory Lessons(BuildContext context) {
+    if (_singleton == null) _singleton = Lessons._(context);
 
     return _singleton;
   }
 
-  LessonTypes._internal(this.context)
+  Lessons._(this.context)
       : lessons =
             List<LessonModel>.generate(LessonIds.values.length, (lessonIndex) {
           switch (LessonIds.values[lessonIndex]) {

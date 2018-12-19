@@ -6,35 +6,6 @@ part of 'timeline_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-TimelineParent _$TimelineParentFromJson(Map<String, dynamic> json) {
-  return TimelineParent(_$enumDecode(_$TimelineUserEnumMap, json['user']),
-      DateTime.parse(json['date'] as String));
-}
-
-Map<String, dynamic> _$TimelineParentToJson(TimelineParent instance) =>
-    <String, dynamic>{
-      'user': _$TimelineUserEnumMap[instance.user],
-      'date': instance.date.toIso8601String()
-    };
-
-T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
-  if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return enumValues.entries
-      .singleWhere((e) => e.value == source,
-          orElse: () => throw ArgumentError(
-              '`$source` is not one of the supported values: '
-              '${enumValues.values.join(', ')}'))
-      .key;
-}
-
-const _$TimelineUserEnumMap = <TimelineUser, dynamic>{
-  TimelineUser.Student: 'Student',
-  TimelineUser.Teacher: 'Teacher'
-};
-
 TimelineModel _$TimelineModelFromJson(Map<String, dynamic> json) {
   return TimelineModel(
       date: DateTime.parse(json['date'] as String),
@@ -69,6 +40,24 @@ Map<String, dynamic> _$TimelineModelToJson(TimelineModel instance) =>
       'finish': TimelineModel._timeOfDayToIntList(instance.finish)
     };
 
+T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
+  if (source == null) {
+    throw ArgumentError('A value must be provided. Supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+  return enumValues.entries
+      .singleWhere((e) => e.value == source,
+          orElse: () => throw ArgumentError(
+              '`$source` is not one of the supported values: '
+              '${enumValues.values.join(', ')}'))
+      .key;
+}
+
+const _$TimelineUserEnumMap = <TimelineUser, dynamic>{
+  TimelineUser.Student: 'Student',
+  TimelineUser.Teacher: 'Teacher'
+};
+
 RoomModel _$RoomModelFromJson(Map<String, dynamic> json) {
   return RoomModel(json['number'] as String,
       _$enumDecode(_$RoomLocationEnumMap, json['location']));
@@ -85,23 +74,28 @@ const _$RoomLocationEnumMap = <RoomLocation, dynamic>{
   RoomLocation.StudyHostel: 'StudyHostel'
 };
 
+LessonType _$LessonTypeFromJson(Map<String, dynamic> json) {
+  return LessonType(json['title'] as String);
+}
+
+Map<String, dynamic> _$LessonTypeToJson(LessonType instance) =>
+    <String, dynamic>{'title': instance.title};
+
 LessonModel _$LessonModelFromJson(Map<String, dynamic> json) {
-  return LessonModel(json['title'] as String, json['iconCodePoint'] as int,
-      _$enumDecode(_$LessonTypeEnumMap, json['lessonType']));
+  return LessonModel(
+      json['title'] as String,
+      json['iconCodePoint'] as int,
+      json['fullTitle'] as String,
+      LessonType.fromJson(json['type'] as Map<String, dynamic>));
 }
 
 Map<String, dynamic> _$LessonModelToJson(LessonModel instance) =>
     <String, dynamic>{
+      'fullTitle': instance.fullTitle,
       'title': instance.title,
       'iconCodePoint': instance.iconCodePoint,
-      'lessonType': _$LessonTypeEnumMap[instance.lessonType]
+      'type': instance.type
     };
-
-const _$LessonTypeEnumMap = <LessonType, dynamic>{
-  LessonType.None: 'None',
-  LessonType.Theory: 'Theory',
-  LessonType.Practice: 'Practice'
-};
 
 TeacherModel _$TeacherModelFromJson(Map<String, dynamic> json) {
   return TeacherModel(json['name'] as String, json['surname'] as String,

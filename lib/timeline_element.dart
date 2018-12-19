@@ -30,67 +30,98 @@ class TimelineElement extends StatelessWidget {
     ));
   }
 
-  Widget _buildContentColumn(BuildContext context) => Stack(
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.only(top: 45.0, left: 140.0, right: 15.0),
-            child: Tooltip(
-              message: model.user == TimelineUser.Student
-                  ? model.teacher.toString()
-                  : model.group,
-              child: Text(
-                model.user == TimelineUser.Student
-                    ? model.teacher.initials()
-                    : model.group,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.title,
+  Widget _buildTeacherGroup(BuildContext context) => Tooltip(
+        message: model.user == TimelineUser.Student
+            ? model.teacher.toString()
+            : model.group,
+        child: Text(
+          model.user == TimelineUser.Student
+              ? model.teacher.initials()
+              : model.group,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.title,
+        ),
+      );
+
+  Widget _buildStart(BuildContext context) => Text(
+        model.start.format(context),
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.title,
+      );
+
+  Widget _buildFinish(BuildContext context) => Text(
+        model.finish.format(context),
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.body2,
+      );
+
+  Widget _buildLessonType(BuildContext context) => Text(
+        model.lesson.type.title,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.body2,
+      );
+
+  Widget _buildLessonTitle(BuildContext context) => Tooltip(
+        message: model.lesson.fullTitle ?? model.lesson.title,
+        child: Text(
+          model.lesson.title,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.title,
+        ),
+      );
+
+  Widget _buildRoomLocation(BuildContext context) => Text(
+        model.room.number,
+        style: Theme.of(context).textTheme.subtitle,
+      );
+
+  static const innerPadding = 4.0;
+
+  Widget _buildContentColumn(BuildContext context) => Padding(
+        padding: EdgeInsets.only(
+          top: TimelinePainter.rectMargins + innerPadding,
+          left: TimelinePainter.rectMargins * 2,
+          right: TimelinePainter.rectMargins * 2,
+          bottom: innerPadding,
+        ),
+        child: Row(
+          children: <Widget>[
+            Container(
+              width: 68 - innerPadding,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  _buildStart(context),
+                  _buildFinish(context),
+                  Expanded(
+                    child: Container(),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 22, bottom: 4),
+                    child: _buildRoomLocation(context),
+                  )
+                ],
               ),
             ),
-          ),
-          Container(
-            padding: EdgeInsets.only(top: 20.0, left: 140.0, right: 15.0),
-            child: Tooltip(
-              message: model.lesson.fullTitle ?? model.lesson.title,
-              child: Text(
-                model.lesson.title,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.title,
-              ),
+            Container(
+              width: 50 + innerPadding,
             ),
-          ),
-          Tooltip(
-            verticalOffset: 50,
-            message:
-                RoomLocationsTitles(context).titles[model.room.location.index],
-            child: Container(
-              margin: EdgeInsets.only(top: 55.0, left: TimelinePainter.rectMargins * 2),
-              padding: EdgeInsets.only(left: 40 - TimelinePainter.rectMargins * 2),
-              child: Text(
-                model.room.number,
-                overflow: TextOverflow.fade,
-                style: Theme.of(context).textTheme.subtitle,
-              ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                model.lesson.type != null
+                    ? _buildLessonType(context)
+                    : Container(),
+                _buildLessonTitle(context),
+                _buildTeacherGroup(context),
+              ],
             ),
-          ),
-          Container(
-            padding: EdgeInsets.only(top: 15.0, left: 15.0),
-            width: 75,
-            child: Text(
-              model.start.format(context),
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.title,
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.only(top: 35.0, left: 15.0),
-            width: 75,
-            child: Text(
-              model.finish.format(context),
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.body2,
-            ),
-          ),
-        ],
+          ],
+        ),
       );
 
   Widget _buildRow(BuildContext context) {

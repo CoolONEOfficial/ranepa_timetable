@@ -66,6 +66,31 @@
     "type": "text",
     "placeholders": {}
   },
+  "practice": "Практика",
+  "@practice": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "lecture": "Лекция",
+  "@lecture": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "exam": "Экзамен",
+  "@exam": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "examConsultation": "Консультация к экзамену",
+  "@examConsultation": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "receptionExamination": "Прием защиты",
+  "@receptionExamination": {
+    "type": "text",
+    "placeholders": {}
+  },
   "groupEconomics": "Экономика",
   "@groupEconomics": {
     "type": "text",

@@ -149,7 +149,7 @@ class WidgetTemplates {
               if (snapshot.hasError)
                 return error ??
                     WidgetTemplates.buildErrorNotification(
-                        context, snapshot.error);
+                        context, snapshot.error ?? "Unknown");
               return builder(context, snapshot);
           }
         });
