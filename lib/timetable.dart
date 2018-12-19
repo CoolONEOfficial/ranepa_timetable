@@ -284,10 +284,13 @@ class Timetable extends StatelessWidget {
     }
     final beforeAlarmClock = Duration(minutes: beforeAlarmClockStr);
 
-    final alarmLesson = timetable[nextDayDate].first;
     String snackBarText;
 
-    if (alarmLesson != null) {
+    final alarmLessonDate = nextDayDate;
+    final alarmDay = timetable[alarmLessonDate];
+
+    if (alarmDay.isNotEmpty) {
+      final alarmLesson = alarmDay.first;
       final alarmClock =
           _toDateTime(alarmLesson.start).subtract(beforeAlarmClock);
 
@@ -306,7 +309,7 @@ class Timetable extends StatelessWidget {
       snackBarText = AppLocalizations.of(context).alarmAddSuccess +
           TimeOfDay.fromDateTime(alarmClock).format(context);
     } else
-      snackBarText = AppLocalizations.of(context).alarmAddFailed;
+      snackBarText = AppLocalizations.of(context).noLessonsFound;
     scaffoldKey.currentState.showSnackBar(
       SnackBar(
         content: new Text(snackBarText),
@@ -322,17 +325,26 @@ class Timetable extends StatelessWidget {
   ) async {
     String snackBarText;
 
-    // TODO: safe code
-    var permissionsGranted = await calPlugin.hasPermissions();
-    if (permissionsGranted.isSuccess && !permissionsGranted.data) {
-      permissionsGranted = await calPlugin.requestPermissions();
-      if (permissionsGranted.isSuccess && permissionsGranted.data) {
-        final calendarArr = (await calPlugin.retrieveCalendars())?.data;
-        if (calendarArr?.isNotEmpty ?? false) {
-          final Calendar calendar = calendarArr.last;
+    // Get calendar permissions if required
+    var permissionsGrantedResult = await calPlugin.hasPermissions();
+    var permissionsGranted = permissionsGrantedResult.data ?? false;
+    if (permissionsGrantedResult.isSuccess && !permissionsGranted) {
+      permissionsGrantedResult = await calPlugin.requestPermissions();
+      if (permissionsGrantedResult.isSuccess && permissionsGrantedResult.data)
+        permissionsGranted = true;
+      else
+        snackBarText = AppLocalizations.of(context).calendarEventsAddFailed;
+    }
 
-          final eventsDay = timetable[nextDayDate];
+    if (permissionsGranted) {
+      // Add calendar event
+      final calendarArr = (await calPlugin.retrieveCalendars())?.data;
+      if (calendarArr?.isNotEmpty ?? false) {
+        final calendar = calendarArr.last;
 
+        final eventsDay = timetable[nextDayDate];
+
+        if (eventsDay.isNotEmpty) {
           for (var mLesson in eventsDay) {
             calPlugin.createOrUpdateEvent(
               Event(
@@ -344,25 +356,12 @@ class Timetable extends StatelessWidget {
               ),
             );
           }
-//          final calendarEvents = (await calPlugin.retrieveEvents(
-//            calendar.id,
-//            RetrieveEventsParams(
-//              startDate: _nextDayDate,
-//              endDate: _nextDayDate.add(
-//                Duration(days: 1),
-//              ),
-//            ),
-//          ))?.data;
-//
-
-//          calendarEvents.
-
           snackBarText = AppLocalizations.of(context).calendarEventsAddSuccess;
-        }
+        } else
+          snackBarText = AppLocalizations.of(context).noLessonsFound;
       } else
-        snackBarText = AppLocalizations.of(context).calendarEventsAddFailed;
-    } else
-      snackBarText = AppLocalizations.of(context).calendarEventsAddFailed;
+        snackBarText = AppLocalizations.of(context).calendarGetFailed;
+    }
 
     scaffoldKey.currentState.showSnackBar(
       SnackBar(

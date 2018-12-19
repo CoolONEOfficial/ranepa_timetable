@@ -22,7 +22,6 @@ class MessageLookup extends MessageLookupByLibrary {
   static _notInlinedMessages(_) => <String, Function> {
     "accounting" : MessageLookupByLibrary.simpleMessage("Бухучет"),
     "accountingAnalysis" : MessageLookupByLibrary.simpleMessage("Анализ бухгалтерской отчетности"),
-    "alarmAddFailed" : MessageLookupByLibrary.simpleMessage("Уроков не найдено"),
     "alarmAddSuccess" : MessageLookupByLibrary.simpleMessage("Будильник заведен на "),
     "alarmTip" : MessageLookupByLibrary.simpleMessage("Добавить в будильник"),
     "beforeAlarmClockDescription" : MessageLookupByLibrary.simpleMessage("Насколько заранее нужно заводить будильник"),
@@ -68,6 +67,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "math" : MessageLookupByLibrary.simpleMessage("Математика"),
     "monday" : MessageLookupByLibrary.simpleMessage("Пн"),
     "noCache" : MessageLookupByLibrary.simpleMessage("День не загружен"),
+    "noLessonsFound" : MessageLookupByLibrary.simpleMessage("Уроков не найдено"),
     "noNetworkConnection" : MessageLookupByLibrary.simpleMessage("Отсутствует подключение к сети"),
     "operatingSystems" : MessageLookupByLibrary.simpleMessage("Операционные системы"),
     "philosophy" : MessageLookupByLibrary.simpleMessage("Философия"),

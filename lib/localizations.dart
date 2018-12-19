@@ -39,6 +39,13 @@ class AppLocalizations {
     );
   }
 
+  String get calendarGetFailed {
+    return Intl.message(
+      'Аn error occurred while getting the calendars',
+      name: 'calendarGetFailed',
+    );
+  }
+
   String get calendarEventsAddFailed {
     return Intl.message(
       'An error occurred while adding events to the calendar',
@@ -55,10 +62,10 @@ class AppLocalizations {
     );
   }
 
-  String get alarmAddFailed {
+  String get noLessonsFound {
     return Intl.message(
       'No lessons found',
-      name: 'alarmAddFailed',
+      name: 'noLessonsFound',
     );
   }
 

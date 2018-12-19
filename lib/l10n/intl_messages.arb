@@ -15,13 +15,18 @@
     "type": "text",
     "placeholders": {}
   },
+  "calendarGetFailed": "Аn error occurred while getting the calendars",
+  "@calendarGetFailed": {
+    "type": "text",
+    "placeholders": {}
+  },
   "alarmAddSuccess": "The alarm clock is turned on at ",
   "@alarmAddSuccess": {
     "type": "text",
     "placeholders": {}
   },
-  "alarmAddFailed": "No lessons found",
-  "@alarmAddFailed": {
+  "noLessonsFound": "No lessons found",
+  "@noLessonsFound": {
     "type": "text",
     "placeholders": {}
   },

@@ -16,13 +16,18 @@
     "type": "text",
     "placeholders": {}
   },
+  "calendarGetFailed": "Произошла ошибка при получении календарей",
+  "@calendarGetFailed": {
+    "type": "text",
+    "placeholders": {}
+  },
   "alarmAddSuccess": "Будильник заведен на ",
   "@alarmAddSuccess": {
     "type": "text",
     "placeholders": {}
   },
-  "alarmAddFailed": "Уроков не найдено",
-  "@alarmAddFailed": {
+  "noLessonsFound": "Уроков не найдено",
+  "@noLessonsFound": {
     "type": "text",
     "placeholders": {}
   },

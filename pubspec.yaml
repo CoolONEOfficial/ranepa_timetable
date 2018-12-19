@@ -22,7 +22,8 @@ dependencies:
   tuple: ^1.0.2
   device_calendar: ^0.0.7
   duration:
-    path: duration
+    git:
+      url: https://github.com/desktop-dart/duration.git
   flutter_duration_picker: ^1.0.4
 
 dev_dependencies:
