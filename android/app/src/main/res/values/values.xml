@@ -10,4 +10,5 @@
     <string name="thursday">Thursday (%s)</string>
     <string name="friday">Friday (%s)</string>
     <string name="saturday">Saturday (%s)</string>
+    <string name="noLessons">No lessons found</string>
 </resources>

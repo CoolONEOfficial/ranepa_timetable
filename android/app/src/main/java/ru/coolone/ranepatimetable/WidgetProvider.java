@@ -11,8 +11,10 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.AlarmClock;
 import android.view.View;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -32,6 +34,8 @@ import static java.lang.Math.toIntExact;
 @NoArgsConstructor
 public class WidgetProvider extends AppWidgetProvider {
     public static final String DELETE_OLD = "ru.coolone.ranepatimetable.DELETE_OLD";
+    public static final String CREATE_ALARM = "ru.coolone.ranepatimetable.CREATE_ALARM";
+    public static final String CREATE_CALENDAR_EVENTS = "ru.coolone.ranepatimetable.CREATE_CALENDAR_EVENTS";
 
     AlarmManager manager;
     PendingIntent updatePendingIntent, deleteOldPendingIntent;
@@ -79,6 +83,21 @@ public class WidgetProvider extends AppWidgetProvider {
             switch (intent.getAction()) {
                 case DELETE_OLD:
                     TimetableDatabase.getInstance(ctx).timetable().deleteOld();
+                    break;
+                case CREATE_ALARM:
+                    var showDay = TimetableDatabase.getInstance(ctx).timetable().selectByDate(showDate);
+                    if(showDay.moveToFirst()) {
+                        // TODO: check before alarm time and alarm clock create and calendar event create
+
+                        var alarmIntent = new Intent(AlarmClock.ACTION_SET_ALARM);
+                        alarmIntent.putExtra(AlarmClock.EXTRA_MESSAGE, showDay.getString(showDay.getColumnIndex(Timeline.PREFIX_LESSON + Timeline.LessonModel.COLUMN_LESSON_TITLE)));
+                        alarmIntent.putExtra(AlarmClock.EXTRA_HOUR, alarmTime.getHourOfDay());
+                        alarmIntent.putExtra(AlarmClock.EXTRA_MINUTES, alarmTime.getMinuteOfHour());
+                    } else Toast.makeText(ctx, R.string.noLessons, Toast.LENGTH_SHORT).show();
+
+
+                    break;
+                case CREATE_CALENDAR_EVENTS:
                     break;
             }
 
@@ -181,6 +200,8 @@ public class WidgetProvider extends AppWidgetProvider {
         return (int) Math.max(Math.min(Integer.MAX_VALUE, l), Integer.MIN_VALUE);
     }
 
+    static long showDate;
+
     private RemoteViews buildLayout(Context context, int appWidgetId, AppWidgetManager appWidgetManager) {
         prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
         theme = Theme.values()[(int) prefs.getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
@@ -251,7 +272,8 @@ public class WidgetProvider extends AppWidgetProvider {
         futureLessonDate.setTimeInMillis(
                 futureLessonCursor.getLong(futureLessonCursor.getColumnIndex(Timeline.COLUMN_DATE))
         );
-        intent.putExtra(WidgetRemoteViewsFactory.DATE, getMidnight(futureLessonDate).getTimeInMillis());
+        showDate = getMidnight(futureLessonDate).getTimeInMillis();
+        intent.putExtra(WidgetRemoteViewsFactory.DATE, showDate);
         intent.putExtra(WidgetRemoteViewsFactory.THEME_ID, theme.ordinal());
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 

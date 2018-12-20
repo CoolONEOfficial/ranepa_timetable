@@ -10,4 +10,5 @@
     <string name="thursday">Четверг (%s)</string>
     <string name="friday">Пятница (%s)</string>
     <string name="saturday">Суббота (%s)</string>
+    <string name="noLessons">Пар не найдено</string>
 </resources>
