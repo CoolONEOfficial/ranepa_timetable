@@ -3,75 +3,94 @@
     android:id="@+id/widget_item"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/widget_item_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <TextView
-        android:id="@+id/widget_item_lesson_title"
-        style="@style/TextAppearance.AppCompat.Title"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="140dp"
-        android:layout_marginLeft="140dp"
-        android:layout_marginTop="20dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/widget_item_margins"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="@dimen/widget_item_margins"
-        android:layout_marginRight="@dimen/widget_item_margins"
-        android:maxLines="1" />
+        android:layout_marginBottom="4dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/widget_item_teacher_or_group"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="140dp"
-        android:layout_marginLeft="140dp"
-        android:layout_marginTop="45dp"
-        android:layout_marginEnd="@dimen/widget_item_margins"
-        android:layout_marginRight="@dimen/widget_item_margins"
-        android:maxLines="1" />
+        <LinearLayout
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:clipChildren="false"
+            android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/widget_item_room_number"
-        style="@style/TextAppearance.AppCompat.Body2"
-        android:layout_width="40dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="55dp"
-        android:maxLines="1" />
+            <TextView
+                android:id="@+id/widget_item_start"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="12"
+                android:textAlignment="center" />
 
-    <TextView
-        android:id="@+id/widget_item_start"
-        style="@style/TextAppearance.AppCompat.Title"
-        android:layout_width="65dp"
-        android:textAlignment="center"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="13dp"
-        android:singleLine="true"
-        android:ellipsize="marquee"
-        android:marqueeRepeatLimit ="marquee_forever"
-        android:scrollHorizontally="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:duplicateParentState="true">
-        <requestFocus android:focusable="true" android:focusableInTouchMode="true"
-            android:duplicateParentState="true" />
-    </TextView>
+            <TextView
+                android:id="@+id/widget_item_finish"
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-6dp"
+                android:maxLines="1"
+                android:textAlignment="center" />
 
-    <TextView
-        android:id="@+id/widget_item_finish"
-        style="@style/TextAppearance.AppCompat.Body2"
-        android:layout_width="65dp"
-        android:textAlignment="center"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="33dp"
-        android:maxLines="1" />
+            <TextView
+                android:id="@+id/widget_item_room_number"
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="22dp"
+                android:layout_marginBottom="2dp"
+                android:layout_weight="1"
+                android:gravity="bottom"
+                android:maxLines="1"
+                android:textAlignment="gravity" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="57dp"
+            android:clipChildren="false"
+            android:gravity="top"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/widget_item_lesson_action"
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1" />
+
+            <TextView
+                android:id="@+id/widget_item_lesson_title"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-4dp"
+                android:maxLines="1" />
+
+            <TextView
+                android:id="@+id/widget_item_teacher_or_group"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-6dp"
+                android:maxLines="1" />
+        </LinearLayout>
+    </LinearLayout>
 </FrameLayout>

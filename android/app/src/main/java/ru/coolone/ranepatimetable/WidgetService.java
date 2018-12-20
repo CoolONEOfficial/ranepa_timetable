@@ -9,8 +9,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -87,7 +89,8 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             iconSize = 29,
             circleRadius = 23,
             rectCornersRadius = 10,
-            circleMargin = 5;
+            circleMargin = 5,
+            circleRadiusAdd = 3;
 
     private Bitmap buildItemBitmap(Context context, float w, float h) {
         log.info("w: " + w + ", h: " + h);
@@ -132,8 +135,8 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         var first = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_FIRST)) != 0;
         var last = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_LAST)) != 0;
 
-        var circleX = dpScale * (rectMargins * 2 + 70 + circleRadius);
-        var circleY = dpScale * ((80 + rectMargins) / 2);
+        var circleX = dpScale * (rectMargins * 2 + circleRadius + 68);
+        var circleY = h / 2 + dpScale * (rectMargins / 2);
 
         var translateIcon = 0.0f;
 
@@ -197,7 +200,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             canvas.drawCircle(
                     circleX,
                     circleY,
-                    dpScale * (circleRadius + 3),
+                    dpScale * (circleRadius + circleRadiusAdd),
                     circlePaint
             );
         }
@@ -296,7 +299,12 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                             Timeline.PREFIX_ROOM
                                     + Timeline.RoomModel.COLUMN_ROOM_NUMBER)
                     )));
+            var action = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_LESSON + Timeline.LessonModel.PREFIX_LESSON_ACTION + Timeline.LessonAction.COLUMN_LESSON_TYPE_TITLE));
+            if (action == null)
+                rv.setViewVisibility(R.id.widget_item_lesson_action, View.GONE);
+            else rv.setTextViewText(R.id.widget_item_lesson_action, action);
 
+            rv.setTextColor(R.id.widget_item_lesson_action, theme.textAccent);
             rv.setTextColor(R.id.widget_item_lesson_title, theme.textAccent);
             rv.setTextColor(R.id.widget_item_teacher_or_group, theme.textAccent);
             rv.setTextColor(R.id.widget_item_start, theme.textAccent);

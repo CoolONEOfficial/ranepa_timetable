@@ -74,11 +74,11 @@ const _$RoomLocationEnumMap = <RoomLocation, dynamic>{
   RoomLocation.StudyHostel: 'StudyHostel'
 };
 
-LessonType _$LessonTypeFromJson(Map<String, dynamic> json) {
-  return LessonType(json['title'] as String);
+LessonAction _$LessonActionFromJson(Map<String, dynamic> json) {
+  return LessonAction(json['title'] as String);
 }
 
-Map<String, dynamic> _$LessonTypeToJson(LessonType instance) =>
+Map<String, dynamic> _$LessonActionToJson(LessonAction instance) =>
     <String, dynamic>{'title': instance.title};
 
 LessonModel _$LessonModelFromJson(Map<String, dynamic> json) {
@@ -86,7 +86,7 @@ LessonModel _$LessonModelFromJson(Map<String, dynamic> json) {
       json['title'] as String,
       json['iconCodePoint'] as int,
       json['fullTitle'] as String,
-      LessonType.fromJson(json['type'] as Map<String, dynamic>));
+      LessonAction.fromJson(json['action'] as Map<String, dynamic>));
 }
 
 Map<String, dynamic> _$LessonModelToJson(LessonModel instance) =>
@@ -94,7 +94,7 @@ Map<String, dynamic> _$LessonModelToJson(LessonModel instance) =>
       'fullTitle': instance.fullTitle,
       'title': instance.title,
       'iconCodePoint': instance.iconCodePoint,
-      'type': instance.type
+      'action': instance.action
     };
 
 TeacherModel _$TeacherModelFromJson(Map<String, dynamic> json) {

@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import java.util.Calendar;
@@ -224,7 +225,7 @@ public class WidgetProvider extends AppWidgetProvider {
                     break;
             }
 
-            var dayDescId = -1;
+            int dayDescId;
             switch (daysBetween(getTodayMidnight(), futureLessonStart)) {
                 case 0:
                     dayDescId = R.string.widget_title_today;

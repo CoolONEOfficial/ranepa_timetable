@@ -55,10 +55,13 @@ class TimelineElement extends StatelessWidget {
         style: Theme.of(context).textTheme.body2,
       );
 
-  Widget _buildLessonType(BuildContext context) => Text(
-        model.lesson.type.title,
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.body2,
+  Widget _buildLessonType(BuildContext context) => Tooltip(
+        message: model.lesson.action?.title ?? model.lesson.fullTitle,
+        child: Text(
+          model.lesson.action.title,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.body2,
+        ),
       );
 
   Widget _buildLessonTitle(BuildContext context) => Tooltip(
@@ -77,52 +80,58 @@ class TimelineElement extends StatelessWidget {
 
   static const innerPadding = 4.0;
 
-  Widget _buildContentColumn(BuildContext context) => Padding(
-        padding: EdgeInsets.only(
-          top: TimelinePainter.rectMargins + innerPadding,
-          left: TimelinePainter.rectMargins * 2,
-          right: TimelinePainter.rectMargins * 2,
-          bottom: innerPadding,
-        ),
-        child: Row(
+  Widget _buildLeftContent(BuildContext context) => Container(
+        width: 68 - innerPadding,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Container(
-              width: 68 - innerPadding,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  _buildStart(context),
-                  _buildFinish(context),
-                  Expanded(
-                    child: Container(),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 22, bottom: 4),
-                    child: _buildRoomLocation(context),
-                  )
-                ],
-              ),
+            _buildStart(context),
+            _buildFinish(context),
+            Expanded(
+              child: Container(),
             ),
-            Container(
-              width: 50 + innerPadding,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                model.lesson.type != null
-                    ? _buildLessonType(context)
-                    : Container(),
-                _buildLessonTitle(context),
-                _buildTeacherGroup(context),
-              ],
-            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 22, bottom: 4),
+              child: _buildRoomLocation(context),
+            )
           ],
         ),
       );
+
+  Widget _buildRightContent(BuildContext context) => Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: (model.lesson.action != null
+            ? <Widget>[_buildLessonType(context)]
+            : <Widget>[])
+          ..addAll(<Widget>[
+            _buildLessonTitle(context),
+            _buildTeacherGroup(context),
+          ]),
+      );
+
+  Widget _buildContentColumn(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: TimelinePainter.rectMargins + innerPadding,
+        left: TimelinePainter.rectMargins * 2,
+        right: TimelinePainter.rectMargins * 2,
+        bottom: innerPadding,
+      ),
+      child: Row(
+        children: <Widget>[
+          _buildLeftContent(context),
+          Container(
+            width: 50 + innerPadding + TimelinePainter.circleRadiusAdd,
+          ),
+          _buildRightContent(context),
+        ],
+      ),
+    );
+  }
 
   Widget _buildRow(BuildContext context) {
     return Container(

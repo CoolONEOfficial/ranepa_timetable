@@ -34,7 +34,8 @@ class TimelinePainter extends CustomPainter {
       iconSize = 15.0,
       circleRadius = 23.0,
       rectCornersRadius = 10.0,
-      circleMargin = 5.0;
+      circleMargin = 5.0,
+      circleRadiusAdd = 3.0;
 
   void _centerElementPaint(Canvas canvas, Size size) {
     if (model.mergeTop)
@@ -68,7 +69,9 @@ class TimelinePainter extends CustomPainter {
 
     // Timeline
     var circleOffset = Offset(
-        rectMargins * 2 + circleRadius + 68, (size.height + rectMargins) / 2);
+      rectMargins * 2 + circleRadius + 68,
+      (size.height + rectMargins) / 2,
+    );
     var translateIcon = 0.0;
     if (!(model.first && model.last)) {
       // Timeline rect
@@ -118,7 +121,7 @@ class TimelinePainter extends CustomPainter {
       // Timeline circle
       canvas.drawCircle(
           circleOffset,
-          circleRadius + 3,
+          circleRadius + circleRadiusAdd,
           Paint()
             ..color = Theme.of(context).accentColor
             ..style = PaintingStyle.fill);

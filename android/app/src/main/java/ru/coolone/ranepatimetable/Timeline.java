@@ -68,24 +68,40 @@ public class Timeline {
         }
     }
 
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static public class LessonAction {
+        public static final String COLUMN_LESSON_TYPE_TITLE = "title";
+
+        String title;
+    }
+
     @AllArgsConstructor
     @NoArgsConstructor
     static public class LessonModel {
+        public static final String PREFIX_LESSON_ACTION = "action_";
+
         public static final String COLUMN_LESSON_TITLE = "title";
         public static final String COLUMN_LESSON_FULL_TITLE = "fullTitle";
         public static final String COLUMN_LESSON_ICON = "iconCodePoint";
-        public static final String COLUMN_LESSON_TYPE = "typeTitle";
 
         String title, fullTitle;
         int iconCodePoint;
-        String typeTitle;
+        @Embedded(prefix = PREFIX_LESSON_ACTION)
+        LessonAction action;
 
         public static LessonModel fromContentValues(ContentValues values, String prefix) {
             return new LessonModel(
                     values.getAsString(prefix + COLUMN_LESSON_TITLE),
                     values.getAsString(prefix + COLUMN_LESSON_FULL_TITLE),
                     values.getAsInteger(prefix + COLUMN_LESSON_ICON),
-                    values.getAsString(prefix + COLUMN_LESSON_TYPE)
+                    new LessonAction(
+                            values.getAsString(
+                                    prefix
+                                            + PREFIX_LESSON_ACTION
+                                            + LessonAction.COLUMN_LESSON_TYPE_TITLE
+                            )
+                    )
             );
         }
     }

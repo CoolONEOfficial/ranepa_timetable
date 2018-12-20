@@ -9,80 +9,66 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_body"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/rounded_body_layout_dark"
-    android:orientation="vertical">
+    android:layout_gravity="center"
+    android:background="@drawable/rounded_body_layout_dark">
 
-    <FrameLayout
+    <ListView
+        android:id="@+id/timeline_list"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_weight="1">
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:paddingTop="@dimen/widget_head_height"
+        android:paddingBottom="8dp"
+        android:scrollbars="none" />
 
-        <ListView
-            android:id="@+id/timeline_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:dividerHeight="0dp"
-            android:divider="@null"
-            android:paddingTop="@dimen/widget_head_height"
-            android:paddingBottom="8dp"
-            android:clipToPadding="false"
-            android:scrollbars="none" />
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:textSize="20sp"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/widget_head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@drawable/rounded_head_layout_light"
+        android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/empty_view"
-            android:layout_width="match_parent"
+            android:id="@+id/widget_title"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:textColor="#ffffff"
-            android:textSize="20sp"
-            android:visibility="gone" />
+            android:layout_marginStart="@dimen/widget_item_margins"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="start|center_vertical"
+            android:maxLines="1" />
 
-        <LinearLayout
-            android:id="@+id/widget_head"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:background="@drawable/rounded_head_layout_light"
-            android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/add_calendar"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/widget_head_height"
+            android:layout_height="@dimen/widget_head_height"
+            android:padding="2dp"
+            android:src="@drawable/ic_calendar" />
 
-            <TextView
-                android:id="@+id/widget_title"
-                style="@style/TextAppearance.AppCompat.Title"
-                android:layout_width="0dp"
-                android:gravity="start|center_vertical"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_marginStart="@dimen/widget_item_margins"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:textColor="@android:color/white"
-                app:autoSizeTextType="uniform"
-                app:autoSizeMinTextSize="12sp"
-                app:autoSizeMaxTextSize="100sp"
-                app:autoSizeStepGranularity="2sp" />
-
-            <ImageButton
-                android:id="@+id/add_calendar"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="@dimen/widget_head_height"
-                android:layout_height="@dimen/widget_head_height"
-                android:padding="2dp"
-                android:src="@drawable/ic_calendar" />
-
-            <ImageButton
-                android:id="@+id/add_alarm"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="@dimen/widget_head_height"
-                android:layout_height="@dimen/widget_head_height"
-                android:padding="2dp"
-                android:src="@drawable/ic_alarm" />
-        </LinearLayout>
-    </FrameLayout>
-
-</LinearLayout>
+        <ImageButton
+            android:id="@+id/add_alarm"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/widget_head_height"
+            android:layout_height="@dimen/widget_head_height"
+            android:padding="2dp"
+            android:src="@drawable/ic_alarm" />
+    </LinearLayout>
+</FrameLayout>
