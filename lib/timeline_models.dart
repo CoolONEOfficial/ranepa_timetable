@@ -120,6 +120,8 @@ class RoomModel {
 class LessonAction extends Findable {
   final String title;
 
+  LessonAction copy() => LessonAction(title, words);
+
   const LessonAction(this.title, [List<List<String>> words]) : super(words);
 
   factory LessonAction.fromJson(Map<String, dynamic> json) =>
@@ -214,6 +216,16 @@ class LessonModel extends Findable {
     List<List<String>> words,
   ]) : super(words);
 
+  LessonModel._copy(
+    this.title,
+    this.iconCodePoint,
+    this.fullTitle, [
+    List<List<String>> words,
+  ]) : super(words);
+
+  LessonModel copy() =>
+      LessonModel._copy(title, iconCodePoint, fullTitle, words);
+
   factory LessonModel.fromJson(Map<String, dynamic> json) =>
       _$LessonModelFromJson(json);
 
@@ -226,7 +238,7 @@ class LessonModel extends Findable {
 
     for (final mLesson in Lessons(context).lessons) {
       if (mLesson.find(lowerStr)) {
-        model = mLesson;
+        model = mLesson.copy();
         break;
       }
     }
@@ -299,8 +311,7 @@ abstract class Findable {
           break;
         }
       }
-      if (strFound)
-        return true;
+      if (strFound) return true;
     }
     return false;
   }

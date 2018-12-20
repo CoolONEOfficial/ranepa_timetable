@@ -153,10 +153,7 @@ class Timetable extends StatelessWidget {
 
     var mDate = from.subtract(Duration(days: 1));
     final _startDayId = timetable.keys.length;
-    for (var mItemId = 0; mItemId < itemArr.length; mItemId++) {
-      debugPrint("mItemId: $mItemId");
-      var mItem = itemArr[mItemId];
-
+    for (final mItem in itemArr) {
       final mItemTimeStart =
           mItem.children[TimetableResponseIndexes.TimeStart.index].text;
       final mItemTimeFinish =
