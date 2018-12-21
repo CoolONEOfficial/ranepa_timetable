@@ -1,5 +1,7 @@
 ![RANEPA Logo](assets/images/icon.png?raw=true "")
 
+[![Build Status](https://travis-ci.org/CoolONEOfficial/ranepa_timetable.svg?branch=master)](https://travis-ci.org/CoolONEOfficial/ranepa_timetable)
+
 # NRU RANEPA Timetable
 
 Custom open-source NRU RANEPA mobile client written on Flutter.
