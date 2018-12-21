@@ -10,6 +10,9 @@
     <string name="thursday">Четверг (%s)</string>
     <string name="friday">Пятница (%s)</string>
     <string name="saturday">Суббота (%s)</string>
-    <string name="noLessons">Пар не найдено</string>
+    <string name="noLessons">Пар не найдено.</string>
     <string name="noBeforeAlarmClock">Не задано время до будильника.\nЕго можно задать в настройках приложения.</string>
+    <string name="noCalendarPermissions">Не удалось получить доступ к календарю.</string>
+    <string name="createCalendarEventsFailed">Произошла ошибка при добавлении событий в календарь.</string>
+    <string name="createCalendarEventsSuccess">События успешно добавлены в календарь.</string>
 </resources>

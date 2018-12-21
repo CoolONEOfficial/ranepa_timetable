@@ -337,7 +337,7 @@ class Timetable extends StatelessWidget {
       // Add calendar event
       final calendarArr = (await calPlugin.retrieveCalendars())?.data;
       if (calendarArr?.isNotEmpty ?? false) {
-        final calendar = calendarArr.last;
+        final calendar = calendarArr.lastWhere((mCal) => !mCal.isReadOnly);
 
         final eventsDay = timetable[nextDayDate];
 

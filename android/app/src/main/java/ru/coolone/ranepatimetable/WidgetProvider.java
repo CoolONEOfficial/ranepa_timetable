@@ -1,27 +1,37 @@
 package ru.coolone.ranepatimetable;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.AlarmClock;
+import android.provider.CalendarContract;
+import android.support.v4.app.ActivityCompat;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.jakewharton.threetenabp.AndroidThreeTen;
+import com.nabinbhandari.android.permissions.PermissionHandler;
+import com.nabinbhandari.android.permissions.Permissions;
 
 import org.threeten.bp.Duration;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import lombok.AllArgsConstructor;
@@ -45,7 +55,8 @@ public class WidgetProvider extends AppWidgetProvider {
     private static SharedPreferences _prefs;
 
     public static SharedPreferences getPrefs(Context context) {
-        if(_prefs == null) _prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
+        if (_prefs == null)
+            _prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
         return _prefs;
     }
 
@@ -88,6 +99,148 @@ public class WidgetProvider extends AppWidgetProvider {
         );
     }
 
+    private int getCalendarId(Context ctx) {
+        String projection[] = {
+                CalendarContract.Calendars._ID, CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL
+        };
+
+        var contentResolver = ctx.getContentResolver();
+        var managedCursor = contentResolver.query(
+                Uri.parse("content://com.android.calendar/calendars"),
+                projection,
+                null,
+                null,
+                null
+        );
+
+        if (managedCursor != null && managedCursor.moveToFirst()) {
+            var idIndex = managedCursor.getColumnIndex(projection[0]);
+            var accessIndex = managedCursor.getColumnIndex(projection[1]);
+            do {
+                if (managedCursor.getInt(accessIndex) == 700)
+                    return managedCursor.getInt(idIndex);
+            } while (managedCursor.moveToNext());
+            managedCursor.close();
+        }
+        return -1;
+
+    }
+
+    private void createAlarmClock(Context ctx) {
+        var firstLesson = TimetableDatabase.getInstance(ctx).timetable().selectByDate(showDate);
+        if (firstLesson.moveToFirst()) {
+            var duration = Duration.ofMinutes(getPrefs(ctx).getLong(PrefsIds.BeforeAlarmClock.prefId, 0));
+
+            if (duration.isZero())
+                Toast.makeText(ctx, R.string.noBeforeAlarmClock, Toast.LENGTH_LONG).show();
+            else {
+                var date = GregorianCalendar.getInstance();
+                date.setTimeInMillis(firstLesson.getLong(firstLesson.getColumnIndex(Timeline.COLUMN_DATE)));
+                date.add(Calendar.HOUR, firstLesson.getInt(firstLesson.getColumnIndex(
+                        Timeline.PREFIX_START
+                                + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR
+                ))
+                        - ((int) duration.toHours()));
+                date.add(Calendar.MINUTE, firstLesson.getInt(firstLesson.getColumnIndex(
+                        Timeline.PREFIX_START
+                                + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE
+                ))
+                        - ((int) duration.toMinutes()));
+
+                var alarmIntent = new Intent(AlarmClock.ACTION_SET_ALARM);
+                alarmIntent.putExtra(AlarmClock.EXTRA_MESSAGE, firstLesson.getString(firstLesson.getColumnIndex(Timeline.PREFIX_LESSON + Timeline.LessonModel.COLUMN_LESSON_TITLE)));
+                alarmIntent.putExtra(AlarmClock.EXTRA_HOUR, date.get(Calendar.HOUR));
+                alarmIntent.putExtra(AlarmClock.EXTRA_MINUTES, date.get(Calendar.MINUTE));
+                alarmIntent.putExtra(AlarmClock.EXTRA_SKIP_UI, true);
+                alarmIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                ctx.startActivity(alarmIntent);
+            }
+        } else Toast.makeText(ctx, R.string.noLessons, Toast.LENGTH_LONG).show();
+    }
+
+    private void createCalendarEvents(final Context ctx) {
+        var mLesson = TimetableDatabase.getInstance(ctx).timetable().selectByDate(showDate);
+
+        if (mLesson.getCount() == 0)
+            Toast.makeText(ctx, R.string.noLessons, Toast.LENGTH_LONG).show();
+        else {
+            while (mLesson.moveToNext()) {
+                var mDate = GregorianCalendar.getInstance();
+                mDate.setTimeInMillis(mLesson.getLong(mLesson.getColumnIndex(Timeline.COLUMN_DATE)));
+
+                var mStartDate = new GregorianCalendar();
+                mStartDate.setTimeInMillis(mDate.getTimeInMillis());
+                mStartDate.add(Calendar.HOUR, mLesson.getInt(mLesson.getColumnIndex(
+                        Timeline.PREFIX_START
+                                + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR
+                )));
+                mStartDate.add(Calendar.MINUTE, mLesson.getInt(mLesson.getColumnIndex(
+                        Timeline.PREFIX_START
+                                + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE
+                )));
+
+                var mFinishDate = new GregorianCalendar();
+                mFinishDate.setTimeInMillis(mDate.getTimeInMillis());
+                mFinishDate.add(Calendar.HOUR, mLesson.getInt(mLesson.getColumnIndex(
+                        Timeline.PREFIX_FINISH
+                                + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR
+                )));
+                mFinishDate.add(Calendar.MINUTE, mLesson.getInt(mLesson.getColumnIndex(
+                        Timeline.PREFIX_FINISH
+                                + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE
+                )));
+
+                ContentResolver cr = ctx.getContentResolver();
+                ContentValues values = new ContentValues();
+                values.put(CalendarContract.Events.DTSTART, mStartDate.getTimeInMillis());
+                values.put(CalendarContract.Events.DTEND, mFinishDate.getTimeInMillis());
+                values.put(CalendarContract.Events.TITLE, mLesson.getString(mLesson.getColumnIndex(
+                        Timeline.PREFIX_LESSON
+                                + Timeline.LessonModel.COLUMN_LESSON_TITLE
+                )));
+                values.put(CalendarContract.Events.DESCRIPTION, mLesson.getString(mLesson.getColumnIndex(
+                        Timeline.PREFIX_LESSON
+                                + Timeline.LessonModel.COLUMN_LESSON_FULL_TITLE
+                )));
+                values.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
+                if (ActivityCompat.checkSelfPermission(ctx, android.Manifest.permission.WRITE_CALENDAR)
+                        == PackageManager.PERMISSION_GRANTED
+                        && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.READ_CALENDAR)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    values.put(CalendarContract.Events.CALENDAR_ID, getCalendarId(ctx));
+                    Toast.makeText(ctx, cr.insert(CalendarContract.Events.CONTENT_URI, values) == null
+                                    ? R.string.createCalendarEventsFailed
+                                    : R.string.createCalendarEventsSuccess,
+                            Toast.LENGTH_LONG
+                    ).show();
+                } else
+                    Permissions.check(
+                            ctx,
+                            new String[]{
+                                    Manifest.permission.WRITE_CALENDAR,
+                                    Manifest.permission.READ_CALENDAR
+                            },
+                            null,
+                            null,
+                            new PermissionHandler() {
+                                @Override
+                                public void onGranted() {
+                                    createCalendarEvents(ctx);
+                                }
+
+                                @Override
+                                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
+                                    super.onDenied(context, deniedPermissions);
+                                    Toast.makeText(ctx, R.string.noCalendarPermissions,
+                                            Toast.LENGTH_LONG
+                                    ).show();
+                                }
+                            }
+                    );
+            }
+        }
+    }
+
     @Override
     public void onReceive(Context ctx, Intent intent) {
         log.info("onReceive: " + intent.getAction());
@@ -95,29 +248,9 @@ public class WidgetProvider extends AppWidgetProvider {
         if (Objects.equals(intent.getAction(), DELETE_OLD)) {
             TimetableDatabase.getInstance(ctx).timetable().deleteOld();
         } else if (Objects.equals(intent.getAction(), CREATE_ALARM_CLOCK)) {
-            var showDay = TimetableDatabase.getInstance(ctx).timetable().selectByDate(showDate);
-            if (showDay.moveToFirst()) {
-                var duration = Duration.ofMinutes(getPrefs(ctx).getLong(PrefsIds.BeforeAlarmClock.prefId, 0));
-
-                if (duration.isZero())
-                    Toast.makeText(ctx, R.string.noBeforeAlarmClock, Toast.LENGTH_LONG).show();
-                else {
-                    var date = GregorianCalendar.getInstance();
-                    date.setTimeInMillis(showDay.getLong(showDay.getColumnIndex(Timeline.COLUMN_DATE)));
-                    date.add(Calendar.HOUR, (int) duration.toHours());
-                    date.add(Calendar.MINUTE, (int) (duration.toHours() * 60 - duration.toMinutes()));
-
-                    var alarmIntent = new Intent(AlarmClock.ACTION_SET_ALARM);
-                    alarmIntent.putExtra(AlarmClock.EXTRA_MESSAGE, showDay.getString(showDay.getColumnIndex(Timeline.PREFIX_LESSON + Timeline.LessonModel.COLUMN_LESSON_TITLE)));
-                    alarmIntent.putExtra(AlarmClock.EXTRA_HOUR, date.get(Calendar.HOUR));
-                    alarmIntent.putExtra(AlarmClock.EXTRA_MINUTES, date.get(Calendar.MINUTE));
-                    alarmIntent.putExtra(AlarmClock.EXTRA_SKIP_UI, true);
-                    alarmIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    ctx.startActivity(alarmIntent);
-                }
-            } else Toast.makeText(ctx, R.string.noLessons, Toast.LENGTH_LONG).show();
+            createAlarmClock(ctx);
         } else if (Objects.equals(intent.getAction(), CREATE_CALENDAR_EVENTS)) {
-            // TODO: calendar events creation
+            createCalendarEvents(ctx);
         }
 
         super.onReceive(ctx, intent);

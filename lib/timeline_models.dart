@@ -256,7 +256,7 @@ class LessonModel extends Findable {
       }
     }
 
-    debugPrint("model type: ${model.action.title}");
+    debugPrint("model type: ${model.action?.title}");
 
     return model;
   }

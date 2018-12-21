@@ -10,6 +10,9 @@
     <string name="thursday">Thursday (%s)</string>
     <string name="friday">Friday (%s)</string>
     <string name="saturday">Saturday (%s)</string>
-    <string name="noLessons">No lessons found</string>
+    <string name="noLessons">No lessons found.</string>
     <string name="noBeforeAlarmClock">Not set time to alarm.\nIt can be set in the application settings.</string>
+    <string name="noCalendarPermissions">Could not access the calendar.</string>
+    <string name="createCalendarEventsFailed">An error occurred while adding events to the calendar.</string>
+    <string name="createCalendarEventsSuccess">Events successfully added to calendar.</string>
 </resources>
