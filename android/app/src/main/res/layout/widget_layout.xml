@@ -56,7 +56,7 @@
             android:maxLines="1" />
 
         <ImageButton
-            android:id="@+id/add_calendar"
+            android:id="@+id/create_calendar_events"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/widget_head_height"
             android:layout_height="@dimen/widget_head_height"
@@ -64,7 +64,7 @@
             android:src="@drawable/ic_calendar" />
 
         <ImageButton
-            android:id="@+id/add_alarm"
+            android:id="@+id/create_alarm_clock"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/widget_head_height"
             android:layout_height="@dimen/widget_head_height"

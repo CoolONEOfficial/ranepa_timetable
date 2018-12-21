@@ -12,12 +12,16 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.AlarmClock;
-import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.jakewharton.threetenabp.AndroidThreeTen;
+
+import org.threeten.bp.Duration;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import lombok.AllArgsConstructor;
@@ -25,20 +29,25 @@ import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.var;
 
-import static java.lang.Math.toIntExact;
-
 /**
- * The weather widget's AppWidgetProvider.
+ * The widget's AppWidgetProvider.
  */
 @Log
 @NoArgsConstructor
 public class WidgetProvider extends AppWidgetProvider {
     public static final String DELETE_OLD = "ru.coolone.ranepatimetable.DELETE_OLD";
-    public static final String CREATE_ALARM = "ru.coolone.ranepatimetable.CREATE_ALARM";
+    public static final String CREATE_ALARM_CLOCK = "ru.coolone.ranepatimetable.CREATE_ALARM_CLOCK";
     public static final String CREATE_CALENDAR_EVENTS = "ru.coolone.ranepatimetable.CREATE_CALENDAR_EVENTS";
 
     AlarmManager manager;
     PendingIntent updatePendingIntent, deleteOldPendingIntent;
+
+    private static SharedPreferences _prefs;
+
+    public static SharedPreferences getPrefs(Context context) {
+        if(_prefs == null) _prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
+        return _prefs;
+    }
 
     @Override
     public void onDisabled(Context context) {
@@ -48,6 +57,8 @@ public class WidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onEnabled(Context context) {
+        AndroidThreeTen.init(context);
+
         manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         updatePendingIntent = PendingIntent.getBroadcast(
@@ -79,34 +90,41 @@ public class WidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context ctx, Intent intent) {
-        if (intent.getAction() != null)
-            switch (intent.getAction()) {
-                case DELETE_OLD:
-                    TimetableDatabase.getInstance(ctx).timetable().deleteOld();
-                    break;
-                case CREATE_ALARM:
-                    var showDay = TimetableDatabase.getInstance(ctx).timetable().selectByDate(showDate);
-                    if(showDay.moveToFirst()) {
-                        // TODO: check before alarm time and alarm clock create and calendar event create
+        log.info("onReceive: " + intent.getAction());
 
-                        var alarmIntent = new Intent(AlarmClock.ACTION_SET_ALARM);
-                        alarmIntent.putExtra(AlarmClock.EXTRA_MESSAGE, showDay.getString(showDay.getColumnIndex(Timeline.PREFIX_LESSON + Timeline.LessonModel.COLUMN_LESSON_TITLE)));
-                        alarmIntent.putExtra(AlarmClock.EXTRA_HOUR, alarmTime.getHourOfDay());
-                        alarmIntent.putExtra(AlarmClock.EXTRA_MINUTES, alarmTime.getMinuteOfHour());
-                    } else Toast.makeText(ctx, R.string.noLessons, Toast.LENGTH_SHORT).show();
+        if (Objects.equals(intent.getAction(), DELETE_OLD)) {
+            TimetableDatabase.getInstance(ctx).timetable().deleteOld();
+        } else if (Objects.equals(intent.getAction(), CREATE_ALARM_CLOCK)) {
+            var showDay = TimetableDatabase.getInstance(ctx).timetable().selectByDate(showDate);
+            if (showDay.moveToFirst()) {
+                var duration = Duration.ofMinutes(getPrefs(ctx).getLong(PrefsIds.BeforeAlarmClock.prefId, 0));
 
+                if (duration.isZero())
+                    Toast.makeText(ctx, R.string.noBeforeAlarmClock, Toast.LENGTH_LONG).show();
+                else {
+                    var date = GregorianCalendar.getInstance();
+                    date.setTimeInMillis(showDay.getLong(showDay.getColumnIndex(Timeline.COLUMN_DATE)));
+                    date.add(Calendar.HOUR, (int) duration.toHours());
+                    date.add(Calendar.MINUTE, (int) (duration.toHours() * 60 - duration.toMinutes()));
 
-                    break;
-                case CREATE_CALENDAR_EVENTS:
-                    break;
-            }
+                    var alarmIntent = new Intent(AlarmClock.ACTION_SET_ALARM);
+                    alarmIntent.putExtra(AlarmClock.EXTRA_MESSAGE, showDay.getString(showDay.getColumnIndex(Timeline.PREFIX_LESSON + Timeline.LessonModel.COLUMN_LESSON_TITLE)));
+                    alarmIntent.putExtra(AlarmClock.EXTRA_HOUR, date.get(Calendar.HOUR));
+                    alarmIntent.putExtra(AlarmClock.EXTRA_MINUTES, date.get(Calendar.MINUTE));
+                    alarmIntent.putExtra(AlarmClock.EXTRA_SKIP_UI, true);
+                    alarmIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    ctx.startActivity(alarmIntent);
+                }
+            } else Toast.makeText(ctx, R.string.noLessons, Toast.LENGTH_LONG).show();
+        } else if (Objects.equals(intent.getAction(), CREATE_CALENDAR_EVENTS)) {
+            // TODO: calendar events creation
+        }
 
         super.onReceive(ctx, intent);
     }
 
     public static int width, height;
     public Theme theme;
-    public static SharedPreferences prefs;
 
     @AllArgsConstructor
     enum Theme {
@@ -148,7 +166,9 @@ public class WidgetProvider extends AppWidgetProvider {
     @AllArgsConstructor
     enum PrefsIds {
         WidgetTranslucent(FLUTTER_PREFIX.concat("widget_translucent")),
-        ThemeId(FLUTTER_PREFIX.concat("theme_id"));
+        ThemeId(FLUTTER_PREFIX.concat("theme_id")),
+        BeforeAlarmClock(FLUTTER_PREFIX.concat("before_alarm_clock")),
+        EndCache(FLUTTER_PREFIX.concat("end_cache"));
         final String prefId;
     }
 
@@ -203,8 +223,7 @@ public class WidgetProvider extends AppWidgetProvider {
     static long showDate;
 
     private RemoteViews buildLayout(Context context, int appWidgetId, AppWidgetManager appWidgetManager) {
-        prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
-        theme = Theme.values()[(int) prefs.getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
+        theme = Theme.values()[(int) getPrefs(context).getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
 
         // See the dimensions and
         var options = appWidgetManager.getAppWidgetOptions(appWidgetId);
@@ -277,7 +296,7 @@ public class WidgetProvider extends AppWidgetProvider {
         intent.putExtra(WidgetRemoteViewsFactory.THEME_ID, theme.ordinal());
         intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
-        var translucent = prefs.getBoolean(PrefsIds.WidgetTranslucent.prefId, true);
+        var translucent = getPrefs(context).getBoolean(PrefsIds.WidgetTranslucent.prefId, true);
         var bodyLayoutResLight = translucent
                 ? R.drawable.rounded_body_layout_light_translucent
                 : R.drawable.rounded_body_layout_light;
@@ -308,8 +327,11 @@ public class WidgetProvider extends AppWidgetProvider {
         }
         rv.setInt(R.id.widget_body, "setBackgroundResource", bodyLayoutResId);
         rv.setInt(R.id.widget_head, "setBackgroundResource", headLayoutResId);
-        rv.setInt(R.id.add_calendar, "setColorFilter", theme.textAccent);
-        rv.setInt(R.id.add_alarm, "setColorFilter", theme.textAccent);
+        rv.setInt(R.id.create_calendar_events, "setColorFilter", theme.textAccent);
+        rv.setInt(R.id.create_alarm_clock, "setColorFilter", theme.textAccent);
+
+        rv.setOnClickPendingIntent(R.id.create_alarm_clock, getPendingSelfIntent(context, CREATE_ALARM_CLOCK));
+        rv.setOnClickPendingIntent(R.id.create_calendar_events, getPendingSelfIntent(context, CREATE_CALENDAR_EVENTS));
 
         rv.setRemoteAdapter(R.id.timeline_list, intent);
         // Set the empty view to be displayed if the collection is empty.  It must be a sibling
@@ -317,6 +339,12 @@ public class WidgetProvider extends AppWidgetProvider {
         rv.setEmptyView(R.id.timeline_list, R.id.empty_view);
 
         return rv;
+    }
+
+    protected PendingIntent getPendingSelfIntent(Context context, String action) {
+        var intent = new Intent(context, getClass());
+        intent.setAction(action);
+        return PendingIntent.getBroadcast(context, 0, intent, 0);
     }
 
     @Override
