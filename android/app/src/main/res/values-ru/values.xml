@@ -11,4 +11,5 @@
     <string name="friday">Пятница (%s)</string>
     <string name="saturday">Суббота (%s)</string>
     <string name="noLessons">Пар не найдено</string>
+    <string name="noBeforeAlarmClock">Не задано время до будильника.\nЕго можно задать в настройках приложения.</string>
 </resources>

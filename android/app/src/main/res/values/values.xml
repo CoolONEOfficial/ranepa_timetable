@@ -11,4 +11,5 @@
     <string name="friday">Friday (%s)</string>
     <string name="saturday">Saturday (%s)</string>
     <string name="noLessons">No lessons found</string>
+    <string name="noBeforeAlarmClock">Not set time to alarm.\nIt can be set in the application settings.</string>
 </resources>

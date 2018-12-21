@@ -315,7 +315,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                     R.id.widget_item_image,
                     buildItemBitmap(
                             context,
-                            width,
+                            width > 0 ? width : 100,
                             80
                     )
             );
