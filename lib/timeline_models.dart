@@ -130,48 +130,48 @@ class LessonAction extends Findable {
   Map<String, dynamic> toJson() => _$LessonActionToJson(this);
 }
 
-class LessonTypes {
-  static LessonTypes _singleton;
+class LessonActions {
+  static LessonActions _singleton;
 
-  factory LessonTypes(BuildContext context) {
-    if (_singleton == null) _singleton = LessonTypes._(context);
+  factory LessonActions(BuildContext context) {
+    if (_singleton == null) _singleton = LessonActions._(context);
 
     return _singleton;
   }
 
   final BuildContext context;
-  final List<LessonAction> lessonTypes;
+  final List<LessonAction> actions;
 
-  LessonTypes._(this.context)
-      : lessonTypes = List<LessonAction>.generate(
-          LessonTypeIds.values.length,
+  LessonActions._(this.context)
+      : actions = List<LessonAction>.generate(
+          LessonActionIds.values.length,
           (mLessonTypeIdIndex) {
-            final mLessonTypeId = LessonTypeIds.values[mLessonTypeIdIndex];
+            final mLessonTypeId = LessonActionIds.values[mLessonTypeIdIndex];
 
             switch (mLessonTypeId) {
-              case LessonTypeIds.Exam:
+              case LessonActionIds.Exam:
                 return LessonAction(
                     AppLocalizations.of(context).exam, <List<String>>[
                   <String>["прием", "экзамен"]
                 ]);
-              case LessonTypeIds.ExamConsultation:
+              case LessonActionIds.ExamConsultation:
                 return LessonAction(
                     AppLocalizations.of(context).examConsultation,
                     <List<String>>[
                       <String>["консульт", "экзамен"]
                     ]);
-              case LessonTypeIds.Practice:
+              case LessonActionIds.Practice:
                 return LessonAction(
                     AppLocalizations.of(context).practice, <List<String>>[
                   <String>["практ"]
                 ]);
-              case LessonTypeIds.ReceptionExamination:
+              case LessonActionIds.ReceptionExamination:
                 return LessonAction(
                     AppLocalizations.of(context).receptionExamination,
                     <List<String>>[
                       <String>["защит", "прием"]
                     ]);
-              case LessonTypeIds.Lecture:
+              case LessonActionIds.Lecture:
                 return LessonAction(
                     AppLocalizations.of(context).lecture, <List<String>>[
                   <String>["лекция"]
@@ -181,7 +181,7 @@ class LessonTypes {
         );
 }
 
-enum LessonTypeIds {
+enum LessonActionIds {
   Lecture,
   Practice,
   ReceptionExamination,
@@ -249,7 +249,7 @@ class LessonModel extends Findable {
 
     model.fullTitle =
         str.substring(0, str.indexOf(')')).replaceFirst('(', '\n');
-    for (final mType in LessonTypes(context).lessonTypes) {
+    for (final mType in LessonActions(context).actions) {
       if (mType.find(lowerStr)) {
         model.action = mType;
         break;
