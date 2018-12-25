@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-12-19T23:08:41.044237",
+  "@@last_modified": "2018-12-25T04:02:46.803284",
   "title": "RANEPA (Timetable)",
   "@title": {
     "type": "text",
@@ -297,6 +297,11 @@
   },
   "prefs": "Preferences",
   "@prefs": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "about": "About",
+  "@about": {
     "type": "text",
     "placeholders": {}
   },

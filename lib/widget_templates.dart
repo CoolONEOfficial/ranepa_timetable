@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/timetable.dart';
@@ -110,6 +111,16 @@ class WidgetTemplates {
           shape: CircleBorder(),
           padding: const EdgeInsets.all(30),
         ),
+      );
+
+  static SvgPicture buildLogo(ThemeData theme, {
+    Color color,
+  }) =>
+      SvgPicture.asset(
+        'assets/images/logo.svg',
+        color: color == null ? theme.accentTextTheme.title.color : color,
+        width: 150,
+        height: 150,
       );
 
   static Widget buildFreeDayNotification(

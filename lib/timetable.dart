@@ -464,28 +464,32 @@ class Timetable extends StatelessWidget {
                         ? TeacherModel.fromString(ssSearchItem.data.item2.title)
                             .initials()
                         : ssSearchItem.data.item2.title),
-                actions: <Widget>[
-                  IconButton(
-                    tooltip: AppLocalizations.of(context).calendarTip,
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () =>
-                        _createCalendarEvents(context, _deviceCalendarPlugin),
-                  ),
-                  IconButton(
-                    tooltip: AppLocalizations.of(context).alarmTip,
-                    icon: const Icon(Icons.alarm),
-                    onPressed: () => _createAlarm(context, prefs),
-                  ),
-                  IconButton(
-                    tooltip: AppLocalizations.of(context).searchTip,
-                    icon: const Icon(Icons.search),
-                    onPressed: () => showSearchItemSelect(
-                          context,
-                          prefs,
-                          toPrefs: false,
+                actions: (Platform.isAndroid
+                    ? <Widget>[
+                        IconButton(
+                          tooltip: AppLocalizations.of(context).calendarTip,
+                          icon: const Icon(Icons.calendar_today),
+                          onPressed: () => _createCalendarEvents(
+                              context, _deviceCalendarPlugin),
                         ),
+                        IconButton(
+                          tooltip: AppLocalizations.of(context).alarmTip,
+                          icon: const Icon(Icons.alarm),
+                          onPressed: () => _createAlarm(context, prefs),
+                        )
+                      ]
+                    : List<Widget>())
+                  ..add(
+                    IconButton(
+                      tooltip: AppLocalizations.of(context).searchTip,
+                      icon: const Icon(Icons.search),
+                      onPressed: () => showSearchItemSelect(
+                            context,
+                            prefs,
+                            toPrefs: false,
+                          ),
+                    ),
                   ),
-                ],
                 bottom: TabBar(
                   tabs: tabs,
                 ),

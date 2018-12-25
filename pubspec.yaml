@@ -21,6 +21,8 @@ dependencies:
   android_intent: ^0.2.1
   tuple: ^1.0.2
   device_calendar: ^0.0.7
+  url_launcher: ^4.0.3
+  flutter_svg: ^0.8.2
   duration:
     git:
       url: https://github.com/desktop-dart/duration.git
@@ -39,7 +41,6 @@ flutter_icons:
   android: true
   ios: true
   adaptive_icon_background: "#F44336"
-  #"#982825"
   adaptive_icon_foreground: "assets/images/icon-foreground.png"
 
 flutter:
@@ -48,6 +49,12 @@ flutter:
 
   assets:
    - assets/images/icon-foreground.png
+   - assets/images/coolone.jpg
+   - assets/images/vadim.jpg
+   - assets/images/xr.jpg
+   - assets/images/logo.svg
+   - assets/images/coolone_logo.svg
+   - assets/images/github.svg
 
   fonts:
    - family:  TimetableIcons

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:ranepa_timetable/about.dart';
 import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/prefs.dart';
@@ -34,7 +35,7 @@ class BaseWidget extends StatelessWidget {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.line_style),
+              leading: Icon(Icons.list),
               title: Text(AppLocalizations.of(context).timetable),
               onTap: () => Navigator.pop(context),
             ),
@@ -43,6 +44,11 @@ class BaseWidget extends StatelessWidget {
               title: Text(AppLocalizations.of(context).prefs),
               onTap: () =>
                   Navigator.popAndPushNamed(context, Prefs.ROUTE),
+            ),
+            ListTile(
+              leading: Icon(Icons.info),
+              title: Text(AppLocalizations.of(context).about),
+              onTap: () => Navigator.popAndPushNamed(context, About.ROUTE),
             ),
             Divider(),
             ListTile(
@@ -85,7 +91,8 @@ class BaseWidget extends StatelessWidget {
                   AppLocalizations.of(context).title,
               theme: Themes().themes[themeId],
               routes: <String, WidgetBuilder>{
-                Prefs.ROUTE: (BuildContext context) => Prefs()
+                Prefs.ROUTE: (context) => Prefs(),
+                About.ROUTE: (context) => About(),
               },
               home: Builder(
                 builder: (context) => prefs.getInt(PrefsIds.SEARCH_ITEM_PREFIX +

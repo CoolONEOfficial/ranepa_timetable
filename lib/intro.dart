@@ -8,6 +8,7 @@ import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/themes.dart';
 import 'package:ranepa_timetable/timeline.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
+import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Intro extends StatelessWidget {
@@ -30,9 +31,7 @@ class Intro extends StatelessWidget {
           localizations.introTimetableTitle,
           textAlign: TextAlign.center,
         ),
-        mainImage:
-
-        Padding(
+        mainImage: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15)
               .add(EdgeInsets.only(top: 30)),
           child: Container(
@@ -40,8 +39,8 @@ class Intro extends StatelessWidget {
             child: ShaderMask(
               shaderCallback: (Rect bounds) {
                 return LinearGradient(
-                  begin: Alignment(0.0,0),
-                  end: Alignment(0.0,1),
+                  begin: Alignment(0.0, 0),
+                  end: Alignment(0.0, 1),
                   colors: <Color>[Colors.transparent, Colors.white],
                   tileMode: TileMode.mirror,
                 ).createShader(bounds);
@@ -56,7 +55,8 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 9, minute: 30),
                     room: RoomModel("24", RoomLocation.Hotel),
                     group: "Иб-021",
-                    lesson: Lessons(context).lessons[LessonIds.physicalCulture.index],
+                    lesson: Lessons(context).lessons[LessonIds.physicalCulture
+                        .index],
                     teacher: TeacherModel("Дмитрий", "Киселев", "Михайлович"),
                     user: TimelineUser.Student,
                   ),
@@ -67,7 +67,8 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 9, minute: 30),
                     room: RoomModel("24", RoomLocation.Hotel),
                     group: "Иб-021",
-                    lesson: Lessons(context).lessons[LessonIds.physicalCulture.index],
+                    lesson: Lessons(context).lessons[LessonIds.physicalCulture
+                        .index],
                     teacher: TeacherModel("Шамин", "Иван", "Александрович"),
                     user: TimelineUser.Student,
                   ),
@@ -107,7 +108,8 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 14, minute: 50),
                     room: RoomModel("302", RoomLocation.Academy),
                     group: "Иб-021",
-                    lesson: Lessons(context).lessons[LessonIds.lifeSafety.index],
+                    lesson: Lessons(context).lessons[LessonIds.lifeSafety
+                        .index],
                     teacher: TeacherModel("Обносова", "Нина", "Юрьевна"),
                     user: TimelineUser.Student,
                     last: true,
@@ -123,17 +125,16 @@ class Intro extends StatelessWidget {
       Color backgroundColor, AppLocalizations localizations) =>
       PageViewModel(
         pageColor: backgroundColor,
-        bubble: Image(
-          image: AssetImage('assets/images/icon-foreground.png'),
-          color: backgroundColor,
+        bubble: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: WidgetTemplates.buildLogo(theme, color: backgroundColor),
         ),
         body: Text(localizations.introWelcomeDescription),
         title: Text(
           localizations.introWelcomeTitle,
           textAlign: TextAlign.center,
         ),
-        mainImage:
-        Image(image: AssetImage('assets/images/icon-foreground.png')),
+        mainImage: WidgetTemplates.buildLogo(theme),
       );
 
   PageViewModel _buildTheme(BuildContext context, ThemeData theme,
@@ -167,39 +168,241 @@ class Intro extends StatelessWidget {
         ),
       );
 
-  PageViewModel _buildSearch(BuildContext context, ThemeData theme, int themeId
-          Color backgroundColor, AppLocalizations localizations) =>
-      PageViewModel(
-        pageColor: theme.primaryColor,
-        bubble: Icon(
-          Icons.search,
-          color: theme.primaryColor,
-        ),
-        body: Text(
-          localizations.introGroupDescription,
-        ),
-        title: Text(
-          localizations.introGroupTitle,
-          textAlign: TextAlign.center,
-  style: TextStyle(fontSize: 40),
-        ),
-        mainImage: Align(
-  alignment: Alignment.bottomCenter,
-          child: RawMaterialButton(
-            onPressed: () => showSearchItemSelect(context, prefs),
-            child: Icon(
-              Icons.search,
-              color: theme.primaryColor,
-              size: 100,
-            ),
-            shape: CircleBorder(),
-            fillColor: theme.brightness == Brightness.light
-              ? theme.backgroundColor
-              : theme.accentColor,
-            padding: const EdgeInsets.all(30),
-          ),
-        ),
-      );
+  PageViewModel _buildSearch
+
+  (
+
+  BuildContext context, ThemeData
+
+  theme
+
+  ,
+
+  int themeId
+
+  Color backgroundColor, AppLocalizations
+
+  localizations
+
+  )
+
+  =>
+
+  PageViewModel
+
+  (
+
+  pageColor
+
+      :
+
+  theme.primaryColor
+
+  ,
+
+  bubble
+
+      :
+
+  Icon
+
+  (
+
+  Icons.search
+
+  ,
+
+  color
+
+      :
+
+  theme.primaryColor
+
+  ,
+
+  )
+
+  ,
+
+  body
+
+      :
+
+  Text
+
+  (
+
+  localizations.introGroupDescription
+
+  ,
+
+  )
+
+  ,
+
+  title
+
+      :
+
+  Text
+
+  (
+
+  localizations.introGroupTitle
+
+  ,
+
+  textAlign
+
+      :
+
+  TextAlign.center
+
+  ,
+
+  style
+
+      :
+
+  TextStyle
+
+  (
+
+  fontSize
+
+      :
+
+  40
+
+  )
+
+  ,
+
+  )
+
+  ,
+
+  mainImage
+
+      :
+
+  Align
+
+  (
+
+  alignment
+
+      :
+
+  Alignment.bottomCenter
+
+  ,
+
+  child
+
+      :
+
+  RawMaterialButton
+
+  (
+
+  onPressed
+
+      :
+
+  (
+
+  )
+
+  =>
+
+  showSearchItemSelect(context, prefs)
+
+  ,
+
+  child
+
+      :
+
+  Icon
+
+  (
+
+  Icons.search
+
+  ,
+
+  color
+
+      :
+
+  theme.primaryColor
+
+  ,
+
+  size
+
+      :
+
+  100
+
+  ,
+
+  )
+
+  ,
+
+  shape
+
+      :
+
+  CircleBorder()
+
+  ,
+
+  fillColor
+
+      :
+
+  theme.brightness
+
+  ==
+
+  Brightness.light
+
+  ?
+
+  theme.backgroundColor
+
+      :
+
+  theme.accentColor
+
+  ,
+
+  padding
+
+      :
+
+  const EdgeInsets.all
+
+  (
+
+  30
+
+  )
+
+  ,
+
+  )
+
+  ,
+
+  )
+
+  ,
+
+  );
 
   @override
   Widget build(BuildContext context) =>
