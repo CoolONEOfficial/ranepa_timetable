@@ -12,6 +12,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/timeline_painter.dart';
@@ -21,14 +23,13 @@ class TimelineElement extends StatelessWidget {
 
   TimelineElement({@required this.model});
 
-  Widget _buildLine(BuildContext context) {
-    return SizedBox.expand(
+  Widget _buildLine(BuildContext context) => SizedBox.expand(
         child: Container(
-      child: CustomPaint(
-        painter: TimelinePainter(context, model),
-      ),
-    ));
-  }
+          child: CustomPaint(
+            painter: TimelinePainter(context, model),
+          ),
+        ),
+      );
 
   Widget _buildTeacherGroup(BuildContext context) => Tooltip(
         message: model.user == TimelineUser.Student
@@ -83,19 +84,23 @@ class TimelineElement extends StatelessWidget {
   Widget _buildLeftContent(BuildContext context) => Container(
         width: 68 - innerPadding,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            _buildStart(context),
-            _buildFinish(context),
-            Expanded(
-              child: Container(),
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _buildStart(context),
+                _buildFinish(context),
+              ],
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 22, bottom: 4),
+              padding: const EdgeInsets.only(left: 22, bottom: 2, top: 8),
               child: _buildRoomLocation(context),
-            )
+            ),
           ],
         ),
       );
@@ -133,17 +138,15 @@ class TimelineElement extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(BuildContext context) {
-    return Container(
-      height: 80.0,
-      child: Stack(
-        children: <Widget>[
-          _buildLine(context),
-          _buildContentColumn(context),
-        ],
-      ),
-    );
-  }
+  Widget _buildRow(BuildContext context) => Container(
+        height: Platform.isAndroid ? 80 : 85,
+        child: Stack(
+          children: <Widget>[
+            _buildLine(context),
+            _buildContentColumn(context),
+          ],
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {

@@ -78,6 +78,8 @@ class BaseWidget extends StatelessWidget {
           builder: (context, snapshot) {
             final themeId = snapshot.data;
             return MaterialApp(
+              builder: (context, child) =>
+                  MediaQuery(data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), child: child),
               localizationsDelegates: [
                 AppLocalizationsDelegate(),
                 GlobalMaterialLocalizations.delegate,

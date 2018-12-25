@@ -169,7 +169,7 @@ class TimelinePainter extends CustomPainter {
       ..layout(minWidth: iconSize * 2)
       ..paint(
         canvas,
-        Offset(10, 52),
+        Offset(10, size.height - 28),
       );
   }
 
