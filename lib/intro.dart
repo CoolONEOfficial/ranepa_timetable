@@ -19,7 +19,7 @@ class Intro extends StatelessWidget {
       : super(key: key);
 
   PageViewModel _buildTimetable(BuildContext context, ThemeData theme,
-      Color backgroundColor, AppLocalizations localizations) =>
+          Color backgroundColor, AppLocalizations localizations) =>
       PageViewModel(
         pageColor: backgroundColor,
         bubble: Icon(
@@ -55,8 +55,8 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 9, minute: 30),
                     room: RoomModel("24", RoomLocation.Hotel),
                     group: "Иб-021",
-                    lesson: Lessons(context).lessons[LessonIds.physicalCulture
-                        .index],
+                    lesson: Lessons(context)
+                        .lessons[LessonIds.physicalCulture.index],
                     teacher: TeacherModel("Дмитрий", "Киселев", "Михайлович"),
                     user: TimelineUser.Student,
                   ),
@@ -67,8 +67,8 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 9, minute: 30),
                     room: RoomModel("24", RoomLocation.Hotel),
                     group: "Иб-021",
-                    lesson: Lessons(context).lessons[LessonIds.physicalCulture
-                        .index],
+                    lesson: Lessons(context)
+                        .lessons[LessonIds.physicalCulture.index],
                     teacher: TeacherModel("Шамин", "Иван", "Александрович"),
                     user: TimelineUser.Student,
                   ),
@@ -108,8 +108,8 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 14, minute: 50),
                     room: RoomModel("302", RoomLocation.Academy),
                     group: "Иб-021",
-                    lesson: Lessons(context).lessons[LessonIds.lifeSafety
-                        .index],
+                    lesson:
+                        Lessons(context).lessons[LessonIds.lifeSafety.index],
                     teacher: TeacherModel("Обносова", "Нина", "Юрьевна"),
                     user: TimelineUser.Student,
                     last: true,
@@ -121,8 +121,8 @@ class Intro extends StatelessWidget {
         ),
       );
 
-  PageViewModel _buildWelcome(ThemeData theme,
-      Color backgroundColor, AppLocalizations localizations) =>
+  PageViewModel _buildWelcome(ThemeData theme, Color backgroundColor,
+          AppLocalizations localizations) =>
       PageViewModel(
         pageColor: backgroundColor,
         bubble: Padding(
@@ -138,7 +138,7 @@ class Intro extends StatelessWidget {
       );
 
   PageViewModel _buildTheme(BuildContext context, ThemeData theme,
-      Color backgroundColor, int themeId, AppLocalizations localizations) =>
+          Color backgroundColor, int themeId, AppLocalizations localizations) =>
       PageViewModel(
         pageColor: backgroundColor,
         bubble: Icon(
@@ -168,248 +168,45 @@ class Intro extends StatelessWidget {
         ),
       );
 
-  PageViewModel _buildSearch
-
-  (
-
-  BuildContext context, ThemeData
-
-  theme
-
-  ,
-
-  int themeId
-
-  Color backgroundColor, AppLocalizations
-
-  localizations
-
-  )
-
-  =>
-
-  PageViewModel
-
-  (
-
-  pageColor
-
-      :
-
-  theme.primaryColor
-
-  ,
-
-  bubble
-
-      :
-
-  Icon
-
-  (
-
-  Icons.search
-
-  ,
-
-  color
-
-      :
-
-  theme.primaryColor
-
-  ,
-
-  )
-
-  ,
-
-  body
-
-      :
-
-  Text
-
-  (
-
-  localizations.introGroupDescription
-
-  ,
-
-  )
-
-  ,
-
-  title
-
-      :
-
-  Text
-
-  (
-
-  localizations.introGroupTitle
-
-  ,
-
-  textAlign
-
-      :
-
-  TextAlign.center
-
-  ,
-
-  style
-
-      :
-
-  TextStyle
-
-  (
-
-  fontSize
-
-      :
-
-  40
-
-  )
-
-  ,
-
-  )
-
-  ,
-
-  mainImage
-
-      :
-
-  Align
-
-  (
-
-  alignment
-
-      :
-
-  Alignment.bottomCenter
-
-  ,
-
-  child
-
-      :
-
-  RawMaterialButton
-
-  (
-
-  onPressed
-
-      :
-
-  (
-
-  )
-
-  =>
-
-  showSearchItemSelect(context, prefs)
-
-  ,
-
-  child
-
-      :
-
-  Icon
-
-  (
-
-  Icons.search
-
-  ,
-
-  color
-
-      :
-
-  theme.primaryColor
-
-  ,
-
-  size
-
-      :
-
-  100
-
-  ,
-
-  )
-
-  ,
-
-  shape
-
-      :
-
-  CircleBorder()
-
-  ,
-
-  fillColor
-
-      :
-
-  theme.brightness
-
-  ==
-
-  Brightness.light
-
-  ?
-
-  theme.backgroundColor
-
-      :
-
-  theme.accentColor
-
-  ,
-
-  padding
-
-      :
-
-  const EdgeInsets.all
-
-  (
-
-  30
-
-  )
-
-  ,
-
-  )
-
-  ,
-
-  )
-
-  ,
-
-  );
+  PageViewModel _buildSearch(BuildContext context, ThemeData theme,
+          Color backgroundColor, int themeId, AppLocalizations localizations) =>
+      PageViewModel(
+        pageColor: backgroundColor,
+        bubble: Icon(
+          Icons.search,
+          color: backgroundColor,
+        ),
+        body: Text(
+          localizations.introGroupDescription,
+        ),
+        title: Text(
+          localizations.introGroupTitle,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 40),
+        ),
+        mainImage: Align(
+          alignment: Alignment.bottomCenter,
+          child: RawMaterialButton(
+            onPressed: () => showSearchItemSelect(context, prefs),
+            child: Icon(
+              Icons.search,
+              color: backgroundColor,
+              size: 100,
+            ),
+            shape: CircleBorder(),
+            fillColor: theme.brightness == Brightness.light
+                ? theme.backgroundColor
+                : theme.accentColor,
+            padding: const EdgeInsets.all(30),
+          ),
+        ),
+      );
 
   @override
-  Widget build(BuildContext context) =>
-      StreamBuilder<int>(
+  Widget build(BuildContext context) => StreamBuilder<int>(
         stream: themeIdBloc.stream,
         initialData:
-        prefs.getInt(PrefsIds.THEME_ID) ?? Themes.DEFAULT_THEME_ID.index,
+            prefs.getInt(PrefsIds.THEME_ID) ?? Themes.DEFAULT_THEME_ID.index,
         builder: (context, snapshot) {
           final theme = Themes().themes[snapshot.data],
               localizations = AppLocalizations.of(context);
@@ -423,7 +220,7 @@ class Intro extends StatelessWidget {
               _buildTheme(context, theme, backgroundColor, snapshot.data,
                   localizations),
               _buildTimetable(context, theme, backgroundColor, localizations),
-              _buildSearch(context, theme, snapshot.data, backgroundColor,
+              _buildSearch(context, theme, backgroundColor, snapshot.data,
                   localizations),
             ],
             doneText: Container(),
