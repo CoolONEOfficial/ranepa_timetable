@@ -10,6 +10,7 @@ class About extends StatelessWidget {
 
   Widget _buildGuyIcon(
     BuildContext context,
+    TextTheme textTheme,
     String name,
     String description,
     String url,
@@ -26,14 +27,14 @@ class About extends StatelessWidget {
                   width: 100.0,
                   height: 100.0,
                   decoration: BoxDecoration(
-                    color: const Color(0xff7c94b6),
+                    color: textTheme.title.color,
                     image: DecorationImage(
                       image: AssetImage('assets/images/$image.jpg'),
                       fit: BoxFit.cover,
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(50.0)),
                     border: Border.all(
-                      color: Theme.of(context).accentTextTheme.title.color,
+                      color: textTheme.title.color,
                       width: 4.0,
                     ),
                   ),
@@ -43,11 +44,11 @@ class About extends StatelessWidget {
               RichText(
                 text: TextSpan(
                   text: '$name\n',
-                  style: Theme.of(context).accentTextTheme.title,
+                  style: textTheme.title,
                   children: <TextSpan>[
                     TextSpan(
                       text: '"$url"',
-                      style: Theme.of(context).accentTextTheme.body2,
+                      style: textTheme.body2,
                     ),
                   ],
                 ),
@@ -55,7 +56,7 @@ class About extends StatelessWidget {
               Container(height: 10),
               Text(
                 description,
-                style: Theme.of(context).accentTextTheme.subtitle,
+                style: textTheme.subtitle,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -64,92 +65,105 @@ class About extends StatelessWidget {
       );
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          title: Text(AppLocalizations.of(context).about),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: SvgPicture.asset(
-                'assets/images/coolone_logo.svg',
-                color: Theme.of(context).accentTextTheme.title.color,
-              ),
-              onPressed: () => openUrl('http://coolone.ru/'),
-            ),
-            IconButton(
-              icon: SvgPicture.asset(
-                'assets/images/github.svg',
-                color: Theme.of(context).accentTextTheme.title.color,
-              ),
-              onPressed: () => openUrl(
-                  'https://github.com/CoolONEOfficial/ranepa_timetable'),
-            ),
-          ],
+  Widget build(BuildContext context) {
+    final textTheme = (Theme.of(context).brightness == Brightness.dark
+        ? Theme.of(context).accentTextTheme
+        : Theme.of(context).primaryTextTheme);
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 0,
+        title: Text(AppLocalizations.of(context).about),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
         ),
-        body: Container(
-          padding: EdgeInsets.symmetric(horizontal: 10.0),
-          color: Theme.of(context).accentColor,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 60.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      WidgetTemplates.buildLogo(Theme.of(context)),
-                      Container(height: 60),
-                      Text(
-                        AppLocalizations.of(context).introWelcomeDescription,
-                        style: Theme.of(context).accentTextTheme.title,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+        actions: <Widget>[
+          IconButton(
+            icon: SvgPicture.asset(
+              'assets/images/coolone_logo.svg',
+              color: textTheme.title.color,
+            ),
+            onPressed: () => openUrl('http://coolone.ru/'),
+          ),
+          IconButton(
+            icon: SvgPicture.asset(
+              'assets/images/github.svg',
+              color: textTheme.title.color,
+            ),
+            onPressed: () =>
+                openUrl('https://github.com/CoolONEOfficial/ranepa_timetable'),
+          ),
+        ],
+      ),
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10.0),
+        color: Theme.of(context).primaryColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 60.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    WidgetTemplates.buildLogo(
+                      Theme.of(context),
+                      color: textTheme.title.color,
+                    ),
+                    Container(height: 60),
+                    Text(
+                      AppLocalizations.of(context).introWelcomeDescription,
+                      style: textTheme.title,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  _buildGuyIcon(
-                    context,
-                    'Вадим',
-                    'IOS разработчик',
-                    'overveigh',
-                    'vadim',
-                  ),
-                  _buildGuyIcon(
-                    context,
-                    'Николай',
-                    'Android разработчик',
-                    'coooneofficial',
-                    'coolone',
-                  ),
-                  _buildGuyIcon(
-                    context,
-                    'Александр',
-                    'Креативный директор',
-                    'xr.aleks01',
-                    'xr',
-                  ),
-                ],
-              ),
-              Container(height: 30),
-            ],
-          ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                _buildGuyIcon(
+                  context,
+                  textTheme,
+                  'Вадим',
+                  'IOS разработчик',
+                  'overveigh',
+                  'vadim',
+                ),
+                _buildGuyIcon(
+                  context,
+                  textTheme,
+                  'Николай',
+                  'Android разработчик',
+                  'coooneofficial',
+                  'coolone',
+                ),
+                _buildGuyIcon(
+                  context,
+                  textTheme,
+                  'Александр',
+                  'Креативный директор',
+                  'xr.aleks01',
+                  'xr',
+                ),
+              ],
+            ),
+            Container(height: 30),
+          ],
         ),
-      );
+      ),
+    );
+  }
 
   void openUrl(String url) async {
     if (await canLaunch(url)) await launch(url);

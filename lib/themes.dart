@@ -30,9 +30,6 @@ class ThemeTitles {
 enum ThemeIds { LIGHT, LIGHT_RED, DARK, DARK_RED }
 
 class Themes {
-  static Themes _singleton;
-
-
   static const redAccentValue = 0xFFF44336;//0xFF982825;
   static MaterialColor redAccent =
   MaterialColor(
@@ -52,36 +49,28 @@ class Themes {
   );
   static const DEFAULT_THEME_ID = ThemeIds.LIGHT_RED;
 
-  factory Themes() {
-    if (_singleton == null) _singleton = Themes._internal();
-    return _singleton;
-  }
+  static final List<ThemeData> themes = <ThemeData>[
+    // LIGHT
+    ThemeData(
+      brightness: Brightness.light,
+    ),
 
-  Themes._internal()
-      : themes = <ThemeData>[
-          // LIGHT
-          ThemeData(
-            brightness: Brightness.light,
-          ),
+    // LIGHT_RED
+    ThemeData(
+      brightness: Brightness.light,
+      primarySwatch: redAccent,
+    ),
 
-          // LIGHT_RED
-          ThemeData(
-            brightness: Brightness.light,
-            primarySwatch: redAccent,
-          ),
+    // DARK
+    ThemeData(
+      brightness: Brightness.dark,
+    ),
 
-          // DARK
-          ThemeData(
-            brightness: Brightness.dark,
-          ),
-
-          // DARK_RED
-          ThemeData(
-            brightness: Brightness.dark,
-            toggleableActiveColor: redAccent.shade600,
-            accentColor: redAccent.shade500,
-          ),
-        ];
-
-  final List<ThemeData> themes;
+    // DARK_RED
+    ThemeData(
+      brightness: Brightness.dark,
+      toggleableActiveColor: redAccent.shade600,
+      accentColor: redAccent.shade500,
+    ),
+  ];
 }

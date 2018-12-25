@@ -91,7 +91,7 @@ class BaseWidget extends StatelessWidget {
               ],
               onGenerateTitle: (BuildContext context) =>
                   AppLocalizations.of(context).title,
-              theme: Themes().themes[themeId],
+              theme: Themes.themes[themeId],
               routes: <String, WidgetBuilder>{
                 Prefs.ROUTE: (context) => Prefs(),
                 About.ROUTE: (context) => About(),

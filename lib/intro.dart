@@ -37,14 +37,12 @@ class Intro extends StatelessWidget {
           child: Container(
             height: 100,
             child: ShaderMask(
-              shaderCallback: (Rect bounds) {
-                return LinearGradient(
-                  begin: Alignment(0.0, 0),
-                  end: Alignment(0.0, 1),
-                  colors: <Color>[Colors.transparent, Colors.white],
-                  tileMode: TileMode.mirror,
-                ).createShader(bounds);
-              },
+              shaderCallback: (Rect bounds) => LinearGradient(
+                    begin: Alignment(0.0, 0),
+                    end: Alignment(0.0, 1),
+                    colors: <Color>[Colors.transparent, Colors.white],
+                    tileMode: TileMode.mirror,
+                  ).createShader(bounds),
               child: TimelineComponent(
                 <TimelineModel>[
                   TimelineModel(
@@ -219,7 +217,7 @@ class Intro extends StatelessWidget {
         initialData:
             prefs.getInt(PrefsIds.THEME_ID) ?? Themes.DEFAULT_THEME_ID.index,
         builder: (context, snapshot) {
-          final theme = Themes().themes[snapshot.data],
+          final theme = Themes.themes[snapshot.data],
               localizations = AppLocalizations.of(context);
           final backgroundColor = theme.brightness == Brightness.light
               ? theme.primaryColor
