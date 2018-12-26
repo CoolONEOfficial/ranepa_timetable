@@ -75,6 +75,11 @@
     "type": "text",
     "placeholders": {}
   },
+  "credit": "Reception of credit",
+  "@credit": {
+    "type": "text",
+    "placeholders": {}
+  },
   "exam": "Exam",
   "@exam": {
     "type": "text",
@@ -90,7 +95,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "groupEconomics": "Economics",
+  "groupEconomics": "Economic theory",
   "@groupEconomics": {
     "type": "text",
     "placeholders": {}

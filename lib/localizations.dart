@@ -142,6 +142,13 @@ class AppLocalizations {
     );
   }
 
+  String get credit {
+    return Intl.message(
+      'Reception of credit',
+      name: 'credit',
+    );
+  }
+
   String get exam {
     return Intl.message(
       'Exam',
@@ -195,7 +202,7 @@ class AppLocalizations {
 
   String get economics {
     return Intl.message(
-      'Economics',
+      'Economic theory',
       name: 'economics',
     );
   }

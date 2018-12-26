@@ -103,17 +103,19 @@ class TimelineElement extends StatelessWidget {
         ),
       );
 
-  Widget _buildRightContent(BuildContext context) => Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: (model.lesson.action != null
-            ? <Widget>[_buildLessonType(context)]
-            : <Widget>[])
-          ..addAll(<Widget>[
-            _buildLessonTitle(context),
-            _buildTeacherGroup(context),
-          ]),
+  Widget _buildRightContent(BuildContext context) => Expanded(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: (model.lesson.action != null
+              ? <Widget>[_buildLessonType(context)]
+              : <Widget>[])
+            ..addAll(<Widget>[
+              _buildLessonTitle(context),
+              _buildTeacherGroup(context),
+            ]),
+        ),
       );
 
   Widget _buildContentColumn(BuildContext context) {

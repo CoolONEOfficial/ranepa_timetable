@@ -149,6 +149,11 @@ class LessonActions {
             final mLessonTypeId = LessonActionIds.values[mLessonTypeIdIndex];
 
             switch (mLessonTypeId) {
+              case LessonActionIds.Credit:
+              return LessonAction(
+              AppLocalizations.of(context).credit, <List<String>>[
+              <String>["прием", "зачет"]
+              ]);
               case LessonActionIds.Exam:
                 return LessonAction(
                     AppLocalizations.of(context).exam, <List<String>>[
@@ -187,6 +192,7 @@ enum LessonActionIds {
   ReceptionExamination,
   Exam,
   ExamConsultation,
+  Credit,
 }
 
 String parseLessonTitle(String str) {
@@ -343,7 +349,6 @@ class Lessons {
                 AppLocalizations.of(context).economics,
                 TimetableIcons.economics.codePoint,
                 <List<String>>[
-                  <String>["экономик"],
                   <String>["экономическ", "теори"]
                 ],
               );

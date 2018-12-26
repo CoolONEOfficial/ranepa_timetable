@@ -145,7 +145,7 @@ class About extends StatelessWidget {
                   textTheme,
                   'Николай',
                   'Android разработчик',
-                  'coooneofficial',
+                  'cooloneofficial',
                   'coolone',
                 ),
                 _buildGuyIcon(
