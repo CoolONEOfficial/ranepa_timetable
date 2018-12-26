@@ -8,7 +8,6 @@ import 'package:ranepa_timetable/about.dart';
 import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/prefs.dart';
-import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/themes.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
@@ -42,8 +41,7 @@ class BaseWidget extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.settings),
               title: Text(AppLocalizations.of(context).prefs),
-              onTap: () =>
-                  Navigator.popAndPushNamed(context, Prefs.ROUTE),
+              onTap: () => Navigator.popAndPushNamed(context, Prefs.ROUTE),
             ),
             ListTile(
               leading: Icon(Icons.info),
@@ -78,8 +76,10 @@ class BaseWidget extends StatelessWidget {
           builder: (context, snapshot) {
             final themeId = snapshot.data;
             return MaterialApp(
-              builder: (context, child) =>
-                  MediaQuery(data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), child: child),
+              builder: (context, child) => MediaQuery(
+                  data: MediaQuery.of(context)
+                      .copyWith(alwaysUse24HourFormat: true),
+                  child: child),
               localizationsDelegates: [
                 AppLocalizationsDelegate(),
                 GlobalMaterialLocalizations.delegate,
@@ -97,8 +97,8 @@ class BaseWidget extends StatelessWidget {
                 About.ROUTE: (context) => About(),
               },
               home: Builder(
-                builder: (context) => prefs.getInt(PrefsIds.SEARCH_ITEM_PREFIX +
-                            SearchItem.PREFERENCES_ID) ==
+                builder: (context) => prefs.getInt(
+                            PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX + PrefsIds.ITEM_ID) ==
                         null
                     ? Intro(base: buildBase(context, prefs), prefs: prefs)
                     : buildBase(context, prefs),

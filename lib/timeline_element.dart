@@ -13,13 +13,16 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import 'package:flutter/material.dart';
+import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/timeline_painter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TimelineElement extends StatelessWidget {
   final TimelineModel model;
+  final SharedPreferences prefs;
 
-  TimelineElement({@required this.model});
+  TimelineElement([this.model, this.prefs]);
 
   Widget _buildLine(BuildContext context) => SizedBox.expand(
         child: Container(
@@ -29,18 +32,18 @@ class TimelineElement extends StatelessWidget {
         ),
       );
 
-  Widget _buildTeacherGroup(BuildContext context) => Tooltip(
-        message: model.user == TimelineUser.Student
-            ? model.teacher.toString()
-            : model.group,
-        child: Text(
-          model.user == TimelineUser.Student
-              ? model.teacher.initials()
-              : model.group,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.title,
-        ),
-      );
+  Widget _buildTeacherGroup(BuildContext context) {
+    final user = User.values[
+        prefs.getInt(PrefsIds.SELECTED_SEARCH_ITEM_PREFIX + PrefsIds.ITEM_TYPE) ?? 0];
+    return Tooltip(
+      message: user == User.Teacher ? model.teacher.toString() : model.group,
+      child: Text(
+        user == User.Student ? model.teacher.initials() : model.group,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.title,
+      ),
+    );
+  }
 
   Widget _buildStart(BuildContext context) => Text(
         model.start.format(context),
@@ -68,7 +71,7 @@ class TimelineElement extends StatelessWidget {
         child: Text(
           model.lesson.title,
           overflow: TextOverflow.ellipsis,
-          softWrap: true,
+          softWrap: false,
           style: Theme.of(context).textTheme.title,
         ),
       );

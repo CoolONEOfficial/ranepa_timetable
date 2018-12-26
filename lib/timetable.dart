@@ -120,11 +120,11 @@ class Timetable extends StatelessWidget {
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
-    <GetRasp${SEARCH_ITEM_TYPES[searchItem.typeId.index].getStr} xmlns="http://tempuri.org/">
+    <GetRasp${searchItemTypes[searchItem.typeId.index].getStr} xmlns="http://tempuri.org/">
       <d1>${from.toIso8601String()}</d1>
       <d2>${to.toIso8601String()}</d2>
       <id>${searchItem.id}</id>
-    </GetRasp${SEARCH_ITEM_TYPES[searchItem.typeId.index].getStr}>
+    </GetRasp${searchItemTypes[searchItem.typeId.index].getStr}>
   </soap:Body>
 </soap:Envelope>
 ''');
@@ -187,12 +187,9 @@ class Timetable extends StatelessWidget {
         lesson: LessonModel.fromString(
             context, mItem.children[TimetableResponseIndexes.Name.index].text),
         teacher: TeacherModel.fromString(
-            searchItem.typeId == SearchItemTypeId.GROUP
+            searchItem.typeId == SearchItemTypeId.Group
                 ? mItem.children[TimetableResponseIndexes.Name.index].text
                 : searchItem.title),
-        user: searchItem.typeId == SearchItemTypeId.TEACHER
-            ? TimelineUser.Teacher
-            : TimelineUser.Student,
       );
 
       timetable[mItemDate].add(mLesson);
@@ -401,8 +398,8 @@ class Timetable extends StatelessWidget {
       length: dayCount,
       child: StreamBuilder<Tuple2<bool, SearchItem>>(
         stream: timetableIdBloc.stream,
-        initialData:
-            Tuple2<bool, SearchItem>(true, SearchItem.fromPrefs(prefs)),
+        initialData: Tuple2<bool, SearchItem>(true,
+            SearchItem.fromPrefs(prefs, PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX)),
         builder: (context, ssSearchItem) => Scaffold(
               drawer: drawer,
               key: scaffoldKey,
@@ -442,7 +439,9 @@ class Timetable extends StatelessWidget {
                                       context, ssSearchItem.data.item2);
                             else
                               mWidget = TimelineComponent(
-                                  timetableIter.current.value);
+                                prefs,
+                                timetableIter.current.value,
+                              );
                           } else
                             mWidget = WidgetTemplates.buildFreeDayNotification(
                                 context, ssSearchItem.data.item2);
@@ -460,7 +459,7 @@ class Timetable extends StatelessWidget {
               appBar: AppBar(
                 elevation: Platform.isAndroid ? 5 : 0,
                 title: Text(
-                    ssSearchItem.data.item2.typeId == SearchItemTypeId.TEACHER
+                    ssSearchItem.data.item2.typeId == SearchItemTypeId.Teacher
                         ? TeacherModel.fromString(ssSearchItem.data.item2.title)
                             .initials()
                         : ssSearchItem.data.item2.title),

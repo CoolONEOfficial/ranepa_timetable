@@ -32,8 +32,6 @@ public class Timeline {
         int iconCodePoint;
     }
 
-    public enum User {Student, Teacher}
-
     @NoArgsConstructor
     @AllArgsConstructor
     static public class TeacherModel {
@@ -146,7 +144,6 @@ public class Timeline {
     public static final String COLUMN_GROUP = "group";
     public static final String COLUMN_FIRST = "first";
     public static final String COLUMN_LAST = "last";
-    public static final String COLUMN_USER = "user";
     public static final String COLUMN_MERGE_BOTTOM = "mergeBottom";
     public static final String COLUMN_MERGE_TOP = "mergeTop";
 
@@ -169,10 +166,6 @@ public class Timeline {
     @ColumnInfo(name = COLUMN_DATE)
     @TypeConverters(Timeline.class)
     Date date;
-
-    @ColumnInfo(name = COLUMN_USER)
-    @TypeConverters(Timeline.class)
-    User user;
 
     @ColumnInfo(name = COLUMN_GROUP)
     String group;
@@ -206,16 +199,6 @@ public class Timeline {
     @TypeConverter
     public static Long fromDate(Date date) {
         return date == null ? null : date.getTime();
-    }
-
-    @TypeConverter
-    public static User toUser(int numeral) {
-        return User.values()[numeral];
-    }
-
-    @TypeConverter
-    public static int fromUser(User status) {
-        return status.ordinal();
     }
 
 //    public static Timeline fromContentValues(ContentValues values) {

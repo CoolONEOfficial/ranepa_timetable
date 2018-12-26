@@ -127,10 +127,10 @@ class WidgetTemplates {
       BuildContext context, SearchItem searchItem) {
     IconData icon;
     switch (searchItem.typeId) {
-      case SearchItemTypeId.TEACHER:
+      case SearchItemTypeId.Teacher:
         icon = TimetableIcons.confetti;
         break;
-      case SearchItemTypeId.GROUP:
+      case SearchItemTypeId.Group:
         icon = TimetableIcons.beer;
         break;
     }

@@ -13,12 +13,19 @@ class SearchItemType {
   const SearchItemType(this.icon, this.getStr);
 }
 
-enum SearchItemTypeId { TEACHER, GROUP }
+enum SearchItemTypeId { Teacher, Group }
 
-const SEARCH_ITEM_TYPES = const <SearchItemType>[
-  const SearchItemType(Icons.person, "Prep"), // TEACHER
-  const SearchItemType(Icons.group, "Group") // GROUP
-];
+final searchItemTypes = List<SearchItemType>.generate(
+  SearchItemTypeId.values.length,
+  (index) {
+    switch (SearchItemTypeId.values[index]) {
+      case SearchItemTypeId.Teacher:
+        return SearchItemType(Icons.person, "Prep");
+      case SearchItemTypeId.Group:
+        return SearchItemType(Icons.group, "Group");
+    }
+  },
+);
 
 abstract class SearchItemBase {
   const SearchItemBase();
@@ -26,10 +33,6 @@ abstract class SearchItemBase {
 
 class SearchItem extends SearchItemBase {
   const SearchItem(this.typeId, this.id, this.title);
-
-  static const PREFERENCES_TYPE_ID = "type";
-  static const PREFERENCES_ID = "id";
-  static const PREFERENCES_TITLE = "title";
 
   final SearchItemTypeId typeId;
   final int id;
@@ -45,18 +48,17 @@ class SearchItem extends SearchItemBase {
       title +
       ".\n";
 
-  void toPrefs(SharedPreferences prefs) {
-    prefs.setInt(
-        PrefsIds.SEARCH_ITEM_PREFIX + PREFERENCES_TYPE_ID, typeId.index);
-    prefs.setInt(PrefsIds.SEARCH_ITEM_PREFIX + PREFERENCES_ID, id);
-    prefs.setString(PrefsIds.SEARCH_ITEM_PREFIX + PREFERENCES_TITLE, title);
+  void toPrefs(SharedPreferences prefs, String prefix) {
+    prefs.setInt(prefix + PrefsIds.ITEM_TYPE, typeId.index);
+    prefs.setInt(prefix + PrefsIds.ITEM_ID, id);
+    prefs.setString(prefix + PrefsIds.ITEM_TITLE, title);
   }
 
-  factory SearchItem.fromPrefs(SharedPreferences prefs) => SearchItem(
-        SearchItemTypeId.values[
-            prefs.getInt(PrefsIds.SEARCH_ITEM_PREFIX + PREFERENCES_TYPE_ID)],
-        prefs.getInt(PrefsIds.SEARCH_ITEM_PREFIX + PREFERENCES_ID),
-        prefs.getString(PrefsIds.SEARCH_ITEM_PREFIX + PREFERENCES_TITLE),
+  factory SearchItem.fromPrefs(SharedPreferences prefs, String prefix) =>
+      SearchItem(
+        SearchItemTypeId.values[prefs.getInt(prefix + PrefsIds.ITEM_TYPE)],
+        prefs.getInt(prefix + PrefsIds.ITEM_ID),
+        prefs.getString(prefix + PrefsIds.ITEM_TITLE),
       );
 }
 
@@ -80,19 +82,19 @@ class Search extends SearchDelegate<SearchItem> {
   Search(BuildContext context)
       : predefinedSuggestions = [
           SearchDivider(AppLocalizations.of(context).groupInformatics),
-          SearchItem(SearchItemTypeId.GROUP, 15034, "Иб-011"),
-          SearchItem(SearchItemTypeId.GROUP, 15035, "Иб-012"),
-          SearchItem(SearchItemTypeId.GROUP, 15016, "Иб-021"),
-          SearchItem(SearchItemTypeId.GROUP, 15024, "Иб-031"),
-          SearchItem(SearchItemTypeId.GROUP, 15030, "Иб-041"),
-          SearchItem(SearchItemTypeId.GROUP, 15031, "Иб-042"),
+          SearchItem(SearchItemTypeId.Group, 15034, "Иб-011"),
+          SearchItem(SearchItemTypeId.Group, 15035, "Иб-012"),
+          SearchItem(SearchItemTypeId.Group, 15016, "Иб-021"),
+          SearchItem(SearchItemTypeId.Group, 15024, "Иб-031"),
+          SearchItem(SearchItemTypeId.Group, 15030, "Иб-041"),
+          SearchItem(SearchItemTypeId.Group, 15031, "Иб-042"),
           SearchDivider(AppLocalizations.of(context).groupEconomics),
-          SearchItem(SearchItemTypeId.GROUP, 15122, "Эб-011"),
-          SearchItem(SearchItemTypeId.GROUP, 15123, "Эб-012"),
-          SearchItem(SearchItemTypeId.GROUP, 15022, "Эб-021"),
-          SearchItem(SearchItemTypeId.GROUP, 15023, "Эб-022"),
-          SearchItem(SearchItemTypeId.GROUP, 15112, "Эб-031"),
-          SearchItem(SearchItemTypeId.GROUP, 15113, "Эб-032"),
+          SearchItem(SearchItemTypeId.Group, 15122, "Эб-011"),
+          SearchItem(SearchItemTypeId.Group, 15123, "Эб-012"),
+          SearchItem(SearchItemTypeId.Group, 15022, "Эб-021"),
+          SearchItem(SearchItemTypeId.Group, 15023, "Эб-022"),
+          SearchItem(SearchItemTypeId.Group, 15112, "Эб-031"),
+          SearchItem(SearchItemTypeId.Group, 15113, "Эб-032"),
           SearchDivider(AppLocalizations.of(context).searchResults),
         ];
 
@@ -164,7 +166,7 @@ class Search extends SearchDelegate<SearchItem> {
                 onTap: () {
                   close(context, mItem);
                 },
-                leading: Icon(SEARCH_ITEM_TYPES[mItem.typeId.index].icon),
+                leading: Icon(searchItemTypes[mItem.typeId.index].icon),
                 title: RichText(
                   // Recent suggestion
                   text: queryIndex == 0
@@ -262,10 +264,10 @@ class Search extends SearchDelegate<SearchItem> {
 
                 switch (mItem.children[SearchResponseIndexes.Type.index].text) {
                   case "Prep":
-                    mItemTypeId = SearchItemTypeId.TEACHER;
+                    mItemTypeId = SearchItemTypeId.Teacher;
                     break;
                   case "Group":
-                    mItemTypeId = SearchItemTypeId.GROUP;
+                    mItemTypeId = SearchItemTypeId.Group;
                     break;
                   default:
                     mItemTypeId = null;

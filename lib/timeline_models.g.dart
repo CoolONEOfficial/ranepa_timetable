@@ -17,7 +17,6 @@ TimelineModel _$TimelineModelFromJson(Map<String, dynamic> json) {
       group: json['group'] as String,
       lesson: LessonModel.fromJson(json['lesson'] as Map<String, dynamic>),
       teacher: TeacherModel.fromJson(json['teacher'] as Map<String, dynamic>),
-      user: _$enumDecode(_$TimelineUserEnumMap, json['user']),
       first: json['first'] as bool,
       last: json['last'] as bool,
       mergeBottom: json['mergeBottom'] as bool,
@@ -26,7 +25,6 @@ TimelineModel _$TimelineModelFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$TimelineModelToJson(TimelineModel instance) =>
     <String, dynamic>{
-      'user': _$TimelineUserEnumMap[instance.user],
       'date': instance.date.toIso8601String(),
       'lesson': instance.lesson,
       'room': instance.room,
@@ -38,6 +36,16 @@ Map<String, dynamic> _$TimelineModelToJson(TimelineModel instance) =>
       'mergeTop': instance.mergeTop,
       'start': TimelineModel._timeOfDayToIntList(instance.start),
       'finish': TimelineModel._timeOfDayToIntList(instance.finish)
+    };
+
+RoomModel _$RoomModelFromJson(Map<String, dynamic> json) {
+  return RoomModel(json['number'] as String,
+      _$enumDecode(_$RoomLocationEnumMap, json['location']));
+}
+
+Map<String, dynamic> _$RoomModelToJson(RoomModel instance) => <String, dynamic>{
+      'number': instance.number,
+      'location': _$RoomLocationEnumMap[instance.location]
     };
 
 T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
@@ -52,21 +60,6 @@ T _$enumDecode<T>(Map<T, dynamic> enumValues, dynamic source) {
               '${enumValues.values.join(', ')}'))
       .key;
 }
-
-const _$TimelineUserEnumMap = <TimelineUser, dynamic>{
-  TimelineUser.Student: 'Student',
-  TimelineUser.Teacher: 'Teacher'
-};
-
-RoomModel _$RoomModelFromJson(Map<String, dynamic> json) {
-  return RoomModel(json['number'] as String,
-      _$enumDecode(_$RoomLocationEnumMap, json['location']));
-}
-
-Map<String, dynamic> _$RoomModelToJson(RoomModel instance) => <String, dynamic>{
-      'number': instance.number,
-      'location': _$RoomLocationEnumMap[instance.location]
-    };
 
 const _$RoomLocationEnumMap = <RoomLocation, dynamic>{
   RoomLocation.Academy: 'Academy',

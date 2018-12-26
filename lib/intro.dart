@@ -44,6 +44,7 @@ class Intro extends StatelessWidget {
                     tileMode: TileMode.mirror,
                   ).createShader(bounds),
               child: TimelineComponent(
+                prefs,
                 <TimelineModel>[
                   TimelineModel(
                     first: true,
@@ -58,7 +59,6 @@ class Intro extends StatelessWidget {
                       ..action = LessonActions(context)
                           .actions[LessonActionIds.Lecture.index],
                     teacher: TeacherModel("Дмитрий", "Киселев", "Михайлович"),
-                    user: TimelineUser.Student,
                   ),
                   TimelineModel(
                     mergeTop: true,
@@ -72,7 +72,6 @@ class Intro extends StatelessWidget {
                       ..action = LessonActions(context)
                           .actions[LessonActionIds.ExamConsultation.index],
                     teacher: TeacherModel("Иван", "Шамин", "Александрович"),
-                    user: TimelineUser.Student,
                   ),
                   TimelineModel(
                     date: DateTime(2018, 9),
@@ -84,7 +83,6 @@ class Intro extends StatelessWidget {
                       ..action = LessonActions(context)
                           .actions[LessonActionIds.ReceptionExamination.index],
                     teacher: TeacherModel("Вера", "Дряхлова", "Рачиковна"),
-                    user: TimelineUser.Student,
                   ),
                   TimelineModel(
                     date: DateTime(2018, 9),
@@ -96,7 +94,6 @@ class Intro extends StatelessWidget {
                       ..action = LessonActions(context)
                           .actions[LessonActionIds.Lecture.index],
                     teacher: TeacherModel("Александр", "Гришин", "Юрьевич"),
-                    user: TimelineUser.Student,
                   ),
                   TimelineModel(
                     date: DateTime(2018, 9),
@@ -108,7 +105,6 @@ class Intro extends StatelessWidget {
                       ..action = LessonActions(context)
                           .actions[LessonActionIds.Practice.index],
                     teacher: TeacherModel("Егоров", "Вадим", "Валерьевич"),
-                    user: TimelineUser.Student,
                   ),
                   TimelineModel(
                     date: DateTime(2018, 9),
@@ -120,7 +116,6 @@ class Intro extends StatelessWidget {
                       ..action = LessonActions(context)
                           .actions[LessonActionIds.Exam.index],
                     teacher: TeacherModel("Обносова", "Нина", "Юрьевна"),
-                    user: TimelineUser.Student,
                     last: true,
                   ),
                 ],

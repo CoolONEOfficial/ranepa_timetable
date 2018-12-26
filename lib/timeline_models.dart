@@ -20,11 +20,10 @@ import 'package:ranepa_timetable/timetable_icons.dart';
 
 part 'timeline_models.g.dart';
 
-enum TimelineUser { Student, Teacher }
+enum User { Teacher, Student }
 
 @JsonSerializable(nullable: false)
 class TimelineModel {
-  final TimelineUser user;
   final DateTime date;
   final LessonModel lesson;
   final RoomModel room;
@@ -51,7 +50,6 @@ class TimelineModel {
     @required this.group,
     @required this.lesson,
     @required this.teacher,
-    @required this.user,
     this.first = false,
     this.last = false,
     this.mergeBottom = false,
@@ -150,10 +148,10 @@ class LessonActions {
 
             switch (mLessonTypeId) {
               case LessonActionIds.Credit:
-              return LessonAction(
-              AppLocalizations.of(context).credit, <List<String>>[
-              <String>["прием", "зачет"]
-              ]);
+                return LessonAction(
+                    AppLocalizations.of(context).credit, <List<String>>[
+                  <String>["прием", "зачет"]
+                ]);
               case LessonActionIds.Exam:
                 return LessonAction(
                     AppLocalizations.of(context).exam, <List<String>>[

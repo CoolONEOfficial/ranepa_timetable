@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -22,6 +21,7 @@ import java.util.Locale;
 import lombok.extern.java.Log;
 import lombok.var;
 
+import static ru.coolone.ranepatimetable.WidgetProvider.getPrefs;
 import static ru.coolone.ranepatimetable.WidgetProvider.width;
 
 /**
@@ -80,9 +80,16 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
      * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
      * @return A float value to represent px equivalent to dp depending on device density
      */
-    private float dpToPixel(float dp) {
+    public static float dpToPixel(Context context, float dp) {
         var metrics = context.getResources().getDisplayMetrics();
         return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    }
+
+    private static float _dpScale = -1;
+
+    public static float dpScale(Context context) {
+        if(_dpScale == -1) _dpScale = dpToPixel(context, 1);
+        return _dpScale;
     }
 
     private static final int rectMargins = 8,
@@ -95,7 +102,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
     private Bitmap buildItemBitmap(Context context, float w, float h) {
         log.info("w: " + w + ", h: " + h);
 
-        var dpScale = dpToPixel(1);
+        var dpScale = dpScale(context);
         w *= dpScale;
         h *= dpScale;
 
@@ -287,11 +294,15 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             var teacherSurname = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_SURNAME));
             var teacherPatronymic = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_PATRONYMIC));
             var group = cursor.getString(cursor.getColumnIndex(Timeline.COLUMN_GROUP));
-            var user = Timeline.User.values()[cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_USER))];
+            var user = WidgetProvider.SearchItemTypeId.values()[getPrefs(context).getInt(
+                    WidgetProvider.PrefsIds.PrimarySearchItemPrefix.prefId +
+                            WidgetProvider.PrefsIds.ItemType.prefId,
+                    -1
+            )];
             rv.setTextViewText(R.id.widget_item_teacher_or_group,
-                    user == Timeline.User.Teacher
-                            ? group
-                            : teacherSurname + ' ' + teacherName.charAt(0) + ". " + teacherPatronymic.charAt(0) + '.');
+                    user == WidgetProvider.SearchItemTypeId.Group
+                            ? teacherSurname + ' ' + teacherName.charAt(0) + ". " + teacherPatronymic.charAt(0) + '.'
+                            : group);
             rv.setTextViewText(R.id.widget_item_start, String.format(getCurrentLocale(), "%d:%02d", start.hour, start.minute));
             rv.setTextViewText(R.id.widget_item_finish, String.format(getCurrentLocale(), "%d:%02d", finish.hour, finish.minute));
             rv.setTextViewText(R.id.widget_item_room_number, String.valueOf(

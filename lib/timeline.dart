@@ -17,11 +17,14 @@ library timeline;
 import 'package:flutter/material.dart';
 import 'package:ranepa_timetable/timeline_element.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TimelineComponent extends StatelessWidget {
   final List<TimelineModel> timelineList;
+  final SharedPreferences prefs;
 
-  const TimelineComponent(this.timelineList, {Key key}) : super(key: key);
+  const TimelineComponent(this.prefs, this.timelineList, {Key key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +32,7 @@ class TimelineComponent extends StatelessWidget {
       child: ListView.builder(
         itemCount: timelineList.length,
         itemBuilder: (_, index) {
-          return TimelineElement(
-              model: timelineList[index]
-          );
+          return TimelineElement(timelineList[index], prefs);
         },
       ),
     );

@@ -18,9 +18,14 @@ import 'package:tuple/tuple.dart';
 class PrefsIds {
   static const WIDGET_TRANSLUCENT = "widget_translucent",
       THEME_ID = "theme_id",
-      SEARCH_ITEM_PREFIX = "search_item_",
       BEFORE_ALARM_CLOCK = "before_alarm_clock",
-      END_CACHE = "end_cache";
+      END_CACHE = "end_cache",
+
+      SELECTED_SEARCH_ITEM_PREFIX = "selected_search_item_",
+      PRIMARY_SEARCH_ITEM_PREFIX = "primary_search_item_",
+      ITEM_TYPE = "type",
+      ITEM_ID = "id",
+      ITEM_TITLE = "title";
 }
 
 Future<SearchItem> showSearchItemSelect(
@@ -32,8 +37,9 @@ Future<SearchItem> showSearchItemSelect(
     ).then(
       (searchItem) async {
         if (searchItem != null) {
+          searchItem.toPrefs(prefs, PrefsIds.SELECTED_SEARCH_ITEM_PREFIX);
           if (toPrefs) {
-            searchItem.toPrefs(prefs);
+            searchItem.toPrefs(prefs, PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX);
             await PlatformChannels.deleteDb();
           }
           timetableIdBloc.add(Tuple2<bool, SearchItem>(toPrefs, searchItem));
@@ -167,7 +173,7 @@ class Prefs extends StatelessWidget {
         rightWidget: StreamBuilder<Tuple2<bool, SearchItem>>(
           stream: timetableIdBloc.stream,
           initialData:
-              Tuple2<bool, SearchItem>(null, SearchItem.fromPrefs(prefs)),
+              Tuple2<bool, SearchItem>(null, SearchItem.fromPrefs(prefs, PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX)),
           builder: (context, snapshot) => Text(snapshot.data.item2.title),
         ),
       );
