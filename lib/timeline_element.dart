@@ -68,6 +68,7 @@ class TimelineElement extends StatelessWidget {
         child: Text(
           model.lesson.title,
           overflow: TextOverflow.ellipsis,
+          softWrap: true,
           style: Theme.of(context).textTheme.title,
         ),
       );
