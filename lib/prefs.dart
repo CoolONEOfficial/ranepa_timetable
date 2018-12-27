@@ -20,7 +20,6 @@ class PrefsIds {
       THEME_ID = "theme_id",
       BEFORE_ALARM_CLOCK = "before_alarm_clock",
       END_CACHE = "end_cache",
-
       SELECTED_SEARCH_ITEM_PREFIX = "selected_search_item_",
       PRIMARY_SEARCH_ITEM_PREFIX = "primary_search_item_",
       ITEM_TYPE = "type",
@@ -172,9 +171,13 @@ class Prefs extends StatelessWidget {
         onPressed: () => showSearchItemSelect(context, prefs),
         rightWidget: StreamBuilder<Tuple2<bool, SearchItem>>(
           stream: timetableIdBloc.stream,
-          initialData:
-              Tuple2<bool, SearchItem>(null, SearchItem.fromPrefs(prefs, PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX)),
-          builder: (context, snapshot) => Text(snapshot.data.item2.title),
+          initialData: Tuple2<bool, SearchItem>(null,
+              SearchItem.fromPrefs(prefs, PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX)),
+          builder: (context, snapshot) => Text(
+                snapshot.data.item2.typeId == SearchItemTypeId.Group
+                    ? snapshot.data.item2.title
+                    : snapshot.data.item2.title.replaceAll(' ', '\n'),
+              ),
         ),
       );
 

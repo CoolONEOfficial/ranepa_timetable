@@ -22,7 +22,7 @@ import lombok.extern.java.Log;
 import lombok.var;
 
 import static ru.coolone.ranepatimetable.WidgetProvider.getPrefs;
-import static ru.coolone.ranepatimetable.WidgetProvider.width;
+import static ru.coolone.ranepatimetable.WidgetProvider.widgetSize;
 
 /**
  * This is the service that provides the factory to be bound to the collection service.
@@ -80,14 +80,14 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
      * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
      * @return A float value to represent px equivalent to dp depending on device density
      */
-    public static float dpToPixel(Context context, float dp) {
+    static float dpToPixel(Context context, float dp) {
         var metrics = context.getResources().getDisplayMetrics();
         return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
     private static float _dpScale = -1;
 
-    public static float dpScale(Context context) {
+    static float dpScale(Context context) {
         if(_dpScale == -1) _dpScale = dpToPixel(context, 1);
         return _dpScale;
     }
@@ -99,12 +99,13 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             circleMargin = 5,
             circleRadiusAdd = 3;
 
-    private Bitmap buildItemBitmap(Context context, float w, float h) {
-        log.info("w: " + w + ", h: " + h);
-
+    private Bitmap buildItemBitmap(Context context) {
         var dpScale = dpScale(context);
-        w *= dpScale;
-        h *= dpScale;
+
+        var w = (widgetSize.first > 0 ? widgetSize.first : 100) * dpScale;
+        var h = 80 * dpScale;
+
+        log.info("w: " + w + ", h: " + h);
 
         var bitmap = Bitmap.createBitmap((int) w, (int) h, Bitmap.Config.ARGB_8888);
         var canvas = new Canvas(bitmap);
@@ -255,7 +256,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         return bitmap;
     }
 
-    Locale getCurrentLocale() {
+    private Locale getCurrentLocale() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return context.getResources().getConfiguration().getLocales().get(0);
         } else {
@@ -294,7 +295,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             var teacherSurname = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_SURNAME));
             var teacherPatronymic = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_PATRONYMIC));
             var group = cursor.getString(cursor.getColumnIndex(Timeline.COLUMN_GROUP));
-            var user = WidgetProvider.SearchItemTypeId.values()[getPrefs(context).getInt(
+            var user = WidgetProvider.SearchItemTypeId.values()[(int) getPrefs(context).getLong(
                     WidgetProvider.PrefsIds.PrimarySearchItemPrefix.prefId +
                             WidgetProvider.PrefsIds.ItemType.prefId,
                     -1
@@ -325,9 +326,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             rv.setImageViewBitmap(
                     R.id.widget_item_image,
                     buildItemBitmap(
-                            context,
-                            width > 0 ? width : 100,
-                            80
+                            context
                     )
             );
         }

@@ -12,54 +12,82 @@ class About extends StatelessWidget {
     BuildContext context,
     TextTheme textTheme,
     String name,
-    String description,
     String url,
-    String image,
-  ) =>
+    String image, {
+    String descriptionLeft,
+    String descriptionRight,
+    String singleStr,
+  }) =>
       Expanded(
-        child: GestureDetector(
-          onTap: () => openUrl("https://vk.com/$url"),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Center(
-                child: Container(
-                  width: 100.0,
-                  height: 100.0,
-                  decoration: BoxDecoration(
-                    color: textTheme.title.color,
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/$image.jpg'),
-                      fit: BoxFit.cover,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                    border: Border.all(
+        child: Container(
+          height: 220,
+          child: GestureDetector(
+            onTap: () => openUrl("https://vk.com/$url"),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Center(
+                  child: Container(
+                    width: 100.0,
+                    height: 100.0,
+                    decoration: BoxDecoration(
                       color: textTheme.title.color,
-                      width: 4.0,
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/$image.jpg'),
+                        fit: BoxFit.cover,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                      border: Border.all(
+                        color: textTheme.title.color,
+                        width: 4.0,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Container(height: 20),
-              RichText(
-                text: TextSpan(
-                  text: '$name\n',
-                  style: textTheme.title,
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: '"$url"',
-                      style: textTheme.body2,
-                    ),
-                  ],
+                Container(height: 20),
+                RichText(
+                  text: TextSpan(
+                    text: '$name\n',
+                    style: textTheme.title,
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: '"$url"',
+                        style: textTheme.body2,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Container(height: 10),
-              Text(
-                description,
-                style: textTheme.subtitle,
-                textAlign: TextAlign.center,
-              ),
-            ],
+                Container(height: 10),
+                Expanded(
+                  child: Center(
+                    child: singleStr != null
+                        ? Text(
+                            singleStr,
+                            style: textTheme.subtitle,
+                            textAlign: TextAlign.center,
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: <Widget>[
+                              Text(
+                                descriptionLeft,
+                                style: textTheme.subtitle,
+                                textAlign: TextAlign.right,
+                              ),
+                              Container(width: 4),
+                              Text(
+                                descriptionRight,
+                                style: textTheme.subtitle,
+                                textAlign: TextAlign.left,
+                              ),
+                            ],
+                          ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );
@@ -130,31 +158,32 @@ class About extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 _buildGuyIcon(
                   context,
                   textTheme,
                   'Вадим',
-                  'IOS разработчик',
                   'overveigh',
                   'vadim',
+                  descriptionLeft: 'IOS',
+                  descriptionRight: 'разработчик\nтeстировщик',
                 ),
                 _buildGuyIcon(
                   context,
                   textTheme,
                   'Николай',
-                  'Android разработчик',
                   'cooloneofficial',
                   'coolone',
+                  descriptionLeft: 'Flutter\nAndroid',
+                  descriptionRight: 'разработчик',
                 ),
                 _buildGuyIcon(
                   context,
                   textTheme,
                   'Александр',
-                  'Креативный директор',
                   'xr.aleks01',
                   'xr',
+                  singleStr: 'Креативный\nдиректор',
                 ),
               ],
             ),

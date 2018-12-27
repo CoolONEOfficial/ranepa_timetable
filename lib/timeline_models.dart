@@ -436,7 +436,7 @@ class Lessons {
                 AppLocalizations.of(context).lifeSafety,
                 TimetableIcons.lifeSafety.codePoint,
                 <List<String>>[
-                  <String>["биологи"]
+                  <String>["безопасность"]
                 ],
               );
             case LessonIds.biology:

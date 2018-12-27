@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -22,6 +23,7 @@ import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.provider.CalendarContract;
 import android.support.v4.app.ActivityCompat;
+import android.util.Pair;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -291,7 +293,6 @@ public class WidgetProvider extends AppWidgetProvider {
         super.onReceive(ctx, intent);
     }
 
-    public static int width, height;
     public Theme theme;
 
     @AllArgsConstructor
@@ -339,14 +340,18 @@ public class WidgetProvider extends AppWidgetProvider {
 
         SelectedSearchItemPrefix("selected_search_item_"),
         PrimarySearchItemPrefix("primary_search_item_"),
-        ItemType("type"),
-        ItemId("id"),
-        ItemTitle("title");
+        ItemType("type", false),
+        ItemId("id", false),
+        ItemTitle("title", false);
 
         final String prefId;
 
-        PrefsIds(String prefId) {
-            this.prefId = FLUTTER_PREFIX.concat(prefId);
+        PrefsIds(String prefId){
+            this(prefId, true);
+        }
+
+        PrefsIds(String prefId, boolean flutterPrefix) {
+            this.prefId = flutterPrefix ? FLUTTER_PREFIX.concat(prefId) : prefId;
         }
     }
 
@@ -366,7 +371,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     static Bitmap buildEmptyViewImage(Context context, Theme theme) {
         var type = SearchItemTypeId.values()[
-                getPrefs(context).getInt(
+                (int) getPrefs(context).getLong(
                         PrefsIds.PrimarySearchItemPrefix.prefId + PrefsIds.ItemType.prefId,
                         0
                 )
@@ -374,7 +379,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
         var dpScale = dpScale(context);
 
-        var bitmap = Bitmap.createBitmap((int) (width * dpScale), (int) (height * dpScale), Bitmap.Config.ARGB_8888);
+        var bitmap = Bitmap.createBitmap((int) (widgetSize.first * dpScale), (int) (widgetSize.second * dpScale), Bitmap.Config.ARGB_8888);
         var canvas = new Canvas(bitmap);
 
         var iconPaint = new Paint();
@@ -388,7 +393,7 @@ public class WidgetProvider extends AppWidgetProvider {
                 )
         );
 
-        iconPaint.setTextSize(dpScale * (Math.min(width, height) / 3));
+        iconPaint.setTextSize(dpScale * (Math.min(widgetSize.first, widgetSize.second) / 3));
         iconPaint.setColor(theme.textAccent);
 
         var BEER = '\ue838';
@@ -398,8 +403,8 @@ public class WidgetProvider extends AppWidgetProvider {
 
         canvas.drawText(
                 String.valueOf(type == SearchItemTypeId.Teacher ? CONFETTI : BEER),
-                (width / 2) * dpScale,
-                (headHeight + (height - headHeight) / 2) * dpScale,
+                (widgetSize.first / 2) * dpScale,
+                (headHeight + (widgetSize.second - headHeight) / 2) * dpScale,
                 iconPaint
         );
 
@@ -408,27 +413,64 @@ public class WidgetProvider extends AppWidgetProvider {
         textPaint.setSubpixelText(true);
         textPaint.setTextAlign(Paint.Align.CENTER);
 
-        textPaint.setTextSize(dpScale * (Math.min(width, height) / 9));
+        textPaint.setTextSize(dpScale * (Math.min(widgetSize.first, widgetSize.second) / 9));
         textPaint.setColor(theme.textAccent);
 
         canvas.drawText(
                 context.getString(R.string.freeDay),
-                (width / 2) * dpScale,
-                (headHeight + (height - headHeight) / 2 + (Math.min(width, height) / 4)) * dpScale,
+                (widgetSize.first / 2) * dpScale,
+                (headHeight + (widgetSize.second - headHeight) / 2 + (Math.min(widgetSize.first, widgetSize.second) / 4)) * dpScale,
                 textPaint
         );
 
         return bitmap;
     }
 
-    private RemoteViews buildLayout(Context context, int appWidgetId, AppWidgetManager appWidgetManager) {
+    private Pair<Integer, Integer> getWidgetSize(
+            Context context,
+            int appWidgetId,
+            AppWidgetManager manager
+    ) {
+
+        AppWidgetProviderInfo providerInfo = AppWidgetManager.getInstance(
+                context.getApplicationContext()).getAppWidgetInfo(appWidgetId);
+
+        // Since min and max is usually the same, just take min
+        var mWidgetLandSize = new Pair<>(providerInfo.minWidth, providerInfo.minHeight);
+        var mWidgetPortSize = new Pair<>(providerInfo.minWidth, providerInfo.minHeight);
+
+        Bundle mAppWidgetOptions = manager.getAppWidgetOptions(appWidgetId);
+
+        if (mAppWidgetOptions
+                .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH) > 0) {
+
+            mWidgetPortSize = new Pair<>(mAppWidgetOptions
+                    .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH), mAppWidgetOptions
+                    .getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT));
+
+            mWidgetLandSize = new Pair<>(mAppWidgetOptions
+                    .getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH), mAppWidgetOptions
+                    .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT));
+        }
+
+        log.info(
+                "Dimensions of the Widget in DIP: "
+                        + ", landWidth = " + mWidgetLandSize.first
+                        + ", landHeight = " + mWidgetLandSize.second
+                        + ", portWidth = " + mWidgetPortSize.first
+                        + ", portHeight = " + mWidgetPortSize.second
+        );
+
+        return context.getResources().getBoolean(R.bool.isPort) ? mWidgetPortSize : mWidgetLandSize;
+    }
+
+    public static Pair<Integer, Integer> widgetSize = new Pair<>(0, 0);
+
+    private RemoteViews buildLayout(Context context, int appWidgetId, AppWidgetManager manager) {
         theme = Theme.values()[(int) getPrefs(context).getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
 
-        // See the dimensions and
-        var options = appWidgetManager.getAppWidgetOptions(appWidgetId);
-        width = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
-        height = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
-        log.info("build layout: w" + width + " h" + height);
+        // Set the size
+        widgetSize = getWidgetSize(context, appWidgetId, manager);
 
         var rv = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
 
