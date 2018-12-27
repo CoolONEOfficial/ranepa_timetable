@@ -17,4 +17,5 @@
     <string name="createCalendarEventsFailed">An error occurred while adding events to the calendar.</string>
     <string name="createCalendarEventsSuccess">Events successfully added to calendar.</string>
     <string name="freeDay">Free day</string>
+    <string name="noCache">The schedule is not cached.\nTap on the widget to open\nthe application and cache it.</string>
 </resources>

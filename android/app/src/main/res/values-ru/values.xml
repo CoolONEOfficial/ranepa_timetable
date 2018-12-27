@@ -17,4 +17,5 @@
     <string name="createCalendarEventsFailed">Произошла ошибка при добавлении событий в календарь.</string>
     <string name="createCalendarEventsSuccess">События успешно добавлены в календарь.</string>
     <string name="freeDay">Свободный день</string>
+    <string name="noCache">Расписание не закэшировано.\nТапните на виджет чтобы открыть\nприложение и его закешировать.</string>
 </resources>

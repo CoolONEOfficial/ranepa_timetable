@@ -14,7 +14,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:background="@drawable/rounded_body_layout_dark">
+    android:background="@drawable/rounded_body_layout_dark_translucent">
 
     <ListView
         android:id="@+id/timeline_list"
@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:background="@drawable/rounded_head_layout_light"
+        android:background="@drawable/rounded_head_layout_dark_translucent"
         android:orientation="horizontal">
 
         <ImageButton

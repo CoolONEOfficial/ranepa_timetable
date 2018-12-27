@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#88303030" />
+    <corners android:radius="@dimen/widget_item_round" />
+</shape>

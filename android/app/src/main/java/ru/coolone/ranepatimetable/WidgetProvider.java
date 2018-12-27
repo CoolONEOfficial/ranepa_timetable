@@ -53,11 +53,18 @@ import static ru.coolone.ranepatimetable.WidgetRemoteViewsFactory.dpScale;
 @Log
 @NoArgsConstructor
 public class WidgetProvider extends AppWidgetProvider {
-    public static final String DELETE_OLD = "ru.coolone.ranepatimetable.DELETE_OLD";
-    public static final String CREATE_ALARM_CLOCK = "ru.coolone.ranepatimetable.CREATE_ALARM_CLOCK";
-    public static final String CREATE_CALENDAR_EVENTS = "ru.coolone.ranepatimetable.CREATE_CALENDAR_EVENTS";
-    public static final String DAY_NEXT = "ru.coolone.ranepatimetable.DAY_NEXT";
-    public static final String DAY_PREV = "ru.coolone.ranepatimetable.DAY_PREV";
+    enum IntentAction {
+        DeleteOld("DELETE_OLD"),
+        CreateAlarmClock("CREATE_ALARM_CLOCK"),
+        CreateCalendarEvents("CREATE_CALENDAR_EVENTS"),
+        DayNext("DAY_NEXT"),
+        DayPrev("DAY_PREV");
+        final String action;
+
+        IntentAction(String action) {
+            this.action = "ru.coolone.ranepatimetable." + action;
+        }
+    }
 
     AlarmManager manager;
     PendingIntent updatePendingIntent, deleteOldPendingIntent;
@@ -102,7 +109,7 @@ public class WidgetProvider extends AppWidgetProvider {
         deleteOldPendingIntent = PendingIntent.getBroadcast(
                 context,
                 0,
-                new Intent(DELETE_OLD),
+                new Intent(IntentAction.DeleteOld.action),
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
         manager.setRepeating(
@@ -273,16 +280,16 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onReceive(Context ctx, Intent intent) {
         log.info("onReceive: " + intent.getAction());
 
-        if (Objects.equals(intent.getAction(), DELETE_OLD)) {
+        if (Objects.equals(intent.getAction(), IntentAction.DeleteOld.action)) {
             TimetableDatabase.getInstance(ctx).timetable().deleteOld();
-        } else if (Objects.equals(intent.getAction(), CREATE_ALARM_CLOCK)) {
+        } else if (Objects.equals(intent.getAction(), IntentAction.CreateAlarmClock.action)) {
             createAlarmClock(ctx);
-        } else if (Objects.equals(intent.getAction(), CREATE_CALENDAR_EVENTS)) {
+        } else if (Objects.equals(intent.getAction(), IntentAction.CreateCalendarEvents.action)) {
             createCalendarEvents(ctx);
-        } else if (Objects.equals(intent.getAction(), DAY_NEXT) || Objects.equals(intent.getAction(), DAY_PREV)) {
+        } else if (Objects.equals(intent.getAction(), IntentAction.DayNext.action) || Objects.equals(intent.getAction(), IntentAction.DayPrev.action)) {
             Calendar now;
             do {
-                dateOffset += Objects.equals(intent.getAction(), DAY_NEXT) ? 1 : -1;
+                dateOffset += Objects.equals(intent.getAction(), IntentAction.DayNext.action) ? 1 : -1;
 
                 now = GregorianCalendar.getInstance();
                 now.add(Calendar.DATE, dateOffset);
@@ -346,7 +353,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
         final String prefId;
 
-        PrefsIds(String prefId){
+        PrefsIds(String prefId) {
             this(prefId, true);
         }
 
@@ -369,7 +376,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     static long showDate;
 
-    static Bitmap buildEmptyViewImage(Context context, Theme theme) {
+    static Bitmap buildEmptyViewBitmap(Context context, Theme theme) {
         var type = SearchItemTypeId.values()[
                 (int) getPrefs(context).getLong(
                         PrefsIds.PrimarySearchItemPrefix.prefId + PrefsIds.ItemType.prefId,
@@ -377,6 +384,58 @@ public class WidgetProvider extends AppWidgetProvider {
                 )
                 ];
 
+        var BEER = '\ue838';
+        var CONFETTI = '\ue839';
+
+        return buildNotificationBitmap(
+                context,
+                theme,
+                type == SearchItemTypeId.Teacher
+                        ? CONFETTI
+                        : BEER,
+                context.getString(R.string.freeDay),
+                9
+        );
+    }
+
+    static Bitmap buildNoCacheImageBitmap(Context context, Theme theme) {
+        var NO_CACHE = '\ue817';
+
+        return buildNotificationBitmap(
+                context,
+                theme,
+                NO_CACHE,
+                context.getString(R.string.noCache),
+                14,
+                0
+        );
+    }
+
+    static Bitmap buildNotificationBitmap(
+            Context context,
+            Theme theme,
+            char icon,
+            String notification,
+            int textScale
+    ) {
+        return buildNotificationBitmap(
+                context,
+                theme,
+                icon,
+                notification,
+                textScale,
+                context.getResources().getDimension(R.dimen.widget_head_height) / dpScale(context)
+        );
+    }
+
+    static Bitmap buildNotificationBitmap(
+            Context context,
+            Theme theme,
+            char icon,
+            String notification,
+            int textScale,
+            float headHeight
+    ) {
         var dpScale = dpScale(context);
 
         var bitmap = Bitmap.createBitmap((int) (widgetSize.first * dpScale), (int) (widgetSize.second * dpScale), Bitmap.Config.ARGB_8888);
@@ -396,13 +455,8 @@ public class WidgetProvider extends AppWidgetProvider {
         iconPaint.setTextSize(dpScale * (Math.min(widgetSize.first, widgetSize.second) / 3));
         iconPaint.setColor(theme.textAccent);
 
-        var BEER = '\ue838';
-        var CONFETTI = '\ue839';
-
-        var headHeight = context.getResources().getDimension(R.dimen.widget_head_height) / dpScale;
-
         canvas.drawText(
-                String.valueOf(type == SearchItemTypeId.Teacher ? CONFETTI : BEER),
+                String.valueOf(icon),
                 (widgetSize.first / 2) * dpScale,
                 (headHeight + (widgetSize.second - headHeight) / 2) * dpScale,
                 iconPaint
@@ -413,15 +467,34 @@ public class WidgetProvider extends AppWidgetProvider {
         textPaint.setSubpixelText(true);
         textPaint.setTextAlign(Paint.Align.CENTER);
 
-        textPaint.setTextSize(dpScale * (Math.min(widgetSize.first, widgetSize.second) / 9));
+        textPaint.setTextSize(dpScale * (Math.min(widgetSize.first, widgetSize.second) / textScale));
         textPaint.setColor(theme.textAccent);
 
-        canvas.drawText(
-                context.getString(R.string.freeDay),
-                (widgetSize.first / 2) * dpScale,
-                (headHeight + (widgetSize.second - headHeight) / 2 + (Math.min(widgetSize.first, widgetSize.second) / 4)) * dpScale,
-                textPaint
-        );
+        var mTextY = (
+                headHeight +
+                        (
+                                widgetSize.second - headHeight
+                        ) / 2 +
+                        (
+                                Math.min(widgetSize.first, widgetSize.second) / 4
+                        )
+        ) * dpScale;
+        for (var line : notification.split("\n")) {
+            canvas.drawText(
+                    line,
+                    (widgetSize.first / 2) * dpScale,
+                    mTextY,
+                    textPaint
+            );
+            mTextY += textPaint.descent() - textPaint.ascent();
+        }
+
+//        canvas.drawText(
+//                notification,
+//                (widgetSize.first / 2) * dpScale,
+//                (headHeight + (widgetSize.second - headHeight) / 2 + (Math.min(widgetSize.first, widgetSize.second) / 4)) * dpScale,
+//                textPaint
+//        );
 
         return bitmap;
     }
@@ -472,129 +545,156 @@ public class WidgetProvider extends AppWidgetProvider {
         // Set the size
         widgetSize = getWidgetSize(context, appWidgetId, manager);
 
-        var rv = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
-
-        var futureLessonFindDate = getTodayMidnight();
-        futureLessonFindDate.add(Calendar.DATE, dateOffset);
-
-        String dayOfWeek;
-        switch (futureLessonFindDate.get(Calendar.DAY_OF_WEEK)) {
-            case Calendar.MONDAY:
-                dayOfWeek = context.getString(R.string.monday);
-                break;
-            case Calendar.TUESDAY:
-                dayOfWeek = context.getString(R.string.tuesday);
-                break;
-            case Calendar.WEDNESDAY:
-                dayOfWeek = context.getString(R.string.wednesday);
-                break;
-            case Calendar.THURSDAY:
-                dayOfWeek = context.getString(R.string.thursday);
-                break;
-            case Calendar.FRIDAY:
-                dayOfWeek = context.getString(R.string.friday);
-                break;
-            case Calendar.SATURDAY:
-                dayOfWeek = context.getString(R.string.saturday);
-                break;
-            default: // sunday
-                dayOfWeek = context.getString(R.string.monday);
-                break;
-        }
-
-        int dayDescId;
-        switch (dateOffset) {
-            case 0:
-                dayDescId = R.string.widget_title_today;
-                break;
-            case 1:
-                dayDescId = R.string.widget_title_tomorrow;
-                break;
-            case 2:
-                dayDescId = R.string.widget_title_after_tomorrow;
-                break;
-            default:
-                dayDescId = R.string.widget_title_after_days;
-        }
-
-        var dayDescStr = context.getString(dayDescId);
-        if (dateOffset > 2)
-            dayDescStr = String.format(dayDescStr, dateOffset);
-
-        rv.setTextViewText(R.id.widget_title,
-                dayOfWeek + ", " + dayDescStr
-        );
-        rv.setTextColor(R.id.widget_title, theme.textAccent);
-
-        // Specify the service to provide data for the collection widget.  Note that we need to
-        // embed the appWidgetId via the data otherwise it will be ignored.
-        var intent = new Intent(context, WidgetService.class);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        var futureLessonDate = GregorianCalendar.getInstance();
-        futureLessonDate.setTimeInMillis(
-                futureLessonFindDate.getTimeInMillis()
-        );
-        showDate = getMidnight(futureLessonDate).getTimeInMillis();
-        intent.putExtra(WidgetRemoteViewsFactory.DATE, showDate);
-        intent.putExtra(WidgetRemoteViewsFactory.THEME_ID, theme.ordinal());
-        intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-
-        var translucent = getPrefs(context).getBoolean(PrefsIds.WidgetTranslucent.prefId, true);
-        var bodyLayoutResLight = translucent
-                ? R.drawable.rounded_body_layout_light_translucent
-                : R.drawable.rounded_body_layout_light;
-        var bodyLayoutResDark = translucent
-                ? R.drawable.rounded_body_layout_dark_translucent
-                : R.drawable.rounded_body_layout_dark;
-        var headLayoutResLight = translucent
-                ? R.drawable.rounded_head_layout_light_translucent
-                : R.drawable.rounded_head_layout_light;
-        var headLayoutResDark = translucent
-                ? R.drawable.rounded_head_layout_dark_translucent
-                : R.drawable.rounded_head_layout_dark;
+        // Get rounded background layout ids
 
         int bodyLayoutResId = -1;
         int headLayoutResId = -1;
+        int layoutResId = -1;
+
+        var translucent = getPrefs(context).getBoolean(PrefsIds.WidgetTranslucent.prefId, true);
 
         switch (theme) {
             case Dark:
             case DarkRed:
-                bodyLayoutResId = bodyLayoutResDark;
-                headLayoutResId = headLayoutResDark;
+                bodyLayoutResId = translucent
+                        ? R.drawable.rounded_body_layout_dark_translucent
+                        : R.drawable.rounded_body_layout_dark;
+                headLayoutResId = translucent
+                        ? R.drawable.rounded_head_layout_dark_translucent
+                        : R.drawable.rounded_head_layout_dark;
+                layoutResId = translucent
+                        ? R.drawable.rounded_layout_dark_translucent
+                        : R.drawable.rounded_layout_dark;
                 break;
             case Light:
             case LightRed:
-                bodyLayoutResId = bodyLayoutResLight;
-                headLayoutResId = headLayoutResLight;
+                bodyLayoutResId = translucent
+                        ? R.drawable.rounded_body_layout_light_translucent
+                        : R.drawable.rounded_body_layout_light;
+                headLayoutResId = translucent
+                        ? R.drawable.rounded_head_layout_light_translucent
+                        : R.drawable.rounded_head_layout_light;
+                layoutResId = translucent
+                        ? R.drawable.rounded_layout_light_translucent
+                        : R.drawable.rounded_layout_light;
                 break;
         }
 
-        rv.setInt(R.id.widget_body, "setBackgroundResource", bodyLayoutResId);
-        rv.setInt(R.id.widget_head, "setBackgroundResource", headLayoutResId);
-        rv.setInt(R.id.create_calendar_events, "setColorFilter", theme.textAccent);
-        rv.setInt(R.id.create_alarm_clock, "setColorFilter", theme.textAccent);
-        rv.setInt(R.id.day_next, "setColorFilter", theme.textAccent);
-        rv.setInt(R.id.day_prev, "setColorFilter", theme.textAccent);
+        RemoteViews rv;
 
-        rv.setOnClickPendingIntent(R.id.create_alarm_clock, getPendingSelfIntent(context, CREATE_ALARM_CLOCK));
-        rv.setOnClickPendingIntent(R.id.create_calendar_events, getPendingSelfIntent(context, CREATE_CALENDAR_EVENTS));
-        rv.setOnClickPendingIntent(R.id.day_next, getPendingSelfIntent(context, DAY_NEXT));
-        rv.setOnClickPendingIntent(R.id.day_prev, getPendingSelfIntent(context, DAY_PREV));
+        if (TimetableDatabase.getInstance(context).timetable().count() != 0) {
 
-        rv.setViewPadding(
-                R.id.widget_title, dateOffset == 0
-                        ? (int) WidgetRemoteViewsFactory.dpToPixel(context, 16)
-                        : 0, 0, 0, 0
-        );
-        rv.setViewVisibility(R.id.day_prev, dateOffset > 0 ? View.VISIBLE : View.GONE);
-        rv.setViewVisibility(R.id.day_next, dateOffset < 7 ? View.VISIBLE : View.GONE);
+            rv = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
 
-        rv.setRemoteAdapter(R.id.timeline_list, intent);
-        rv.setImageViewBitmap(
-                R.id.empty_view,
-                buildEmptyViewImage(context, theme)
-        );
-        rv.setEmptyView(R.id.timeline_list, R.id.empty_view);
+            var futureLessonFindDate = getTodayMidnight();
+            futureLessonFindDate.add(Calendar.DATE, dateOffset);
+
+            String dayOfWeek = null;
+            switch (futureLessonFindDate.get(Calendar.DAY_OF_WEEK)) {
+                case Calendar.MONDAY:
+                    dayOfWeek = context.getString(R.string.monday);
+                    break;
+                case Calendar.TUESDAY:
+                    dayOfWeek = context.getString(R.string.tuesday);
+                    break;
+                case Calendar.WEDNESDAY:
+                    dayOfWeek = context.getString(R.string.wednesday);
+                    break;
+                case Calendar.THURSDAY:
+                    dayOfWeek = context.getString(R.string.thursday);
+                    break;
+                case Calendar.FRIDAY:
+                    dayOfWeek = context.getString(R.string.friday);
+                    break;
+                case Calendar.SATURDAY:
+                    dayOfWeek = context.getString(R.string.saturday);
+                    break;
+            }
+
+            int dayDescId;
+            switch (dateOffset) {
+                case 0:
+                    dayDescId = R.string.widget_title_today;
+                    break;
+                case 1:
+                    dayDescId = R.string.widget_title_tomorrow;
+                    break;
+                case 2:
+                    dayDescId = R.string.widget_title_after_tomorrow;
+                    break;
+                default:
+                    dayDescId = R.string.widget_title_after_days;
+            }
+
+            var dayDescStr = context.getString(dayDescId);
+            if (dateOffset > 2)
+                dayDescStr = String.format(dayDescStr, dateOffset);
+
+            rv.setTextViewText(R.id.widget_title,
+                    dayOfWeek + ", " + dayDescStr
+            );
+            rv.setTextColor(R.id.widget_title, theme.textAccent);
+
+            // Specify the service to provide data for the collection widget.  Note that we need to
+            // embed the appWidgetId via the data otherwise it will be ignored.
+            var intent = new Intent(context, WidgetService.class);
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            var futureLessonDate = GregorianCalendar.getInstance();
+            futureLessonDate.setTimeInMillis(
+                    futureLessonFindDate.getTimeInMillis()
+            );
+            showDate = getMidnight(futureLessonDate).getTimeInMillis();
+            intent.putExtra(WidgetRemoteViewsFactory.DATE, showDate);
+            intent.putExtra(WidgetRemoteViewsFactory.THEME_ID, theme.ordinal());
+            intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+
+            rv.setInt(R.id.widget_body, "setBackgroundResource", bodyLayoutResId);
+            rv.setInt(R.id.widget_head, "setBackgroundResource", headLayoutResId);
+            rv.setInt(R.id.create_calendar_events, "setColorFilter", theme.textAccent);
+            rv.setInt(R.id.create_alarm_clock, "setColorFilter", theme.textAccent);
+            rv.setInt(R.id.day_next, "setColorFilter", theme.textAccent);
+            rv.setInt(R.id.day_prev, "setColorFilter", theme.textAccent);
+
+            rv.setOnClickPendingIntent(R.id.create_alarm_clock, getPendingSelfIntent(context, IntentAction.CreateAlarmClock.action));
+            rv.setOnClickPendingIntent(R.id.create_calendar_events, getPendingSelfIntent(context, IntentAction.CreateCalendarEvents.action));
+            rv.setOnClickPendingIntent(R.id.day_next, getPendingSelfIntent(context, IntentAction.DayNext.action));
+            rv.setOnClickPendingIntent(R.id.day_prev, getPendingSelfIntent(context, IntentAction.DayPrev.action));
+
+            rv.setViewPadding(
+                    R.id.widget_title, dateOffset == 0
+                            ? (int) WidgetRemoteViewsFactory.dpToPixel(context, 16)
+                            : 0, 0, 0, 0
+            );
+            rv.setViewVisibility(R.id.day_prev, dateOffset > 0 ? View.VISIBLE : View.GONE);
+            rv.setViewVisibility(R.id.day_next, dateOffset < 7 ? View.VISIBLE : View.GONE);
+
+            rv.setRemoteAdapter(R.id.timeline_list, intent);
+            rv.setImageViewBitmap(
+                    R.id.empty_view,
+                    buildEmptyViewBitmap(context, theme)
+            );
+            rv.setEmptyView(R.id.timeline_list, R.id.empty_view);
+
+        } else {
+            rv = new RemoteViews(context.getPackageName(), R.layout.widget_no_cache_layout);
+
+            rv.setInt(R.id.widget_no_cache_image, "setBackgroundResource", layoutResId);
+            rv.setOnClickPendingIntent(R.id.widget_no_cache_image,
+                    PendingIntent.getActivity(
+                            context,
+                            0,
+                            new Intent(
+                                    context,
+                                    MainActivity.class
+                            ),
+                            0
+                    )
+            );
+            rv.setImageViewBitmap(
+                    R.id.widget_no_cache_image,
+                    buildNoCacheImageBitmap(context, theme)
+            );
+        }
 
         return rv;
     }
