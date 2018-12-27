@@ -399,7 +399,7 @@ public class WidgetProvider extends AppWidgetProvider {
     }
 
     static Bitmap buildNoCacheImageBitmap(Context context, Theme theme) {
-        var NO_CACHE = '\ue817';
+        var NO_CACHE = '\ue826';
 
         return buildNotificationBitmap(
                 context,
