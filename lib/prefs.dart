@@ -29,7 +29,7 @@ class PrefsIds {
 
 Future<SearchItem> showSearchItemSelect(
         BuildContext context, SharedPreferences prefs,
-        {toPrefs = true}) =>
+        {primary = true}) =>
     showSearch<SearchItem>(
       context: context,
       delegate: Search(context),
@@ -37,11 +37,11 @@ Future<SearchItem> showSearchItemSelect(
       (searchItem) async {
         if (searchItem != null) {
           searchItem.toPrefs(prefs, PrefsIds.SELECTED_SEARCH_ITEM_PREFIX);
-          if (toPrefs) {
+          if (primary) {
             searchItem.toPrefs(prefs, PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX);
             await PlatformChannels.deleteDb();
           }
-          timetableIdBloc.add(Tuple2<bool, SearchItem>(toPrefs, searchItem));
+          timetableIdBloc.add(Tuple2<bool, SearchItem>(primary, searchItem));
         }
         return searchItem;
       },

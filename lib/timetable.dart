@@ -485,7 +485,7 @@ class Timetable extends StatelessWidget {
                       onPressed: () => showSearchItemSelect(
                             context,
                             prefs,
-                            toPrefs: false,
+                            primary: false,
                           ),
                     ),
                   ),

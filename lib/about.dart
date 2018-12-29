@@ -3,22 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/themes.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class About extends StatelessWidget {
   static const ROUTE = "/about";
 
-  Widget _buildGuyIcon(
-    BuildContext context,
-    TextTheme textTheme,
-    String name,
-    String url,
-    String image, {
-    String descriptionLeft,
-    String descriptionRight,
-    String singleStr,
-  }) =>
+  Widget _buildGuyIcon(BuildContext context,
+      TextTheme textTheme,
+      String name,
+      String url,
+      String image, {
+        String descriptionLeft,
+        String descriptionRight,
+        String singleStr,
+      }) =>
       Expanded(
         child: Container(
           height: 220,
@@ -63,39 +63,43 @@ class About extends StatelessWidget {
                   child: Center(
                     child: singleStr != null
                         ? AutoSizeText(
-                            singleStr,
-                            style: textTheme.subtitle,
-                            textAlign: TextAlign.center,
-                          )
+                      singleStr,
+                      style: textTheme.subtitle,
+                      textAlign: TextAlign.center,
+                    )
                         : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.max,
-                            verticalDirection: VerticalDirection.down,
-                            children: <Widget>[
-                              Flexible(
-                                child: AutoSizeText(
-                                  descriptionLeft,
-                                  style: textTheme.subtitle,
-                                  textAlign: TextAlign.right,
-                                  minFontSize: 2,
-                                  maxLines: descriptionLeft.split('\n').length,
-                                  softWrap: false,
-                                ),
-                              ),
-                              Container(width: 4),
-                              Flexible(
-                                child: AutoSizeText(
-                                  descriptionRight,
-                                  style: textTheme.subtitle,
-                                  textAlign: TextAlign.left,
-                                  maxLines: descriptionRight.split('\n').length,
-                                  minFontSize: 2,
-                                  softWrap: false,
-                                ),
-                              ),
-                            ],
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      verticalDirection: VerticalDirection.down,
+                      children: <Widget>[
+                        Flexible(
+                          child: AutoSizeText(
+                            descriptionLeft,
+                            style: textTheme.subtitle,
+                            textAlign: TextAlign.right,
+                            minFontSize: 2,
+                            maxLines: descriptionLeft
+                                .split('\n')
+                                .length,
+                            softWrap: false,
                           ),
+                        ),
+                        Container(width: 4),
+                        Flexible(
+                          child: AutoSizeText(
+                            descriptionRight,
+                            style: textTheme.subtitle,
+                            textAlign: TextAlign.left,
+                            maxLines: descriptionRight
+                                .split('\n')
+                                .length,
+                            minFontSize: 2,
+                            softWrap: false,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -104,17 +108,58 @@ class About extends StatelessWidget {
         ),
       );
 
+  List<Widget> _buildGuys(BuildContext context, TextTheme textTheme) =>
+      <Widget>[
+        _buildGuyIcon(
+          context,
+          textTheme,
+          'Вадим',
+          'overveigh',
+          'vadim',
+          descriptionLeft: 'IOS',
+          descriptionRight: 'разработчик\nтeстировщик',
+        ),
+        _buildGuyIcon(
+          context,
+          textTheme,
+          'Николай',
+          'cooloneofficial',
+          'coolone',
+          descriptionLeft: 'Flutter\nAndroid',
+          descriptionRight: 'разработчик',
+        ),
+        _buildGuyIcon(
+          context,
+          textTheme,
+          'Александр',
+          'xr.aleks01',
+          'xr',
+          singleStr: 'Креативный\nдиректор',
+        ),
+      ];
+
   @override
   Widget build(BuildContext context) {
-    final textTheme = (Theme.of(context).brightness == Brightness.dark
-        ? Theme.of(context).accentTextTheme
-        : Theme.of(context).primaryTextTheme);
+    final currentTheme = Theme.of(context);
+    final textTheme = (currentTheme.brightness == Brightness.dark &&
+        currentTheme.accentColor !=
+            Themes.themes[ThemeIds.DARK.index].accentColor
+        ? Theme
+        .of(context)
+        .accentTextTheme
+        : Theme
+        .of(context)
+        .primaryTextTheme);
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme
+            .of(context)
+            .primaryColor,
         elevation: 0,
-        title: Text(AppLocalizations.of(context).about),
+        title: Text(AppLocalizations
+            .of(context)
+            .about),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -137,73 +182,59 @@ class About extends StatelessWidget {
           ),
         ],
       ),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10.0),
-        color: Theme.of(context).primaryColor,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
+      body: OrientationBuilder(
+        builder: (context, orientation) =>
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10.0),
+              color: Theme
+                  .of(context)
+                  .primaryColor,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                color: Theme
+                    .of(context)
+                    .primaryColor,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
-                    WidgetTemplates.buildLogo(
-                      Theme.of(context),
-                      color: textTheme.title.color,
-                    ),
-                    Container(height: 20),
                     Expanded(
-                      child: AutoSizeText(
-                        AppLocalizations.of(context).introWelcomeDescription,
-                        style: textTheme.title,
-                        textAlign: TextAlign.center,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              WidgetTemplates.buildLogo(
+                                Theme.of(context),
+                                color: textTheme.title.color,
+                              ),
+                              Container(height: 20),
+                              AutoSizeText(
+                                AppLocalizations
+                                    .of(context)
+                                    .introWelcomeDescription,
+                                style: textTheme.title,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.max,
+                      children: _buildGuys(context, textTheme),
+                    ),
+                    Container(height: 30),
                   ],
                 ),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                _buildGuyIcon(
-                  context,
-                  textTheme,
-                  'Вадим',
-                  'overveigh',
-                  'vadim',
-                  descriptionLeft: 'IOS',
-                  descriptionRight: 'разработчик\nтeстировщик',
-                ),
-                _buildGuyIcon(
-                  context,
-                  textTheme,
-                  'Николай',
-                  'cooloneofficial',
-                  'coolone',
-                  descriptionLeft: 'Flutter\nAndroid',
-                  descriptionRight: 'разработчик',
-                ),
-                _buildGuyIcon(
-                  context,
-                  textTheme,
-                  'Александр',
-                  'xr.aleks01',
-                  'xr',
-                  singleStr: 'Креативный\nдиректор',
-                ),
-              ],
-            ),
-            Container(height: 30),
-          ],
-        ),
       ),
     );
   }
