@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intro_views_flutter/Models/page_view_model.dart';
@@ -26,10 +27,12 @@ class Intro extends StatelessWidget {
           Icons.list,
           color: backgroundColor,
         ),
-        body: Text(localizations.introTimetableDescription),
-        title: Text(
+        body: AutoSizeText(localizations.introTimetableDescription),
+        title: AutoSizeText(
           localizations.introTimetableTitle,
           textAlign: TextAlign.center,
+          maxLines: 2,
+          minFontSize: 40,
         ),
         mainImage: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15)
@@ -133,10 +136,12 @@ class Intro extends StatelessWidget {
           padding: const EdgeInsets.all(4.0),
           child: WidgetTemplates.buildLogo(theme, color: backgroundColor),
         ),
-        body: Text(localizations.introWelcomeDescription),
-        title: Text(
+        body: AutoSizeText(localizations.introWelcomeDescription),
+        title: AutoSizeText(
           localizations.introWelcomeTitle,
           textAlign: TextAlign.center,
+          maxLines: 2,
+          minFontSize: 40,
         ),
         mainImage: WidgetTemplates.buildLogo(theme),
       );
@@ -149,13 +154,15 @@ class Intro extends StatelessWidget {
           Icons.color_lens,
           color: backgroundColor,
         ),
-        body: Text(localizations.introThemeDescription),
-        title: Text(
+        body: AutoSizeText(localizations.introThemeDescription),
+        title: AutoSizeText(
           localizations.introThemeTitle,
           textAlign: TextAlign.center,
+          maxLines: 2,
+          minFontSize: 40,
         ),
         mainImage: Align(
-          alignment: Alignment.bottomCenter,
+          alignment: Alignment.center,
           child: RawMaterialButton(
             onPressed: () => showThemeSelect(context, prefs),
             child: Icon(
@@ -180,16 +187,16 @@ class Intro extends StatelessWidget {
           Icons.search,
           color: backgroundColor,
         ),
-        body: Text(
+        body: AutoSizeText(
           localizations.introGroupDescription,
         ),
-        title: Text(
+        title: AutoSizeText(
           localizations.introGroupTitle,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 40),
+          minFontSize: 40,
         ),
         mainImage: Align(
-          alignment: Alignment.bottomCenter,
+          alignment: Alignment.center,
           child: RawMaterialButton(
             onPressed: () => showSearchItemSelect(context, prefs),
             child: Icon(

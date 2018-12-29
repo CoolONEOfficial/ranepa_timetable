@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
@@ -61,7 +62,7 @@ class About extends StatelessWidget {
                 Expanded(
                   child: Center(
                     child: singleStr != null
-                        ? Text(
+                        ? AutoSizeText(
                             singleStr,
                             style: textTheme.subtitle,
                             textAlign: TextAlign.center,
@@ -70,17 +71,28 @@ class About extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisSize: MainAxisSize.max,
+                            verticalDirection: VerticalDirection.down,
                             children: <Widget>[
-                              Text(
-                                descriptionLeft,
-                                style: textTheme.subtitle,
-                                textAlign: TextAlign.right,
+                              Flexible(
+                                child: AutoSizeText(
+                                  descriptionLeft,
+                                  style: textTheme.subtitle,
+                                  textAlign: TextAlign.right,
+                                  minFontSize: 2,
+                                  maxLines: descriptionLeft.split('\n').length,
+                                  softWrap: false,
+                                ),
                               ),
                               Container(width: 4),
-                              Text(
-                                descriptionRight,
-                                style: textTheme.subtitle,
-                                textAlign: TextAlign.left,
+                              Flexible(
+                                child: AutoSizeText(
+                                  descriptionRight,
+                                  style: textTheme.subtitle,
+                                  textAlign: TextAlign.left,
+                                  maxLines: descriptionRight.split('\n').length,
+                                  minFontSize: 2,
+                                  softWrap: false,
+                                ),
                               ),
                             ],
                           ),
@@ -135,7 +147,7 @@ class About extends StatelessWidget {
           children: <Widget>[
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 60.0),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -145,11 +157,13 @@ class About extends StatelessWidget {
                       Theme.of(context),
                       color: textTheme.title.color,
                     ),
-                    Container(height: 60),
-                    Text(
-                      AppLocalizations.of(context).introWelcomeDescription,
-                      style: textTheme.title,
-                      textAlign: TextAlign.center,
+                    Container(height: 20),
+                    Expanded(
+                      child: AutoSizeText(
+                        AppLocalizations.of(context).introWelcomeDescription,
+                        style: textTheme.title,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ],
                 ),
