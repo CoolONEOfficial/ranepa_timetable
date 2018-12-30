@@ -489,13 +489,6 @@ public class WidgetProvider extends AppWidgetProvider {
             mTextY += textPaint.descent() - textPaint.ascent();
         }
 
-//        canvas.drawText(
-//                notification,
-//                (widgetSize.first / 2) * dpScale,
-//                (headHeight + (widgetSize.second - headHeight) / 2 + (Math.min(widgetSize.first, widgetSize.second) / 4)) * dpScale,
-//                textPaint
-//        );
-
         return bitmap;
     }
 

@@ -137,7 +137,8 @@ class Timetable extends StatelessWidget {
     SharedPreferences prefs, [
     bool updateDb = true,
   ]) async {
-    if (!await _checkInternetConnection()) return;
+    if(!await _checkInternetConnection())
+      return;
 
     final response = await _buildHttpRequest(searchItem, from, to);
 
@@ -406,55 +407,78 @@ class Timetable extends StatelessWidget {
               body: StreamBuilder<void>(
                 stream: timetableFutureBuilderBloc.stream,
                 builder: (context, _) => WidgetTemplates.buildFutureBuilder(
-                      context,
-                      future: Platform.isAndroid && ssSearchItem.data.item1
-                          ? _getTimetable(
-                              context, ssSearchItem.data.item2, prefs)
-                          : _loadAllTimetable(
-                              context,
-                              ssSearchItem.data.item2,
-                              prefs,
-                              updateDb: false,
-                            ),
-                      builder: (context, _) {
-                        if (timetable.values.isEmpty)
-                          return WidgetTemplates.buildNetworkErrorNotification(
-                              context);
+                        context,
+                        future: _checkInternetConnection(),
+                        builder: (context, internetConn) {
+                      if (!internetConn.data && (!Platform.isAndroid || !ssSearchItem.data.item1))
+                        return WidgetTemplates.buildNetworkErrorNotification(
+                            context);
+                      return WidgetTemplates.buildFutureBuilder(
+                        context,
+                        future: Platform.isAndroid && ssSearchItem.data.item1
+                            ? _getTimetable(
+                                context, ssSearchItem.data.item2, prefs)
+                            : _loadAllTimetable(
+                                context,
+                                ssSearchItem.data.item2,
+                                prefs,
+                                updateDb: false,
+                              ),
+                        builder: (context, _) {
+                          if (timetable.values.isEmpty)
+                            timetable.addEntries(
+                              Iterable<
+                                  MapEntry<DateTime,
+                                      List<TimelineModel>>>.generate(
+                                dayCount,
+                                (dayIndex) =>
+                                    MapEntry<DateTime, List<TimelineModel>>(
+                                      todayMidnight.add(
+                                        Duration(days: dayIndex),
+                                      ),
+                                      List<TimelineModel>(),
+                                    ),
+                              ),
+                            );
 
-                        final tabViews = List<Widget>();
-                        final endCache =
-                            DateTime.parse(prefs.getString(PrefsIds.END_CACHE));
+                          final tabViews = List<Widget>();
+                          final endCache = DateTime.parse(
+                              prefs.getString(PrefsIds.END_CACHE));
 
-                        var timetableIter = timetable.entries.iterator;
-                        var mDate = timetable.entries.first.key;
-                        while (tabViews.length < dayCount) {
-                          Widget mWidget;
-                          if (mDate.compareTo(endCache) > 0)
-                            mWidget = WidgetTemplates.buildNoCacheNotification(
-                                context);
-                          else if (timetableIter.moveNext()) {
-                            if (timetableIter.current.value.isEmpty)
+                          var timetableIter = timetable.entries.iterator;
+                          var mDate = timetable.entries.first.key;
+                          while (tabViews.length < dayCount) {
+                            Widget mWidget;
+                            if (mDate.compareTo(endCache) > 0)
+                              mWidget =
+                                  WidgetTemplates.buildNoCacheNotification(
+                                      context);
+                            else if (timetableIter.moveNext()) {
+                              if (timetableIter.current.value.isEmpty)
+                                mWidget =
+                                    WidgetTemplates.buildFreeDayNotification(
+                                        context, ssSearchItem.data.item2);
+                              else
+                                mWidget = TimelineComponent(
+                                  prefs,
+                                  timetableIter.current.value,
+                                );
+                            } else
                               mWidget =
                                   WidgetTemplates.buildFreeDayNotification(
                                       context, ssSearchItem.data.item2);
-                            else
-                              mWidget = TimelineComponent(
-                                prefs,
-                                timetableIter.current.value,
-                              );
-                          } else
-                            mWidget = WidgetTemplates.buildFreeDayNotification(
-                                context, ssSearchItem.data.item2);
 
-                          tabViews.add(mWidget);
+                            tabViews.add(mWidget);
 
-                          mDate.add(Duration(
-                              days:
-                                  mDate.weekday == DateTime.saturday ? 2 : 1));
-                        }
-                        return TabBarView(children: tabViews);
-                      },
-                    ),
+                            mDate.add(Duration(
+                                days: mDate.weekday == DateTime.saturday
+                                    ? 2
+                                    : 1));
+                          }
+                          return TabBarView(children: tabViews);
+                        },
+                      );
+                    }),
               ),
               appBar: AppBar(
                 elevation: Platform.isAndroid ? 5 : 0,
