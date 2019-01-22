@@ -20,9 +20,9 @@ final searchItemTypes = List<SearchItemType>.generate(
   (index) {
     switch (SearchItemTypeId.values[index]) {
       case SearchItemTypeId.Teacher:
-        return SearchItemType(Icons.person, "Prep");
+        return SearchItemType(Icons.person, "teacher");
       case SearchItemTypeId.Group:
-        return SearchItemType(Icons.group, "Group");
+        return SearchItemType(Icons.group, "group");
     }
   },
 );

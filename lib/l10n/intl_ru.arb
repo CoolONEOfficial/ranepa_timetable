@@ -116,6 +116,16 @@
     "type": "text",
     "placeholders": {}
   },
+  "discMath": "Дискретная математика",
+  "@discMath": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "statMath": "Теория вероятностей и мат. статистика",
+  "@statMath": {
+    "type": "text",
+    "placeholders": {}
+  },
   "economics": "Экономическая теория",
   "@economics": {
     "type": "text",

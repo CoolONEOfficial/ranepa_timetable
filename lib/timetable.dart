@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:android_intent/android_intent.dart';
@@ -17,16 +18,6 @@ import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
-import 'package:xml/xml.dart' as xml;
-
-enum TimetableResponseIndexes {
-  Date,
-  TimeStart,
-  TimeFinish,
-  Name,
-  Room,
-  Group,
-}
 
 class Timetable extends StatelessWidget {
   final Drawer drawer;
@@ -113,21 +104,14 @@ class Timetable extends StatelessWidget {
     debugPrint("ended get timetable");
   }
 
+  static String formatDateTime(DateTime dt) =>
+      "${dt.day}.${dt.month}.${dt.year}";
+
   static Future<http.Response> _buildHttpRequest(
           SearchItem searchItem, DateTime from, DateTime to) =>
-      http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
-          headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
-<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <GetRasp${searchItemTypes[searchItem.typeId.index].getStr} xmlns="http://tempuri.org/">
-      <d1>${from.toIso8601String()}</d1>
-      <d2>${to.toIso8601String()}</d2>
-      <id>${searchItem.id}</id>
-    </GetRasp${searchItemTypes[searchItem.typeId.index].getStr}>
-  </soap:Body>
-</soap:Envelope>
-''');
+      http.get('http://services.niu.ranepa.ru/API/public/'
+          '${searchItemTypes[searchItem.typeId.index].getStr}/${searchItem.id}'
+          '/schedule/${formatDateTime(from)}/${formatDateTime(to)}');
 
   static Future<void> loadTimetable(
     BuildContext context,
@@ -137,31 +121,18 @@ class Timetable extends StatelessWidget {
     SharedPreferences prefs, [
     bool updateDb = true,
   ]) async {
-    if(!await _checkInternetConnection())
-      return;
+    if (!await _checkInternetConnection()) return;
 
     final response = await _buildHttpRequest(searchItem, from, to);
 
     debugPrint("http load end. starting parse request..");
 
-    final itemArr = xml
-        .parse(response.body)
-        .children[1]
-        .firstChild
-        .firstChild
-        .firstChild
-        .children;
+    final itemArr = json.decode(response.body);
 
     var mDate = from.subtract(Duration(days: 1));
     final _startDayId = timetable.keys.length;
     for (final mItem in itemArr) {
-      final mItemTimeStart =
-          mItem.children[TimetableResponseIndexes.TimeStart.index].text;
-      final mItemTimeFinish =
-          mItem.children[TimetableResponseIndexes.TimeFinish.index].text;
-      final mItemDate = DateTime.parse(
-          mItem.children[TimetableResponseIndexes.Date.index].text);
-
+      final mItemDate = DateTime.parse(mItem["xdt"]);
       while (mItemDate != mDate) {
         mDate = mDate.add(Duration(days: 1));
         // skip sunday
@@ -169,6 +140,9 @@ class Timetable extends StatelessWidget {
           timetable[mDate] = List<TimelineModel>();
         }
       }
+
+      final mItemTimeStart = mItem["nf"];
+      final mItemTimeFinish = mItem["kf"];
 
       final mLesson = TimelineModel(
         date: mItemDate,
@@ -182,14 +156,18 @@ class Timetable extends StatelessWidget {
                 mItemTimeFinish.substring(0, mItemTimeFinish.length - 3)),
             minute: int.parse(mItemTimeFinish.substring(
                 mItemTimeFinish.length - 2, mItemTimeFinish.length))),
-        room: RoomModel.fromString(
-            mItem.children[TimetableResponseIndexes.Room.index].text),
-        group: mItem.children[TimetableResponseIndexes.Group.index].text,
-        lesson: LessonModel.fromString(
-            context, mItem.children[TimetableResponseIndexes.Name.index].text),
+        room: RoomModel.fromString(mItem["number"]),
+        group: searchItem.typeId == SearchItemTypeId.Teacher
+            ? mItem["group"]
+            : searchItem.title,
+        lesson: LessonModel.build(
+          context,
+          mItem["subject"],
+          mItem["type"],
+        ),
         teacher: TeacherModel.fromString(
             searchItem.typeId == SearchItemTypeId.Group
-                ? mItem.children[TimetableResponseIndexes.Name.index].text
+                ? mItem["teacher"]
                 : searchItem.title),
       );
 
@@ -410,7 +388,8 @@ class Timetable extends StatelessWidget {
                         context,
                         future: _checkInternetConnection(),
                         builder: (context, internetConn) {
-                      if (!internetConn.data && (!Platform.isAndroid || !ssSearchItem.data.item1))
+                      if (!internetConn.data &&
+                          (!Platform.isAndroid || !ssSearchItem.data.item1))
                         return WidgetTemplates.buildNetworkErrorNotification(
                             context);
                       return WidgetTemplates.buildFutureBuilder(

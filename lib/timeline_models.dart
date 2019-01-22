@@ -150,34 +150,34 @@ class LessonActions {
               case LessonActionIds.Credit:
                 return LessonAction(
                     AppLocalizations.of(context).credit, <List<String>>[
-                  <String>["прием", "зачет"]
+                  //<String>["прием", "зачет"] TODO: exam etc
                 ]);
               case LessonActionIds.Exam:
                 return LessonAction(
                     AppLocalizations.of(context).exam, <List<String>>[
-                  <String>["прием", "экзамен"]
+                  //<String>["прием", "экзамен"]
                 ]);
               case LessonActionIds.ExamConsultation:
                 return LessonAction(
                     AppLocalizations.of(context).examConsultation,
                     <List<String>>[
-                      <String>["консульт", "экзамен"]
+                      //<String>["консульт", "экзамен"]
                     ]);
               case LessonActionIds.Practice:
                 return LessonAction(
                     AppLocalizations.of(context).practice, <List<String>>[
-                  <String>["практ"]
+                  <String>["прак"]
                 ]);
               case LessonActionIds.ReceptionExamination:
                 return LessonAction(
                     AppLocalizations.of(context).receptionExamination,
                     <List<String>>[
-                      <String>["защит", "прием"]
+                      //<String>["защит", "прием"]
                     ]);
               case LessonActionIds.Lecture:
                 return LessonAction(
                     AppLocalizations.of(context).lecture, <List<String>>[
-                  <String>["лекция"]
+                  <String>["лек"]
                 ]);
             }
           },
@@ -191,13 +191,6 @@ enum LessonActionIds {
   Exam,
   ExamConsultation,
   Credit,
-}
-
-String parseLessonTitle(String str) {
-  final openBracketIndex = str.indexOf('('),
-      title = str.substring(
-          0, openBracketIndex != -1 ? openBracketIndex : str.length - 1);
-  return title[0].toUpperCase() + title.substring(1);
 }
 
 @JsonSerializable(nullable: false)
@@ -235,30 +228,34 @@ class LessonModel extends Findable {
 
   Map<String, dynamic> toJson() => _$LessonModelToJson(this);
 
-  factory LessonModel.fromString(BuildContext context, String str) {
-    final lowerStr = str.toLowerCase();
-
+  factory LessonModel.build(
+    BuildContext context,
+    String subject,
+    String type,
+  ) {
     LessonModel model;
 
+    final lowerSubject = subject.toLowerCase();
     for (final mLesson in Lessons(context).lessons) {
-      if (mLesson.find(lowerStr)) {
+      if (mLesson.find(lowerSubject)) {
         model = mLesson.copy();
         break;
       }
     }
 
     if (model == null)
-      model = LessonModel._(
-          parseLessonTitle(lowerStr), TimetableIcons.unknownLesson.codePoint);
+      model = LessonModel._(subject, TimetableIcons.unknownLesson.codePoint);
 
-    model.fullTitle =
-        str.substring(0, str.indexOf(')')).replaceFirst('(', '\n');
+    final lowerType = type.toLowerCase();
     for (final mType in LessonActions(context).actions) {
-      if (mType.find(lowerStr)) {
+      if (mType.find(lowerType)) {
         model.action = mType;
         break;
       }
     }
+    if (model.action == null)
+      model.action = LessonAction(type, <List<String>>[]);
+    model.fullTitle = "$subject (${model.action.title})\n";
 
     debugPrint("model type: ${model.action?.title}");
 
@@ -268,6 +265,8 @@ class LessonModel extends Findable {
 
 enum LessonIds {
   math,
+  discMath,
+  statMath,
   economics,
   informationTheory,
   philosophy,
@@ -340,6 +339,22 @@ class Lessons {
                 TimetableIcons.math.codePoint,
                 <List<String>>[
                   <String>["математик"]
+                ],
+              );
+            case LessonIds.discMath:
+              return LessonModel._(
+                AppLocalizations.of(context).discMath,
+                TimetableIcons.math.codePoint,
+                <List<String>>[
+                  <String>["дискрет", "математ"]
+                ],
+              );
+            case LessonIds.statMath:
+              return LessonModel._(
+                AppLocalizations.of(context).statMath,
+                TimetableIcons.math.codePoint,
+                <List<String>>[
+                  <String>["статистик", "математ"]
                 ],
               );
             case LessonIds.economics:

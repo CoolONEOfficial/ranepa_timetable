@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-12-25T04:02:46.803284",
+  "@@last_modified": "2019-01-23T00:16:40.239734",
   "title": "RANEPA (Timetable)",
   "@title": {
     "type": "text",
@@ -95,7 +95,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "groupEconomics": "Economic theory",
+  "groupEconomics": "Economics",
   "@groupEconomics": {
     "type": "text",
     "placeholders": {}
@@ -115,7 +115,17 @@
     "type": "text",
     "placeholders": {}
   },
-  "economics": "Economics",
+  "discMath": "Discrete math",
+  "@discMath": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "statMath": "Theory of probability and mathematical statistics",
+  "@statMath": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "economics": "Economic theory",
   "@economics": {
     "type": "text",
     "placeholders": {}

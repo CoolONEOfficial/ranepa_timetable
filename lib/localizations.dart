@@ -200,6 +200,20 @@ class AppLocalizations {
     );
   }
 
+  String get discMath {
+    return Intl.message(
+      'Discrete math',
+      name: 'discMath',
+    );
+  }
+
+  String get statMath {
+    return Intl.message(
+      'Theory of probability and mathematical statistics',
+      name: 'statMath',
+    );
+  }
+
   String get economics {
     return Intl.message(
       'Economic theory',
