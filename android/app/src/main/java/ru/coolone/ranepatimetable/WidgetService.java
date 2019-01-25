@@ -144,7 +144,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         var last = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_LAST)) != 0;
 
         var circleX = dpScale * (rectMargins * 2 + circleRadius + 68);
-        var circleY = h / 2 + dpScale * (rectMargins / 2);
+        var circleY = h / 2 + dpScale * (rectMargins / 2f);
 
         var translateIcon = 0.0f;
 

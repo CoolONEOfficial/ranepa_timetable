@@ -272,7 +272,12 @@ public class WidgetProvider extends AppWidgetProvider {
                                     ctx.getPackageName(),
                                     WidgetProvider.class.getName()
                             ),
-                            buildLayout(ctx, mId, AppWidgetManager.getInstance(ctx))
+                            buildLayout(
+                                    ctx,
+                                    mId,
+                                    AppWidgetManager.getInstance(ctx),
+                                    false
+                            )
                     );
     }
 
@@ -289,7 +294,9 @@ public class WidgetProvider extends AppWidgetProvider {
         } else if (Objects.equals(intent.getAction(), IntentAction.DayNext.action) || Objects.equals(intent.getAction(), IntentAction.DayPrev.action)) {
             Calendar now;
             do {
-                dateOffset += Objects.equals(intent.getAction(), IntentAction.DayNext.action) ? 1 : -1;
+                dateOffset += Objects.equals(intent.getAction(), IntentAction.DayNext.action)
+                        ? 1
+                        : -1;
 
                 now = GregorianCalendar.getInstance();
                 now.add(Calendar.DATE, dateOffset);
@@ -504,39 +511,58 @@ public class WidgetProvider extends AppWidgetProvider {
         // Since min and max is usually the same, just take min
         var mWidgetLandSize = new Pair<>(providerInfo.minWidth, providerInfo.minHeight);
         var mWidgetPortSize = new Pair<>(providerInfo.minWidth, providerInfo.minHeight);
+        var mNewWidgetLandSize = new Pair<>(0, 0);
+        var mNewWidgetPortSize = new Pair<>(0, 0);
 
         Bundle mAppWidgetOptions = manager.getAppWidgetOptions(appWidgetId);
 
         if (mAppWidgetOptions
                 .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH) > 0) {
 
-            mWidgetPortSize = new Pair<>(mAppWidgetOptions
-                    .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH), mAppWidgetOptions
-                    .getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT));
+            mNewWidgetPortSize = new Pair<>(
+                    mAppWidgetOptions
+                            .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH),
+                    mAppWidgetOptions
+                            .getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT)
+            );
 
-            mWidgetLandSize = new Pair<>(mAppWidgetOptions
-                    .getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH), mAppWidgetOptions
-                    .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT));
+            mNewWidgetLandSize = new Pair<>(
+                    mAppWidgetOptions
+                            .getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH),
+                    mAppWidgetOptions
+                            .getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
+            );
         }
 
         log.info(
-                "Dimensions of the Widget in DIP: "
-                        + ", landWidth = " + mWidgetLandSize.first
-                        + ", landHeight = " + mWidgetLandSize.second
-                        + ", portWidth = " + mWidgetPortSize.first
-                        + ", portHeight = " + mWidgetPortSize.second
+                "Dimensions of the Widget in DIP: \n"
+                        + "landWidth = " + mWidgetLandSize.first
+                        + ",\nlandHeight = " + mWidgetLandSize.second
+                        + ",\nportWidth = " + mWidgetPortSize.first
+                        + ",\nportHeight = " + mWidgetPortSize.second
+                        + ",\nnew landWidth = " + mNewWidgetLandSize.first
+                        + ",\nnew landHeight = " + mNewWidgetLandSize.second
+                        + ",\nnew portWidth = " + mNewWidgetPortSize.first
+                        + ",\nnew portHeight = " + mNewWidgetPortSize.second
         );
 
-        return context.getResources().getBoolean(R.bool.isPort) ? mWidgetPortSize : mWidgetLandSize;
+        return context.getResources().getBoolean(R.bool.isPort)
+                ? mNewWidgetPortSize.first != 0 || mNewWidgetPortSize.second != 0
+                ? mNewWidgetPortSize
+                : mWidgetPortSize
+                : mNewWidgetLandSize.first != 0 || mNewWidgetLandSize.second != 0
+                ? mNewWidgetLandSize
+                : mWidgetLandSize;
     }
 
-    public static Pair<Integer, Integer> widgetSize = new Pair<>(0, 0);
+    public static Pair<Integer, Integer> widgetSize = new Pair<>(100, 100);
 
-    private RemoteViews buildLayout(Context context, int appWidgetId, AppWidgetManager manager) {
+    private RemoteViews buildLayout(Context context, int appWidgetId, AppWidgetManager manager, boolean updateSize) {
         theme = Theme.values()[(int) getPrefs(context).getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
 
         // Set the size
-        widgetSize = getWidgetSize(context, appWidgetId, manager);
+        if (updateSize)
+            widgetSize = getWidgetSize(context, appWidgetId, manager);
 
         // Get rounded background layout ids
 
@@ -706,7 +732,12 @@ public class WidgetProvider extends AppWidgetProvider {
         for (int appWidgetId : appWidgetIds) {
             appWidgetManager.updateAppWidget(
                     appWidgetId,
-                    buildLayout(context, appWidgetId, appWidgetManager)
+                    buildLayout(
+                            context,
+                            appWidgetId,
+                            appWidgetManager,
+                            true
+                    )
             );
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
@@ -722,7 +753,8 @@ public class WidgetProvider extends AppWidgetProvider {
                 buildLayout(
                         context,
                         appWidgetId,
-                        appWidgetManager
+                        appWidgetManager,
+                        true
                 )
         );
 
