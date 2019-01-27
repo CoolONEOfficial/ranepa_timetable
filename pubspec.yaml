@@ -1,7 +1,7 @@
 name: ranepa_timetable
 description: Custom RANEPA android client on Flutter.
 
-version: 1.2+4
+version: 1.2.1+5
 
 environment:
   sdk: ">=2.0.0-dev.68.0 <3.0.0"
@@ -39,7 +39,7 @@ flutter_icons:
   image_path_ios: "assets/images/icon.png"
   android: true
   ios: true
-  adaptive_icon_background: "#F44336"
+  adaptive_icon_background: "#000000"
   adaptive_icon_foreground: "assets/images/icon-foreground.png"
 
 flutter:
