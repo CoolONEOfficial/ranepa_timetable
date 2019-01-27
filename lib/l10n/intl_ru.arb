@@ -51,6 +51,11 @@
     "type": "text",
     "placeholders": {}
   },
+  "refreshTip": "Обновить расписание",
+  "@refreshTip": {
+    "type": "text",
+    "placeholders": {}
+  },
   "alarmTip": "Добавить в будильник",
   "@alarmTip": {
     "type": "text",

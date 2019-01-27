@@ -481,7 +481,15 @@ class Timetable extends StatelessWidget {
                         )
                       ]
                     : List<Widget>())
-                  ..add(
+                  ..addAll(<Widget>[
+                    IconButton(
+                      tooltip: AppLocalizations.of(context).refreshTip,
+                      icon: const Icon(Icons.refresh),
+                      onPressed: () async {
+                        await PlatformChannels.deleteDb();
+                        timetableIdBloc.add(ssSearchItem.data);
+                      },
+                    ),
                     IconButton(
                       tooltip: AppLocalizations.of(context).searchTip,
                       icon: const Icon(Icons.search),
@@ -491,7 +499,7 @@ class Timetable extends StatelessWidget {
                             primary: false,
                           ),
                     ),
-                  ),
+                  ]),
                 bottom: TabBar(
                   tabs: tabs,
                 ),

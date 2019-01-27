@@ -84,6 +84,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "prefs" : MessageLookupByLibrary.simpleMessage("Настройки"),
     "projectDevelopment" : MessageLookupByLibrary.simpleMessage("Проектная разработка"),
     "receptionExamination" : MessageLookupByLibrary.simpleMessage("Прием защиты"),
+    "refreshTip" : MessageLookupByLibrary.simpleMessage("Обновить расписание"),
     "roomLocationAcademy" : MessageLookupByLibrary.simpleMessage("Академия"),
     "roomLocationHotel" : MessageLookupByLibrary.simpleMessage("Гостиница (ул. Пушкина, 8)"),
     "roomLocationStudyHostel" : MessageLookupByLibrary.simpleMessage("Студенческое общежитие"),

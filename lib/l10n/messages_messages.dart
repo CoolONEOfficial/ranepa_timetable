@@ -84,6 +84,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "prefs" : MessageLookupByLibrary.simpleMessage("Preferences"),
     "projectDevelopment" : MessageLookupByLibrary.simpleMessage("Project Development"),
     "receptionExamination" : MessageLookupByLibrary.simpleMessage("Reception examination"),
+    "refreshTip" : MessageLookupByLibrary.simpleMessage("Refresh shedule"),
     "roomLocationAcademy" : MessageLookupByLibrary.simpleMessage("Academy"),
     "roomLocationHotel" : MessageLookupByLibrary.simpleMessage("Hotel (St. Pushkin, 8)"),
     "roomLocationStudyHostel" : MessageLookupByLibrary.simpleMessage("Study hostel"),

@@ -96,12 +96,19 @@ class AppLocalizations {
     );
   }
 
-  // Search strings
+  // Toolbar tips
 
   String get searchTip {
     return Intl.message(
       'Search',
       name: 'searchTip',
+    );
+  }
+
+  String get refreshTip {
+    return Intl.message(
+      'Refresh shedule',
+      name: 'refreshTip',
     );
   }
 

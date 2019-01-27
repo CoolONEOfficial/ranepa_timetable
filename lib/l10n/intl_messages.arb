@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2019-01-23T00:16:40.239734",
+  "@@last_modified": "2019-01-27T22:02:54.164138",
   "title": "RANEPA (Timetable)",
   "@title": {
     "type": "text",
@@ -47,6 +47,11 @@
   },
   "searchTip": "Search",
   "@searchTip": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "refreshTip": "Refresh shedule",
+  "@refreshTip": {
     "type": "text",
     "placeholders": {}
   },
