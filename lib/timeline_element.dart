@@ -33,10 +33,11 @@ class TimelineElement extends StatelessWidget {
       );
 
   Widget _buildTeacherGroup(BuildContext context) {
-    final user = User.values[
-        prefs.getInt(PrefsIds.SELECTED_SEARCH_ITEM_PREFIX + PrefsIds.ITEM_TYPE) ?? 0];
+    final user = User.values[prefs.getInt(
+            PrefsIds.SELECTED_SEARCH_ITEM_PREFIX + PrefsIds.ITEM_TYPE) ??
+        0];
     return Tooltip(
-      message: user == User.Teacher ? model.teacher.toString() : model.group,
+      message: user == User.Student ? model.teacher.toString() : model.group,
       child: Text(
         user == User.Student ? model.teacher.initials() : model.group,
         overflow: TextOverflow.ellipsis,

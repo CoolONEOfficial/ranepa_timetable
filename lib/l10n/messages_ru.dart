@@ -63,7 +63,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "introThemeTitle" : MessageLookupByLibrary.simpleMessage("Тема"),
     "introTimetableDescription" : MessageLookupByLibrary.simpleMessage("Так будет выглядеть расписание. При необходимости можно вернуться назад и сменить цветовую схему."),
     "introTimetableTitle" : MessageLookupByLibrary.simpleMessage("Пример расписания"),
-    "introWelcomeDescription" : MessageLookupByLibrary.simpleMessage("Это приложение является неофициальным клиентом сайта РАНХиГС Нижнего Новгорода и не имеет ничего общего с его админинстрацией."),
+    "introWelcomeDescription" : MessageLookupByLibrary.simpleMessage("Для использования приложения необходимо пройти начальную настройку.\n\nЭто приложение является неофициальным клиентом сайта РАНХиГС Нижнего Новгорода и не имеет ничего общего с его админинстрацией."),
     "introWelcomeTitle" : MessageLookupByLibrary.simpleMessage("Добро пожаловать"),
     "inventory" : MessageLookupByLibrary.simpleMessage("Инвентаризация"),
     "lecture" : MessageLookupByLibrary.simpleMessage("Лекция"),

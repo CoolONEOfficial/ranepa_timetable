@@ -8,7 +8,7 @@ import 'l10n/messages_all.dart';
 class AppLocalizations {
   static Future<AppLocalizations> load(Locale locale) {
     final String name =
-    locale.countryCode == null ? locale.languageCode : locale.toString();
+        locale.countryCode == null ? locale.languageCode : locale.toString();
     final String localeName = Intl.canonicalizedLocale(name);
 
     return initializeMessages(localeName).then((bool _) {
@@ -646,7 +646,7 @@ class AppLocalizations {
 
   String get introWelcomeDescription {
     return Intl.message(
-      'This application is an unofficial client of the site of the Nizhny Novgorod RANEPA and has no relation to its administration.',
+      'To use the application, you must pass the initial setup.\n\nThis application is an unofficial client of the site of the Nizhny Novgorod RANEPA and has no relation to its administration.',
       name: 'introWelcomeDescription',
     );
   }

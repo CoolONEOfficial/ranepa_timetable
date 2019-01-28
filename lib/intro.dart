@@ -131,16 +131,15 @@ class Intro extends StatelessWidget {
   PageViewModel _buildWelcome(ThemeData theme, Color backgroundColor,
           AppLocalizations localizations) =>
       PageViewModel(
-        pageColor: backgroundColor,
-        bubble: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: WidgetTemplates.buildLogo(theme, color: backgroundColor),
+        pageColor: Colors.black,
+        bubble: Icon(
+          Icons.school,
+          color: Colors.black,
         ),
         body: AutoSizeText(localizations.introWelcomeDescription),
         title: AutoSizeText(
           localizations.introWelcomeTitle,
-          textAlign: TextAlign.center,
-          maxLines: 2,
+          textAlign: TextAlign.justify,
           minFontSize: 40,
         ),
         mainImage: WidgetTemplates.buildLogo(theme),

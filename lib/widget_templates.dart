@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/timetable.dart';
@@ -81,8 +80,7 @@ class WidgetTemplates {
   static Widget buildErrorNotification(BuildContext context, String error) =>
       _buildIconNotification(context, error, Icons.error);
 
-  static Widget buildNetworkErrorNotification(
-          BuildContext context) =>
+  static Widget buildNetworkErrorNotification(BuildContext context) =>
       _buildNotification(
         context,
         AppLocalizations.of(context).noNetworkConnection,
@@ -97,8 +95,7 @@ class WidgetTemplates {
         ),
       );
 
-  static Widget buildNoCacheNotification(
-      BuildContext context) =>
+  static Widget buildNoCacheNotification(BuildContext context) =>
       _buildNotification(
         context,
         AppLocalizations.of(context).noCache,
@@ -113,12 +110,14 @@ class WidgetTemplates {
         ),
       );
 
-  static SvgPicture buildLogo(ThemeData theme, {
+  static Image buildLogo(
+    ThemeData theme, {
     Color color,
   }) =>
-      SvgPicture.asset(
-        'assets/images/logo.svg',
-        color: color == null ? theme.accentTextTheme.title.color : color,
+      Image(
+        image: AssetImage(
+          'assets/images/icon-full.png',
+        ),
         width: 150,
         height: 150,
       );

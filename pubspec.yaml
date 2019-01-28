@@ -47,13 +47,7 @@ flutter:
   uses-material-design: true
 
   assets:
-   - assets/images/icon-foreground.png
-   - assets/images/coolone.jpg
-   - assets/images/vadim.jpg
-   - assets/images/xr.jpg
-   - assets/images/logo.svg
-   - assets/images/coolone_logo.svg
-   - assets/images/github.svg
+   - assets/images/
 
   fonts:
    - family:  TimetableIcons

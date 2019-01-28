@@ -63,7 +63,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "introThemeTitle" : MessageLookupByLibrary.simpleMessage("Color scheme"),
     "introTimetableDescription" : MessageLookupByLibrary.simpleMessage("So the schedule will look. If necessary, you can go back and change the theme."),
     "introTimetableTitle" : MessageLookupByLibrary.simpleMessage("Shedule example"),
-    "introWelcomeDescription" : MessageLookupByLibrary.simpleMessage("This application is an unofficial client of the site of the Nizhny Novgorod RANEPA and has no relation to its administration."),
+    "introWelcomeDescription" : MessageLookupByLibrary.simpleMessage("To use the application, you must pass the initial setup.\n\nThis application is an unofficial client of the site of the Nizhny Novgorod RANEPA and has no relation to its administration."),
     "introWelcomeTitle" : MessageLookupByLibrary.simpleMessage("Welcome"),
     "inventory" : MessageLookupByLibrary.simpleMessage("Inventarization"),
     "lecture" : MessageLookupByLibrary.simpleMessage("Lecture"),
