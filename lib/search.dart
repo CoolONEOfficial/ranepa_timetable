@@ -1,10 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xml/xml.dart' as xml;
 
 class SearchItemType {
   final IconData icon;
@@ -67,8 +68,6 @@ class SearchDivider extends SearchItemBase {
 
   final String title;
 }
-
-enum SearchResponseIndexes { Type, Id, Title }
 
 class Search extends SearchDelegate<SearchItem> {
   List<SearchItemBase> webSuggestions = [];
@@ -238,31 +237,22 @@ class Search extends SearchDelegate<SearchItem> {
         ? _buildSuggestions()
         : WidgetTemplates.buildFutureBuilder(
             context,
-            future: http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
-                headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
-<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <GetNameUidForRasp xmlns="http://tempuri.org/">
-      <str>$query</str>
-    </GetNameUidForRasp>
-  </soap:Body>
-</soap:Envelope>
-''').then((response) => response.body),
+            future: http
+                .get('http://services.niu.ranepa.ru/'
+                    'wp-content/plugins/rasp/rasp_json_data.php?name=$query')
+                .then((response) => response.body),
             builder: (context, snapshot) {
               debugPrint("Search snapshot data: " + snapshot.data);
-              final itemArr = xml
-                  .parse(snapshot.data)
-                  .children[1]
-                  .firstChild
-                  .firstChild
-                  .firstChild
-                  .children;
 
-              for (var mItem in itemArr) {
+              final jsonObj = json.decode(snapshot.data);
+
+              final itemArr =
+                  jsonObj.entries.first.value.entries.first.value;
+
+              for (var mItem in itemArr is Iterable ? itemArr : <dynamic>[itemArr]) {
                 SearchItemTypeId mItemTypeId;
 
-                switch (mItem.children[SearchResponseIndexes.Type.index].text) {
+                switch (mItem["Type"]) {
                   case "Prep":
                     mItemTypeId = SearchItemTypeId.Teacher;
                     break;
@@ -275,9 +265,8 @@ class Search extends SearchDelegate<SearchItem> {
 
                 webSuggestions.add(SearchItem(
                   mItemTypeId,
-                  int.parse(
-                      mItem.children[SearchResponseIndexes.Id.index].text),
-                  mItem.children[SearchResponseIndexes.Title.index].text,
+                  mItem["id"],
+                  mItem["Title"],
                 ));
               }
               debugPrint(webSuggestions.toString());
