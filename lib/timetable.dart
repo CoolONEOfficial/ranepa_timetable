@@ -94,7 +94,7 @@ class Timetable extends StatelessWidget {
         await loadTimetable(
           context,
           endCache,
-          today.add(Duration(days: dayCount - 1)),
+          today.add(Duration(days: dayCount)),
           searchItem,
           prefs,
         );
