@@ -23,6 +23,8 @@ class Timetable extends StatelessWidget {
   final Drawer drawer;
   final SharedPreferences prefs;
 
+  static bool showSelected = false;
+
   static final LinkedHashMap<DateTime, List<TimelineModel>> timetable =
       LinkedHashMap<DateTime, List<TimelineModel>>();
 
