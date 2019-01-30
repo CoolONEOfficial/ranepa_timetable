@@ -20,6 +20,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.AlarmClock;
 import android.provider.CalendarContract;
 import android.support.v4.app.ActivityCompat;
@@ -94,6 +95,11 @@ public class WidgetProvider extends AppWidgetProvider {
         widgetSize = Pair.create(
                 getPrefs(context).getInt(PrefsIds.WidgetSizeWidth.prefId, 1),
                 getPrefs(context).getInt(PrefsIds.WidgetSizeHeight.prefId, 1)
+        );
+
+        log.info("Create widget size from prefs: \n"
+                + "w: " + widgetSize.first + "\n"
+                + "h: " + widgetSize.second + "\n"
         );
 
         manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -408,7 +414,7 @@ public class WidgetProvider extends AppWidgetProvider {
                         ? CONFETTI
                         : BEER,
                 context.getString(R.string.freeDay),
-                9
+                9f
         );
     }
 
@@ -420,7 +426,7 @@ public class WidgetProvider extends AppWidgetProvider {
                 theme,
                 NO_CACHE,
                 context.getString(R.string.noCache),
-                14,
+                14f,
                 0
         );
     }
@@ -430,7 +436,7 @@ public class WidgetProvider extends AppWidgetProvider {
             Theme theme,
             char icon,
             String notification,
-            int textScale
+            float textScale
     ) {
         return buildNotificationBitmap(
                 context,
@@ -447,7 +453,7 @@ public class WidgetProvider extends AppWidgetProvider {
             Theme theme,
             char icon,
             String notification,
-            int textScale,
+            float textScale,
             float headHeight
     ) {
         var dpScale = dpScale(context);
@@ -466,12 +472,12 @@ public class WidgetProvider extends AppWidgetProvider {
                 )
         );
 
-        iconPaint.setTextSize(dpScale * (Math.min(widgetSize.first, widgetSize.second) / 3));
+        iconPaint.setTextSize(dpScale * (Math.min(widgetSize.first, widgetSize.second) / 3f));
         iconPaint.setColor(theme.textAccent);
 
         canvas.drawText(
                 String.valueOf(icon),
-                (widgetSize.first / 2) * dpScale,
+                (widgetSize.first / 2f) * dpScale,
                 (headHeight + (widgetSize.second - headHeight) / 2) * dpScale,
                 iconPaint
         );
@@ -490,13 +496,13 @@ public class WidgetProvider extends AppWidgetProvider {
                                 widgetSize.second - headHeight
                         ) / 2 +
                         (
-                                Math.min(widgetSize.first, widgetSize.second) / 4
+                                Math.min(widgetSize.first, widgetSize.second) / 4f
                         )
         ) * dpScale;
         for (var line : notification.split("\n")) {
             canvas.drawText(
                     line,
-                    (widgetSize.first / 2) * dpScale,
+                    (widgetSize.first / 2f) * dpScale,
                     mTextY,
                     textPaint
             );
