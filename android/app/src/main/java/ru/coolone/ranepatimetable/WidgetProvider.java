@@ -91,6 +91,11 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onEnabled(Context context) {
         AndroidThreeTen.init(context);
 
+        widgetSize = Pair.create(
+                getPrefs(context).getInt(PrefsIds.WidgetSizeWidth.prefId, 1),
+                getPrefs(context).getInt(PrefsIds.WidgetSizeHeight.prefId, 1)
+        );
+
         manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
         updatePendingIntent = PendingIntent.getBroadcast(
@@ -351,6 +356,8 @@ public class WidgetProvider extends AppWidgetProvider {
         ThemeId("theme_id"),
         BeforeAlarmClock("before_alarm_clock"),
         EndCache("end_cache"),
+        WidgetSizeWidth("widget_size_width"),
+        WidgetSizeHeight("widget_size_height"),
 
         SelectedSearchItemPrefix("selected_search_item_"),
         PrimarySearchItemPrefix("primary_search_item_"),
@@ -555,14 +562,19 @@ public class WidgetProvider extends AppWidgetProvider {
                 : mWidgetLandSize;
     }
 
-    public static Pair<Integer, Integer> widgetSize = new Pair<>(100, 100);
+    public static Pair<Integer, Integer> widgetSize;
 
     private RemoteViews buildLayout(Context context, int appWidgetId, AppWidgetManager manager, boolean updateSize) {
         theme = Theme.values()[(int) getPrefs(context).getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
 
         // Set the size
-        if (updateSize)
+        if (updateSize) {
             widgetSize = getWidgetSize(context, appWidgetId, manager);
+            var prefsEditor = getPrefs(context).edit();
+            prefsEditor.putInt(PrefsIds.WidgetSizeWidth.prefId, widgetSize.first);
+            prefsEditor.putInt(PrefsIds.WidgetSizeHeight.prefId, widgetSize.second);
+            prefsEditor.apply();
+        }
 
         // Get rounded background layout ids
 
