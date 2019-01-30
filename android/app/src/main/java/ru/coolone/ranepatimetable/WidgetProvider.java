@@ -703,7 +703,7 @@ public class WidgetProvider extends AppWidgetProvider {
                             : 0, 0, 0, 0
             );
             rv.setViewVisibility(R.id.day_prev, dateOffset > 0 ? View.VISIBLE : View.GONE);
-            rv.setViewVisibility(R.id.day_next, dateOffset < 7 ? View.VISIBLE : View.GONE);
+            rv.setViewVisibility(R.id.day_next, dateOffset < 6 ? View.VISIBLE : View.GONE);
 
             rv.setRemoteAdapter(R.id.timeline_list, intent);
             rv.setImageViewBitmap(

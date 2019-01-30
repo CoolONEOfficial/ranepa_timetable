@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/timeline_painter.dart';
+import 'package:ranepa_timetable/timetable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TimelineElement extends StatelessWidget {
@@ -33,8 +34,9 @@ class TimelineElement extends StatelessWidget {
       );
 
   Widget _buildTeacherGroup(BuildContext context) {
-    final user = User.values[prefs.getInt(
-            PrefsIds.SELECTED_SEARCH_ITEM_PREFIX + PrefsIds.ITEM_TYPE) ??
+    final user = User.values[prefs.getInt(Timetable.showSelected
+            ? PrefsIds.SELECTED_SEARCH_ITEM_PREFIX
+            : PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX + PrefsIds.ITEM_TYPE) ??
         0];
     return Tooltip(
       message: user == User.Student ? model.teacher.toString() : model.group,
