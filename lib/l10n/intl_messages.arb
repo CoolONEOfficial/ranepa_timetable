@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2019-01-28T10:41:04.988739",
+  "@@last_modified": "2019-01-28T10:53:08.041073",
   "title": "RANEPA (Timetable)",
   "@title": {
     "type": "text",
@@ -202,6 +202,11 @@
   },
   "physicalCulture": "Physical Culture",
   "@physicalCulture": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "legalSupport": "Legal support",
+  "@legalSupport": {
     "type": "text",
     "placeholders": {}
   },

@@ -296,7 +296,8 @@ enum LessonIds {
   budgetCalculations,
   taxation,
   businessPlanning,
-  inventory
+  inventory,
+  legalSupport,
 }
 
 abstract class Findable {
@@ -476,6 +477,14 @@ class Lessons {
                 TimetableIcons.physicalCulture.codePoint,
                 <List<String>>[
                   <String>["физ", "культур"]
+                ],
+              );
+            case LessonIds.legalSupport:
+              return LessonModel._(
+                AppLocalizations.of(context).legalSupport,
+                TimetableIcons.ethics.codePoint,
+                <List<String>>[
+                  <String>["право", "обеспеч"]
                 ],
               );
             case LessonIds.ethics:

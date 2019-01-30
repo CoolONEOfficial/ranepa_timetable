@@ -23,8 +23,6 @@ class Timetable extends StatelessWidget {
   final Drawer drawer;
   final SharedPreferences prefs;
 
-  static bool showSelected = false;
-
   static final LinkedHashMap<DateTime, List<TimelineModel>> timetable =
       LinkedHashMap<DateTime, List<TimelineModel>>();
 
@@ -68,7 +66,7 @@ class Timetable extends StatelessWidget {
     return loadTimetable(
       context,
       Timetable.todayMidnight,
-      Timetable.todayMidnight.add(Duration(days: dayCount)),
+      Timetable.todayMidnight.add(Duration(days: dayCount - 1)),
       searchItem,
       prefs,
       updateDb,
@@ -96,7 +94,7 @@ class Timetable extends StatelessWidget {
         await loadTimetable(
           context,
           endCache,
-          today.add(Duration(days: dayCount)),
+          today.add(Duration(days: dayCount - 1)),
           searchItem,
           prefs,
         );
@@ -109,6 +107,12 @@ class Timetable extends StatelessWidget {
   static String formatDateTime(DateTime dt) =>
       "${dt.day}.${dt.month}.${dt.year}";
 
+  static Future<http.Response> _buildHttpRequest(
+          SearchItem searchItem, DateTime from, DateTime to) =>
+      http.get('http://services.niu.ranepa.ru/API/public/'
+          '${searchItemTypes[searchItem.typeId.index].getStr}/${searchItem.id}'
+          '/schedule/${formatDateTime(from)}/${formatDateTime(to)}');
+
   static Future<void> loadTimetable(
     BuildContext context,
     DateTime from,
@@ -119,9 +123,7 @@ class Timetable extends StatelessWidget {
   ]) async {
     if (!await _checkInternetConnection()) return;
 
-    final response = await http.get('http://services.niu.ranepa.ru/API/public/'
-        '${searchItemTypes[searchItem.typeId.index].getStr}/${searchItem.id}'
-        '/schedule/${formatDateTime(from)}/${formatDateTime(to)}');
+    final response = await _buildHttpRequest(searchItem, from, to);
 
     debugPrint("http load end. starting parse request..");
 
@@ -376,7 +378,7 @@ class Timetable extends StatelessWidget {
       child: StreamBuilder<Tuple2<bool, SearchItem>>(
         stream: timetableIdBloc.stream,
         initialData: Tuple2<bool, SearchItem>(true,
-            SearchItem.fromPrefs(prefs, showSelected ? PrefsIds.SELECTED_SEARCH_ITEM_PREFIX : PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX)),
+            SearchItem.fromPrefs(prefs, PrefsIds.SELECTED_SEARCH_ITEM_PREFIX)),
         builder: (context, ssSearchItem) => Scaffold(
               drawer: drawer,
               key: scaffoldKey,

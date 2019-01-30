@@ -326,6 +326,13 @@ class AppLocalizations {
     );
   }
 
+  String get legalSupport {
+    return Intl.message(
+      'Legal support',
+      name: 'legalSupport',
+    );
+  }
+
   String get ethics {
     return Intl.message(
       'Ethics',
