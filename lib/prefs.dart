@@ -40,7 +40,7 @@ Future<SearchItem> showSearchItemSelect(
           if (primary) {
             searchItem.toPrefs(prefs, PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX);
             await PlatformChannels.deleteDb();
-          }
+          } else Timetable.showSelected = true;
           timetableIdBloc.add(Tuple2<bool, SearchItem>(primary, searchItem));
         }
         return searchItem;
