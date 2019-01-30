@@ -244,12 +244,17 @@ class Search extends SearchDelegate<SearchItem> {
             builder: (context, snapshot) {
               debugPrint("Search snapshot data: " + snapshot.data);
 
-              final jsonObj = json.decode(snapshot.data);
+              final itemArr = json
+                  .decode(snapshot.data)
+                  .entries
+                  .first
+                  .value
+                  .entries
+                  .first
+                  .value;
 
-              final itemArr =
-                  jsonObj.entries.first.value.entries.first.value;
-
-              for (var mItem in itemArr is Iterable ? itemArr : <dynamic>[itemArr]) {
+              for (var mItem
+                  in itemArr is Iterable ? itemArr : <dynamic>[itemArr]) {
                 SearchItemTypeId mItemTypeId;
 
                 switch (mItem["Type"]) {

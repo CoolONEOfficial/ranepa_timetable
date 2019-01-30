@@ -206,6 +206,11 @@
     "type": "text",
     "placeholders": {}
   },
+  "legalSupport": "Правовое обеспечение",
+  "@legalSupport": {
+    "type": "text",
+    "placeholders": {}
+  },
   "ethics": "Этика",
   "@ethics": {
     "type": "text",

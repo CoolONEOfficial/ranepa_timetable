@@ -109,9 +109,11 @@ class Timetable extends StatelessWidget {
 
   static Future<http.Response> _buildHttpRequest(
           SearchItem searchItem, DateTime from, DateTime to) =>
-      http.get('http://services.niu.ranepa.ru/API/public/'
-          '${searchItemTypes[searchItem.typeId.index].getStr}/${searchItem.id}'
-          '/schedule/${formatDateTime(from)}/${formatDateTime(to)}');
+      http.get('http://services.niu.ranepa.ru/'
+          'wp-content/plugins/rasp/rasp_json_data.php'
+          '?user=${searchItem.title}'
+          '&dstart=${formatDateTime(from)}'
+          '&dfinish=${formatDateTime(to)}');
 
   static Future<void> loadTimetable(
     BuildContext context,
@@ -127,12 +129,20 @@ class Timetable extends StatelessWidget {
 
     debugPrint("http load end. starting parse request..");
 
-    final itemArr = json.decode(response.body);
+    final itemArr =
+        json.decode(response.body).entries.first.value.entries.first.value;
 
     var mDate = from.subtract(Duration(days: 1));
     final _startDayId = timetable.keys.length;
-    for (final mItem in itemArr) {
-      final mItemDate = DateTime.parse(mItem["xdt"]);
+    for (var mItem in itemArr != null && itemArr is! Iterable
+        ? <dynamic>[itemArr]
+        : itemArr) {
+      final String mItemDateStr = mItem["date"];
+      final mItemDate = DateTime(
+        int.parse(mItemDateStr.substring(6)),
+        int.parse(mItemDateStr.substring(3, 5)),
+        int.parse(mItemDateStr.substring(0, 2)),
+      );
       while (mItemDate != mDate) {
         mDate = mDate.add(Duration(days: 1));
         // skip sunday
@@ -141,8 +151,12 @@ class Timetable extends StatelessWidget {
         }
       }
 
-      final mItemTimeStart = mItem["nf"];
-      final mItemTimeFinish = mItem["kf"];
+      final mItemTimeStart = mItem["timestart"];
+      final mItemTimeFinish = mItem["timefinish"];
+      final String mItemName = mItem["name"];
+      final openBracketIndex = mItemName.indexOf('(');
+      final closeBracketIndex = mItemName.indexOf(')');
+      final closeGTIndex = mItemName.indexOf('>');
 
       final mLesson = TimelineModel(
         date: mItemDate,
@@ -156,18 +170,16 @@ class Timetable extends StatelessWidget {
                 mItemTimeFinish.substring(0, mItemTimeFinish.length - 3)),
             minute: int.parse(mItemTimeFinish.substring(
                 mItemTimeFinish.length - 2, mItemTimeFinish.length))),
-        room: RoomModel.fromString(mItem["number"]),
-        group: searchItem.typeId == SearchItemTypeId.Teacher
-            ? mItem["group"]
-            : searchItem.title,
+        room: RoomModel.fromString(mItem["aydit"]),
+        group: mItem["namegroup"],
         lesson: LessonModel.build(
           context,
-          mItem["subject"],
-          mItem["type"],
+          mItemName.substring(0, openBracketIndex),
+          mItemName.substring(openBracketIndex + 1, closeBracketIndex),
         ),
         teacher: TeacherModel.fromString(
             searchItem.typeId == SearchItemTypeId.Group
-                ? mItem["teacher"]
+                ? mItemName.substring(closeGTIndex + 1)
                 : searchItem.title),
       );
 
