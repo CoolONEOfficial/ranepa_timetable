@@ -107,12 +107,6 @@ class Timetable extends StatelessWidget {
   static String formatDateTime(DateTime dt) =>
       "${dt.day}.${dt.month}.${dt.year}";
 
-  static Future<http.Response> _buildHttpRequest(
-          SearchItem searchItem, DateTime from, DateTime to) =>
-      http.get('http://services.niu.ranepa.ru/API/public/'
-          '${searchItemTypes[searchItem.typeId.index].getStr}/${searchItem.id}'
-          '/schedule/${formatDateTime(from)}/${formatDateTime(to)}');
-
   static Future<void> loadTimetable(
     BuildContext context,
     DateTime from,
@@ -123,7 +117,9 @@ class Timetable extends StatelessWidget {
   ]) async {
     if (!await _checkInternetConnection()) return;
 
-    final response = await _buildHttpRequest(searchItem, from, to);
+    final response = await http.get('http://services.niu.ranepa.ru/API/public/'
+        '${searchItemTypes[searchItem.typeId.index].getStr}/${searchItem.id}'
+        '/schedule/${formatDateTime(from)}/${formatDateTime(to)}');
 
     debugPrint("http load end. starting parse request..");
 
