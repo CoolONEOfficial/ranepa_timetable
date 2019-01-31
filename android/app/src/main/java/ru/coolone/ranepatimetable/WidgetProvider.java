@@ -20,6 +20,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.AlarmClock;
 import android.provider.CalendarContract;
 import android.support.v4.app.ActivityCompat;
@@ -90,6 +91,16 @@ public class WidgetProvider extends AppWidgetProvider {
     @Override
     public void onEnabled(Context context) {
         AndroidThreeTen.init(context);
+
+        widgetSize = Pair.create(
+                getPrefs(context).getInt(PrefsIds.WidgetSizeWidth.prefId, 1),
+                getPrefs(context).getInt(PrefsIds.WidgetSizeHeight.prefId, 1)
+        );
+
+        log.info("Create widget size from prefs: \n"
+                + "w: " + widgetSize.first + "\n"
+                + "h: " + widgetSize.second + "\n"
+        );
 
         manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
@@ -351,6 +362,8 @@ public class WidgetProvider extends AppWidgetProvider {
         ThemeId("theme_id"),
         BeforeAlarmClock("before_alarm_clock"),
         EndCache("end_cache"),
+        WidgetSizeWidth("widget_size_width"),
+        WidgetSizeHeight("widget_size_height"),
 
         SelectedSearchItemPrefix("selected_search_item_"),
         PrimarySearchItemPrefix("primary_search_item_"),
@@ -401,7 +414,7 @@ public class WidgetProvider extends AppWidgetProvider {
                         ? CONFETTI
                         : BEER,
                 context.getString(R.string.freeDay),
-                9
+                9f
         );
     }
 
@@ -413,7 +426,7 @@ public class WidgetProvider extends AppWidgetProvider {
                 theme,
                 NO_CACHE,
                 context.getString(R.string.noCache),
-                14,
+                14f,
                 0
         );
     }
@@ -423,7 +436,7 @@ public class WidgetProvider extends AppWidgetProvider {
             Theme theme,
             char icon,
             String notification,
-            int textScale
+            float textScale
     ) {
         return buildNotificationBitmap(
                 context,
@@ -440,7 +453,7 @@ public class WidgetProvider extends AppWidgetProvider {
             Theme theme,
             char icon,
             String notification,
-            int textScale,
+            float textScale,
             float headHeight
     ) {
         var dpScale = dpScale(context);
@@ -459,12 +472,12 @@ public class WidgetProvider extends AppWidgetProvider {
                 )
         );
 
-        iconPaint.setTextSize(dpScale * (Math.min(widgetSize.first, widgetSize.second) / 3));
+        iconPaint.setTextSize(dpScale * (Math.min(widgetSize.first, widgetSize.second) / 3f));
         iconPaint.setColor(theme.textAccent);
 
         canvas.drawText(
                 String.valueOf(icon),
-                (widgetSize.first / 2) * dpScale,
+                (widgetSize.first / 2f) * dpScale,
                 (headHeight + (widgetSize.second - headHeight) / 2) * dpScale,
                 iconPaint
         );
@@ -483,13 +496,13 @@ public class WidgetProvider extends AppWidgetProvider {
                                 widgetSize.second - headHeight
                         ) / 2 +
                         (
-                                Math.min(widgetSize.first, widgetSize.second) / 4
+                                Math.min(widgetSize.first, widgetSize.second) / 4f
                         )
         ) * dpScale;
         for (var line : notification.split("\n")) {
             canvas.drawText(
                     line,
-                    (widgetSize.first / 2) * dpScale,
+                    (widgetSize.first / 2f) * dpScale,
                     mTextY,
                     textPaint
             );
@@ -555,14 +568,19 @@ public class WidgetProvider extends AppWidgetProvider {
                 : mWidgetLandSize;
     }
 
-    public static Pair<Integer, Integer> widgetSize = new Pair<>(100, 100);
+    public static Pair<Integer, Integer> widgetSize;
 
     private RemoteViews buildLayout(Context context, int appWidgetId, AppWidgetManager manager, boolean updateSize) {
         theme = Theme.values()[(int) getPrefs(context).getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
 
         // Set the size
-        if (updateSize)
+        if (updateSize) {
             widgetSize = getWidgetSize(context, appWidgetId, manager);
+            var prefsEditor = getPrefs(context).edit();
+            prefsEditor.putInt(PrefsIds.WidgetSizeWidth.prefId, widgetSize.first);
+            prefsEditor.putInt(PrefsIds.WidgetSizeHeight.prefId, widgetSize.second);
+            prefsEditor.apply();
+        }
 
         // Get rounded background layout ids
 
@@ -685,7 +703,7 @@ public class WidgetProvider extends AppWidgetProvider {
                             : 0, 0, 0, 0
             );
             rv.setViewVisibility(R.id.day_prev, dateOffset > 0 ? View.VISIBLE : View.GONE);
-            rv.setViewVisibility(R.id.day_next, dateOffset < 7 ? View.VISIBLE : View.GONE);
+            rv.setViewVisibility(R.id.day_next, dateOffset < 6 ? View.VISIBLE : View.GONE);
 
             rv.setRemoteAdapter(R.id.timeline_list, intent);
             rv.setImageViewBitmap(
