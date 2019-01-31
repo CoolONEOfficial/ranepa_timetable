@@ -12,6 +12,27 @@ Custom open-source NRU RANEPA mobile client written on Flutter.
 
 For help getting started with Flutter, view our online [documentation](https://flutter.io/).
 
+## Project setup
+
+### Android:
+
+1) Move release keystore to /android/app/
+
+2) Create key.properties to /android with:
+
+```
+storePassword=# STORE PASSWORD #
+keyPassword=# KEY PASSWORD #
+keyAlias=# KEY ALIAS #
+storeFile=/app/# FILENAME #.keystore
+```
+
+2) Move google-services.json to /android/app/
+
+### iOS:
+
+1)
+
 ## References, used in the development
 
 [Localization](https://proandroiddev.com/flutter-localization-step-by-step-30f95d06018d) flutter app
