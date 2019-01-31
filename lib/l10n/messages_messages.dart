@@ -67,6 +67,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "introWelcomeTitle" : MessageLookupByLibrary.simpleMessage("Welcome"),
     "inventory" : MessageLookupByLibrary.simpleMessage("Inventarization"),
     "lecture" : MessageLookupByLibrary.simpleMessage("Lecture"),
+    "legalSupport" : MessageLookupByLibrary.simpleMessage("Legal support"),
     "lifeSafety" : MessageLookupByLibrary.simpleMessage("Basics of life safety"),
     "literature" : MessageLookupByLibrary.simpleMessage("Literature"),
     "loading" : MessageLookupByLibrary.simpleMessage("Loading"),
