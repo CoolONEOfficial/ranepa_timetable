@@ -141,7 +141,7 @@ class Timetable extends StatelessWidget {
         int.parse(mItemDateStr.substring(3, 5)),
         int.parse(mItemDateStr.substring(0, 2)),
       );
-      while (mItemDate != mDate) {
+      while (mDate != mItemDate) {
         mDate = mDate.add(Duration(days: 1));
         // skip sunday
         if (mDate.weekday != DateTime.sunday) {

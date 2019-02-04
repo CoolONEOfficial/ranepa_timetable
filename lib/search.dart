@@ -235,64 +235,64 @@ class Search extends SearchDelegate<SearchItem> {
     webSuggestions.clear();
     return query.isEmpty
         ? _buildSuggestions()
-        : WidgetTemplates.buildFutureBuilder(
-            context,
-            future: http
-                .get('http://services.niu.ranepa.ru/'
-                    'wp-content/plugins/rasp/rasp_json_data.php?name=$query')
-                .then((response) => response.body),
-            builder: (context, snapshot) {
-              debugPrint("Search snapshot data: " + snapshot.data);
+        : new RegExp(r"^[(А-я)\d\s\-]+$").hasMatch(query)
+            ? WidgetTemplates.buildFutureBuilder(
+                context,
+                future: http
+                    .get('http://services.niu.ranepa.ru/'
+                        'wp-content/plugins/rasp/rasp_json_data.php?name=$query')
+                    .then((response) => response.body),
+                builder: (context, snapshot) {
+                  debugPrint("Search snapshot data: " + snapshot.data);
 
-              final itemArr = json
-                  .decode(snapshot.data)
-                  .entries
-                  .first
-                  .value
-                  .entries
-                  .first
-                  .value;
+                  final resultArr =
+                      json.decode(snapshot.data).entries.first.value.entries;
 
-              for (var mItem
-                  in itemArr is Iterable ? itemArr : <dynamic>[itemArr]) {
-                SearchItemTypeId mItemTypeId;
+                  if (resultArr.isNotEmpty) {
+                    final itemArr = resultArr.first.value;
 
-                switch (mItem["Type"]) {
-                  case "Prep":
-                    mItemTypeId = SearchItemTypeId.Teacher;
-                    break;
-                  case "Group":
-                    mItemTypeId = SearchItemTypeId.Group;
-                    break;
-                  default:
-                    mItemTypeId = null;
-                }
+                    for (var mItem
+                        in itemArr is Iterable ? itemArr : <dynamic>[itemArr]) {
+                      SearchItemTypeId mItemTypeId;
 
-                webSuggestions.add(SearchItem(
-                  mItemTypeId,
-                  mItem["id"],
-                  mItem["Title"],
-                ));
-              }
-              debugPrint(webSuggestions.toString());
+                      switch (mItem["Type"]) {
+                        case "Prep":
+                          mItemTypeId = SearchItemTypeId.Teacher;
+                          break;
+                        case "Group":
+                          mItemTypeId = SearchItemTypeId.Group;
+                          break;
+                        default:
+                          mItemTypeId = null;
+                      }
 
-              return _buildSuggestions();
-            },
-            loading: Stack(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.only(right: 10, top: 10),
-                  alignment: Alignment.topRight,
-                  child: SizedBox(
-                    child: CircularProgressIndicator(),
-                    height: 15.0,
-                    width: 15.0,
-                  ),
+                      webSuggestions.add(SearchItem(
+                        mItemTypeId,
+                        mItem["id"],
+                        mItem["Title"],
+                      ));
+                    }
+                  }
+                  debugPrint(webSuggestions.toString());
+
+                  return _buildSuggestions();
+                },
+                loading: Stack(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.only(right: 10, top: 10),
+                      alignment: Alignment.topRight,
+                      child: SizedBox(
+                        child: CircularProgressIndicator(),
+                        height: 15.0,
+                        width: 15.0,
+                      ),
+                    ),
+                    _buildSuggestions()
+                  ],
                 ),
-                _buildSuggestions()
-              ],
-            ),
-          );
+              )
+            : Container();
   }
 
   @override

@@ -19,6 +19,8 @@ import lombok.var;
 @lombok.extern.java.Log
 public class MainActivity extends FlutterActivity {
 
+    boolean oldRemoved = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +46,12 @@ public class MainActivity extends FlutterActivity {
                                 result.success(null);
                                 break;
                             case "getDb": {
+                                if(!oldRemoved) {
+                                    TimetableDatabase.getInstance(MainActivity.this).timetable().deleteOld();
+
+                                    oldRemoved = true;
+                                }
+
                                 log.info("getDb started..");
                                 var g = getGson();
 
