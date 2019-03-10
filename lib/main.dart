@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -48,13 +49,16 @@ class BaseWidget extends StatelessWidget {
               title: Text(AppLocalizations.of(context).about),
               onTap: () => Navigator.popAndPushNamed(context, About.ROUTE),
             ),
-            Divider(),
-            ListTile(
-              leading: Icon(Icons.close),
-              title: Text(AppLocalizations.of(context).close),
-              onTap: () => SystemNavigator.pop(),
-            ),
-          ],
+          ]..addAll(Platform.isAndroid
+              ? <Widget>[
+                  Divider(),
+                  ListTile(
+                    leading: Icon(Icons.close),
+                    title: Text(AppLocalizations.of(context).close),
+                    onTap: () => SystemNavigator.pop(),
+                  ),
+                ]
+              : []),
         ),
       ),
       prefs: prefs,
@@ -98,7 +102,8 @@ class BaseWidget extends StatelessWidget {
               },
               home: Builder(
                 builder: (context) => prefs.getInt(
-                            PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX + PrefsIds.ITEM_ID) ==
+                            PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX +
+                                PrefsIds.ITEM_ID) ==
                         null
                     ? Intro(base: buildBase(context, prefs), prefs: prefs)
                     : buildBase(context, prefs),
