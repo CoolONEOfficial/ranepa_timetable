@@ -1,20 +1,14 @@
 package ru.coolone.ranepatimetable;
 
 import android.content.ContentProvider;
-import android.content.ContentProviderOperation;
-import android.content.ContentProviderResult;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.OperationApplicationException;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import java.util.ArrayList;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import lombok.var;
 
 

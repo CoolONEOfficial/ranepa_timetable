@@ -20,10 +20,8 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.AlarmClock;
 import android.provider.CalendarContract;
-import android.support.v4.app.ActivityCompat;
 import android.util.Pair;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -41,6 +39,7 @@ import java.util.GregorianCalendar;
 import java.util.Objects;
 import java.util.TimeZone;
 
+import androidx.core.app.ActivityCompat;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;

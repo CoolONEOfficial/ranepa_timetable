@@ -16,22 +16,25 @@ For help getting started with Flutter, view our online [documentation](https://f
 
 ### Android:
 
-1) Move release keystore to /android/app/
-
-2) Create key.properties to /android with:
+1. Create key.properties to /android with:
 
 ```
 storePassword=# STORE PASSWORD #
 keyPassword=# KEY PASSWORD #
 keyAlias=# KEY ALIAS #
-storeFile=/app/# FILENAME #.keystore
+storeFile=/path/to/keystore/# FILENAME #.keystore
 ```
 
-2) Move google-services.json to /android/app/
+### iOS:l
 
-### iOS:
-
-1)
+1. Open Podfile.lock
+1.1. Uncomment "platform :ios, '9.0''
+1.2. Add `use_frameworks!` after `platform`
+1.3. add `config.build_settings['SWIFT_VERSION'] = '4.0'` after `ENABLE_BITCODE`.
+4. Create "File.swift" to /ios with:
+```
+import Foundation
+```
 
 ## References, used in the development
 

@@ -9,10 +9,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import io.flutter.app.FlutterActivity;
-import io.flutter.plugin.common.BasicMessageChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.StringCodec;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 import lombok.var;
 
