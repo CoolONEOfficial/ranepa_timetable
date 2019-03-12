@@ -25,12 +25,16 @@ keyAlias=# KEY ALIAS #
 storeFile=/path/to/keystore/# FILENAME #.keystore
 ```
 
-### iOS:l
+### iOS:
 
 1. Open Podfile.lock
+
 1.1. Uncomment "platform :ios, '9.0''
+
 1.2. Add `use_frameworks!` after `platform`
+
 1.3. add `config.build_settings['SWIFT_VERSION'] = '4.0'` after `ENABLE_BITCODE`.
+
 4. Create "File.swift" to /ios with:
 ```
 import Foundation
