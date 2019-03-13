@@ -4,6 +4,10 @@
 
 [<img src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png">](https://play.google.com/store/apps/details?id=ru.coolone.ranepatimetable)
 
+[![AppStore][appstore-image =250x]][appstore-url]
+[![PlayStore][playstore-image =250x]][playstore-url]
+
+
 # NRU RANEPA Timetable
 
 Custom open-source NRU RANEPA mobile client written on Flutter.
@@ -67,3 +71,9 @@ flutter pub pub run flutter_launcher_icons:main
 ```Shell
 flutter packages pub run build_runner build --delete-conflicting-outputs
 ```
+
+[appstore-image]: https://developer.apple.com/app-store/marketing/guidelines/images/badge-example-preferred.png
+[playstore-image]: https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png
+
+[appstore-url]: https://itunes.apple.com/ru/app//id1454700217
+[playstore-url]: https://play.google.com/store/apps/details?id=ru.coolone.ranepatimetable
