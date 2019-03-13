@@ -25,14 +25,14 @@ public abstract class TimetableDatabase extends RoomDatabase {
     /**
      * Gets the singleton instance of TimetableDatabase.
      *
-     * @param context The context.
+     * @param ctx The ctx.
      * @return The singleton instance of TimetableDatabase.
      */
-    public static synchronized TimetableDatabase getInstance(Context context) {
+    public static synchronized TimetableDatabase getInstance(Context ctx) {
         if (sInstance == null) {
             sInstance = Room
                     .databaseBuilder(
-                            context.getApplicationContext(),
+                            ctx.getApplicationContext(),
                             TimetableDatabase.class,
                             NAME
                     )

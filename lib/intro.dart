@@ -6,7 +6,7 @@ import 'package:intro_views_flutter/intro_views_flutter.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
-import 'package:ranepa_timetable/themes.dart';
+import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/timeline.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
@@ -19,7 +19,7 @@ class Intro extends StatelessWidget {
   const Intro({Key key, @required this.base, @required this.prefs})
       : super(key: key);
 
-  PageViewModel _buildTimetable(BuildContext context, ThemeData theme,
+  PageViewModel _buildTimetable(BuildContext ctx, ThemeData theme,
           Color backgroundColor, AppLocalizations localizations) =>
       PageViewModel(
         pageColor: backgroundColor,
@@ -57,9 +57,9 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 9, minute: 30),
                     room: RoomModel("24", RoomLocation.Hotel),
                     group: "Иб-021",
-                    lesson: Lessons(context)
+                    lesson: Lessons(ctx)
                         .lessons[LessonIds.physicalCulture.index]
-                      ..action = LessonActions(context)
+                      ..action = LessonActions(ctx)
                           .actions[LessonActionIds.Lecture.index],
                     teacher: TeacherModel("Дмитрий", "Киселев", "Михайлович"),
                   ),
@@ -70,9 +70,9 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 9, minute: 30),
                     room: RoomModel("24", RoomLocation.Hotel),
                     group: "Иб-021",
-                    lesson: Lessons(context)
+                    lesson: Lessons(ctx)
                         .lessons[LessonIds.physicalCulture.index]
-                      ..action = LessonActions(context)
+                      ..action = LessonActions(ctx)
                           .actions[LessonActionIds.ExamConsultation.index],
                     teacher: TeacherModel("Иван", "Шамин", "Александрович"),
                   ),
@@ -82,8 +82,8 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 11, minute: 10),
                     room: RoomModel("109a", RoomLocation.Academy),
                     group: "Иб-021",
-                    lesson: Lessons(context).lessons[LessonIds.ethics.index]
-                      ..action = LessonActions(context)
+                    lesson: Lessons(ctx).lessons[LessonIds.ethics.index]
+                      ..action = LessonActions(ctx)
                           .actions[LessonActionIds.ReceptionExamination.index],
                     teacher: TeacherModel("Вера", "Дряхлова", "Рачиковна"),
                   ),
@@ -93,8 +93,8 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 12, minute: 50),
                     room: RoomModel("109", RoomLocation.Academy),
                     group: "Иб-021",
-                    lesson: Lessons(context).lessons[LessonIds.economics.index]
-                      ..action = LessonActions(context)
+                    lesson: Lessons(ctx).lessons[LessonIds.economics.index]
+                      ..action = LessonActions(ctx)
                           .actions[LessonActionIds.Lecture.index],
                     teacher: TeacherModel("Александр", "Гришин", "Юрьевич"),
                   ),
@@ -104,8 +104,8 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 12, minute: 50),
                     room: RoomModel("407", RoomLocation.Academy),
                     group: "Иб-021",
-                    lesson: Lessons(context).lessons[LessonIds.history.index]
-                      ..action = LessonActions(context)
+                    lesson: Lessons(ctx).lessons[LessonIds.history.index]
+                      ..action = LessonActions(ctx)
                           .actions[LessonActionIds.Practice.index],
                     teacher: TeacherModel("Егоров", "Вадим", "Валерьевич"),
                   ),
@@ -115,8 +115,8 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 14, minute: 50),
                     room: RoomModel("302", RoomLocation.Academy),
                     group: "Иб-021",
-                    lesson: Lessons(context).lessons[LessonIds.lifeSafety.index]
-                      ..action = LessonActions(context)
+                    lesson: Lessons(ctx).lessons[LessonIds.lifeSafety.index]
+                      ..action = LessonActions(ctx)
                           .actions[LessonActionIds.Exam.index],
                     teacher: TeacherModel("Обносова", "Нина", "Юрьевна"),
                     last: true,
@@ -145,8 +145,8 @@ class Intro extends StatelessWidget {
         mainImage: WidgetTemplates.buildLogo(theme),
       );
 
-  PageViewModel _buildTheme(BuildContext context, ThemeData theme,
-          Color backgroundColor, int themeId, AppLocalizations localizations) =>
+  PageViewModel _buildTheme(BuildContext ctx, ThemeData theme,
+          Color backgroundColor, AppLocalizations localizations) =>
       PageViewModel(
         pageColor: backgroundColor,
         bubble: Icon(
@@ -163,7 +163,10 @@ class Intro extends StatelessWidget {
         mainImage: Align(
           alignment: Alignment.center,
           child: RawMaterialButton(
-            onPressed: () => showThemeSelect(context, prefs),
+            onPressed: () async {
+              await showThemeBrightnessSelect(ctx, prefs);
+              showMaterialColorPicker(ctx);
+            },
             child: Icon(
               Icons.color_lens,
               size: 100,
@@ -178,8 +181,8 @@ class Intro extends StatelessWidget {
         ),
       );
 
-  PageViewModel _buildSearch(BuildContext context, ThemeData theme,
-          Color backgroundColor, int themeId, AppLocalizations localizations) =>
+  PageViewModel _buildSearch(BuildContext ctx, ThemeData theme,
+          Color backgroundColor, AppLocalizations localizations) =>
       PageViewModel(
         pageColor: backgroundColor,
         bubble: Icon(
@@ -197,7 +200,7 @@ class Intro extends StatelessWidget {
         mainImage: Align(
           alignment: Alignment.center,
           child: RawMaterialButton(
-            onPressed: () => showSearchItemSelect(context, prefs),
+            onPressed: () => showSearchItemSelect(ctx, prefs),
             child: Icon(
               Icons.search,
               color: backgroundColor,
@@ -213,13 +216,10 @@ class Intro extends StatelessWidget {
       );
 
   @override
-  Widget build(BuildContext context) => StreamBuilder<int>(
-        stream: themeIdBloc.stream,
-        initialData:
-            prefs.getInt(PrefsIds.THEME_ID) ?? Themes.DEFAULT_THEME_ID.index,
-        builder: (context, snapshot) {
-          final theme = Themes.themes[snapshot.data],
-              localizations = AppLocalizations.of(context);
+  Widget build(BuildContext ctx) => buildThemeStream(
+        (ctx, snapshot) {
+          final theme = buildTheme(),
+              localizations = AppLocalizations.of(ctx);
           final backgroundColor = theme.brightness == Brightness.light
               ? theme.primaryColor
               : theme.canvasColor;
@@ -227,11 +227,9 @@ class Intro extends StatelessWidget {
           return IntroViewsFlutter(
             [
               _buildWelcome(theme, backgroundColor, localizations),
-              _buildTheme(context, theme, backgroundColor, snapshot.data,
-                  localizations),
-              _buildTimetable(context, theme, backgroundColor, localizations),
-              _buildSearch(context, theme, backgroundColor, snapshot.data,
-                  localizations),
+              _buildTheme(ctx, theme, backgroundColor, localizations),
+              _buildTimetable(ctx, theme, backgroundColor, localizations),
+              _buildSearch(ctx, theme, backgroundColor, localizations),
             ],
             doneText: Container(),
             showSkipButton: false,

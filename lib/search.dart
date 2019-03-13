@@ -78,27 +78,27 @@ class Search extends SearchDelegate<SearchItem> {
 
   final List<SearchItemBase> predefinedSuggestions;
 
-  Search(BuildContext context)
+  Search(BuildContext ctx)
       : predefinedSuggestions = [
-          SearchDivider(AppLocalizations.of(context).groupInformatics),
+          SearchDivider(AppLocalizations.of(ctx).groupInformatics),
           SearchItem(SearchItemTypeId.Group, 15034, "Иб-011"),
           SearchItem(SearchItemTypeId.Group, 15035, "Иб-012"),
           SearchItem(SearchItemTypeId.Group, 15016, "Иб-021"),
           SearchItem(SearchItemTypeId.Group, 15024, "Иб-031"),
           SearchItem(SearchItemTypeId.Group, 15030, "Иб-041"),
           SearchItem(SearchItemTypeId.Group, 15031, "Иб-042"),
-          SearchDivider(AppLocalizations.of(context).groupEconomics),
+          SearchDivider(AppLocalizations.of(ctx).groupEconomics),
           SearchItem(SearchItemTypeId.Group, 15122, "Эб-011"),
           SearchItem(SearchItemTypeId.Group, 15123, "Эб-012"),
           SearchItem(SearchItemTypeId.Group, 15022, "Эб-021"),
           SearchItem(SearchItemTypeId.Group, 15023, "Эб-022"),
           SearchItem(SearchItemTypeId.Group, 15112, "Эб-031"),
           SearchItem(SearchItemTypeId.Group, 15113, "Эб-032"),
-          SearchDivider(AppLocalizations.of(context).searchResults),
+          SearchDivider(AppLocalizations.of(ctx).searchResults),
         ];
 
   @override
-  List<Widget> buildActions(context) {
+  List<Widget> buildActions(ctx) {
     return [
       IconButton(
         icon: Icon(Icons.clear),
@@ -110,12 +110,12 @@ class Search extends SearchDelegate<SearchItem> {
   }
 
   @override
-  Widget buildLeading(context) {
+  Widget buildLeading(ctx) {
     return IconButton(
         icon: AnimatedIcon(
             icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
         onPressed: () {
-          close(context, null);
+          close(ctx, null);
         });
   }
 
@@ -151,10 +151,10 @@ class Search extends SearchDelegate<SearchItem> {
     }
 
     return ListView.builder(
-        itemBuilder: (context, index) {
+        itemBuilder: (ctx, index) {
           final mItem = suggestions[index];
 
-          final ThemeData theme = Theme.of(context);
+          final ThemeData theme = Theme.of(ctx);
           if (mItem is SearchItem) {
             final queryIndex =
                     mItem.title.indexOf(RegExp(query, caseSensitive: false)),
@@ -163,7 +163,7 @@ class Search extends SearchDelegate<SearchItem> {
 
             return ListTile(
                 onTap: () {
-                  close(context, mItem);
+                  close(ctx, mItem);
                 },
                 leading: Icon(searchItemTypes[mItem.typeId.index].icon),
                 title: RichText(
@@ -230,19 +230,19 @@ class Search extends SearchDelegate<SearchItem> {
   }
 
   @override
-  Widget buildSuggestions(context) {
+  Widget buildSuggestions(ctx) {
     debugPrint("Suggestions build start");
     webSuggestions.clear();
     return query.isEmpty
         ? _buildSuggestions()
         : new RegExp(r"^[(А-я)\d\s\-]+$").hasMatch(query)
             ? WidgetTemplates.buildFutureBuilder(
-                context,
+                ctx,
                 future: http
                     .get('http://services.niu.ranepa.ru/'
                         'wp-content/plugins/rasp/rasp_json_data.php?name=$query')
                     .then((response) => response.body),
-                builder: (context, snapshot) {
+                builder: (ctx, snapshot) {
                   debugPrint("Search snapshot data: " + snapshot.data);
 
                   final resultArr =
@@ -296,16 +296,16 @@ class Search extends SearchDelegate<SearchItem> {
   }
 
   @override
-  Widget buildResults(BuildContext context) {
+  Widget buildResults(BuildContext ctx) {
     return Container();
   }
 
   @override
-  ThemeData appBarTheme(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+  ThemeData appBarTheme(BuildContext ctx) {
+    final ThemeData theme = Theme.of(ctx);
 
     return theme.brightness == Brightness.light
-        ? super.appBarTheme(context)
+        ? super.appBarTheme(ctx)
         : theme.copyWith(
             primaryColor: theme.primaryColor,
             primaryIconTheme: theme.primaryIconTheme,

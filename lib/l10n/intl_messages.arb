@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2019-03-13T22:45:57.661975",
+  "@@last_modified": "2019-03-13T23:12:47.891535",
   "title": "RANEPA (Timetable)",
   "@title": {
     "type": "text",
@@ -355,6 +355,16 @@
     "type": "text",
     "placeholders": {}
   },
+  "themeAccentTitle": "Theme accent color",
+  "@themeAccentTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeAccentDescription": "Accent color of theme",
+  "@themeAccentDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
   "groupTitle": "Group/teacher",
   "@groupTitle": {
     "type": "text",
@@ -390,28 +400,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "themeDarkRed": "Dark Red",
-  "@themeDarkRed": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "themeBlack": "Black",
-  "@themeBlack": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "themeBlackRed": "Black Red",
-  "@themeBlackRed": {
-    "type": "text",
-    "placeholders": {}
-  },
   "themeLight": "Light",
   "@themeLight": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "themeLightRed": "Light Red",
-  "@themeLightRed": {
     "type": "text",
     "placeholders": {}
   },

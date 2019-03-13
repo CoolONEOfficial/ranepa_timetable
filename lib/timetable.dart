@@ -59,14 +59,14 @@ class Timetable extends StatelessWidget {
   }
 
   static Future<void> _loadAllTimetable(
-    BuildContext context,
+    BuildContext ctx,
     SearchItem searchItem,
     SharedPreferences prefs, {
     bool updateDb = true,
   }) {
     timetable.clear();
     return loadTimetable(
-      context,
+      ctx,
       Timetable.todayMidnight,
       Timetable.todayMidnight.add(Duration(days: dayCount - 1)),
       searchItem,
@@ -76,7 +76,7 @@ class Timetable extends StatelessWidget {
   }
 
   static Future<void> _getTimetable(
-    BuildContext context,
+    BuildContext ctx,
     SearchItem searchItem,
     SharedPreferences prefs,
   ) async {
@@ -86,7 +86,7 @@ class Timetable extends StatelessWidget {
     final today = Timetable.todayMidnight;
 
     if (dbTimetable == null)
-      await _loadAllTimetable(context, searchItem, prefs);
+      await _loadAllTimetable(ctx, searchItem, prefs);
     else {
       timetable.clear();
       timetable.addAll(dbTimetable);
@@ -94,7 +94,7 @@ class Timetable extends StatelessWidget {
       final endCache = DateTime.parse(prefs.getString(PrefsIds.END_CACHE));
       if (endCache.compareTo(endCacheMidnight) != 0) {
         await loadTimetable(
-          context,
+          ctx,
           endCache,
           today.add(Duration(days: dayCount - 1)),
           searchItem,
@@ -110,7 +110,7 @@ class Timetable extends StatelessWidget {
       "${dt.day}.${dt.month}.${dt.year}";
 
   static Future<void> loadTimetable(
-    BuildContext context,
+    BuildContext ctx,
     DateTime from,
     DateTime to,
     SearchItem searchItem,
@@ -171,7 +171,7 @@ class Timetable extends StatelessWidget {
         room: RoomModel.fromString(mItem["aydit"]),
         group: mItem["namegroup"],
         lesson: LessonModel.build(
-          context,
+          ctx,
           mItemName.substring(0, openBracketIndex),
           mItemName.substring(openBracketIndex + 1, closeBracketIndex),
         ),
@@ -257,13 +257,13 @@ class Timetable extends StatelessWidget {
   }
 
   static void _createAlarm(
-    BuildContext context,
+    BuildContext ctx,
     SharedPreferences prefs,
   ) async {
     var beforeAlarmClockStr = prefs.getInt(PrefsIds.BEFORE_ALARM_CLOCK);
     if (beforeAlarmClockStr == null) {
       beforeAlarmClockStr =
-          (await Prefs.showBeforeAlarmClockSelect(context, prefs)).inMinutes;
+          (await Prefs.showBeforeAlarmClockSelect(ctx, prefs)).inMinutes;
     }
     final beforeAlarmClock = Duration(minutes: beforeAlarmClockStr);
 
@@ -289,10 +289,10 @@ class Timetable extends StatelessWidget {
           },
         ).launch();
 
-      snackBarText = AppLocalizations.of(context).alarmAddSuccess +
-          TimeOfDay.fromDateTime(alarmClock).format(context);
+      snackBarText = AppLocalizations.of(ctx).alarmAddSuccess +
+          TimeOfDay.fromDateTime(alarmClock).format(ctx);
     } else
-      snackBarText = AppLocalizations.of(context).noLessonsFound;
+      snackBarText = AppLocalizations.of(ctx).noLessonsFound;
     scaffoldKey.currentState.showSnackBar(
       SnackBar(
         content: new Text(snackBarText),
@@ -303,7 +303,7 @@ class Timetable extends StatelessWidget {
   DeviceCalendarPlugin _deviceCalendarPlugin;
 
   static void _createCalendarEvents(
-    BuildContext context,
+    BuildContext ctx,
     DeviceCalendarPlugin calPlugin,
   ) async {
     String snackBarText;
@@ -316,7 +316,7 @@ class Timetable extends StatelessWidget {
       if (permissionsGrantedResult.isSuccess && permissionsGrantedResult.data)
         permissionsGranted = true;
       else
-        snackBarText = AppLocalizations.of(context).calendarEventsAddFailed;
+        snackBarText = AppLocalizations.of(ctx).calendarEventsAddFailed;
     }
 
     if (permissionsGranted) {
@@ -339,11 +339,11 @@ class Timetable extends StatelessWidget {
               ),
             );
           }
-          snackBarText = AppLocalizations.of(context).calendarEventsAddSuccess;
+          snackBarText = AppLocalizations.of(ctx).calendarEventsAddSuccess;
         } else
-          snackBarText = AppLocalizations.of(context).noLessonsFound;
+          snackBarText = AppLocalizations.of(ctx).noLessonsFound;
       } else
-        snackBarText = AppLocalizations.of(context).calendarGetFailed;
+        snackBarText = AppLocalizations.of(ctx).calendarGetFailed;
     }
 
     scaffoldKey.currentState.showSnackBar(
@@ -354,15 +354,15 @@ class Timetable extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
     // Create tabs
     final weekdayNames = [
-      AppLocalizations.of(context).monday,
-      AppLocalizations.of(context).tuesday,
-      AppLocalizations.of(context).wednesday,
-      AppLocalizations.of(context).thursday,
-      AppLocalizations.of(context).friday,
-      AppLocalizations.of(context).saturday
+      AppLocalizations.of(ctx).monday,
+      AppLocalizations.of(ctx).tuesday,
+      AppLocalizations.of(ctx).wednesday,
+      AppLocalizations.of(ctx).thursday,
+      AppLocalizations.of(ctx).friday,
+      AppLocalizations.of(ctx).saturday
     ];
 
     final tabs = List<Tab>();
@@ -389,31 +389,31 @@ class Timetable extends StatelessWidget {
         stream: timetableIdBloc.stream,
         initialData: Tuple2<bool, SearchItem>(true,
             SearchItem.fromPrefs(prefs, PrefsIds.SELECTED_SEARCH_ITEM_PREFIX)),
-        builder: (context, ssSearchItem) => Scaffold(
+        builder: (ctx, ssSearchItem) => Scaffold(
               drawer: drawer,
               key: scaffoldKey,
               body: StreamBuilder<void>(
                 stream: timetableFutureBuilderBloc.stream,
-                builder: (context, _) => WidgetTemplates.buildFutureBuilder(
-                        context,
+                builder: (ctx, _) => WidgetTemplates.buildFutureBuilder(
+                        ctx,
                         future: _checkInternetConnection(),
-                        builder: (context, internetConn) {
+                        builder: (ctx, internetConn) {
                       if (!internetConn.data &&
                           (!Platform.isAndroid || !ssSearchItem.data.item1))
                         return WidgetTemplates.buildNetworkErrorNotification(
-                            context);
+                            ctx);
                       return WidgetTemplates.buildFutureBuilder(
-                        context,
+                        ctx,
                         future: Platform.isAndroid && ssSearchItem.data.item1
                             ? _getTimetable(
-                                context, ssSearchItem.data.item2, prefs)
+                                ctx, ssSearchItem.data.item2, prefs)
                             : _loadAllTimetable(
-                                context,
+                                ctx,
                                 ssSearchItem.data.item2,
                                 prefs,
                                 updateDb: false,
                               ),
-                        builder: (context, _) {
+                        builder: (ctx, _) {
                           if (timetable.values.isEmpty)
                             timetable.addEntries(
                               Iterable<
@@ -441,12 +441,12 @@ class Timetable extends StatelessWidget {
                             if (mDate.compareTo(endCache) > 0)
                               mWidget =
                                   WidgetTemplates.buildNoCacheNotification(
-                                      context);
+                                      ctx);
                             else if (timetableIter.moveNext()) {
                               if (timetableIter.current.value.isEmpty)
                                 mWidget =
                                     WidgetTemplates.buildFreeDayNotification(
-                                        context, ssSearchItem.data.item2);
+                                        ctx, ssSearchItem.data.item2);
                               else
                                 mWidget = TimelineComponent(
                                   prefs,
@@ -455,7 +455,7 @@ class Timetable extends StatelessWidget {
                             } else
                               mWidget =
                                   WidgetTemplates.buildFreeDayNotification(
-                                      context, ssSearchItem.data.item2);
+                                      ctx, ssSearchItem.data.item2);
 
                             tabViews.add(mWidget);
 
@@ -464,6 +464,7 @@ class Timetable extends StatelessWidget {
                                     ? 2
                                     : 1));
                           }
+                          return TabBarView(children: tabViews);
                         },
                       );
                     }),
@@ -478,21 +479,21 @@ class Timetable extends StatelessWidget {
                 actions: (Platform.isAndroid
                     ? <Widget>[
                         IconButton(
-                          tooltip: AppLocalizations.of(context).calendarTip,
+                          tooltip: AppLocalizations.of(ctx).calendarTip,
                           icon: const Icon(Icons.calendar_today),
                           onPressed: () => _createCalendarEvents(
-                              context, _deviceCalendarPlugin),
+                              ctx, _deviceCalendarPlugin),
                         ),
                         IconButton(
-                          tooltip: AppLocalizations.of(context).alarmTip,
+                          tooltip: AppLocalizations.of(ctx).alarmTip,
                           icon: const Icon(Icons.alarm),
-                          onPressed: () => _createAlarm(context, prefs),
+                          onPressed: () => _createAlarm(ctx, prefs),
                         )
                       ]
                     : List<Widget>())
                   ..addAll(<Widget>[
                     IconButton(
-                      tooltip: AppLocalizations.of(context).refreshTip,
+                      tooltip: AppLocalizations.of(ctx).refreshTip,
                       icon: const Icon(Icons.refresh),
                       onPressed: () async {
                         await PlatformChannels.deleteDb();
@@ -500,10 +501,10 @@ class Timetable extends StatelessWidget {
                       },
                     ),
                     IconButton(
-                      tooltip: AppLocalizations.of(context).searchTip,
+                      tooltip: AppLocalizations.of(ctx).searchTip,
                       icon: const Icon(Icons.search),
                       onPressed: () => showSearchItemSelect(
-                            context,
+                            ctx,
                             prefs,
                             primary: false,
                           ),

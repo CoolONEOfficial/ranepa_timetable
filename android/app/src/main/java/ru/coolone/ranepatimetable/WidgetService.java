@@ -39,7 +39,7 @@ public class WidgetService extends RemoteViewsService {
  */
 @Log
 class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
-    private Context context;
+    private Context ctx;
     private Cursor cursor;
     private long dateMillis;
     private WidgetProvider.Theme theme;
@@ -47,8 +47,8 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
     public static final String DATE = "date";
     public static final String THEME_ID = "themeId";
 
-    public WidgetRemoteViewsFactory(Context context, Intent intent) {
-        this.context = context;
+    public WidgetRemoteViewsFactory(Context ctx, Intent intent) {
+        this.ctx = ctx;
         var intentDateMillis = intent.getLongExtra(DATE, -1);
         if (intentDateMillis != -1) dateMillis = intentDateMillis;
         var themeId = intent.getIntExtra(THEME_ID, WidgetProvider.DEFAULT_THEME_ID);
@@ -80,15 +80,15 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
      * @param dp A value in dp (density independent pixels) unit. Which we need to convert into pixels
      * @return A float value to represent px equivalent to dp depending on device density
      */
-    static float dpToPixel(Context context, float dp) {
-        var metrics = context.getResources().getDisplayMetrics();
+    static float dpToPixel(Context ctx, float dp) {
+        var metrics = ctx.getResources().getDisplayMetrics();
         return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
     private static float _dpScale = -1;
 
-    static float dpScale(Context context) {
-        if(_dpScale == -1) _dpScale = dpToPixel(context, 1);
+    static float dpScale(Context ctx) {
+        if(_dpScale == -1) _dpScale = dpToPixel(ctx, 1);
         return _dpScale;
     }
 
@@ -99,8 +99,8 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             circleMargin = 5,
             circleRadiusAdd = 3;
 
-    private Bitmap buildItemBitmap(Context context) {
-        var dpScale = dpScale(context);
+    private Bitmap buildItemBitmap(Context ctx) {
+        var dpScale = dpScale(ctx);
 
         var w = (widgetSize.first > 0 ? widgetSize.first : 100) * dpScale;
         var h = 80 * dpScale;
@@ -220,7 +220,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         iconPaint.setTextAlign(Paint.Align.CENTER);
         iconPaint.setTypeface(
                 Typeface.createFromAsset(
-                        context.getAssets(),
+                        ctx.getAssets(),
                         "fonts/TimetableIcons.ttf"
                 )
         );
@@ -258,16 +258,16 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
 
     private Locale getCurrentLocale() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return context.getResources().getConfiguration().getLocales().get(0);
+            return ctx.getResources().getConfiguration().getLocales().get(0);
         } else {
             //noinspection deprecation
-            return context.getResources().getConfiguration().locale;
+            return ctx.getResources().getConfiguration().locale;
         }
     }
 
     @Override
     public RemoteViews getViewAt(int position) {
-        var rv = new RemoteViews(context.getPackageName(), R.layout.widget_item);
+        var rv = new RemoteViews(ctx.getPackageName(), R.layout.widget_item);
 
         // Get the data for this position from the content provider
         if (cursor.moveToPosition(position)) {
@@ -295,7 +295,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             var teacherSurname = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_SURNAME));
             var teacherPatronymic = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_PATRONYMIC));
             var group = cursor.getString(cursor.getColumnIndex(Timeline.COLUMN_GROUP));
-            var user = WidgetProvider.SearchItemTypeId.values()[(int) getPrefs(context).getLong(
+            var user = WidgetProvider.SearchItemTypeId.values()[(int) getPrefs(ctx).getLong(
                     WidgetProvider.PrefsIds.PrimarySearchItemPrefix.prefId +
                             WidgetProvider.PrefsIds.ItemType.prefId,
                     -1
@@ -326,7 +326,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             rv.setImageViewBitmap(
                     R.id.widget_item_image,
                     buildItemBitmap(
-                            context
+                            ctx
                     )
             );
         }
@@ -363,6 +363,6 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             cursor.close();
         }
         log.info("Database cursor refresh...");
-        cursor = TimetableDatabase.getInstance(context).timetable().selectByDate(dateMillis);
+        cursor = TimetableDatabase.getInstance(ctx).timetable().selectByDate(dateMillis);
     }
 }

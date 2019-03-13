@@ -356,6 +356,16 @@
     "type": "text",
     "placeholders": {}
   },
+  "themeAccentTitle": "Дополнительный цвет",
+  "@themeAccentTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "themeAccentDescription": "Цвет подсветки цветовой схемы",
+  "@themeAccentDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
   "groupTitle": "Изменить группу/преподавателя",
   "@groupTitle": {
     "type": "text",
@@ -391,28 +401,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "themeDarkRed": "Темно-красная",
-  "@themeDarkRed": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "themeBlack": "Черная",
-  "@themeBlack": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "themeBlackRed": "Черно-красная",
-  "@themeBlackRed": {
-    "type": "text",
-    "placeholders": {}
-  },
   "themeLight": "Светлая",
   "@themeLight": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "themeLightRed": "Светло-красная",
-  "@themeLightRed": {
     "type": "text",
     "placeholders": {}
   },

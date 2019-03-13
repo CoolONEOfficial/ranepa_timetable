@@ -46,10 +46,10 @@ public class TimetableDataProvider extends ContentProvider {
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         final int code = MATCHER.match(uri);
         if (code == CODE_TIMELINE_DIR || code == CODE_TIMELINE_ITEM) {
-            var context = getContext();
-            if (context == null) return null;
+            var ctx = getContext();
+            if (ctx == null) return null;
 
-            var timetable = TimetableDatabase.getInstance(context).timetable();
+            var timetable = TimetableDatabase.getInstance(ctx).timetable();
 
             final Cursor cursor;
             if (code == CODE_TIMELINE_DIR) {
@@ -57,7 +57,7 @@ public class TimetableDataProvider extends ContentProvider {
             } else {
                 cursor = timetable.selectById(ContentUris.parseId(uri));
             }
-            cursor.setNotificationUri(context.getContentResolver(), uri);
+            cursor.setNotificationUri(ctx.getContentResolver(), uri);
 
             return cursor;
         } else {

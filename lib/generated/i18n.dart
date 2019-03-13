@@ -14,7 +14,7 @@ class S implements WidgetsLocalizations {
   static const GeneratedLocalizationsDelegate delegate =
     GeneratedLocalizationsDelegate();
 
-  static S of(BuildContext context) => Localizations.of<S>(context, S);
+  static S of(BuildContext ctx) => Localizations.of<S>(ctx, S);
 
   @override
   TextDirection get textDirection => TextDirection.ltr;

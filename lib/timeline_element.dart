@@ -25,15 +25,15 @@ class TimelineElement extends StatelessWidget {
 
   TimelineElement([this.model, this.prefs]);
 
-  Widget _buildLine(BuildContext context) => SizedBox.expand(
+  Widget _buildLine(BuildContext ctx) => SizedBox.expand(
         child: Container(
           child: CustomPaint(
-            painter: TimelinePainter(context, model),
+            painter: TimelinePainter(ctx, model),
           ),
         ),
       );
 
-  Widget _buildTeacherGroup(BuildContext context) {
+  Widget _buildTeacherGroup(BuildContext ctx) {
     final user = User.values[prefs.getInt((Timetable.showSelected
                 ? PrefsIds.SELECTED_SEARCH_ITEM_PREFIX
                 : PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX) +
@@ -44,50 +44,50 @@ class TimelineElement extends StatelessWidget {
       child: Text(
         user == User.Student ? model.teacher.initials() : model.group,
         overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.title,
+        style: Theme.of(ctx).textTheme.title,
       ),
     );
   }
 
-  Widget _buildStart(BuildContext context) => Text(
-        model.start.format(context),
+  Widget _buildStart(BuildContext ctx) => Text(
+        model.start.format(ctx),
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.title,
+        style: Theme.of(ctx).textTheme.title,
       );
 
-  Widget _buildFinish(BuildContext context) => Text(
-        model.finish.format(context),
+  Widget _buildFinish(BuildContext ctx) => Text(
+        model.finish.format(ctx),
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.body2,
+        style: Theme.of(ctx).textTheme.body2,
       );
 
-  Widget _buildLessonType(BuildContext context) => Tooltip(
+  Widget _buildLessonType(BuildContext ctx) => Tooltip(
         message: model.lesson.action?.title ?? model.lesson.fullTitle,
         child: Text(
           model.lesson.action.title,
           overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.body2,
+          style: Theme.of(ctx).textTheme.body2,
         ),
       );
 
-  Widget _buildLessonTitle(BuildContext context) => Tooltip(
+  Widget _buildLessonTitle(BuildContext ctx) => Tooltip(
         message: model.lesson.fullTitle ?? model.lesson.title,
         child: Text(
           model.lesson.title,
           overflow: TextOverflow.ellipsis,
           softWrap: false,
-          style: Theme.of(context).textTheme.title,
+          style: Theme.of(ctx).textTheme.title,
         ),
       );
 
-  Widget _buildRoomLocation(BuildContext context) => Text(
+  Widget _buildRoomLocation(BuildContext ctx) => Text(
         model.room.number,
-        style: Theme.of(context).textTheme.subtitle,
+        style: Theme.of(ctx).textTheme.subtitle,
       );
 
   static const innerPadding = 4.0;
 
-  Widget _buildLeftContent(BuildContext context) => Container(
+  Widget _buildLeftContent(BuildContext ctx) => Container(
         width: 68 - innerPadding,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -99,34 +99,34 @@ class TimelineElement extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                _buildStart(context),
-                _buildFinish(context),
+                _buildStart(ctx),
+                _buildFinish(ctx),
               ],
             ),
             Padding(
               padding: const EdgeInsets.only(left: 22, bottom: 2, top: 8),
-              child: _buildRoomLocation(context),
+              child: _buildRoomLocation(ctx),
             ),
           ],
         ),
       );
 
-  Widget _buildRightContent(BuildContext context) => Expanded(
+  Widget _buildRightContent(BuildContext ctx) => Expanded(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: (model.lesson.action != null
-              ? <Widget>[_buildLessonType(context)]
+              ? <Widget>[_buildLessonType(ctx)]
               : <Widget>[])
             ..addAll(<Widget>[
-              _buildLessonTitle(context),
-              _buildTeacherGroup(context),
+              _buildLessonTitle(ctx),
+              _buildTeacherGroup(ctx),
             ]),
         ),
       );
 
-  Widget _buildContentColumn(BuildContext context) {
+  Widget _buildContentColumn(BuildContext ctx) {
     return Padding(
       padding: EdgeInsets.only(
         top: TimelinePainter.rectMargins + innerPadding,
@@ -136,28 +136,28 @@ class TimelineElement extends StatelessWidget {
       ),
       child: Row(
         children: <Widget>[
-          _buildLeftContent(context),
+          _buildLeftContent(ctx),
           Container(
             width: 50 + innerPadding + TimelinePainter.circleRadiusAdd,
           ),
-          _buildRightContent(context),
+          _buildRightContent(ctx),
         ],
       ),
     );
   }
 
-  Widget _buildRow(BuildContext context) => Container(
+  Widget _buildRow(BuildContext ctx) => Container(
         height: 85,
         child: Stack(
           children: <Widget>[
-            _buildLine(context),
-            _buildContentColumn(context),
+            _buildLine(ctx),
+            _buildContentColumn(ctx),
           ],
         ),
       );
 
   @override
-  Widget build(BuildContext context) {
-    return _buildRow(context);
+  Widget build(BuildContext ctx) {
+    return _buildRow(ctx);
   }
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/themes.dart';
+import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -11,7 +11,7 @@ class About extends StatelessWidget {
   static const ROUTE = "/about";
 
   Widget _buildGuyIconContent(
-    BuildContext context,
+    BuildContext ctx,
     TextTheme textTheme,
     String name,
     String url,
@@ -104,7 +104,7 @@ class About extends StatelessWidget {
       );
 
   Widget _buildGuyIcon(
-    BuildContext context,
+    BuildContext ctx,
     TextTheme textTheme,
     String name,
     String url,
@@ -117,7 +117,7 @@ class About extends StatelessWidget {
       orientation == Orientation.portrait
           ? Flexible(
               child: _buildGuyIconContent(
-              context,
+              ctx,
               textTheme,
               name,
               url,
@@ -129,7 +129,7 @@ class About extends StatelessWidget {
           : Container(
               width: 130,
               child: _buildGuyIconContent(
-                context,
+                ctx,
                 textTheme,
                 name,
                 url,
@@ -140,13 +140,13 @@ class About extends StatelessWidget {
               ));
 
   List<Widget> _buildGuys(
-    BuildContext context,
+    BuildContext ctx,
     TextTheme textTheme,
     Orientation orientation,
   ) =>
       <Widget>[
         _buildGuyIcon(
-          context,
+          ctx,
           textTheme,
           'Вадим',
           'overveigh',
@@ -156,7 +156,7 @@ class About extends StatelessWidget {
           descriptionRight: 'разработчик\nтeстировщик',
         ),
         _buildGuyIcon(
-          context,
+          ctx,
           textTheme,
           'Николай',
           'cooloneofficial',
@@ -166,7 +166,7 @@ class About extends StatelessWidget {
           descriptionRight: 'разработчик',
         ),
         _buildGuyIcon(
-          context,
+          ctx,
           textTheme,
           'Александр',
           'xr.aleks01',
@@ -177,7 +177,7 @@ class About extends StatelessWidget {
       ];
 
   List<Widget> _buildLogoText(
-    BuildContext context,
+    BuildContext ctx,
     TextTheme textTheme,
     Orientation orientation,
   ) =>
@@ -185,7 +185,7 @@ class About extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(20),
           child: WidgetTemplates.buildLogo(
-            Theme.of(context),
+            Theme.of(ctx),
             color: textTheme.title.color,
           ),
         ),
@@ -193,34 +193,32 @@ class About extends StatelessWidget {
             ? Container(
                 width: 200,
                 child: AutoSizeText(
-                  AppLocalizations.of(context).introWelcomeDescription,
+                  AppLocalizations.of(ctx).introWelcomeDescription,
                   style: textTheme.title,
                   textAlign: TextAlign.center,
                 ))
             : AutoSizeText(
-                AppLocalizations.of(context).introWelcomeDescription,
+                AppLocalizations.of(ctx).introWelcomeDescription,
                 style: textTheme.title,
                 textAlign: TextAlign.center,
               ),
       ];
 
   @override
-  Widget build(BuildContext context) {
-    final currentTheme = Theme.of(context);
-    final textTheme = (currentTheme.brightness == Brightness.dark &&
-            currentTheme.accentColor !=
-                Themes.themes[ThemeIds.DARK.index].accentColor
-        ? Theme.of(context).accentTextTheme
-        : Theme.of(context).primaryTextTheme);
+  Widget build(BuildContext ctx) {
+    final currentTheme = Theme.of(ctx);
+    final textTheme = (currentTheme.brightness == Brightness.dark
+        ? Theme.of(ctx).accentTextTheme
+        : Theme.of(ctx).primaryTextTheme);
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(ctx).primaryColor,
         elevation: 0,
-        title: Text(AppLocalizations.of(context).about),
+        title: Text(AppLocalizations.of(ctx).about),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(ctx),
         ),
         actions: <Widget>[
           IconButton(
@@ -241,9 +239,9 @@ class About extends StatelessWidget {
         ],
       ),
       body: OrientationBuilder(
-        builder: (context, orientation) => Container(
+        builder: (ctx, orientation) => Container(
               padding: EdgeInsets.all(10),
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(ctx).primaryColor,
               child: orientation == Orientation.portrait
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -259,7 +257,7 @@ class About extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.min,
                                 children: _buildLogoText(
-                                    context, textTheme, orientation),
+                                    ctx, textTheme, orientation),
                               ),
                             ),
                           ),
@@ -268,7 +266,7 @@ class About extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
-                          children: _buildGuys(context, textTheme, orientation),
+                          children: _buildGuys(ctx, textTheme, orientation),
                         ),
                       ],
                     )
@@ -278,8 +276,8 @@ class About extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: _buildLogoText(
-                            context, textTheme, orientation)
-                          ..addAll(_buildGuys(context, textTheme, orientation)),
+                            ctx, textTheme, orientation)
+                          ..addAll(_buildGuys(ctx, textTheme, orientation)),
                       ),
                     ),
             ),

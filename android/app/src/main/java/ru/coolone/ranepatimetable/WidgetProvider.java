@@ -75,25 +75,25 @@ public class WidgetProvider extends AppWidgetProvider {
 
     private static SharedPreferences _prefs;
 
-    public static SharedPreferences getPrefs(Context context) {
+    public static SharedPreferences getPrefs(Context ctx) {
         if (_prefs == null)
-            _prefs = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
+            _prefs = ctx.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE);
         return _prefs;
     }
 
     @Override
-    public void onDisabled(Context context) {
+    public void onDisabled(Context ctx) {
         if (manager != null && updatePendingIntent != null)
             manager.cancel(updatePendingIntent);
     }
 
     @Override
-    public void onEnabled(Context context) {
-        AndroidThreeTen.init(context);
+    public void onEnabled(Context ctx) {
+        AndroidThreeTen.init(ctx);
 
         widgetSize = Pair.create(
-                getPrefs(context).getInt(PrefsIds.WidgetSizeWidth.prefId, 1),
-                getPrefs(context).getInt(PrefsIds.WidgetSizeHeight.prefId, 1)
+                getPrefs(ctx).getInt(PrefsIds.WidgetSizeWidth.prefId, 1),
+                getPrefs(ctx).getInt(PrefsIds.WidgetSizeHeight.prefId, 1)
         );
 
         log.info("Create widget size from prefs: \n"
@@ -101,12 +101,12 @@ public class WidgetProvider extends AppWidgetProvider {
                 + "h: " + widgetSize.second + "\n"
         );
 
-        manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        manager = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
 
         updatePendingIntent = PendingIntent.getBroadcast(
-                context,
+                ctx,
                 0,
-                new Intent(context, WidgetProvider.class),
+                new Intent(ctx, WidgetProvider.class),
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
         manager.setRepeating(
@@ -117,7 +117,7 @@ public class WidgetProvider extends AppWidgetProvider {
         );
 
         deleteOldPendingIntent = PendingIntent.getBroadcast(
-                context,
+                ctx,
                 0,
                 new Intent(IntentAction.DeleteOld.action),
                 PendingIntent.FLAG_UPDATE_CURRENT
@@ -259,8 +259,8 @@ public class WidgetProvider extends AppWidgetProvider {
                                 }
 
                                 @Override
-                                public void onDenied(Context context, ArrayList<String> deniedPermissions) {
-                                    super.onDenied(context, deniedPermissions);
+                                public void onDenied(Context ctx, ArrayList<String> deniedPermissions) {
+                                    super.onDenied(ctx, deniedPermissions);
                                     Toast.makeText(ctx, R.string.noCalendarPermissions,
                                             Toast.LENGTH_LONG
                                     ).show();
@@ -395,9 +395,9 @@ public class WidgetProvider extends AppWidgetProvider {
 
     static long showDate;
 
-    static Bitmap buildEmptyViewBitmap(Context context, Theme theme) {
+    static Bitmap buildEmptyViewBitmap(Context ctx, Theme theme) {
         var type = SearchItemTypeId.values()[
-                (int) getPrefs(context).getLong(
+                (int) getPrefs(ctx).getLong(
                         PrefsIds.PrimarySearchItemPrefix.prefId + PrefsIds.ItemType.prefId,
                         0
                 )
@@ -407,55 +407,55 @@ public class WidgetProvider extends AppWidgetProvider {
         var CONFETTI = '\ue839';
 
         return buildNotificationBitmap(
-                context,
+                ctx,
                 theme,
                 type == SearchItemTypeId.Teacher
                         ? CONFETTI
                         : BEER,
-                context.getString(R.string.freeDay),
+                ctx.getString(R.string.freeDay),
                 9f
         );
     }
 
-    static Bitmap buildNoCacheImageBitmap(Context context, Theme theme) {
+    static Bitmap buildNoCacheImageBitmap(Context ctx, Theme theme) {
         var NO_CACHE = '\ue826';
 
         return buildNotificationBitmap(
-                context,
+                ctx,
                 theme,
                 NO_CACHE,
-                context.getString(R.string.noCache),
+                ctx.getString(R.string.noCache),
                 14f,
                 0
         );
     }
 
     static Bitmap buildNotificationBitmap(
-            Context context,
+            Context ctx,
             Theme theme,
             char icon,
             String notification,
             float textScale
     ) {
         return buildNotificationBitmap(
-                context,
+                ctx,
                 theme,
                 icon,
                 notification,
                 textScale,
-                context.getResources().getDimension(R.dimen.widget_head_height) / dpScale(context)
+                ctx.getResources().getDimension(R.dimen.widget_head_height) / dpScale(ctx)
         );
     }
 
     static Bitmap buildNotificationBitmap(
-            Context context,
+            Context ctx,
             Theme theme,
             char icon,
             String notification,
             float textScale,
             float headHeight
     ) {
-        var dpScale = dpScale(context);
+        var dpScale = dpScale(ctx);
 
         var bitmap = Bitmap.createBitmap((int) (widgetSize.first * dpScale), (int) (widgetSize.second * dpScale), Bitmap.Config.ARGB_8888);
         var canvas = new Canvas(bitmap);
@@ -466,7 +466,7 @@ public class WidgetProvider extends AppWidgetProvider {
         iconPaint.setTextAlign(Paint.Align.CENTER);
         iconPaint.setTypeface(
                 Typeface.createFromAsset(
-                        context.getAssets(),
+                        ctx.getAssets(),
                         "fonts/TimetableIcons.ttf"
                 )
         );
@@ -512,13 +512,13 @@ public class WidgetProvider extends AppWidgetProvider {
     }
 
     private Pair<Integer, Integer> getWidgetSize(
-            Context context,
+            Context ctx,
             int appWidgetId,
             AppWidgetManager manager
     ) {
 
         AppWidgetProviderInfo providerInfo = AppWidgetManager.getInstance(
-                context.getApplicationContext()).getAppWidgetInfo(appWidgetId);
+                ctx.getApplicationContext()).getAppWidgetInfo(appWidgetId);
 
         // Since min and max is usually the same, just take min
         var mWidgetLandSize = new Pair<>(providerInfo.minWidth, providerInfo.minHeight);
@@ -558,7 +558,7 @@ public class WidgetProvider extends AppWidgetProvider {
                         + ",\nnew portHeight = " + mNewWidgetPortSize.second
         );
 
-        return context.getResources().getBoolean(R.bool.isPort)
+        return ctx.getResources().getBoolean(R.bool.isPort)
                 ? mNewWidgetPortSize.first != 0 || mNewWidgetPortSize.second != 0
                 ? mNewWidgetPortSize
                 : mWidgetPortSize
@@ -569,13 +569,13 @@ public class WidgetProvider extends AppWidgetProvider {
 
     public static Pair<Integer, Integer> widgetSize;
 
-    private RemoteViews buildLayout(Context context, int appWidgetId, AppWidgetManager manager, boolean updateSize) {
-        theme = Theme.values()[(int) getPrefs(context).getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
+    private RemoteViews buildLayout(Context ctx, int appWidgetId, AppWidgetManager manager, boolean updateSize) {
+        theme = Theme.values()[(int) getPrefs(ctx).getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
 
         // Set the size
         if (updateSize) {
-            widgetSize = getWidgetSize(context, appWidgetId, manager);
-            var prefsEditor = getPrefs(context).edit();
+            widgetSize = getWidgetSize(ctx, appWidgetId, manager);
+            var prefsEditor = getPrefs(ctx).edit();
             prefsEditor.putInt(PrefsIds.WidgetSizeWidth.prefId, widgetSize.first);
             prefsEditor.putInt(PrefsIds.WidgetSizeHeight.prefId, widgetSize.second);
             prefsEditor.apply();
@@ -587,7 +587,7 @@ public class WidgetProvider extends AppWidgetProvider {
         int headLayoutResId = -1;
         int layoutResId = -1;
 
-        var translucent = getPrefs(context).getBoolean(PrefsIds.WidgetTranslucent.prefId, true);
+        var translucent = getPrefs(ctx).getBoolean(PrefsIds.WidgetTranslucent.prefId, true);
 
         switch (theme) {
             case Dark:
@@ -618,9 +618,9 @@ public class WidgetProvider extends AppWidgetProvider {
 
         RemoteViews rv;
 
-        if (TimetableDatabase.getInstance(context).timetable().count() != 0) {
+        if (TimetableDatabase.getInstance(ctx).timetable().count() != 0) {
 
-            rv = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+            rv = new RemoteViews(ctx.getPackageName(), R.layout.widget_layout);
 
             var futureLessonFindDate = getTodayMidnight();
             futureLessonFindDate.add(Calendar.DATE, dateOffset);
@@ -628,22 +628,22 @@ public class WidgetProvider extends AppWidgetProvider {
             String dayOfWeek = null;
             switch (futureLessonFindDate.get(Calendar.DAY_OF_WEEK)) {
                 case Calendar.MONDAY:
-                    dayOfWeek = context.getString(R.string.monday);
+                    dayOfWeek = ctx.getString(R.string.monday);
                     break;
                 case Calendar.TUESDAY:
-                    dayOfWeek = context.getString(R.string.tuesday);
+                    dayOfWeek = ctx.getString(R.string.tuesday);
                     break;
                 case Calendar.WEDNESDAY:
-                    dayOfWeek = context.getString(R.string.wednesday);
+                    dayOfWeek = ctx.getString(R.string.wednesday);
                     break;
                 case Calendar.THURSDAY:
-                    dayOfWeek = context.getString(R.string.thursday);
+                    dayOfWeek = ctx.getString(R.string.thursday);
                     break;
                 case Calendar.FRIDAY:
-                    dayOfWeek = context.getString(R.string.friday);
+                    dayOfWeek = ctx.getString(R.string.friday);
                     break;
                 case Calendar.SATURDAY:
-                    dayOfWeek = context.getString(R.string.saturday);
+                    dayOfWeek = ctx.getString(R.string.saturday);
                     break;
             }
 
@@ -662,7 +662,7 @@ public class WidgetProvider extends AppWidgetProvider {
                     dayDescId = R.string.widget_title_after_days;
             }
 
-            var dayDescStr = context.getString(dayDescId);
+            var dayDescStr = ctx.getString(dayDescId);
             if (dateOffset > 2)
                 dayDescStr = String.format(dayDescStr, dateOffset);
 
@@ -673,7 +673,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
             // Specify the service to provide data for the collection widget.  Note that we need to
             // embed the appWidgetId via the data otherwise it will be ignored.
-            var intent = new Intent(context, WidgetService.class);
+            var intent = new Intent(ctx, WidgetService.class);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             var futureLessonDate = GregorianCalendar.getInstance();
             futureLessonDate.setTimeInMillis(
@@ -691,14 +691,14 @@ public class WidgetProvider extends AppWidgetProvider {
             rv.setInt(R.id.day_next, "setColorFilter", theme.textAccent);
             rv.setInt(R.id.day_prev, "setColorFilter", theme.textAccent);
 
-            rv.setOnClickPendingIntent(R.id.create_alarm_clock, getPendingSelfIntent(context, IntentAction.CreateAlarmClock.action));
-            rv.setOnClickPendingIntent(R.id.create_calendar_events, getPendingSelfIntent(context, IntentAction.CreateCalendarEvents.action));
-            rv.setOnClickPendingIntent(R.id.day_next, getPendingSelfIntent(context, IntentAction.DayNext.action));
-            rv.setOnClickPendingIntent(R.id.day_prev, getPendingSelfIntent(context, IntentAction.DayPrev.action));
+            rv.setOnClickPendingIntent(R.id.create_alarm_clock, getPendingSelfIntent(ctx, IntentAction.CreateAlarmClock.action));
+            rv.setOnClickPendingIntent(R.id.create_calendar_events, getPendingSelfIntent(ctx, IntentAction.CreateCalendarEvents.action));
+            rv.setOnClickPendingIntent(R.id.day_next, getPendingSelfIntent(ctx, IntentAction.DayNext.action));
+            rv.setOnClickPendingIntent(R.id.day_prev, getPendingSelfIntent(ctx, IntentAction.DayPrev.action));
 
             rv.setViewPadding(
                     R.id.widget_title, dateOffset == 0
-                            ? (int) WidgetRemoteViewsFactory.dpToPixel(context, 16)
+                            ? (int) WidgetRemoteViewsFactory.dpToPixel(ctx, 16)
                             : 0, 0, 0, 0
             );
             rv.setViewVisibility(R.id.day_prev, dateOffset > 0 ? View.VISIBLE : View.GONE);
@@ -707,20 +707,20 @@ public class WidgetProvider extends AppWidgetProvider {
             rv.setRemoteAdapter(R.id.timeline_list, intent);
             rv.setImageViewBitmap(
                     R.id.empty_view,
-                    buildEmptyViewBitmap(context, theme)
+                    buildEmptyViewBitmap(ctx, theme)
             );
             rv.setEmptyView(R.id.timeline_list, R.id.empty_view);
 
         } else {
-            rv = new RemoteViews(context.getPackageName(), R.layout.widget_no_cache_layout);
+            rv = new RemoteViews(ctx.getPackageName(), R.layout.widget_no_cache_layout);
 
             rv.setInt(R.id.widget_no_cache_image, "setBackgroundResource", layoutResId);
             rv.setOnClickPendingIntent(R.id.widget_no_cache_image,
                     PendingIntent.getActivity(
-                            context,
+                            ctx,
                             0,
                             new Intent(
-                                    context,
+                                    ctx,
                                     MainActivity.class
                             ),
                             0
@@ -728,21 +728,21 @@ public class WidgetProvider extends AppWidgetProvider {
             );
             rv.setImageViewBitmap(
                     R.id.widget_no_cache_image,
-                    buildNoCacheImageBitmap(context, theme)
+                    buildNoCacheImageBitmap(ctx, theme)
             );
         }
 
         return rv;
     }
 
-    protected PendingIntent getPendingSelfIntent(Context context, String action) {
-        var intent = new Intent(context, getClass());
+    protected PendingIntent getPendingSelfIntent(Context ctx, String action) {
+        var intent = new Intent(ctx, getClass());
         intent.setAction(action);
-        return PendingIntent.getBroadcast(context, 0, intent, 0);
+        return PendingIntent.getBroadcast(ctx, 0, intent, 0);
     }
 
     @Override
-    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+    public void onUpdate(Context ctx, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         log.info("widget onUpdate");
 
         // Update each of the widgets with the remote adapter
@@ -750,25 +750,25 @@ public class WidgetProvider extends AppWidgetProvider {
             appWidgetManager.updateAppWidget(
                     appWidgetId,
                     buildLayout(
-                            context,
+                            ctx,
                             appWidgetId,
                             appWidgetManager,
                             true
                     )
             );
         }
-        super.onUpdate(context, appWidgetManager, appWidgetIds);
+        super.onUpdate(ctx, appWidgetManager, appWidgetIds);
     }
 
     @Override
-    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager,
+    public void onAppWidgetOptionsChanged(Context ctx, AppWidgetManager appWidgetManager,
                                           int appWidgetId, Bundle newOptions) {
         log.info("widget onAppWidgetOptionsChanged");
 
         appWidgetManager.updateAppWidget(
                 appWidgetId,
                 buildLayout(
-                        context,
+                        ctx,
                         appWidgetId,
                         appWidgetManager,
                         true

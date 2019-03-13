@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
 
 class WidgetTemplates {
-  static Widget buildPreferenceButton(BuildContext context,
+  static Widget buildPreferenceButton(BuildContext ctx,
       {@required String title,
       @required String description,
       VoidCallback onPressed,
@@ -15,14 +16,14 @@ class WidgetTemplates {
     var expandedChildren = <Widget>[
       Text(
         title,
-        style: Theme.of(context).textTheme.subhead,
+        style: Theme.of(ctx).textTheme.subhead,
       ),
       Container(
         height: 2,
       ),
       Text(
         description,
-        style: Theme.of(context).textTheme.caption,
+        style: Theme.of(ctx).textTheme.caption,
       ),
     ];
 
@@ -43,7 +44,7 @@ class WidgetTemplates {
   }
 
   static Widget _buildNotification(
-          BuildContext context, String text, Widget widget) =>
+          BuildContext ctx, String text, Widget widget) =>
       Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -53,16 +54,16 @@ class WidgetTemplates {
             Container(height: 20),
             Text(
               text,
-              style: Theme.of(context).textTheme.title,
+              style: Theme.of(ctx).textTheme.title,
             )
           ],
         ),
       );
 
-  static Widget _buildIconNotification(BuildContext context, String text,
+  static Widget _buildIconNotification(BuildContext ctx, String text,
           [IconData icon]) =>
       _buildNotification(
-        context,
+        ctx,
         text,
         FittedBox(
           fit: BoxFit.scaleDown,
@@ -70,20 +71,20 @@ class WidgetTemplates {
         ),
       );
 
-  static Widget buildLoadingNotification(BuildContext context) =>
+  static Widget buildLoadingNotification(BuildContext ctx) =>
       _buildNotification(
-        context,
-        AppLocalizations.of(context).loading,
+        ctx,
+        AppLocalizations.of(ctx).loading,
         CircularProgressIndicator(),
       );
 
-  static Widget buildErrorNotification(BuildContext context, String error) =>
-      _buildIconNotification(context, error, Icons.error);
+  static Widget buildErrorNotification(BuildContext ctx, String error) =>
+      _buildIconNotification(ctx, error, Icons.error);
 
-  static Widget buildNetworkErrorNotification(BuildContext context) =>
+  static Widget buildNetworkErrorNotification(BuildContext ctx) =>
       _buildNotification(
-        context,
-        AppLocalizations.of(context).noNetworkConnection,
+        ctx,
+        AppLocalizations.of(ctx).noNetworkConnection,
         RawMaterialButton(
           onPressed: () => timetableFutureBuilderBloc.add(null),
           child: Icon(
@@ -95,10 +96,10 @@ class WidgetTemplates {
         ),
       );
 
-  static Widget buildNoCacheNotification(BuildContext context) =>
+  static Widget buildNoCacheNotification(BuildContext ctx) =>
       _buildNotification(
-        context,
-        AppLocalizations.of(context).noCache,
+        ctx,
+        AppLocalizations.of(ctx).noCache,
         RawMaterialButton(
           onPressed: () => timetableFutureBuilderBloc.add(null),
           child: Icon(
@@ -123,7 +124,7 @@ class WidgetTemplates {
       );
 
   static Widget buildFreeDayNotification(
-      BuildContext context, SearchItem searchItem) {
+      BuildContext ctx, SearchItem searchItem) {
     IconData icon;
     switch (searchItem.typeId) {
       case SearchItemTypeId.Teacher:
@@ -135,11 +136,11 @@ class WidgetTemplates {
     }
 
     return _buildIconNotification(
-        context, AppLocalizations.of(context).freeDay, icon);
+        ctx, AppLocalizations.of(ctx).freeDay, icon);
   }
 
   static Widget buildFutureBuilder<T>(
-    BuildContext context, {
+    BuildContext ctx, {
     @required Future future,
     @required AsyncWidgetBuilder<T> builder,
     Widget loading,
@@ -147,20 +148,20 @@ class WidgetTemplates {
   }) {
     return FutureBuilder<T>(
         future: future,
-        builder: (BuildContext _, AsyncSnapshot snapshot) {
+        builder: (BuildContext ctx, AsyncSnapshot snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
             case ConnectionState.active:
             case ConnectionState.waiting:
               return loading ??
-                  WidgetTemplates.buildLoadingNotification(context);
+                  WidgetTemplates.buildLoadingNotification(ctx);
               break;
             case ConnectionState.done:
               if (snapshot.hasError)
                 return error ??
                     WidgetTemplates.buildErrorNotification(
-                        context, snapshot.error ?? "Unknown");
-              return builder(context, snapshot);
+                        ctx, snapshot.error ?? "Unknown");
+              return builder(ctx, snapshot);
           }
         });
   }

@@ -27,6 +27,7 @@ dependencies:
   flutter_duration_picker: ^1.0.4
   auto_size_text: ^1.0.0
   flutter_email_sender: ^2.0.0
+  flutter_material_color_picker: ^0.0.5
 
 dev_dependencies:
   flutter_test:

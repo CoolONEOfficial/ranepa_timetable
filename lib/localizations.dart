@@ -17,8 +17,8 @@ class AppLocalizations {
     });
   }
 
-  static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+  static AppLocalizations of(BuildContext ctx) {
+    return Localizations.of<AppLocalizations>(ctx, AppLocalizations);
   }
 
   // App title
@@ -544,6 +544,20 @@ class AppLocalizations {
     );
   }
 
+  String get themeAccentTitle {
+    return Intl.message(
+      'Theme accent color',
+      name: 'themeAccentTitle',
+    );
+  }
+
+  String get themeAccentDescription {
+    return Intl.message(
+      'Accent color of theme',
+      name: 'themeAccentDescription',
+    );
+  }
+
   String get groupTitle {
     return Intl.message(
       'Group/teacher',
@@ -595,38 +609,10 @@ class AppLocalizations {
     );
   }
 
-  String get themeDarkRed {
-    return Intl.message(
-      'Dark Red',
-      name: 'themeDarkRed',
-    );
-  }
-
-  String get themeBlack {
-    return Intl.message(
-      'Black',
-      name: 'themeBlack',
-    );
-  }
-
-  String get themeBlackRed {
-    return Intl.message(
-      'Black Red',
-      name: 'themeBlackRed',
-    );
-  }
-
   String get themeLight {
     return Intl.message(
       'Light',
       name: 'themeLight',
-    );
-  }
-
-  String get themeLightRed {
-    return Intl.message(
-      'Light Red',
-      name: 'themeLightRed',
     );
   }
 

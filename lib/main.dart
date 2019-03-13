@@ -10,14 +10,14 @@ import 'package:ranepa_timetable/about.dart';
 import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/prefs.dart';
-import 'package:ranepa_timetable/themes.dart';
+import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 
 class BaseWidget extends StatelessWidget {
-  Widget buildBase(BuildContext context, SharedPreferences prefs) {
+  Widget buildBase(BuildContext ctx, SharedPreferences prefs) {
     return Timetable(
       drawer: Drawer(
         child: ListView(
@@ -30,7 +30,7 @@ class BaseWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
               ),
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(ctx).primaryColor,
                 image: DecorationImage(
                   image: AssetImage('assets/images/icon-foreground.png'),
                 ),
@@ -38,25 +38,25 @@ class BaseWidget extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.list),
-              title: Text(AppLocalizations.of(context).timetable),
-              onTap: () => Navigator.pop(context),
+              title: Text(AppLocalizations.of(ctx).timetable),
+              onTap: () => Navigator.pop(ctx),
             ),
             ListTile(
               leading: Icon(Icons.settings),
-              title: Text(AppLocalizations.of(context).prefs),
-              onTap: () => Navigator.popAndPushNamed(context, Prefs.ROUTE),
+              title: Text(AppLocalizations.of(ctx).prefs),
+              onTap: () => Navigator.popAndPushNamed(ctx, Prefs.ROUTE),
             ),
             ListTile(
               leading: Icon(Icons.info),
-              title: Text(AppLocalizations.of(context).about),
-              onTap: () => Navigator.popAndPushNamed(context, About.ROUTE),
+              title: Text(AppLocalizations.of(ctx).about),
+              onTap: () => Navigator.popAndPushNamed(ctx, About.ROUTE),
             ),
           ]..addAll(Platform.isAndroid
               ? <Widget>[
                   Divider(),
                   ListTile(
                     leading: Icon(Icons.close),
-                    title: Text(AppLocalizations.of(context).close),
+                    title: Text(AppLocalizations.of(ctx).close),
                     onTap: () => SystemNavigator.pop(),
                   ),
                 ]
@@ -68,24 +68,21 @@ class BaseWidget extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
     return WidgetTemplates.buildFutureBuilder<SharedPreferences>(
-      context,
+      ctx,
       loading: Container(),
       future: SharedPreferences.getInstance(),
-      builder: (context, snapshot) {
+      builder: (ctx, snapshot) {
         final prefs = snapshot.data;
-        return StreamBuilder<int>(
-          stream: themeIdBloc.stream,
-          initialData:
-              prefs.getInt(PrefsIds.THEME_ID) ?? Themes.DEFAULT_THEME_ID.index,
-          builder: (context, snapshot) {
-            final themeId = snapshot.data;
+        return buildThemeStream(
+          (ctx, snapshot) {
+            final theme = snapshot.data;
             return MaterialApp(
-              builder: (context, child) {
-                ErrorWidget.builder = _buildError(context);
+              builder: (ctx, child) {
+                ErrorWidget.builder = _buildError(ctx);
                 return MediaQuery(
-                    data: MediaQuery.of(context)
+                    data: MediaQuery.of(ctx)
                         .copyWith(alwaysUse24HourFormat: true),
                     child: child);
               },
@@ -98,20 +95,20 @@ class BaseWidget extends StatelessWidget {
                 SupportedLocales.en,
                 SupportedLocales.ru,
               ],
-              onGenerateTitle: (BuildContext context) =>
-                  AppLocalizations.of(context).title,
-              theme: Themes.themes[themeId],
+              onGenerateTitle: (BuildContext ctx) =>
+                  AppLocalizations.of(ctx).title,
+              theme: theme,
               routes: <String, WidgetBuilder>{
-                Prefs.ROUTE: (context) => Prefs(),
-                About.ROUTE: (context) => About(),
+                Prefs.ROUTE: (ctx) => Prefs(),
+                About.ROUTE: (ctx) => About(),
               },
               home: Builder(
-                builder: (context) => prefs.getInt(
+                builder: (ctx) => prefs.getInt(
                             PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX +
                                 PrefsIds.ITEM_ID) ==
                         null
-                    ? Intro(base: buildBase(context, prefs), prefs: prefs)
-                    : buildBase(context, prefs),
+                    ? Intro(base: buildBase(ctx, prefs), prefs: prefs)
+                    : buildBase(ctx, prefs),
               ),
             );
           },
@@ -125,8 +122,6 @@ class SupportedLocales {
   static const Locale en = const Locale('en', 'US');
   static const Locale ru = const Locale('ru', 'RU');
 }
-
-final themeIdBloc = StreamController<int>.broadcast();
 
 class DisabledFocusNode extends FocusNode {
   @override
