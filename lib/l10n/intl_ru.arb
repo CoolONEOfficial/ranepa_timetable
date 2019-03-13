@@ -6,6 +6,11 @@
     "type": "text",
     "placeholders": {}
   },
+  "errorMessage": "Чтото пошло не так",
+  "@errorMessage": {
+  "type": "text",
+    "placeholders": {}
+  },
   "calendarEventsAddSuccess": "События успешно добавлены в календарь",
   "@calendarEventsAddSuccess": {
     "type": "text",

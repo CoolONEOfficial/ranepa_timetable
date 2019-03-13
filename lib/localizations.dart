@@ -30,6 +30,15 @@ class AppLocalizations {
     );
   }
 
+  // Error message
+
+  String get errorMessage {
+    return Intl.message(
+      'Something went wrong',
+      name: 'errorMessage',
+    );
+  }
+
   // Calendar notifications
 
   String get calendarEventsAddSuccess {

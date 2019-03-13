@@ -1,7 +1,12 @@
 {
-  "@@last_modified": "2019-01-28T10:53:08.041073",
+  "@@last_modified": "2019-03-13T17:38:15.274444",
   "title": "RANEPA (Timetable)",
   "@title": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "errorMessage": "Something went wrong",
+  "@errorMessage": {
     "type": "text",
     "placeholders": {}
   },

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -80,10 +81,13 @@ class BaseWidget extends StatelessWidget {
           builder: (context, snapshot) {
             final themeId = snapshot.data;
             return MaterialApp(
-              builder: (context, child) => MediaQuery(
-                  data: MediaQuery.of(context)
-                      .copyWith(alwaysUse24HourFormat: true),
-                  child: child),
+              builder: (context, child) {
+                ErrorWidget.builder = _buildError(context);
+                return MediaQuery(
+                    data: MediaQuery.of(context)
+                        .copyWith(alwaysUse24HourFormat: true),
+                    child: child);
+              },
               localizationsDelegates: [
                 AppLocalizationsDelegate(),
                 GlobalMaterialLocalizations.delegate,
@@ -122,6 +126,21 @@ class SupportedLocales {
 }
 
 final themeIdBloc = StreamController<int>.broadcast();
+
+Widget Function(FlutterErrorDetails) _buildError(BuildContext ctx) {
+  return (FlutterErrorDetails err) => Center(
+          child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          AutoSizeText(
+            AppLocalizations.of(ctx).errorMessage,
+            style: TextStyle(fontSize: 25.0),
+            maxLines: 1,
+          ),
+
+        ],
+      ));
+}
 
 Future main() async {
   return runApp(BaseWidget());

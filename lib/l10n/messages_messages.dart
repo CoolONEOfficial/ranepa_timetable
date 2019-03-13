@@ -44,6 +44,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "documentManagementSupport" : MessageLookupByLibrary.simpleMessage("Document management support"),
     "economics" : MessageLookupByLibrary.simpleMessage("Economic theory"),
     "english" : MessageLookupByLibrary.simpleMessage("English"),
+    "errorMessage" : MessageLookupByLibrary.simpleMessage("Something went wrong"),
     "ethics" : MessageLookupByLibrary.simpleMessage("Ethics"),
     "exam" : MessageLookupByLibrary.simpleMessage("Exam"),
     "examConsultation" : MessageLookupByLibrary.simpleMessage("Exam consultation"),

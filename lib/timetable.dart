@@ -464,7 +464,6 @@ class Timetable extends StatelessWidget {
                                     ? 2
                                     : 1));
                           }
-                          return TabBarView(children: tabViews);
                         },
                       );
                     }),
