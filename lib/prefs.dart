@@ -23,6 +23,7 @@ class PrefsIds {
       THEME_TEXT_PRIMARY = "theme_text_primary",
       THEME_TEXT_ACCENT = "theme_text_accent",
       THEME_BACKGROUND = "theme_background",
+      THEME_BRIGHTNESS = "theme_brightness",
       BEFORE_ALARM_CLOCK = "before_alarm_clock",
       END_CACHE = "end_cache",
       SELECTED_SEARCH_ITEM_PREFIX = "selected_search_item_",
@@ -53,7 +54,8 @@ Future<SearchItem> showSearchItemSelect(
       },
     );
 
-Future<Brightness> showThemeBrightnessSelect(BuildContext ctx, SharedPreferences prefs) {
+Future<Brightness> showThemeBrightnessSelect(
+    BuildContext ctx, SharedPreferences prefs) {
   final dialogItems = List<Widget>();
 
   for (var mBrightness in Brightness.values) {
@@ -78,32 +80,32 @@ Future<Brightness> showThemeBrightnessSelect(BuildContext ctx, SharedPreferences
 }
 
 void showMaterialColorPicker(BuildContext ctx) => showDialog(
-  context: ctx,
-  builder: (ctx) {
-    var pickedColor = accentColor;
-    return AlertDialog(
-      contentPadding: const EdgeInsets.all(6.0),
-      content: MaterialColorPicker(
-        selectedColor: pickedColor,
-        allowShades: false,
-        onMainColorChange: (color) => pickedColor = color,
-      ),
-      actions: [
-        FlatButton(
-          child: Text(MaterialLocalizations.of(ctx).cancelButtonLabel),
-          onPressed: () => Navigator.of(ctx).pop(),
-        ),
-        FlatButton(
-          child: Text(MaterialLocalizations.of(ctx).okButtonLabel),
-          onPressed: () {
-            Navigator.of(ctx).pop();
-            accentColor = pickedColor;
-          },
-        ),
-      ],
+      context: ctx,
+      builder: (ctx) {
+        var pickedColor = accentColor;
+        return AlertDialog(
+          contentPadding: const EdgeInsets.all(6.0),
+          content: MaterialColorPicker(
+            selectedColor: pickedColor,
+            allowShades: false,
+            onMainColorChange: (color) => pickedColor = color,
+          ),
+          actions: [
+            FlatButton(
+              child: Text(MaterialLocalizations.of(ctx).cancelButtonLabel),
+              onPressed: () => Navigator.of(ctx).pop(),
+            ),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(ctx).okButtonLabel),
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                accentColor = pickedColor;
+              },
+            ),
+          ],
+        );
+      },
     );
-  },
-);
 
 class Prefs extends StatelessWidget {
   static const ROUTE = "/prefs";
@@ -132,13 +134,13 @@ class Prefs extends StatelessWidget {
         onPressed: () => showMaterialColorPicker(ctx),
         rightWidget: buildThemeStream(
           (ctx, snapshot) => Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              color: snapshot.data.accentColor,
-              shape: BoxShape.circle,
-            ),
-          ),
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: snapshot.data.accentColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
         ),
       );
 
@@ -197,10 +199,9 @@ class Prefs extends StatelessWidget {
                   printDuration(
                     snapshot.data,
                     delimiter: "\n",
-                    locale:
-                        Localizations.localeOf(ctx) == SupportedLocales.ru
-                            ? russianLocale
-                            : englishLocale,
+                    locale: Localizations.localeOf(ctx) == SupportedLocales.ru
+                        ? russianLocale
+                        : englishLocale,
                   ),
                 )
               : Container(),

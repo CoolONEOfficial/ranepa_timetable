@@ -43,6 +43,7 @@ import androidx.core.app.ActivityCompat;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
+import lombok.val;
 import lombok.var;
 
 import static ru.coolone.ranepatimetable.WidgetRemoteViewsFactory.dpScale;
@@ -64,6 +65,11 @@ public class WidgetProvider extends AppWidgetProvider {
         IntentAction(String action) {
             this.action = "ru.coolone.ranepatimetable." + action;
         }
+    }
+
+    enum Brightness {
+        Dark,
+        Light
     }
 
     AlarmManager manager;
@@ -320,45 +326,31 @@ public class WidgetProvider extends AppWidgetProvider {
     public Theme theme;
 
     @AllArgsConstructor
-    enum Theme {
-        Light(
-                Color.BLUE,
-                0xFF2196F3,
-                Color.WHITE,
-                Color.BLACK,
-                0xFF90CAF9
-        ),
-        LightRed(
-                Color.RED,
-                0xFFF44336,
-                Color.WHITE,
-                Color.BLACK,
-                0xFFEF9A9A
-        ),
-        Dark(
-                0xFF212121,
-                0xFF64FFDA,
-                Color.BLACK,
-                Color.WHITE,
-                0xFF616161
-        ),
-        DarkRed(
-                0xFF212121,
-                0xFFF44336,
-                Color.WHITE,
-                Color.WHITE,
-                0xFF616161
-        );
-
+    static class Theme {
         final int primary, accent, textPrimary, textAccent, background;
     }
 
-    public static final int DEFAULT_THEME_ID = Theme.LightRed.ordinal();
+    public static final Theme defaultTheme = new Theme(
+            Color.BLUE,
+            0xFF2196F3,
+            Color.WHITE,
+            Color.BLACK,
+            0xFF90CAF9
+    );
+
     private static final String FLUTTER_PREFIX = "flutter.";
 
     enum PrefsIds {
         WidgetTranslucent("widget_translucent"),
-        ThemeId("theme_id"),
+
+        ThemePrimary("theme_primary"),
+        ThemeAccent("theme_accent"),
+        ThemeTextPrimary("theme_text_primary"),
+        ThemeTextAccent("theme_text_accent"),
+        ThemeBackground("theme_background"),
+
+        ThemeBrightness("theme_brightness"),
+
         BeforeAlarmClock("before_alarm_clock"),
         EndCache("end_cache"),
         WidgetSizeWidth("widget_size_width"),
@@ -570,7 +562,15 @@ public class WidgetProvider extends AppWidgetProvider {
     public static Pair<Integer, Integer> widgetSize;
 
     private RemoteViews buildLayout(Context ctx, int appWidgetId, AppWidgetManager manager, boolean updateSize) {
-        theme = Theme.values()[(int) getPrefs(ctx).getLong(PrefsIds.ThemeId.prefId, DEFAULT_THEME_ID)];
+        val prefs = getPrefs(ctx);
+
+        theme = new Theme(
+                Color.parseColor(prefs.getString(PrefsIds.ThemePrimary.prefId, Integer.toHexString(defaultTheme.primary))),
+                Color.parseColor(prefs.getString(PrefsIds.ThemeAccent.prefId, Integer.toHexString(defaultTheme.textAccent))),
+                Color.parseColor(prefs.getString(PrefsIds.ThemeTextAccent.prefId, Integer.toHexString(defaultTheme.textPrimary))),
+                Color.parseColor(prefs.getString(PrefsIds.ThemeTextPrimary.prefId, Integer.toHexString(defaultTheme.textAccent))),
+                Color.parseColor(prefs.getString(PrefsIds.ThemeBackground.prefId, Integer.toHexString(defaultTheme.background)))
+        );
 
         // Set the size
         if (updateSize) {
@@ -589,9 +589,8 @@ public class WidgetProvider extends AppWidgetProvider {
 
         var translucent = getPrefs(ctx).getBoolean(PrefsIds.WidgetTranslucent.prefId, true);
 
-        switch (theme) {
+        switch (Brightness.values()[prefs.getInt(PrefsIds.ThemeBrightness.prefId, 0)]) {
             case Dark:
-            case DarkRed:
                 bodyLayoutResId = translucent
                         ? R.drawable.rounded_body_layout_dark_translucent
                         : R.drawable.rounded_body_layout_dark;
@@ -603,7 +602,6 @@ public class WidgetProvider extends AppWidgetProvider {
                         : R.drawable.rounded_layout_dark;
                 break;
             case Light:
-            case LightRed:
                 bodyLayoutResId = translucent
                         ? R.drawable.rounded_body_layout_light_translucent
                         : R.drawable.rounded_body_layout_light;
@@ -681,7 +679,11 @@ public class WidgetProvider extends AppWidgetProvider {
             );
             showDate = getMidnight(futureLessonDate).getTimeInMillis();
             intent.putExtra(WidgetRemoteViewsFactory.DATE, showDate);
-            intent.putExtra(WidgetRemoteViewsFactory.THEME_ID, theme.ordinal());
+            intent.putExtra(WidgetRemoteViewsFactory.THEME_PRIMARY, theme.primary);
+            intent.putExtra(WidgetRemoteViewsFactory.THEME_ACCENT, theme.accent);
+            intent.putExtra(WidgetRemoteViewsFactory.THEME_TEXT_PRIMARY, theme.textPrimary);
+            intent.putExtra(WidgetRemoteViewsFactory.THEME_TEXT_ACCENT, theme.textAccent);
+            intent.putExtra(WidgetRemoteViewsFactory.THEME_BACKGROUND, theme.background);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
             rv.setInt(R.id.widget_body, "setBackgroundResource", bodyLayoutResId);

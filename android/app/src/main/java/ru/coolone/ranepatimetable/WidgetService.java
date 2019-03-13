@@ -21,6 +21,7 @@ import java.util.Locale;
 import lombok.extern.java.Log;
 import lombok.var;
 
+import static ru.coolone.ranepatimetable.WidgetProvider.defaultTheme;
 import static ru.coolone.ranepatimetable.WidgetProvider.getPrefs;
 import static ru.coolone.ranepatimetable.WidgetProvider.widgetSize;
 
@@ -45,14 +46,23 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
     private WidgetProvider.Theme theme;
 
     public static final String DATE = "date";
-    public static final String THEME_ID = "themeId";
+    public static final String THEME_PRIMARY = "themePrimary";
+    public static final String THEME_ACCENT = "themeAccent";
+    public static final String THEME_TEXT_PRIMARY = "themeTextPrimary";
+    public static final String THEME_TEXT_ACCENT = "themeTextAccent";
+    public static final String THEME_BACKGROUND = "themeBackground";
 
     public WidgetRemoteViewsFactory(Context ctx, Intent intent) {
         this.ctx = ctx;
         var intentDateMillis = intent.getLongExtra(DATE, -1);
         if (intentDateMillis != -1) dateMillis = intentDateMillis;
-        var themeId = intent.getIntExtra(THEME_ID, WidgetProvider.DEFAULT_THEME_ID);
-        theme = WidgetProvider.Theme.values()[themeId];
+        theme = new WidgetProvider.Theme(
+                intent.getIntExtra(THEME_PRIMARY, defaultTheme.primary),
+                intent.getIntExtra(THEME_ACCENT, WidgetProvider.defaultTheme.accent),
+                intent.getIntExtra(THEME_TEXT_PRIMARY, WidgetProvider.defaultTheme.textPrimary),
+                intent.getIntExtra(THEME_TEXT_ACCENT, WidgetProvider.defaultTheme.textAccent),
+                intent.getIntExtra(THEME_BACKGROUND, WidgetProvider.defaultTheme.background)
+        );
     }
 
     @Override
@@ -88,7 +98,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
     private static float _dpScale = -1;
 
     static float dpScale(Context ctx) {
-        if(_dpScale == -1) _dpScale = dpToPixel(ctx, 1);
+        if (_dpScale == -1) _dpScale = dpToPixel(ctx, 1);
         return _dpScale;
     }
 

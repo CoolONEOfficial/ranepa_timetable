@@ -24,18 +24,22 @@ void _onThemeChange() async {
 
   var prefs = await SharedPreferences.getInstance();
 
-  await prefs.setString(PrefsIds.THEME_ACCENT, theme.accentColor.toString());
-
-  await prefs.setString(PrefsIds.THEME_PRIMARY, theme.primaryColor.toString());
+  await prefs.setString(
+      PrefsIds.THEME_ACCENT, theme.accentColor.value.toRadixString(16));
 
   await prefs.setString(
-      PrefsIds.THEME_BACKGROUND, theme.backgroundColor.toString());
+      PrefsIds.THEME_PRIMARY, theme.primaryColor.value.toRadixString(16));
 
   await prefs.setString(
-      PrefsIds.THEME_TEXT_ACCENT, theme.accentTextTheme.title.color.toString());
+      PrefsIds.THEME_BACKGROUND, theme.backgroundColor.value.toRadixString(16));
+
+  await prefs.setString(PrefsIds.THEME_TEXT_ACCENT,
+      theme.accentTextTheme.title.color.value.toRadixString(16));
 
   await prefs.setString(PrefsIds.THEME_TEXT_PRIMARY,
-      theme.primaryTextTheme.title.color.toString());
+      theme.primaryTextTheme.title.color.value.toRadixString(16));
+
+  await prefs.setInt(PrefsIds.THEME_BRIGHTNESS, theme.brightness.index);
 
   PlatformChannels.refreshWidget();
 }
@@ -45,7 +49,7 @@ void _onThemeChange() async {
 final themeBloc = StreamController<ThemeData>.broadcast();
 
 StreamBuilder<ThemeData> buildThemeStream(
-    AsyncWidgetBuilder<ThemeData> builder) =>
+        AsyncWidgetBuilder<ThemeData> builder) =>
     StreamBuilder<ThemeData>(
       stream: themeBloc.stream,
       initialData: buildTheme(),
@@ -80,8 +84,7 @@ class ThemeBrightnessTitles {
   static ThemeBrightnessTitles _singleton;
 
   factory ThemeBrightnessTitles(BuildContext ctx) {
-    if (_singleton == null)
-      _singleton = ThemeBrightnessTitles._internal(ctx);
+    if (_singleton == null) _singleton = ThemeBrightnessTitles._internal(ctx);
     return _singleton;
   }
 
