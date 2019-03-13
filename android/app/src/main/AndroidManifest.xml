@@ -48,8 +48,6 @@
                 android:value="true" />
 
             <intent-filter>
-                <category android:name="android.intent.category.BROWSABLE" />
-
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />

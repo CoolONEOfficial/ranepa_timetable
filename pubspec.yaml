@@ -13,26 +13,26 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^0.1.2
-  http: ^0.12.0
-  xml: ^3.2.3
-  shared_preferences: ^0.4.3
-  json_serializable: ^2.0.0
+  http: ^0.12.0+1
+  xml: ^3.4.1
+  shared_preferences: ^0.5.1+1
+  json_serializable: ^2.0.3
   intro_views_flutter: ^2.4.0
-  android_intent: ^0.2.1
+  android_intent: ^0.3.0
   tuple: ^1.0.2
-  device_calendar: ^0.0.7
-  url_launcher: ^4.1.0+1
-  flutter_svg: ^0.8.2
+  device_calendar: ^0.1.1
+  url_launcher: ^5.0.2
+  flutter_svg: ^0.12.0
   duration: ^2.0.4
   flutter_duration_picker: ^1.0.4
-  auto_size_text: ^0.3.0
+  auto_size_text: ^1.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.7.0
-  intl_translation: ^0.17.1
-  build_runner: ^1.0.0
+  intl_translation: ^0.17.3
+  build_runner: ^1.2.8
 
 flutter_icons:
   image_path_android: "assets/images/icon.png"
