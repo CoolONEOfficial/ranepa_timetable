@@ -14,6 +14,7 @@ import 'package:ranepa_timetable/themes.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 
 class BaseWidget extends StatelessWidget {
   Widget buildBase(BuildContext context, SharedPreferences prefs) {
@@ -127,6 +128,11 @@ class SupportedLocales {
 
 final themeIdBloc = StreamController<int>.broadcast();
 
+class DisabledFocusNode extends FocusNode {
+  @override
+  bool get hasFocus => false;
+}
+
 Widget Function(FlutterErrorDetails) _buildError(BuildContext ctx) {
   return (FlutterErrorDetails err) => Center(
           child: Column(
@@ -137,11 +143,34 @@ Widget Function(FlutterErrorDetails) _buildError(BuildContext ctx) {
             style: TextStyle(fontSize: 25.0),
             maxLines: 1,
           ),
-
+          Container(
+            width: 200,
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: TextFormField(
+              initialValue: err.toString(),
+              keyboardType: TextInputType.multiline,
+              maxLines: 6,
+              enableInteractiveSelection: false,
+              focusNode: DisabledFocusNode(),
+            ),
+          ),
+          AutoSizeText(
+            AppLocalizations.of(ctx).sendError,
+            style: TextStyle(fontSize: 15.0),
+            maxLines: 2,
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.send,
+            ),
+            onPressed: () => FlutterEmailSender.send(Email(
+                  body: err.toString(),
+                  subject: "RANEPA Timetable error",
+                  recipients: ["coolone.official@gmail.com"],
+                )),
+          ),
         ],
       ));
 }
 
-Future main() async {
-  return runApp(BaseWidget());
-}
+Future main() async => runApp(BaseWidget());

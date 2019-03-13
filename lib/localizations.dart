@@ -39,6 +39,13 @@ class AppLocalizations {
     );
   }
 
+  String get sendError {
+    return Intl.message(
+      'Send error description\nto developers',
+      name: 'sendError',
+    );
+  }
+
   // Calendar notifications
 
   String get calendarEventsAddSuccess {

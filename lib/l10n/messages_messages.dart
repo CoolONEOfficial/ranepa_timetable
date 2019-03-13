@@ -93,6 +93,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "saturday" : MessageLookupByLibrary.simpleMessage("Sa"),
     "searchResults" : MessageLookupByLibrary.simpleMessage("Web search results"),
     "searchTip" : MessageLookupByLibrary.simpleMessage("Search"),
+    "sendError" : MessageLookupByLibrary.simpleMessage("Send error description\nto developers"),
     "socialStudies" : MessageLookupByLibrary.simpleMessage("Social Studies"),
     "softwareDevelopment" : MessageLookupByLibrary.simpleMessage("Software Development"),
     "speechCulture" : MessageLookupByLibrary.simpleMessage("Culture of Speech"),

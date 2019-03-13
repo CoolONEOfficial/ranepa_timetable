@@ -6,11 +6,16 @@
     "type": "text",
     "placeholders": {}
   },
-  "errorMessage": "Чтото пошло не так",
+  "errorMessage": "Что-то пошло не так",
   "@errorMessage": {
   "type": "text",
     "placeholders": {}
   },
+    "sendError": "Отправить описание\nошибки разработчикам",
+    "@sendError": {
+      "type": "text",
+      "placeholders": {}
+    },
   "calendarEventsAddSuccess": "События успешно добавлены в календарь",
   "@calendarEventsAddSuccess": {
     "type": "text",

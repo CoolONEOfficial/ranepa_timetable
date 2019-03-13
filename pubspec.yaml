@@ -26,6 +26,7 @@ dependencies:
   duration: ^2.0.4
   flutter_duration_picker: ^1.0.4
   auto_size_text: ^1.0.0
+  flutter_email_sender: ^2.0.0
 
 dev_dependencies:
   flutter_test:

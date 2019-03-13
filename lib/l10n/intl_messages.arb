@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2019-03-13T17:38:15.274444",
+  "@@last_modified": "2019-03-13T22:45:57.661975",
   "title": "RANEPA (Timetable)",
   "@title": {
     "type": "text",
@@ -7,6 +7,11 @@
   },
   "errorMessage": "Something went wrong",
   "@errorMessage": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "sendError": "Send error description\nto developers",
+  "@sendError": {
     "type": "text",
     "placeholders": {}
   },
