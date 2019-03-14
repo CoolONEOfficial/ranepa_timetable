@@ -74,7 +74,7 @@ class BaseWidget extends StatelessWidget {
       loading: Container(),
       future: SharedPreferences.getInstance(),
       builder: (ctx, snapshot) {
-        final prefs = snapshot.data;
+        prefs = snapshot.data;
         return buildThemeStream(
           (ctx, snapshot) {
             final theme = snapshot.data;
@@ -167,5 +167,7 @@ Widget Function(FlutterErrorDetails) _buildError(BuildContext ctx) {
         ],
       ));
 }
+
+SharedPreferences prefs;
 
 Future main() async => runApp(BaseWidget());

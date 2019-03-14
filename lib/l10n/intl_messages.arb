@@ -405,7 +405,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "introGroupTitle": "Group or teacher by default",
+  "introGroupTitle": "Group or teacher",
   "@introGroupTitle": {
     "type": "text",
     "placeholders": {}

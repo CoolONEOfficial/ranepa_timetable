@@ -59,7 +59,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "informatics" : MessageLookupByLibrary.simpleMessage("Informatics"),
     "informationTheory" : MessageLookupByLibrary.simpleMessage("Information theory"),
     "introGroupDescription" : MessageLookupByLibrary.simpleMessage("For this group or teacher, the schedule will be loaded at startup."),
-    "introGroupTitle" : MessageLookupByLibrary.simpleMessage("Group or teacher by default"),
+    "introGroupTitle" : MessageLookupByLibrary.simpleMessage("Group or teacher"),
     "introThemeDescription" : MessageLookupByLibrary.simpleMessage("The selected theme will be used when drawing the schedule and everything else. The theme can be changed in the settings."),
     "introThemeTitle" : MessageLookupByLibrary.simpleMessage("Color scheme"),
     "introTimetableDescription" : MessageLookupByLibrary.simpleMessage("So the schedule will look. If necessary, you can go back and change the theme."),

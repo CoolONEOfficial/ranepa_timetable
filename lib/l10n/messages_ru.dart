@@ -59,7 +59,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "informatics" : MessageLookupByLibrary.simpleMessage("Информатика"),
     "informationTheory" : MessageLookupByLibrary.simpleMessage("Теория информации"),
     "introGroupDescription" : MessageLookupByLibrary.simpleMessage("Для этой группы или преподавателя будет показываться расписание в будущем."),
-    "introGroupTitle" : MessageLookupByLibrary.simpleMessage("Группа или преподаватель по умолчанию"),
+    "introGroupTitle" : MessageLookupByLibrary.simpleMessage("Группа или преподаватель"),
     "introThemeDescription" : MessageLookupByLibrary.simpleMessage("Выбранная тема будет использоваться для отрисовки расписания и всего остального. Тему можно поменять в настройках."),
     "introThemeTitle" : MessageLookupByLibrary.simpleMessage("Тема"),
     "introTimetableDescription" : MessageLookupByLibrary.simpleMessage("Так будет выглядеть расписание. При необходимости можно вернуться назад и сменить цветовую схему."),

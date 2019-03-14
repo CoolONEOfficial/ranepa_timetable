@@ -150,34 +150,34 @@ class LessonActions {
               case LessonActionIds.Credit:
                 return LessonAction(
                     AppLocalizations.of(ctx).credit, <List<String>>[
-                  //<String>["прием", "зачет"] TODO: exam etc
+                  <String>["прием", "зачет"]
                 ]);
               case LessonActionIds.Exam:
                 return LessonAction(
                     AppLocalizations.of(ctx).exam, <List<String>>[
-                  //<String>["прием", "экзамен"]
+                  <String>["прием", "экзамен"]
                 ]);
               case LessonActionIds.ExamConsultation:
                 return LessonAction(
                     AppLocalizations.of(ctx).examConsultation,
                     <List<String>>[
-                      //<String>["консульт", "экзамен"]
+                      <String>["консульт", "экзамен"]
                     ]);
               case LessonActionIds.Practice:
                 return LessonAction(
                     AppLocalizations.of(ctx).practice, <List<String>>[
-                  <String>["прак"]
+                  <String>["практ"]
                 ]);
               case LessonActionIds.ReceptionExamination:
                 return LessonAction(
                     AppLocalizations.of(ctx).receptionExamination,
                     <List<String>>[
-                      //<String>["защит", "прием"]
+                      <String>["защит", "прием"]
                     ]);
               case LessonActionIds.Lecture:
                 return LessonAction(
                     AppLocalizations.of(ctx).lecture, <List<String>>[
-                  <String>["лек"]
+                  <String>["лекция"]
                 ]);
             }
           },

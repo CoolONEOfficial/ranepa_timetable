@@ -58,12 +58,16 @@ class PlatformChannels {
   }
 
   static Future<void> deleteDb() async {
-    if(Platform.isAndroid)
+    if(Platform.isAndroid) {
+      debugPrint("Deleting db...");
       await methodChannel.invokeMethod("deleteDb");
+    }
   }
 
   static Future<void> refreshWidget() async {
-    if(Platform.isAndroid)
+    if(Platform.isAndroid) {
+      debugPrint("Refreshing widget...");
       methodChannel.invokeMethod("refreshWidget");
+    }
   }
 }

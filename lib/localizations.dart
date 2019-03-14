@@ -620,7 +620,7 @@ class AppLocalizations {
 
   String get introGroupTitle {
     return Intl.message(
-      'Group or teacher by default',
+      'Group or teacher',
       name: 'introGroupTitle',
     );
   }

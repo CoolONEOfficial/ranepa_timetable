@@ -568,9 +568,9 @@ public class WidgetProvider extends AppWidgetProvider {
 
         theme = new Theme(
                 Color.parseColor('#' + prefs.getString(PrefsIds.ThemePrimary.prefId, Integer.toHexString(defaultTheme.primary))),
-                Color.parseColor('#' + prefs.getString(PrefsIds.ThemeAccent.prefId, Integer.toHexString(defaultTheme.textAccent))),
-                Color.parseColor('#' + prefs.getString(PrefsIds.ThemeTextAccent.prefId, Integer.toHexString(defaultTheme.textPrimary))),
-                Color.parseColor('#' + prefs.getString(PrefsIds.ThemeTextPrimary.prefId, Integer.toHexString(defaultTheme.textAccent))),
+                Color.parseColor('#' + prefs.getString(PrefsIds.ThemeAccent.prefId, Integer.toHexString(defaultTheme.accent))),
+                Color.parseColor('#' + prefs.getString(PrefsIds.ThemeTextPrimary.prefId, Integer.toHexString(defaultTheme.textPrimary))),
+                Color.parseColor('#' + prefs.getString(PrefsIds.ThemeTextAccent.prefId, Integer.toHexString(defaultTheme.textAccent))),
                 Color.parseColor('#' + prefs.getString(PrefsIds.ThemeBackground.prefId, Integer.toHexString(defaultTheme.background)))
         );
 

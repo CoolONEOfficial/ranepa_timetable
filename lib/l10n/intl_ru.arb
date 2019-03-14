@@ -406,7 +406,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "introGroupTitle": "Группа или преподаватель по умолчанию",
+  "introGroupTitle": "Группа или преподаватель",
   "@introGroupTitle": {
     "type": "text",
     "placeholders": {}

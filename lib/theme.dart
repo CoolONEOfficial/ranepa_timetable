@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/platform_channels.dart';
 import 'package:ranepa_timetable/prefs.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-ThemeData buildTheme() => _buildTheme(_brightness, _accentColor);
+ThemeData buildTheme() => _buildTheme(brightness, accentColor);
 
 ThemeData _buildTheme(
   Brightness brightness,
@@ -15,6 +15,9 @@ ThemeData _buildTheme(
     ThemeData(
         brightness: brightness,
         primarySwatch: accentColor,
+        primaryColor: accentColor,
+        primaryColorLight: accentColor.shade100,
+        primaryColorDark: accentColor.shade700,
         toggleableActiveColor: accentColor.shade600,
         accentColor: accentColor.shade500);
 
@@ -22,22 +25,21 @@ void _onThemeChange() async {
   var theme = buildTheme();
   themeBloc.sink.add(theme);
 
-  var prefs = await SharedPreferences.getInstance();
+  debugPrint("Writing theme to prefs...");
+
+  await prefs.setString(PrefsIds.THEME_ACCENT, _colorToHex(theme.accentColor));
 
   await prefs.setString(
-      PrefsIds.THEME_ACCENT, theme.accentColor.value.toRadixString(16));
+      PrefsIds.THEME_PRIMARY, _colorToHex(theme.primaryColor));
 
   await prefs.setString(
-      PrefsIds.THEME_PRIMARY, theme.primaryColor.value.toRadixString(16));
-
-  await prefs.setString(
-      PrefsIds.THEME_BACKGROUND, theme.backgroundColor.value.toRadixString(16));
+      PrefsIds.THEME_BACKGROUND, _colorToHex(theme.backgroundColor));
 
   await prefs.setString(PrefsIds.THEME_TEXT_ACCENT,
-      theme.accentTextTheme.title.color.value.toRadixString(16));
+      _colorToHex(theme.accentTextTheme.title.color));
 
   await prefs.setString(PrefsIds.THEME_TEXT_PRIMARY,
-      theme.primaryTextTheme.title.color.value.toRadixString(16));
+      _colorToHex(theme.primaryTextTheme.title.color));
 
   await prefs.setInt(PrefsIds.THEME_BRIGHTNESS, theme.brightness.index);
 
@@ -47,6 +49,8 @@ void _onThemeChange() async {
 // Reactive bloc
 
 final themeBloc = StreamController<ThemeData>.broadcast();
+
+final defaultTheme = ThemeData.light();
 
 StreamBuilder<ThemeData> buildThemeStream(
         AsyncWidgetBuilder<ThemeData> builder) =>
@@ -58,9 +62,11 @@ StreamBuilder<ThemeData> buildThemeStream(
 
 // Brightness
 
-Brightness _brightness = Brightness.light;
+Brightness _brightness;
 
-get brightness => _brightness;
+get brightness => _brightness != null
+    ? _brightness
+    : Brightness.values[prefs.getInt(PrefsIds.THEME_BRIGHTNESS) ?? 0];
 
 set brightness(value) {
   _brightness = value;
@@ -69,9 +75,29 @@ set brightness(value) {
 
 // Accent color
 
-MaterialColor _accentColor = Colors.blue;
+String _colorToHex(Color color) => color.value.toRadixString(16);
 
-get accentColor => _accentColor;
+Color _hexToColor(String hex) =>
+    Color(int.parse(hex, radix: 16));
+
+MaterialColor _toMaterialColor(Color color) {
+  for (var mColor in Colors.primaries) {
+    if (mColor.value == color.value) return mColor;
+  }
+  throw Exception('Material color ${color.toString()} not found!!!');
+}
+
+MaterialColor _accentColor;
+
+get accentColor {
+  var prefColor = prefs.getString(PrefsIds.THEME_PRIMARY);
+
+  return _accentColor != null
+      ? _accentColor
+      : prefColor != null
+          ? _toMaterialColor(_hexToColor(prefColor))
+          : defaultTheme.primaryColor;
+}
 
 set accentColor(value) {
   _accentColor = value;

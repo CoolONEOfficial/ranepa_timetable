@@ -152,9 +152,9 @@ class Timetable extends StatelessWidget {
       final mItemTimeStart = mItem["timestart"];
       final mItemTimeFinish = mItem["timefinish"];
       final String mItemName = mItem["name"];
-      final openBracketIndex = mItemName.indexOf('(');
-      final closeBracketIndex = mItemName.indexOf(')');
-      final closeGTIndex = mItemName.indexOf('>');
+      final openBracketIndex = mItemName.lastIndexOf('(');
+      final closeBracketIndex = mItemName.lastIndexOf(')');
+      final closeGTIndex = mItemName.lastIndexOf('>');
 
       final mLesson = TimelineModel(
         date: mItemDate,

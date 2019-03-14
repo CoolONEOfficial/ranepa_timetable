@@ -32,7 +32,7 @@ class Intro extends StatelessWidget {
           localizations.introTimetableTitle,
           textAlign: TextAlign.center,
           maxLines: 2,
-          minFontSize: 40,
+          maxFontSize: 40,
         ),
         mainImage: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15)
@@ -57,10 +57,10 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 9, minute: 30),
                     room: RoomModel("24", RoomLocation.Hotel),
                     group: "Иб-021",
-                    lesson: Lessons(ctx)
-                        .lessons[LessonIds.physicalCulture.index]
-                      ..action = LessonActions(ctx)
-                          .actions[LessonActionIds.Lecture.index],
+                    lesson:
+                        Lessons(ctx).lessons[LessonIds.physicalCulture.index]
+                          ..action = LessonActions(ctx)
+                              .actions[LessonActionIds.Lecture.index],
                     teacher: TeacherModel("Дмитрий", "Киселев", "Михайлович"),
                   ),
                   TimelineModel(
@@ -70,10 +70,10 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 9, minute: 30),
                     room: RoomModel("24", RoomLocation.Hotel),
                     group: "Иб-021",
-                    lesson: Lessons(ctx)
-                        .lessons[LessonIds.physicalCulture.index]
-                      ..action = LessonActions(ctx)
-                          .actions[LessonActionIds.ExamConsultation.index],
+                    lesson:
+                        Lessons(ctx).lessons[LessonIds.physicalCulture.index]
+                          ..action = LessonActions(ctx)
+                              .actions[LessonActionIds.ExamConsultation.index],
                     teacher: TeacherModel("Иван", "Шамин", "Александрович"),
                   ),
                   TimelineModel(
@@ -140,7 +140,7 @@ class Intro extends StatelessWidget {
         title: AutoSizeText(
           localizations.introWelcomeTitle,
           textAlign: TextAlign.justify,
-          minFontSize: 40,
+          maxFontSize: 40,
         ),
         mainImage: WidgetTemplates.buildLogo(theme),
       );
@@ -158,14 +158,14 @@ class Intro extends StatelessWidget {
           localizations.introThemeTitle,
           textAlign: TextAlign.center,
           maxLines: 2,
-          minFontSize: 40,
+          maxFontSize: 40,
         ),
         mainImage: Align(
           alignment: Alignment.center,
           child: RawMaterialButton(
             onPressed: () async {
-              await showThemeBrightnessSelect(ctx, prefs);
-              showMaterialColorPicker(ctx);
+              if (await showThemeBrightnessSelect(ctx, prefs) != null)
+                showMaterialColorPicker(ctx);
             },
             child: Icon(
               Icons.color_lens,
@@ -195,7 +195,7 @@ class Intro extends StatelessWidget {
         title: AutoSizeText(
           localizations.introGroupTitle,
           textAlign: TextAlign.center,
-          minFontSize: 40,
+          maxFontSize: 40,
         ),
         mainImage: Align(
           alignment: Alignment.center,
@@ -218,8 +218,7 @@ class Intro extends StatelessWidget {
   @override
   Widget build(BuildContext ctx) => buildThemeStream(
         (ctx, snapshot) {
-          final theme = buildTheme(),
-              localizations = AppLocalizations.of(ctx);
+          final theme = buildTheme(), localizations = AppLocalizations.of(ctx);
           final backgroundColor = theme.brightness == Brightness.light
               ? theme.primaryColor
               : theme.canvasColor;

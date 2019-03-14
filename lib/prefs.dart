@@ -236,27 +236,19 @@ class Prefs extends StatelessWidget {
             onPressed: () => Navigator.pop(ctx),
           ),
         ),
-        body: WidgetTemplates.buildFutureBuilder<SharedPreferences>(
-          ctx,
-          loading: Container(),
-          future: SharedPreferences.getInstance(),
-          builder: (ctx, snapshot) {
-            final prefs = snapshot.data;
-            return ListView(
-              children: <Widget>[
-                _buildThemePreferenceButton(ctx, prefs),
-                Divider(height: 0),
-                _buildThemeAccentPreferenceButton(ctx, prefs),
-                Divider(height: 0),
-                _buildSearchItemPreferenceButton(ctx, prefs),
-                Divider(height: 0),
-                _buildBeforeAlarmClockPreferenceButton(ctx, prefs),
-                Divider(height: 0),
-                _buildWidgetTranslucentPreferenceButton(ctx, prefs),
-                Divider(height: 0),
-              ],
-            );
-          },
+        body: ListView(
+          children: <Widget>[
+            _buildThemePreferenceButton(ctx, prefs),
+            Divider(height: 0),
+            _buildThemeAccentPreferenceButton(ctx, prefs),
+            Divider(height: 0),
+            _buildSearchItemPreferenceButton(ctx, prefs),
+            Divider(height: 0),
+            _buildBeforeAlarmClockPreferenceButton(ctx, prefs),
+            Divider(height: 0),
+            _buildWidgetTranslucentPreferenceButton(ctx, prefs),
+            Divider(height: 0),
+          ],
         ),
       );
 }
