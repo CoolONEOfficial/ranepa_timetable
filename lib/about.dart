@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -220,23 +222,25 @@ class About extends StatelessWidget {
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(ctx),
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: SvgPicture.asset(
-              'assets/images/coolone_logo.svg',
-              color: textTheme.title.color,
-            ),
-            onPressed: () => openUrl('http://coolone.ru/'),
-          ),
-          IconButton(
-            icon: SvgPicture.asset(
-              'assets/images/github.svg',
-              color: textTheme.title.color,
-            ),
-            onPressed: () =>
-                openUrl('https://github.com/CoolONEOfficial/ranepa_timetable'),
-          ),
-        ],
+        actions: Platform.isIOS
+            ? <Widget>[]
+            : <Widget>[
+                IconButton(
+                  icon: SvgPicture.asset(
+                    'assets/images/coolone_logo.svg',
+                    color: textTheme.title.color,
+                  ),
+                  onPressed: () => openUrl('http://coolone.ru/'),
+                ),
+                IconButton(
+                  icon: SvgPicture.asset(
+                    'assets/images/github.svg',
+                    color: textTheme.title.color,
+                  ),
+                  onPressed: () => openUrl(
+                      'https://github.com/CoolONEOfficial/ranepa_timetable'),
+                ),
+              ],
       ),
       body: OrientationBuilder(
         builder: (ctx, orientation) => Container(
@@ -256,8 +260,8 @@ class About extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.min,
-                                children: _buildLogoText(
-                                    ctx, textTheme, orientation),
+                                children:
+                                    _buildLogoText(ctx, textTheme, orientation),
                               ),
                             ),
                           ),
@@ -275,8 +279,7 @@ class About extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: _buildLogoText(
-                            ctx, textTheme, orientation)
+                        children: _buildLogoText(ctx, textTheme, orientation)
                           ..addAll(_buildGuys(ctx, textTheme, orientation)),
                       ),
                     ),
