@@ -564,12 +564,14 @@ public class WidgetProvider extends AppWidgetProvider {
     private RemoteViews buildLayout(Context ctx, int appWidgetId, AppWidgetManager manager, boolean updateSize) {
         val prefs = getPrefs(ctx);
 
+        log.severe("prefs color: " + prefs.getString(PrefsIds.ThemePrimary.prefId, Integer.toHexString(defaultTheme.primary)));
+
         theme = new Theme(
-                Color.parseColor(prefs.getString(PrefsIds.ThemePrimary.prefId, Integer.toHexString(defaultTheme.primary))),
-                Color.parseColor(prefs.getString(PrefsIds.ThemeAccent.prefId, Integer.toHexString(defaultTheme.textAccent))),
-                Color.parseColor(prefs.getString(PrefsIds.ThemeTextAccent.prefId, Integer.toHexString(defaultTheme.textPrimary))),
-                Color.parseColor(prefs.getString(PrefsIds.ThemeTextPrimary.prefId, Integer.toHexString(defaultTheme.textAccent))),
-                Color.parseColor(prefs.getString(PrefsIds.ThemeBackground.prefId, Integer.toHexString(defaultTheme.background)))
+                Color.parseColor('#' + prefs.getString(PrefsIds.ThemePrimary.prefId, Integer.toHexString(defaultTheme.primary))),
+                Color.parseColor('#' + prefs.getString(PrefsIds.ThemeAccent.prefId, Integer.toHexString(defaultTheme.textAccent))),
+                Color.parseColor('#' + prefs.getString(PrefsIds.ThemeTextAccent.prefId, Integer.toHexString(defaultTheme.textPrimary))),
+                Color.parseColor('#' + prefs.getString(PrefsIds.ThemeTextPrimary.prefId, Integer.toHexString(defaultTheme.textAccent))),
+                Color.parseColor('#' + prefs.getString(PrefsIds.ThemeBackground.prefId, Integer.toHexString(defaultTheme.background)))
         );
 
         // Set the size
@@ -589,7 +591,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
         var translucent = getPrefs(ctx).getBoolean(PrefsIds.WidgetTranslucent.prefId, true);
 
-        switch (Brightness.values()[prefs.getInt(PrefsIds.ThemeBrightness.prefId, 0)]) {
+        switch (Brightness.values()[(int) prefs.getLong(PrefsIds.ThemeBrightness.prefId, 0)]) {
             case Dark:
                 bodyLayoutResId = translucent
                         ? R.drawable.rounded_body_layout_dark_translucent
