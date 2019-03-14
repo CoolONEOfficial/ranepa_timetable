@@ -327,7 +327,9 @@ public class WidgetProvider extends AppWidgetProvider {
 
     @AllArgsConstructor
     static class Theme {
-        final int primary, accent, textPrimary, textAccent, background;
+        final int primary, accent,
+                textPrimary, textAccent,
+                background;
     }
 
     public static final Theme defaultTheme = new Theme(
@@ -669,7 +671,7 @@ public class WidgetProvider extends AppWidgetProvider {
             rv.setTextViewText(R.id.widget_title,
                     dayOfWeek + ", " + dayDescStr
             );
-            rv.setTextColor(R.id.widget_title, theme.textAccent);
+            rv.setTextColor(R.id.widget_title, theme.textPrimary);
 
             // Specify the service to provide data for the collection widget.  Note that we need to
             // embed the appWidgetId via the data otherwise it will be ignored.
@@ -690,10 +692,10 @@ public class WidgetProvider extends AppWidgetProvider {
 
             rv.setInt(R.id.widget_body, "setBackgroundResource", bodyLayoutResId);
             rv.setInt(R.id.widget_head, "setBackgroundResource", headLayoutResId);
-            rv.setInt(R.id.create_calendar_events, "setColorFilter", theme.textAccent);
-            rv.setInt(R.id.create_alarm_clock, "setColorFilter", theme.textAccent);
-            rv.setInt(R.id.day_next, "setColorFilter", theme.textAccent);
-            rv.setInt(R.id.day_prev, "setColorFilter", theme.textAccent);
+            rv.setInt(R.id.create_calendar_events, "setColorFilter", theme.textPrimary);
+            rv.setInt(R.id.create_alarm_clock, "setColorFilter", theme.textPrimary);
+            rv.setInt(R.id.day_next, "setColorFilter", theme.textPrimary);
+            rv.setInt(R.id.day_prev, "setColorFilter", theme.textPrimary);
 
             rv.setOnClickPendingIntent(R.id.create_alarm_clock, getPendingSelfIntent(ctx, IntentAction.CreateAlarmClock.action));
             rv.setOnClickPendingIntent(R.id.create_calendar_events, getPendingSelfIntent(ctx, IntentAction.CreateCalendarEvents.action));

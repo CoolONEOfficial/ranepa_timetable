@@ -58,10 +58,10 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         if (intentDateMillis != -1) dateMillis = intentDateMillis;
         theme = new WidgetProvider.Theme(
                 intent.getIntExtra(THEME_PRIMARY, defaultTheme.primary),
-                intent.getIntExtra(THEME_ACCENT, WidgetProvider.defaultTheme.accent),
-                intent.getIntExtra(THEME_TEXT_PRIMARY, WidgetProvider.defaultTheme.textPrimary),
-                intent.getIntExtra(THEME_TEXT_ACCENT, WidgetProvider.defaultTheme.textAccent),
-                intent.getIntExtra(THEME_BACKGROUND, WidgetProvider.defaultTheme.background)
+                intent.getIntExtra(THEME_ACCENT, defaultTheme.accent),
+                intent.getIntExtra(THEME_TEXT_PRIMARY, defaultTheme.textPrimary),
+                intent.getIntExtra(THEME_TEXT_ACCENT, defaultTheme.textAccent),
+                intent.getIntExtra(THEME_BACKGROUND, defaultTheme.background)
         );
     }
 
@@ -237,7 +237,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
 
         // Draw lesson icon
         iconPaint.setTextSize(dpScale * iconSize);
-        iconPaint.setColor(theme.textPrimary);
+        iconPaint.setColor(theme.textAccent);
         canvas.drawText(
                 String.valueOf(
                         Character.toChars(
@@ -255,7 +255,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                 Timeline.PREFIX_ROOM
                         + Timeline.RoomModel.COLUMN_ROOM_LOCATION)
         )];
-        iconPaint.setColor(theme.textAccent);
+        iconPaint.setColor(theme.textPrimary);
         iconPaint.setTextSize(dpScale * 20);
         canvas.drawText(
                 String.valueOf(
@@ -326,12 +326,12 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                 rv.setViewVisibility(R.id.widget_item_lesson_action, View.GONE);
             else rv.setTextViewText(R.id.widget_item_lesson_action, action);
 
-            rv.setTextColor(R.id.widget_item_lesson_action, theme.textAccent);
-            rv.setTextColor(R.id.widget_item_lesson_title, theme.textAccent);
-            rv.setTextColor(R.id.widget_item_teacher_or_group, theme.textAccent);
-            rv.setTextColor(R.id.widget_item_start, theme.textAccent);
-            rv.setTextColor(R.id.widget_item_finish, theme.textAccent);
-            rv.setTextColor(R.id.widget_item_room_number, theme.textAccent);
+            rv.setTextColor(R.id.widget_item_lesson_action, theme.textPrimary);
+            rv.setTextColor(R.id.widget_item_lesson_title, theme.textPrimary);
+            rv.setTextColor(R.id.widget_item_teacher_or_group, theme.textPrimary);
+            rv.setTextColor(R.id.widget_item_start, theme.textPrimary);
+            rv.setTextColor(R.id.widget_item_finish, theme.textPrimary);
+            rv.setTextColor(R.id.widget_item_room_number, theme.textPrimary);
 
             rv.setImageViewBitmap(
                     R.id.widget_item_image,
