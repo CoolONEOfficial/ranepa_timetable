@@ -16,24 +16,17 @@ class Intro extends StatelessWidget {
   final Widget base;
   final SharedPreferences prefs;
 
-  const Intro({Key key, @required this.base, @required this.prefs})
-      : super(key: key);
+  Intro({Key key, @required this.base, @required this.prefs}) : super(key: key);
 
-  PageViewModel _buildTimetable(BuildContext ctx, ThemeData theme,
-          Color backgroundColor, AppLocalizations localizations) =>
-      PageViewModel(
+  PageViewModel _buildTimetable(BuildContext ctx) => PageViewModel(
+        bubbleBackgroundColor: contentColor,
         pageColor: backgroundColor,
         bubble: Icon(
           Icons.list,
           color: backgroundColor,
         ),
-        body: AutoSizeText(localizations.introTimetableDescription),
-        title: AutoSizeText(
-          localizations.introTimetableTitle,
-          textAlign: TextAlign.center,
-          maxLines: 2,
-          maxFontSize: 40,
-        ),
+        body: _buildBodyText(localizations.introTimetableDescription),
+        title: _buildTitleText(localizations.introTimetableTitle),
         mainImage: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15)
               .add(EdgeInsets.only(top: 30)),
@@ -128,112 +121,112 @@ class Intro extends StatelessWidget {
         ),
       );
 
-  PageViewModel _buildWelcome(ThemeData theme, Color backgroundColor,
-          AppLocalizations localizations) =>
-      PageViewModel(
+  PageViewModel _buildWelcome() => PageViewModel(
         pageColor: Colors.black,
         bubble: Icon(
           Icons.school,
           color: Colors.black,
         ),
         body: AutoSizeText(localizations.introWelcomeDescription),
-        title: AutoSizeText(
-          localizations.introWelcomeTitle,
-          textAlign: TextAlign.justify,
-          maxFontSize: 40,
-        ),
+        title: _buildTitleText(localizations.introWelcomeTitle),
         mainImage: WidgetTemplates.buildLogo(theme),
       );
 
-  PageViewModel _buildTheme(BuildContext ctx, ThemeData theme,
-          Color backgroundColor, AppLocalizations localizations) =>
-      PageViewModel(
+  PageViewModel _buildTheme(BuildContext ctx) => PageViewModel(
+        bubbleBackgroundColor: contentColor,
         pageColor: backgroundColor,
         bubble: Icon(
           Icons.color_lens,
           color: backgroundColor,
         ),
-        body: AutoSizeText(localizations.introThemeDescription),
-        title: AutoSizeText(
-          localizations.introThemeTitle,
-          textAlign: TextAlign.center,
-          maxLines: 2,
-          maxFontSize: 40,
-        ),
+        body: _buildBodyText(localizations.introThemeDescription),
+        title: _buildTitleText(localizations.introThemeTitle),
         mainImage: Align(
           alignment: Alignment.center,
-          child: RawMaterialButton(
-            onPressed: () async {
-              if (await showThemeBrightnessSelect(ctx, prefs) != null)
-                showMaterialColorPicker(ctx);
-            },
-            child: Icon(
-              Icons.color_lens,
-              size: 100,
-              color: backgroundColor,
-            ),
-            shape: CircleBorder(),
-            fillColor: theme.brightness == Brightness.light
-                ? theme.backgroundColor
-                : theme.accentColor,
-            padding: const EdgeInsets.all(30),
-          ),
+          child: _buildCircleButton(Icons.color_lens, onPressed: () async {
+            if (await showThemeBrightnessSelect(ctx, prefs) != null)
+              showMaterialColorPicker(ctx);
+          }),
         ),
       );
 
-  PageViewModel _buildSearch(BuildContext ctx, ThemeData theme,
-          Color backgroundColor, AppLocalizations localizations) =>
-      PageViewModel(
+  PageViewModel _buildSearch(BuildContext ctx) => PageViewModel(
+        bubbleBackgroundColor: contentColor,
         pageColor: backgroundColor,
         bubble: Icon(
           Icons.search,
           color: backgroundColor,
         ),
-        body: AutoSizeText(
+        body: _buildBodyText(
           localizations.introGroupDescription,
         ),
-        title: AutoSizeText(
-          localizations.introGroupTitle,
-          textAlign: TextAlign.center,
-          maxFontSize: 40,
-        ),
+        title: _buildTitleText(localizations.introGroupTitle),
         mainImage: Align(
           alignment: Alignment.center,
-          child: RawMaterialButton(
+          child: _buildCircleButton(
+            Icons.search,
             onPressed: () => showSearchItemSelect(ctx, prefs),
-            child: Icon(
-              Icons.search,
-              color: backgroundColor,
-              size: 100,
-            ),
-            shape: CircleBorder(),
-            fillColor: theme.brightness == Brightness.light
-                ? theme.backgroundColor
-                : theme.accentColor,
-            padding: const EdgeInsets.all(30),
           ),
         ),
       );
 
+  AutoSizeText _buildTitleText(String text) => AutoSizeText(
+        text,
+        style: TextStyle(color: contentColor),
+        maxFontSize: 40,
+        textAlign: TextAlign.center,
+      );
+
+  AutoSizeText _buildBodyText(String text) => AutoSizeText(
+        text,
+        style: TextStyle(color: contentColor),
+      );
+
+  RawMaterialButton _buildCircleButton(IconData icon,
+          {VoidCallback onPressed}) =>
+      RawMaterialButton(
+        onPressed: onPressed,
+        child: Icon(
+          icon,
+          color: backgroundColor,
+          size: 100,
+        ),
+        shape: CircleBorder(),
+        fillColor:
+            theme.brightness == Brightness.light ? contentColor : accentColor,
+        padding: const EdgeInsets.all(30),
+      );
+
+  ThemeData theme;
+  Color backgroundColor;
+  Color contentColor;
+  AppLocalizations localizations;
+
   @override
   Widget build(BuildContext ctx) => buildThemeStream(
         (ctx, snapshot) {
-          final theme = buildTheme(), localizations = AppLocalizations.of(ctx);
-          final backgroundColor = theme.brightness == Brightness.light
+          theme = buildTheme();
+          localizations = AppLocalizations.of(ctx);
+          backgroundColor = theme.brightness == Brightness.light
               ? theme.primaryColor
               : theme.canvasColor;
+          contentColor = (theme.brightness == Brightness.light
+                  ? theme.accentTextTheme
+                  : theme.textTheme)
+              .body1
+              .color;
 
           return IntroViewsFlutter(
             [
-              _buildWelcome(theme, backgroundColor, localizations),
-              _buildTheme(ctx, theme, backgroundColor, localizations),
-              _buildTimetable(ctx, theme, backgroundColor, localizations),
-              _buildSearch(ctx, theme, backgroundColor, localizations),
+              _buildWelcome(),
+              _buildTheme(ctx),
+              _buildTimetable(ctx),
+              _buildSearch(ctx),
             ],
             doneText: Container(),
             showSkipButton: false,
             pageButtonTextStyles: TextStyle(
-              color: Colors.white,
+              color: contentColor,
               fontSize: 18.0,
             ),
           );
