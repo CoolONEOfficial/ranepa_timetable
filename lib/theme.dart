@@ -27,19 +27,19 @@ void _onThemeChange() async {
 
   debugPrint("Writing theme to prefs...");
 
-  await prefs.setString(PrefsIds.THEME_ACCENT, _colorToHex(theme.accentColor));
-
   await prefs.setString(
       PrefsIds.THEME_PRIMARY, _colorToHex(theme.primaryColor));
+
+  await prefs.setString(PrefsIds.THEME_ACCENT, _colorToHex(theme.accentColor));
 
   await prefs.setString(
       PrefsIds.THEME_BACKGROUND, _colorToHex(theme.backgroundColor));
 
-  await prefs.setString(PrefsIds.THEME_TEXT_ACCENT,
-      _colorToHex(theme.accentTextTheme.title.color));
+  await prefs.setString(
+      PrefsIds.THEME_TEXT_PRIMARY, _colorToHex(theme.textTheme.body1.color));
 
-  await prefs.setString(PrefsIds.THEME_TEXT_PRIMARY,
-      _colorToHex(theme.primaryTextTheme.title.color));
+  await prefs.setString(PrefsIds.THEME_TEXT_ACCENT,
+      _colorToHex(theme.accentTextTheme.body1.color));
 
   await prefs.setInt(PrefsIds.THEME_BRIGHTNESS, theme.brightness.index);
 
@@ -77,11 +77,11 @@ set brightness(value) {
 
 String _colorToHex(Color color) => color.value.toRadixString(16);
 
-Color _hexToColor(String hex) =>
-    Color(int.parse(hex, radix: 16));
+Color _hexToColor(String hex) => Color(int.parse(hex, radix: 16));
 
 MaterialColor _toMaterialColor(Color color) {
-  for (var mColor in Colors.primaries) {
+  for (var mColor in List<MaterialColor>.of(Colors.primaries)
+    ..add(Colors.grey)) {
     if (mColor.value == color.value) return mColor;
   }
   throw Exception('Material color ${color.toString()} not found!!!');

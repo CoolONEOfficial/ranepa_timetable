@@ -152,9 +152,9 @@ class Timetable extends StatelessWidget {
       final mItemTimeStart = mItem["timestart"];
       final mItemTimeFinish = mItem["timefinish"];
       final String mItemName = mItem["name"];
-      final openBracketIndex = mItemName.lastIndexOf('(');
-      final closeBracketIndex = mItemName.lastIndexOf(')');
-      final closeGTIndex = mItemName.lastIndexOf('>');
+      String bracketsInner =
+          RegExp(r"\(([^)]*)\)[^(]*$").stringMatch(mItemName).substring(1);
+      bracketsInner = bracketsInner.substring(0, bracketsInner.lastIndexOf(')'));
 
       final mLesson = TimelineModel(
         date: mItemDate,
@@ -172,12 +172,12 @@ class Timetable extends StatelessWidget {
         group: mItem["namegroup"],
         lesson: LessonModel.build(
           ctx,
-          mItemName.substring(0, openBracketIndex),
-          mItemName.substring(openBracketIndex + 1, closeBracketIndex),
+          mItemName.substring(0, mItemName.indexOf('(')),
+          bracketsInner,
         ),
         teacher: TeacherModel.fromString(
             searchItem.typeId == SearchItemTypeId.Group
-                ? mItemName.substring(closeGTIndex + 1)
+                ? mItemName.substring(mItemName.indexOf('>') + 1)
                 : searchItem.title),
       );
 
@@ -394,8 +394,7 @@ class Timetable extends StatelessWidget {
               key: scaffoldKey,
               body: StreamBuilder<void>(
                 stream: timetableFutureBuilderBloc.stream,
-                builder: (ctx, _) => WidgetTemplates.buildFutureBuilder(
-                        ctx,
+                builder: (ctx, _) => WidgetTemplates.buildFutureBuilder(ctx,
                         future: _checkInternetConnection(),
                         builder: (ctx, internetConn) {
                       if (!internetConn.data &&
@@ -405,8 +404,7 @@ class Timetable extends StatelessWidget {
                       return WidgetTemplates.buildFutureBuilder(
                         ctx,
                         future: Platform.isAndroid && ssSearchItem.data.item1
-                            ? _getTimetable(
-                                ctx, ssSearchItem.data.item2, prefs)
+                            ? _getTimetable(ctx, ssSearchItem.data.item2, prefs)
                             : _loadAllTimetable(
                                 ctx,
                                 ssSearchItem.data.item2,
@@ -440,8 +438,7 @@ class Timetable extends StatelessWidget {
                             Widget mWidget;
                             if (mDate.compareTo(endCache) > 0)
                               mWidget =
-                                  WidgetTemplates.buildNoCacheNotification(
-                                      ctx);
+                                  WidgetTemplates.buildNoCacheNotification(ctx);
                             else if (timetableIter.moveNext()) {
                               if (timetableIter.current.value.isEmpty)
                                 mWidget =
@@ -481,8 +478,8 @@ class Timetable extends StatelessWidget {
                         IconButton(
                           tooltip: AppLocalizations.of(ctx).calendarTip,
                           icon: const Icon(Icons.calendar_today),
-                          onPressed: () => _createCalendarEvents(
-                              ctx, _deviceCalendarPlugin),
+                          onPressed: () =>
+                              _createCalendarEvents(ctx, _deviceCalendarPlugin),
                         ),
                         IconButton(
                           tooltip: AppLocalizations.of(ctx).alarmTip,

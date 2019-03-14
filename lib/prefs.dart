@@ -17,7 +17,8 @@ import 'package:ranepa_timetable/theme.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 
 class PrefsIds {
-  static const WIDGET_TRANSLUCENT = "widget_translucent",
+  static const LAST_UPDATE = "last_update",
+      WIDGET_TRANSLUCENT = "widget_translucent",
       THEME_PRIMARY = "theme_primary",
       THEME_ACCENT = "theme_accent",
       THEME_TEXT_PRIMARY = "theme_text_primary",

@@ -38,6 +38,8 @@ class TimelinePainter extends CustomPainter {
       circleRadiusAdd = 3.0;
 
   void _centerElementPaint(Canvas canvas, Size size) {
+    final theme = Theme.of(ctx);
+    
     if (model.mergeTop)
       canvas.drawRect(
         Rect.fromLTRB(
@@ -47,7 +49,7 @@ class TimelinePainter extends CustomPainter {
           rectMargins,
         ),
         Paint()
-          ..color = Theme.of(ctx).backgroundColor.withOpacity(0.5)
+          ..color = theme.backgroundColor.withOpacity(0.5)
           ..strokeCap = StrokeCap.round
           ..style = PaintingStyle.fill,
       );
@@ -62,7 +64,7 @@ class TimelinePainter extends CustomPainter {
         new Radius.circular(rectCornersRadius),
       ),
       Paint()
-        ..color = Theme.of(ctx).backgroundColor
+        ..color = theme.backgroundColor
         ..strokeCap = StrokeCap.round
         ..style = PaintingStyle.fill,
     );
@@ -76,7 +78,7 @@ class TimelinePainter extends CustomPainter {
     if (!(model.first && model.last)) {
       // Timeline rect
       final rectPaint = Paint()
-        ..color = Theme.of(ctx).accentColor
+        ..color = theme.accentColor
         ..strokeCap = StrokeCap.round;
 
       if (model.first || !model.last) {
@@ -98,7 +100,7 @@ class TimelinePainter extends CustomPainter {
 
       // Timeline border arc
       final arcPaint = Paint()
-        ..color = Theme.of(ctx).accentColor
+        ..color = theme.accentColor
         ..style = PaintingStyle.fill;
 
       if (model.first)
@@ -123,7 +125,7 @@ class TimelinePainter extends CustomPainter {
           circleOffset,
           circleRadius + circleRadiusAdd,
           Paint()
-            ..color = Theme.of(ctx).accentColor
+            ..color = theme.accentColor
             ..style = PaintingStyle.fill);
 
     // Icons
@@ -134,7 +136,7 @@ class TimelinePainter extends CustomPainter {
       text: TextSpan(
         style: TextStyle(
             fontFamily: fontFamily,
-            color: Theme.of(ctx).accentTextTheme.body1.color,
+            color: theme.accentTextTheme.body1.color,
             fontSize: iconSize * 2),
         text: String.fromCharCode(model.lesson.iconCodePoint),
       ),
@@ -153,7 +155,7 @@ class TimelinePainter extends CustomPainter {
         text: TextSpan(
           style: TextStyle(
             fontFamily: fontFamily,
-            color: Theme.of(ctx).textTheme.body1.color,
+            color: theme.textTheme.body1.color,
             fontSize: 20.0,
           ),
           text: String.fromCharCode(

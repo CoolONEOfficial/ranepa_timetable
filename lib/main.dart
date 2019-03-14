@@ -9,12 +9,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ranepa_timetable/about.dart';
 import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/platform_channels.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:package_info/package_info.dart';
 
 class BaseWidget extends StatelessWidget {
   Widget buildBase(BuildContext ctx, SharedPreferences prefs) {
@@ -68,54 +70,77 @@ class BaseWidget extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext ctx) {
-    return WidgetTemplates.buildFutureBuilder<SharedPreferences>(
-      ctx,
-      loading: Container(),
-      future: SharedPreferences.getInstance(),
-      builder: (ctx, snapshot) {
-        prefs = snapshot.data;
-        return buildThemeStream(
-          (ctx, snapshot) {
-            final theme = snapshot.data;
-            return MaterialApp(
-              builder: (ctx, child) {
-                ErrorWidget.builder = _buildError(ctx);
-                return MediaQuery(
-                    data: MediaQuery.of(ctx)
-                        .copyWith(alwaysUse24HourFormat: true),
-                    child: child);
-              },
-              localizationsDelegates: [
-                AppLocalizationsDelegate(),
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate
-              ],
-              supportedLocales: [
-                SupportedLocales.en,
-                SupportedLocales.ru,
-              ],
-              onGenerateTitle: (BuildContext ctx) =>
-                  AppLocalizations.of(ctx).title,
-              theme: theme,
-              routes: <String, WidgetBuilder>{
-                Prefs.ROUTE: (ctx) => Prefs(),
-                About.ROUTE: (ctx) => About(),
-              },
-              home: Builder(
-                builder: (ctx) => prefs.getInt(
-                            PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX +
-                                PrefsIds.ITEM_ID) ==
-                        null
-                    ? Intro(base: buildBase(ctx, prefs), prefs: prefs)
-                    : buildBase(ctx, prefs),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
+  Widget build(BuildContext ctx) =>
+      WidgetTemplates.buildFutureBuilder<PackageInfo>(
+        ctx,
+        loading: Container(),
+        future: PackageInfo.fromPlatform(),
+        builder: (ctx, snapshot) {
+          version = snapshot.data.version;
+          debugPrint("App version: " + version);
+
+          return WidgetTemplates.buildFutureBuilder<SharedPreferences>(
+            ctx,
+            loading: Container(),
+            future: SharedPreferences.getInstance(),
+            builder: (ctx, snapshot) {
+              prefs = snapshot.data;
+
+              if (prefs.getString(PrefsIds.LAST_UPDATE) != version) {
+                return WidgetTemplates.buildFutureBuilder(ctx,
+                    loading: Container(),
+                    future: Future.wait(
+                        <Future>[prefs.clear(), PlatformChannels.deleteDb()]),
+                    builder: (ctx, _) {
+                  prefs.setString(PrefsIds.LAST_UPDATE, version);
+                  return _build(ctx);
+                });
+              }
+
+              return _build(ctx);
+            },
+          );
+        },
+      );
+
+  Widget _build(BuildContext ctx) => buildThemeStream(
+        (ctx, snapshot) {
+          final theme = snapshot.data;
+          return MaterialApp(
+            builder: (ctx, child) {
+              ErrorWidget.builder = _buildError(ctx);
+              return MediaQuery(
+                  data:
+                      MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
+                  child: child);
+            },
+            localizationsDelegates: [
+              AppLocalizationsDelegate(),
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate
+            ],
+            supportedLocales: [
+              SupportedLocales.en,
+              SupportedLocales.ru,
+            ],
+            onGenerateTitle: (BuildContext ctx) =>
+                AppLocalizations.of(ctx).title,
+            theme: theme,
+            routes: <String, WidgetBuilder>{
+              Prefs.ROUTE: (ctx) => Prefs(),
+              About.ROUTE: (ctx) => About(),
+            },
+            home: Builder(
+              builder: (ctx) => prefs.getInt(
+                          PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX +
+                              PrefsIds.ITEM_ID) ==
+                      null
+                  ? Intro(base: buildBase(ctx, prefs), prefs: prefs)
+                  : buildBase(ctx, prefs),
+            ),
+          );
+        },
+      );
 }
 
 class SupportedLocales {
@@ -169,5 +194,6 @@ Widget Function(FlutterErrorDetails) _buildError(BuildContext ctx) {
 }
 
 SharedPreferences prefs;
+String version;
 
 Future main() async => runApp(BaseWidget());
