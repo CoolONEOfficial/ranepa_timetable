@@ -21,6 +21,22 @@ import java.util.Locale;
 import lombok.extern.java.Log;
 import lombok.var;
 
+import static ru.coolone.ranepatimetable.Timeline.COLUMN_DATE;
+import static ru.coolone.ranepatimetable.Timeline.COLUMN_FIRST;
+import static ru.coolone.ranepatimetable.Timeline.COLUMN_GROUP;
+import static ru.coolone.ranepatimetable.Timeline.COLUMN_LAST;
+import static ru.coolone.ranepatimetable.Timeline.COLUMN_MERGE_TOP;
+import static ru.coolone.ranepatimetable.Timeline.LessonAction;
+import static ru.coolone.ranepatimetable.Timeline.LessonModel;
+import static ru.coolone.ranepatimetable.Timeline.Location;
+import static ru.coolone.ranepatimetable.Timeline.PREFIX_FINISH;
+import static ru.coolone.ranepatimetable.Timeline.PREFIX_LESSON;
+import static ru.coolone.ranepatimetable.Timeline.PREFIX_ROOM;
+import static ru.coolone.ranepatimetable.Timeline.PREFIX_START;
+import static ru.coolone.ranepatimetable.Timeline.PREFIX_TEACHER;
+import static ru.coolone.ranepatimetable.Timeline.RoomModel;
+import static ru.coolone.ranepatimetable.Timeline.TeacherModel;
+import static ru.coolone.ranepatimetable.Timeline.TimeOfDayModel;
 import static ru.coolone.ranepatimetable.WidgetProvider.defaultTheme;
 import static ru.coolone.ranepatimetable.WidgetProvider.getPrefs;
 import static ru.coolone.ranepatimetable.WidgetProvider.widgetSize;
@@ -128,7 +144,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         bgRectPaint.setColor(theme.background);
         canvas.drawRoundRect(rect, dpScale * rectCornersRadius, dpScale * rectCornersRadius, bgRectPaint);
 
-        var mergeTop = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_MERGE_TOP)) != 0;
+        var mergeTop = cursor.getInt(cursor.getColumnIndex(COLUMN_MERGE_TOP)) != 0;
         if (mergeTop) {
             var mergePaint = new Paint();
             mergePaint.setAntiAlias(true);
@@ -150,8 +166,8 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             );
         }
 
-        var first = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_FIRST)) != 0;
-        var last = cursor.getInt(cursor.getColumnIndex(Timeline.COLUMN_LAST)) != 0;
+        var first = cursor.getInt(cursor.getColumnIndex(COLUMN_FIRST)) != 0;
+        var last = cursor.getInt(cursor.getColumnIndex(COLUMN_LAST)) != 0;
 
         var circleX = dpScale * (rectMargins * 2 + circleRadius + 68);
         var circleY = h / 2 + dpScale * (rectMargins / 2f);
@@ -243,25 +259,29 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                         Character.toChars(
                                 cursor.getInt(
                                         cursor.getColumnIndex(
-                                                Timeline.PREFIX_LESSON
-                                                        + Timeline.LessonModel.COLUMN_LESSON_ICON)
+                                                PREFIX_LESSON
+                                                        + LessonModel.COLUMN_LESSON_ICON)
                                 )
                         )
                 ), circleX, circleY + dpScale * (10 + translateIcon), iconPaint
         );
 
         // Draw room location icon
-        var roomLocation = Timeline.Location.values()[cursor.getInt(cursor.getColumnIndex(
-                Timeline.PREFIX_ROOM
-                        + Timeline.RoomModel.COLUMN_ROOM_LOCATION)
-        )];
-        iconPaint.setColor(theme.textPrimary);
-        iconPaint.setTextSize(dpScale * 20);
-        canvas.drawText(
-                String.valueOf(
-                        Character.toChars(roomLocation.iconCodePoint)
-                ), dpScale * 25, dpScale * 70, iconPaint
-        );
+        if (WidgetProvider.RoomLocationStyle.values()[
+                (int) getPrefs(ctx).getLong(WidgetProvider.PrefsIds.RoomLocationStyle.prefId, 0)
+                ] == WidgetProvider.RoomLocationStyle.Icon) {
+            var roomLocation = Location.values()[cursor.getInt(cursor.getColumnIndex(
+                    PREFIX_ROOM
+                            + RoomModel.COLUMN_ROOM_LOCATION)
+            )];
+            iconPaint.setColor(theme.textPrimary);
+            iconPaint.setTextSize(dpScale * 20);
+            canvas.drawText(
+                    String.valueOf(
+                            Character.toChars(roomLocation.iconCodePoint)
+                    ), dpScale * 25, dpScale * 70, iconPaint
+            );
+        }
 
         return bitmap;
     }
@@ -282,29 +302,29 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         // Get the data for this position from the content provider
         if (cursor.moveToPosition(position)) {
             var date = new GregorianCalendar();
-            date.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(Timeline.COLUMN_DATE)));
+            date.setTimeInMillis(cursor.getLong(cursor.getColumnIndex(COLUMN_DATE)));
 
-            var start = new Timeline.TimeOfDayModel(
-                    cursor.getInt(cursor.getColumnIndex(Timeline.PREFIX_START + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR)),
-                    cursor.getInt(cursor.getColumnIndex(Timeline.PREFIX_START + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE))
+            var start = new TimeOfDayModel(
+                    cursor.getInt(cursor.getColumnIndex(PREFIX_START + TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR)),
+                    cursor.getInt(cursor.getColumnIndex(PREFIX_START + TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE))
             );
-            var finish = new Timeline.TimeOfDayModel(
-                    cursor.getInt(cursor.getColumnIndex(Timeline.PREFIX_FINISH + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR)),
-                    cursor.getInt(cursor.getColumnIndex(Timeline.PREFIX_FINISH + Timeline.TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE))
+            var finish = new TimeOfDayModel(
+                    cursor.getInt(cursor.getColumnIndex(PREFIX_FINISH + TimeOfDayModel.COLUMN_TIMEOFDAY_HOUR)),
+                    cursor.getInt(cursor.getColumnIndex(PREFIX_FINISH + TimeOfDayModel.COLUMN_TIMEOFDAY_MINUTE))
             );
 
             rv.setTextViewText(R.id.widget_item_lesson_title,
                     cursor.getString(
                             cursor.getColumnIndex(
-                                    Timeline.PREFIX_LESSON
-                                            + Timeline.LessonModel.COLUMN_LESSON_TITLE
+                                    PREFIX_LESSON
+                                            + LessonModel.COLUMN_LESSON_TITLE
                             )
                     )
             );
-            var teacherName = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_NAME));
-            var teacherSurname = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_SURNAME));
-            var teacherPatronymic = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_TEACHER + Timeline.TeacherModel.COLUMN_TEACHER_PATRONYMIC));
-            var group = cursor.getString(cursor.getColumnIndex(Timeline.COLUMN_GROUP));
+            var teacherName = cursor.getString(cursor.getColumnIndex(PREFIX_TEACHER + TeacherModel.COLUMN_TEACHER_NAME));
+            var teacherSurname = cursor.getString(cursor.getColumnIndex(PREFIX_TEACHER + TeacherModel.COLUMN_TEACHER_SURNAME));
+            var teacherPatronymic = cursor.getString(cursor.getColumnIndex(PREFIX_TEACHER + TeacherModel.COLUMN_TEACHER_PATRONYMIC));
+            var group = cursor.getString(cursor.getColumnIndex(COLUMN_GROUP));
             var user = WidgetProvider.SearchItemTypeId.values()[(int) getPrefs(ctx).getLong(
                     WidgetProvider.PrefsIds.PrimarySearchItemPrefix.prefId +
                             WidgetProvider.PrefsIds.ItemType.prefId,
@@ -316,15 +336,36 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                             : group);
             rv.setTextViewText(R.id.widget_item_start, String.format(getCurrentLocale(), "%d:%02d", start.hour, start.minute));
             rv.setTextViewText(R.id.widget_item_finish, String.format(getCurrentLocale(), "%d:%02d", finish.hour, finish.minute));
-            rv.setTextViewText(R.id.widget_item_room_number, String.valueOf(
-                    cursor.getString(cursor.getColumnIndex(
-                            Timeline.PREFIX_ROOM
-                                    + Timeline.RoomModel.COLUMN_ROOM_NUMBER)
-                    )));
-            var action = cursor.getString(cursor.getColumnIndex(Timeline.PREFIX_LESSON + Timeline.LessonModel.PREFIX_LESSON_ACTION + Timeline.LessonAction.COLUMN_LESSON_TYPE_TITLE));
+
+            var prefix = "";
+            if (WidgetProvider.RoomLocationStyle.values()[
+                    (int) getPrefs(ctx).getLong(WidgetProvider.PrefsIds.RoomLocationStyle.prefId, 0)
+                    ] == WidgetProvider.RoomLocationStyle.Text)
+                switch (Location.values()[cursor.getInt(cursor.getColumnIndex(
+                        PREFIX_ROOM
+                                + RoomModel.COLUMN_ROOM_LOCATION))]) {
+                    case Hotel:
+                        prefix = "П8-";
+                        break;
+                    case StudyHostel:
+                        prefix = "СО-";
+                        break;
+                }
+            rv.setTextViewText(R.id.widget_item_room_number,
+                    prefix + cursor.getString(cursor.getColumnIndex(
+                            PREFIX_ROOM
+                                    + RoomModel.COLUMN_ROOM_NUMBER)
+                    ));
+            var action = cursor.getString(
+                    cursor.getColumnIndex(
+                            PREFIX_LESSON
+                                    + LessonModel.PREFIX_LESSON_ACTION
+                                    + LessonAction.COLUMN_LESSON_TYPE_TITLE
+                    ));
             if (action == null)
                 rv.setViewVisibility(R.id.widget_item_lesson_action, View.GONE);
-            else rv.setTextViewText(R.id.widget_item_lesson_action, action);
+            else
+                rv.setTextViewText(R.id.widget_item_lesson_action, action);
 
             rv.setTextColor(R.id.widget_item_lesson_action, theme.textPrimary);
             rv.setTextColor(R.id.widget_item_lesson_title, theme.textPrimary);

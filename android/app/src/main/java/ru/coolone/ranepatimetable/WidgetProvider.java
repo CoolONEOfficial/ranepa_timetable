@@ -72,6 +72,11 @@ public class WidgetProvider extends AppWidgetProvider {
         Light
     }
 
+    enum RoomLocationStyle {
+        Text,
+        Icon
+    }
+
     AlarmManager manager;
     PendingIntent updatePendingIntent, deleteOldPendingIntent;
 
@@ -184,14 +189,19 @@ public class WidgetProvider extends AppWidgetProvider {
                         - ((int) duration.toMinutes()));
 
                 var alarmIntent = new Intent(AlarmClock.ACTION_SET_ALARM);
-                alarmIntent.putExtra(AlarmClock.EXTRA_MESSAGE, firstLesson.getString(firstLesson.getColumnIndex(Timeline.PREFIX_LESSON + Timeline.LessonModel.COLUMN_LESSON_TITLE)));
+                alarmIntent.putExtra(AlarmClock.EXTRA_MESSAGE, firstLesson.getString(
+                        firstLesson.getColumnIndex(
+                                Timeline.PREFIX_LESSON
+                                        + Timeline.LessonModel.COLUMN_LESSON_TITLE
+                        )));
                 alarmIntent.putExtra(AlarmClock.EXTRA_HOUR, date.get(Calendar.HOUR));
                 alarmIntent.putExtra(AlarmClock.EXTRA_MINUTES, date.get(Calendar.MINUTE));
                 alarmIntent.putExtra(AlarmClock.EXTRA_SKIP_UI, true);
                 alarmIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 ctx.startActivity(alarmIntent);
             }
-        } else Toast.makeText(ctx, R.string.noLessons, Toast.LENGTH_LONG).show();
+        } else
+            Toast.makeText(ctx, R.string.noLessons, Toast.LENGTH_LONG).show();
     }
 
     private void createCalendarEvents(final Context ctx) {
@@ -307,7 +317,8 @@ public class WidgetProvider extends AppWidgetProvider {
             createAlarmClock(ctx);
         } else if (Objects.equals(intent.getAction(), IntentAction.CreateCalendarEvents.action)) {
             createCalendarEvents(ctx);
-        } else if (Objects.equals(intent.getAction(), IntentAction.DayNext.action) || Objects.equals(intent.getAction(), IntentAction.DayPrev.action)) {
+        } else if (Objects.equals(intent.getAction(), IntentAction.DayNext.action)
+                || Objects.equals(intent.getAction(), IntentAction.DayPrev.action)) {
             Calendar now;
             do {
                 dateOffset += Objects.equals(intent.getAction(), IntentAction.DayNext.action)
@@ -316,7 +327,8 @@ public class WidgetProvider extends AppWidgetProvider {
 
                 now = GregorianCalendar.getInstance();
                 now.add(Calendar.DATE, dateOffset);
-            } while (now.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY);
+            }
+            while (now.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY);
             refreshWidget(ctx);
         }
 
@@ -343,6 +355,8 @@ public class WidgetProvider extends AppWidgetProvider {
     private static final String FLUTTER_PREFIX = "flutter.";
 
     enum PrefsIds {
+        RoomLocationStyle("room_location_style"),
+
         WidgetTranslucent("widget_translucent"),
 
         ThemePrimary("theme_primary"),

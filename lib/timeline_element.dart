@@ -81,25 +81,22 @@ class TimelineElement extends StatelessWidget {
       );
 
   Widget _buildRoomLocation(BuildContext ctx) {
-    String prefix;
-    switch (model.room.location) {
-      case RoomLocation.Academy:
-        prefix = "";
-        break;
-      case RoomLocation.StudyHostel:
-        prefix = "СО-";
-        break;
-      case RoomLocation.Hotel:
-        prefix = "П8-";
-        break;
-    }
+    String prefix = "";
+    if (RoomLocationStyle
+            .values[prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ?? 0] ==
+        RoomLocationStyle.Text)
+      switch (model.room.location) {
+        case RoomLocation.StudyHostel:
+          prefix = "СО-";
+          break;
+        case RoomLocation.Hotel:
+          prefix = "П8-";
+          break;
+        default:
+      }
 
     return Text(
-      RoomLocationStyle
-                  .values[prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ?? 0] ==
-              RoomLocationStyle.Text
-          ? prefix + model.room.number
-          : model.room.number,
+      prefix + model.room.number,
       style: Theme.of(ctx).textTheme.subtitle,
       textAlign: RoomLocationStyle
                   .values[prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ?? 0] ==
