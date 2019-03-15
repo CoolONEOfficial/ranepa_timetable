@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2019-03-13T23:12:47.891535",
+  "@@last_modified": "2019-03-15T11:23:20.377340",
   "title": "RANEPA (Timetable)",
   "@title": {
     "type": "text",
@@ -392,6 +392,31 @@
   },
   "widgetTranslucentDescription": "Translucency android widget on home screen",
   "@widgetTranslucentDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomLocationStyleTitle": "Room location style",
+  "@roomLocationStyleTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomLocationStyleDescriptionIcon": "Icon showing the location of the room",
+  "@roomLocationStyleDescriptionIcon": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomLocationStyleDescriptionText": "Text showing the location of the room",
+  "@roomLocationStyleDescriptionText": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomLocationStyleIcon": "Icon",
+  "@roomLocationStyleIcon": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "roomLocationStyleText": "Text",
+  "@roomLocationStyleText": {
     "type": "text",
     "placeholders": {}
   },

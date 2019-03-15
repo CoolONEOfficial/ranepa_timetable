@@ -28,7 +28,7 @@ class TimelineElement extends StatelessWidget {
   Widget _buildLine(BuildContext ctx) => SizedBox.expand(
         child: Container(
           child: CustomPaint(
-            painter: TimelinePainter(ctx, model),
+            painter: TimelinePainter(ctx, model, prefs),
           ),
         ),
       );
@@ -80,10 +80,34 @@ class TimelineElement extends StatelessWidget {
         ),
       );
 
-  Widget _buildRoomLocation(BuildContext ctx) => Text(
-        model.room.number,
-        style: Theme.of(ctx).textTheme.subtitle,
-      );
+  Widget _buildRoomLocation(BuildContext ctx) {
+    String prefix;
+    switch (model.room.location) {
+      case RoomLocation.Academy:
+        prefix = "";
+        break;
+      case RoomLocation.StudyHostel:
+        prefix = "СО-";
+        break;
+      case RoomLocation.Hotel:
+        prefix = "П8-";
+        break;
+    }
+
+    return Text(
+      RoomLocationStyle
+                  .values[prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ?? 0] ==
+              RoomLocationStyle.Text
+          ? prefix + model.room.number
+          : model.room.number,
+      style: Theme.of(ctx).textTheme.subtitle,
+      textAlign: RoomLocationStyle
+                  .values[prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ?? 0] ==
+              RoomLocationStyle.Text
+          ? TextAlign.center
+          : TextAlign.start,
+    );
+  }
 
   static const innerPadding = 4.0;
 
@@ -104,7 +128,15 @@ class TimelineElement extends StatelessWidget {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 22, bottom: 2, top: 8),
+              padding: EdgeInsets.only(
+                  left: RoomLocationStyle.values[
+                              prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ??
+                                  0] ==
+                          RoomLocationStyle.Icon
+                      ? 22
+                      : 2,
+                  bottom: 2,
+                  top: 8),
               child: _buildRoomLocation(ctx),
             ),
           ],

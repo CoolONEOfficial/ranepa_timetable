@@ -62,6 +62,8 @@ class TimelineModel {
   Map<String, dynamic> toJson() => _$TimelineModelToJson(this);
 }
 
+enum RoomLocationStyle { Text, Icon }
+
 enum RoomLocation { Academy, Hotel, StudyHostel }
 
 class RoomLocationsTitles {

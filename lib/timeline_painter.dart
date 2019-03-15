@@ -16,14 +16,17 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TimelinePainter extends CustomPainter {
   final TimelineModel model;
   final BuildContext ctx;
+  final SharedPreferences prefs;
 
-  TimelinePainter(this.ctx, this.model);
+  TimelinePainter(this.ctx, this.model, this.prefs);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -39,7 +42,7 @@ class TimelinePainter extends CustomPainter {
 
   void _centerElementPaint(Canvas canvas, Size size) {
     final theme = Theme.of(ctx);
-    
+
     if (model.mergeTop)
       canvas.drawRect(
         Rect.fromLTRB(
@@ -150,29 +153,32 @@ class TimelinePainter extends CustomPainter {
             -iconSize, -(circleRadius / 3 * 2) + translateIcon),
       );
 
-    // Location icon
-    TextPainter(
-        text: TextSpan(
-          style: TextStyle(
-            fontFamily: fontFamily,
-            color: theme.textTheme.body1.color,
-            fontSize: 20.0,
+    if (RoomLocationStyle
+            .values[prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ?? 0] ==
+        RoomLocationStyle.Icon)
+      // Location icon
+      TextPainter(
+          text: TextSpan(
+            style: TextStyle(
+              fontFamily: fontFamily,
+              color: theme.textTheme.body1.color,
+              fontSize: 20.0,
+            ),
+            text: String.fromCharCode(
+                (model.room.location == RoomLocation.StudyHostel
+                        ? TimetableIcons.studyHostel
+                        : model.room.location == RoomLocation.Hotel
+                            ? TimetableIcons.hotel
+                            : TimetableIcons.academy)
+                    .codePoint),
           ),
-          text: String.fromCharCode(
-              (model.room.location == RoomLocation.StudyHostel
-                      ? TimetableIcons.studyHostel
-                      : model.room.location == RoomLocation.Hotel
-                          ? TimetableIcons.hotel
-                          : TimetableIcons.academy)
-                  .codePoint),
-        ),
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr)
-      ..layout(minWidth: iconSize * 2)
-      ..paint(
-        canvas,
-        Offset(10, size.height - 28),
-      );
+          textAlign: TextAlign.center,
+          textDirection: TextDirection.ltr)
+        ..layout(minWidth: iconSize * 2)
+        ..paint(
+          canvas,
+          Offset(10, size.height - 28),
+        );
   }
 
   @override

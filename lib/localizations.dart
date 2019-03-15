@@ -600,6 +600,41 @@ class AppLocalizations {
     );
   }
 
+  String get roomLocationStyleTitle {
+    return Intl.message(
+      'Room location style',
+      name: 'roomLocationStyleTitle',
+    );
+  }
+
+  String get roomLocationStyleDescriptionIcon {
+    return Intl.message(
+      'Icon showing the location of the room',
+      name: 'roomLocationStyleDescriptionIcon',
+    );
+  }
+
+  String get roomLocationStyleDescriptionText {
+    return Intl.message(
+      'Text showing the location of the room',
+      name: 'roomLocationStyleDescriptionText',
+    );
+  }
+
+  String get roomLocationStyleIcon {
+    return Intl.message(
+      'Icon',
+      name: 'roomLocationStyleIcon',
+    );
+  }
+
+  String get roomLocationStyleText {
+    return Intl.message(
+      'Text',
+      name: 'roomLocationStyleText',
+    );
+  }
+
   // Themes titles
 
   String get themeDark {

@@ -9,6 +9,7 @@ import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/platform_channels.dart';
 import 'package:ranepa_timetable/search.dart';
+import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,7 @@ import 'package:flutter_material_color_picker/flutter_material_color_picker.dart
 
 class PrefsIds {
   static const LAST_UPDATE = "last_update",
+      ROOM_LOCATION_STYLE = "room_location_style",
       WIDGET_TRANSLUCENT = "widget_translucent",
       THEME_PRIMARY = "theme_primary",
       THEME_ACCENT = "theme_accent",
@@ -111,10 +113,10 @@ void showMaterialColorPicker(BuildContext ctx) => showDialog(
 class Prefs extends StatelessWidget {
   static const ROUTE = "/prefs";
 
-  final widgetTranslucent = StreamController<bool>();
+  final widgetTranslucentBloc = StreamController<bool>();
+  final roomLocationStyleBloc = StreamController<RoomLocationStyle>();
 
-  Widget _buildThemePreferenceButton(
-          BuildContext ctx, SharedPreferences prefs) =>
+  Widget _buildThemePreference(BuildContext ctx, SharedPreferences prefs) =>
       WidgetTemplates.buildPreferenceButton(
         ctx,
         title: AppLocalizations.of(ctx).themeTitle,
@@ -126,7 +128,7 @@ class Prefs extends StatelessWidget {
         ),
       );
 
-  Widget _buildThemeAccentPreferenceButton(
+  Widget _buildThemeAccentPreference(
           BuildContext ctx, SharedPreferences prefs) =>
       WidgetTemplates.buildPreferenceButton(
         ctx,
@@ -145,11 +147,11 @@ class Prefs extends StatelessWidget {
         ),
       );
 
-  Widget _buildWidgetTranslucentPreferenceButton(
+  Widget _buildWidgetTranslucentPreference(
           BuildContext ctx, SharedPreferences prefs) =>
       StreamBuilder<bool>(
         initialData: prefs.getBool(PrefsIds.WIDGET_TRANSLUCENT) ?? true,
-        stream: widgetTranslucent.stream,
+        stream: widgetTranslucentBloc.stream,
         builder: (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
               ctx,
               title: AppLocalizations.of(ctx).widgetTranslucentTitle,
@@ -158,7 +160,7 @@ class Prefs extends StatelessWidget {
               rightWidget: Checkbox(
                 value: snapshot.data,
                 onChanged: (value) {
-                  widgetTranslucent.add(value);
+                  widgetTranslucentBloc.add(value);
                   prefs.setBool(PrefsIds.WIDGET_TRANSLUCENT, value).then(
                         (_) => PlatformChannels.refreshWidget(),
                       );
@@ -184,7 +186,7 @@ class Prefs extends StatelessWidget {
         return duration;
       });
 
-  Widget _buildBeforeAlarmClockPreferenceButton(
+  Widget _buildBeforeAlarmClockPreference(
           BuildContext ctx, SharedPreferences prefs) =>
       WidgetTemplates.buildPreferenceButton(
         ctx,
@@ -209,7 +211,7 @@ class Prefs extends StatelessWidget {
         ),
       );
 
-  Widget _buildSearchItemPreferenceButton(
+  Widget _buildSearchItemPreference(
           BuildContext ctx, SharedPreferences prefs) =>
       WidgetTemplates.buildPreferenceButton(
         ctx,
@@ -228,6 +230,41 @@ class Prefs extends StatelessWidget {
         ),
       );
 
+  Widget _buildRoomLocationStylePreference(
+          BuildContext ctx, SharedPreferences prefs) =>
+      StreamBuilder<RoomLocationStyle>(
+        initialData: RoomLocationStyle
+            .values[prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ?? 0],
+        stream: roomLocationStyleBloc.stream,
+        builder: (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
+              ctx,
+              title: AppLocalizations.of(ctx).widgetTranslucentTitle,
+              description: snapshot.data == RoomLocationStyle.Icon
+                  ? AppLocalizations.of(ctx).roomLocationStyleDescriptionIcon
+                  : AppLocalizations.of(ctx).roomLocationStyleDescriptionText,
+              rightWidget: Row(
+                children: <Widget>[
+                  Text(AppLocalizations.of(ctx).roomLocationStyleText),
+                  Switch(
+                    value: snapshot.data == RoomLocationStyle.Icon,
+                    onChanged: (value) {
+                      var rlStyle = value
+                          ? RoomLocationStyle.Icon
+                          : RoomLocationStyle.Text;
+                      roomLocationStyleBloc.add(rlStyle);
+                      prefs
+                          .setInt(PrefsIds.ROOM_LOCATION_STYLE, rlStyle.index)
+                          .then(
+                            (_) => PlatformChannels.refreshWidget(),
+                          );
+                    },
+                  ),
+                  Text(AppLocalizations.of(ctx).roomLocationStyleIcon),
+                ],
+              ),
+            ),
+      );
+
   @override
   Widget build(BuildContext ctx) => Scaffold(
         appBar: AppBar(
@@ -239,15 +276,17 @@ class Prefs extends StatelessWidget {
         ),
         body: ListView(
           children: <Widget>[
-            _buildThemePreferenceButton(ctx, prefs),
+            _buildThemePreference(ctx, prefs),
             Divider(height: 0),
-            _buildThemeAccentPreferenceButton(ctx, prefs),
+            _buildThemeAccentPreference(ctx, prefs),
             Divider(height: 0),
-            _buildSearchItemPreferenceButton(ctx, prefs),
+            _buildSearchItemPreference(ctx, prefs),
             Divider(height: 0),
-            _buildBeforeAlarmClockPreferenceButton(ctx, prefs),
+            _buildBeforeAlarmClockPreference(ctx, prefs),
             Divider(height: 0),
-            _buildWidgetTranslucentPreferenceButton(ctx, prefs),
+            _buildWidgetTranslucentPreference(ctx, prefs),
+            Divider(height: 0),
+            _buildRoomLocationStylePreference(ctx, prefs),
             Divider(height: 0),
           ],
         ),
