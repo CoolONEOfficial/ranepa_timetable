@@ -12,13 +12,24 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
+import 'package:tuple/tuple.dart';
 
 part 'timeline_models.g.dart';
+
+abstract class FindableModel {
+  const FindableModel();
+}
+
+mixin ToAlias {}
+
+class FindTree = Tuple2<FindableModel, Map<List<dynamic>, dynamic>> with ToAlias;
 
 enum User { Teacher, Student }
 
@@ -94,7 +105,7 @@ class RoomLocationsTitles {
 }
 
 @JsonSerializable(nullable: false)
-class RoomModel {
+class RoomModel extends FindableModel {
   final String number;
   final RoomLocation location;
 
@@ -115,12 +126,12 @@ class RoomModel {
 }
 
 @JsonSerializable(nullable: false)
-class LessonAction extends Findable {
+class LessonAction {
   final String title;
 
-  LessonAction copy() => LessonAction(title, words);
+  LessonAction copy() => LessonAction(title);
 
-  const LessonAction(this.title, [List<List<String>> words]) : super(words);
+  const LessonAction(this.title);
 
   factory LessonAction.fromJson(Map<String, dynamic> json) =>
       _$LessonActionFromJson(json);
@@ -138,63 +149,21 @@ class LessonActions {
   }
 
   final BuildContext ctx;
-  final List<LessonAction> actions;
+  final FindTree findTree;
 
   LessonActions._(this.ctx)
-      : actions = List<LessonAction>.generate(
-          LessonActionIds.values.length,
-          (mLessonTypeIdIndex) {
-            final mLessonTypeId = LessonActionIds.values[mLessonTypeIdIndex];
-
-            switch (mLessonTypeId) {
-              case LessonActionIds.Credit:
-                return LessonAction(
-                    AppLocalizations.of(ctx).credit, <List<String>>[
-                  <String>["прием", "зачет"]
-                ]);
-              case LessonActionIds.Exam:
-                return LessonAction(
-                    AppLocalizations.of(ctx).exam, <List<String>>[
-                  <String>["прием", "экзамен"]
-                ]);
-              case LessonActionIds.ExamConsultation:
-                return LessonAction(
-                    AppLocalizations.of(ctx).examConsultation,
-                    <List<String>>[
-                      <String>["консульт", "экзамен"]
-                    ]);
-              case LessonActionIds.Practice:
-                return LessonAction(
-                    AppLocalizations.of(ctx).practice, <List<String>>[
-                  <String>["практ"]
-                ]);
-              case LessonActionIds.ReceptionExamination:
-                return LessonAction(
-                    AppLocalizations.of(ctx).receptionExamination,
-                    <List<String>>[
-                      <String>["защит", "прием"]
-                    ]);
-              case LessonActionIds.Lecture:
-                return LessonAction(
-                    AppLocalizations.of(ctx).lecture, <List<String>>[
-                  <String>["лекция"]
-                ]);
-            }
-          },
-        );
-}
-
-enum LessonActionIds {
-  Lecture,
-  Practice,
-  ReceptionExamination,
-  Exam,
-  ExamConsultation,
-  Credit,
+      : findTree = FindTree(null, {
+          ["прием", "зачет"]: LessonAction(AppLocalizations.of(ctx).credit),
+          ["прием", "экзамен"]: AppLocalizations.of(ctx).exam,
+          ["консульт", "экзамен"]: AppLocalizations.of(ctx).examConsultation,
+          ["практ"]: AppLocalizations.of(ctx).practice,
+          ["прием", "защит"]: AppLocalizations.of(ctx).receptionExamination,
+          ["лекция"]: AppLocalizations.of(ctx).lecture,
+        });
 }
 
 @JsonSerializable(nullable: false)
-class LessonModel extends Findable {
+class LessonModel extends FindableModel {
   String fullTitle;
   final String title;
   final int iconCodePoint;
@@ -207,21 +176,11 @@ class LessonModel extends Findable {
     this.action,
   );
 
-  LessonModel._(
-    this.title,
-    this.iconCodePoint, [
-    List<List<String>> words,
-  ]) : super(words);
+  LessonModel._(this.title, this.iconCodePoint);
 
-  LessonModel._copy(
-    this.title,
-    this.iconCodePoint,
-    this.fullTitle, [
-    List<List<String>> words,
-  ]) : super(words);
+  LessonModel._copy(this.title, this.iconCodePoint, this.fullTitle);
 
-  LessonModel copy() =>
-      LessonModel._copy(title, iconCodePoint, fullTitle, words);
+  LessonModel copy() => LessonModel._copy(title, iconCodePoint, fullTitle);
 
   factory LessonModel.fromJson(Map<String, dynamic> json) =>
       _$LessonModelFromJson(json);
@@ -236,88 +195,19 @@ class LessonModel extends Findable {
     LessonModel model;
 
     final lowerSubject = subject.toLowerCase();
-    for (final mLesson in Lessons(ctx).lessons) {
-      if (mLesson.find(lowerSubject)) {
-        model = mLesson.copy();
-        break;
-      }
-    }
 
+    model = _findInTree(lowerSubject, Lessons(ctx).findTree);
     if (model == null)
       model = LessonModel._(subject, TimetableIcons.unknownLesson.codePoint);
 
     final lowerType = type.toLowerCase();
-    for (final mType in LessonActions(ctx).actions) {
-      if (mType.find(lowerType)) {
-        model.action = mType;
-        break;
-      }
-    }
-    if (model.action == null)
-      model.action = LessonAction(type, <List<String>>[]);
+    model.action = _findInTree(lowerType, LessonActions(ctx).findTree);
+    if (model.action == null) model.action = LessonAction(type);
     model.fullTitle = "$subject (${model.action.title})\n";
 
     debugPrint("model type: ${model.action?.title}");
 
     return model;
-  }
-}
-
-enum LessonIds {
-  math,
-  discMath,
-  statMath,
-  economics,
-  informationTheory,
-  philosophy,
-  speechCulture,
-  physics,
-  chemistry,
-  literature,
-  english,
-  informatics,
-  geography,
-  history,
-  lifeSafety,
-  biology,
-  socialStudies,
-  physicalCulture,
-  ethics,
-  management,
-  softwareDevelopment,
-  computerArchitecture,
-  operatingSystems,
-  computerGraphic,
-  projectDevelopment,
-  databases,
-  documentManagementSupport,
-  accounting,
-  accountingAnalysis,
-  budgetCalculations,
-  taxation,
-  businessPlanning,
-  inventory,
-  legalSupport,
-}
-
-abstract class Findable {
-  @JsonKey(ignore: true)
-  final List<List<String>> words;
-
-  const Findable([this.words]);
-
-  bool find(String findStr) {
-    for (final mStrList in words) {
-      bool strFound = true;
-      for (final mStr in mStrList) {
-        if (!findStr.contains(mStr)) {
-          strFound = false;
-          break;
-        }
-      }
-      if (strFound) return true;
-    }
-    return false;
   }
 }
 
@@ -331,290 +221,260 @@ class Lessons {
   }
 
   Lessons._(this.ctx)
-      : lessons =
-            List<LessonModel>.generate(LessonIds.values.length, (lessonIndex) {
-          switch (LessonIds.values[lessonIndex]) {
-            case LessonIds.math:
-              return LessonModel._(
+      : findTree = FindTree(
+          null,
+          {
+            ["математик"]: FindTree(
+              LessonModel._(
                 AppLocalizations.of(ctx).math,
                 TimetableIcons.math.codePoint,
-                <List<String>>[
-                  <String>["математик"]
-                ],
-              );
-            case LessonIds.discMath:
-              return LessonModel._(
-                AppLocalizations.of(ctx).discMath,
-                TimetableIcons.math.codePoint,
-                <List<String>>[
-                  <String>["дискрет", "математ"]
-                ],
-              );
-            case LessonIds.statMath:
-              return LessonModel._(
-                AppLocalizations.of(ctx).statMath,
-                TimetableIcons.math.codePoint,
-                <List<String>>[
-                  <String>["статистик", "математ"]
-                ],
-              );
-            case LessonIds.economics:
-              return LessonModel._(
-                AppLocalizations.of(ctx).economics,
-                TimetableIcons.economics.codePoint,
-                <List<String>>[
-                  <String>["экономическ", "теори"]
-                ],
-              );
-            case LessonIds.informationTheory:
-              return LessonModel._(
-                AppLocalizations.of(ctx).informationTheory,
-                TimetableIcons.informationTheory.codePoint,
-                <List<String>>[
-                  <String>["теори", "информаци"]
-                ],
-              );
-            case LessonIds.philosophy:
-              return LessonModel._(
-                AppLocalizations.of(ctx).philosophy,
-                TimetableIcons.philosophy.codePoint,
-                <List<String>>[
-                  <String>["философи"]
-                ],
-              );
-            case LessonIds.speechCulture:
-              return LessonModel._(
-                AppLocalizations.of(ctx).speechCulture,
-                TimetableIcons.speechCulture.codePoint,
-                <List<String>>[
-                  <String>["культур", "реч"]
-                ],
-              );
-            case LessonIds.physics:
-              return LessonModel._(
-                AppLocalizations.of(ctx).physics,
-                TimetableIcons.physics.codePoint,
-                <List<String>>[
-                  <String>["физик"]
-                ],
-              );
-            case LessonIds.chemistry:
-              return LessonModel._(
-                AppLocalizations.of(ctx).chemistry,
-                TimetableIcons.chemistry.codePoint,
-                <List<String>>[
-                  <String>["хими"]
-                ],
-              );
-            case LessonIds.literature:
-              return LessonModel._(
-                AppLocalizations.of(ctx).literature,
-                TimetableIcons.literature.codePoint,
-                <List<String>>[
-                  <String>["литератур"]
-                ],
-              );
-            case LessonIds.english:
-              return LessonModel._(
-                AppLocalizations.of(ctx).english,
-                TimetableIcons.english.codePoint,
-                <List<String>>[
-                  <String>["иностранн"],
-                  <String>["английск"]
-                ],
-              );
-            case LessonIds.informatics:
-              return LessonModel._(
-                AppLocalizations.of(ctx).informatics,
-                TimetableIcons.informatics.codePoint,
-                <List<String>>[
-                  <String>["информатик"]
-                ],
-              );
-            case LessonIds.geography:
-              return LessonModel._(
-                AppLocalizations.of(ctx).geography,
-                TimetableIcons.geography.codePoint,
-                <List<String>>[
-                  <String>["географи"]
-                ],
-              );
-            case LessonIds.history:
-              return LessonModel._(
-                AppLocalizations.of(ctx).history,
-                TimetableIcons.history.codePoint,
-                <List<String>>[
-                  <String>["истори"]
-                ],
-              );
-            case LessonIds.lifeSafety:
-              return LessonModel._(
-                AppLocalizations.of(ctx).lifeSafety,
-                TimetableIcons.lifeSafety.codePoint,
-                <List<String>>[
-                  <String>["безопасность"]
-                ],
-              );
-            case LessonIds.biology:
-              return LessonModel._(
-                AppLocalizations.of(ctx).biology,
-                TimetableIcons.biology.codePoint,
-                <List<String>>[
-                  <String>["биологи"]
-                ],
-              );
-            case LessonIds.socialStudies:
-              return LessonModel._(
-                AppLocalizations.of(ctx).socialStudies,
-                TimetableIcons.socialStudies.codePoint,
-                <List<String>>[
-                  <String>["общество"]
-                ],
-              );
-            case LessonIds.physicalCulture:
-              return LessonModel._(
-                AppLocalizations.of(ctx).physicalCulture,
-                TimetableIcons.physicalCulture.codePoint,
-                <List<String>>[
-                  <String>["физ", "культур"]
-                ],
-              );
-            case LessonIds.legalSupport:
-              return LessonModel._(
-                AppLocalizations.of(ctx).legalSupport,
-                TimetableIcons.ethics.codePoint,
-                <List<String>>[
-                  <String>["право", "обеспеч"]
-                ],
-              );
-            case LessonIds.ethics:
-              return LessonModel._(
-                AppLocalizations.of(ctx).ethics,
-                TimetableIcons.ethics.codePoint,
-                <List<String>>[
-                  <String>["этик"]
-                ],
-              );
-            case LessonIds.management:
-              return LessonModel._(
-                AppLocalizations.of(ctx).management,
-                TimetableIcons.management.codePoint,
-                <List<String>>[
-                  <String>["менеджмент"]
-                ],
-              );
-            case LessonIds.softwareDevelopment:
-              return LessonModel._(
-                AppLocalizations.of(ctx).softwareDevelopment,
-                TimetableIcons.softwareDevelopment.codePoint,
-                <List<String>>[
-                  <String>["разработ", "програмн", "обеспечени"],
-                  <String>["разработ", "по"]
-                ],
-              );
-            case LessonIds.computerArchitecture:
-              return LessonModel._(
-                AppLocalizations.of(ctx).computerArchitecture,
-                TimetableIcons.computerArchitecture.codePoint,
-                <List<String>>[
-                  <String>["архитектур", "эвм"],
-                  <String>["архитектур", "пк"]
-                ],
-              );
-            case LessonIds.operatingSystems:
-              return LessonModel._(
-                AppLocalizations.of(ctx).operatingSystems,
-                TimetableIcons.operatingSystems.codePoint,
-                <List<String>>[
-                  <String>["операционн", "систем"]
-                ],
-              );
-            case LessonIds.computerGraphic:
-              return LessonModel._(
-                AppLocalizations.of(ctx).computerGraphic,
-                TimetableIcons.computerGraphic.codePoint,
-                <List<String>>[
-                  <String>["компьютерн", "график"]
-                ],
-              );
-            case LessonIds.projectDevelopment:
-              return LessonModel._(
-                AppLocalizations.of(ctx).projectDevelopment,
-                TimetableIcons.projectDevelopment.codePoint,
-                <List<String>>[
-                  <String>["проектн"]
-                ],
-              );
-            case LessonIds.databases:
-              return LessonModel._(
-                AppLocalizations.of(ctx).databases,
-                TimetableIcons.databases.codePoint,
-                <List<String>>[
-                  <String>["баз", "данн"]
-                ],
-              );
-            case LessonIds.documentManagementSupport:
-              return LessonModel._(
-                AppLocalizations.of(ctx).documentManagementSupport,
-                TimetableIcons.documentManagementSupport.codePoint,
-                <List<String>>[
-                  <String>["обеспеч", "управл", "документ"]
-                ],
-              );
-            case LessonIds.accounting:
-              return LessonModel._(
-                AppLocalizations.of(ctx).accounting,
-                TimetableIcons.accounting.codePoint,
-                <List<String>>[
-                  <String>["бухучет"]
-                ],
-              );
-            case LessonIds.accountingAnalysis:
-              return LessonModel._(
-                AppLocalizations.of(ctx).accountingAnalysis,
-                TimetableIcons.accountingAnalysis.codePoint,
-                <List<String>>[
-                  <String>["анализ", "бухгалтер"]
-                ],
-              );
-            case LessonIds.budgetCalculations:
-              return LessonModel._(
-                AppLocalizations.of(ctx).budgetCalculations,
-                TimetableIcons.budgetCalculations.codePoint,
-                <List<String>>[
-                  <String>["расчет", "бюдж"]
-                ],
-              );
-            case LessonIds.taxation:
-              return LessonModel._(
-                AppLocalizations.of(ctx).taxation,
-                TimetableIcons.taxation.codePoint,
-                <List<String>>[
-                  <String>["налогообложен"]
-                ],
-              );
-            case LessonIds.businessPlanning:
-              return LessonModel._(
-                AppLocalizations.of(ctx).businessPlanning,
-                TimetableIcons.businessPlanning.codePoint,
-                <List<String>>[
-                  <String>["планирован", "бизнес"]
-                ],
-              );
-            case LessonIds.inventory:
-              return LessonModel._(
-                AppLocalizations.of(ctx).inventory,
-                TimetableIcons.inventory.codePoint,
-                <List<String>>[
-                  <String>["инвентар"]
-                ],
-              );
-          }
-        });
+              ),
+              {
+                ["дискрет"]: LessonModel._(
+                  AppLocalizations.of(ctx).discMath,
+                  TimetableIcons.math.codePoint,
+                ),
+                ["статисти"]: LessonModel._(
+                  AppLocalizations.of(ctx).statMath,
+                  TimetableIcons.math.codePoint,
+                ),
+              },
+            ),
+            ["экономическ", "теори"]: LessonModel._(
+              AppLocalizations.of(ctx).economics,
+              TimetableIcons.economics.codePoint,
+            ),
+            ["теори", "информаци"]: LessonModel._(
+              AppLocalizations.of(ctx).informationTheory,
+              TimetableIcons.informationTheory.codePoint,
+            ),
+            ["философи"]: LessonModel._(
+              AppLocalizations.of(ctx).philosophy,
+              TimetableIcons.philosophy.codePoint,
+            ),
+            ["культур", "реч"]: LessonModel._(
+              AppLocalizations.of(ctx).speechCulture,
+              TimetableIcons.speechCulture.codePoint,
+            ),
+            ["физик"]: LessonModel._(
+              AppLocalizations.of(ctx).physics,
+              TimetableIcons.physics.codePoint,
+            ),
+            ["хими"]: LessonModel._(
+              AppLocalizations.of(ctx).chemistry,
+              TimetableIcons.chemistry.codePoint,
+            ),
+            ["литератур"]: LessonModel._(
+              AppLocalizations.of(ctx).literature,
+              TimetableIcons.literature.codePoint,
+            ),
+            [
+              ["иностранн", "английск"],
+              'язык',
+            ]: LessonModel._(
+              AppLocalizations.of(ctx).english,
+              TimetableIcons.english.codePoint,
+            ),
+            ["информатик"]: LessonModel._(
+              AppLocalizations.of(ctx).informatics,
+              TimetableIcons.informatics.codePoint,
+            ),
+            ["географи"]: LessonModel._(
+              AppLocalizations.of(ctx).geography,
+              TimetableIcons.geography.codePoint,
+            ),
+            ["истори"]: LessonModel._(
+              AppLocalizations.of(ctx).history,
+              TimetableIcons.history.codePoint,
+            ),
+            ["безопасность"]: LessonModel._(
+              AppLocalizations.of(ctx).lifeSafety,
+              TimetableIcons.lifeSafety.codePoint,
+            ),
+            ["биологи"]: LessonModel._(
+              AppLocalizations.of(ctx).biology,
+              TimetableIcons.biology.codePoint,
+            ),
+            ["общество"]: LessonModel._(
+              AppLocalizations.of(ctx).socialStudies,
+              TimetableIcons.socialStudies.codePoint,
+            ),
+            ["физ", "культур"]: LessonModel._(
+              AppLocalizations.of(ctx).physicalCulture,
+              TimetableIcons.physicalCulture.codePoint,
+            ),
+            ["право", "обеспеч"]: LessonModel._(
+              AppLocalizations.of(ctx).legalSupport,
+              TimetableIcons.ethics.codePoint,
+            ),
+            ["этик"]: LessonModel._(
+              AppLocalizations.of(ctx).ethics,
+              TimetableIcons.ethics.codePoint,
+            ),
+            ["менеджмент"]: LessonModel._(
+              AppLocalizations.of(ctx).management,
+              TimetableIcons.management.codePoint,
+            ),
+            [
+              "разработ",
+              [
+                "по",
+                ["програмн", "обеспечени"],
+              ],
+            ]: LessonModel._(
+              AppLocalizations.of(ctx).softwareDevelopment,
+              TimetableIcons.softwareDevelopment.codePoint,
+            ),
+            [
+              "архитектур",
+              ["пк", "эвм"],
+            ]: LessonModel._(
+              AppLocalizations.of(ctx).computerArchitecture,
+              TimetableIcons.computerArchitecture.codePoint,
+            ),
+            ["операционн", "систем"]: LessonModel._(
+              AppLocalizations.of(ctx).operatingSystems,
+              TimetableIcons.operatingSystems.codePoint,
+            ),
+            ["компьютерн", "график"]: LessonModel._(
+              AppLocalizations.of(ctx).computerGraphic,
+              TimetableIcons.computerGraphic.codePoint,
+            ),
+            ["проектн", "разработк"]: LessonModel._(
+              AppLocalizations.of(ctx).projectDevelopment,
+              TimetableIcons.projectDevelopment.codePoint,
+            ),
+            ["баз", "данн"]: LessonModel._(
+              AppLocalizations.of(ctx).databases,
+              TimetableIcons.databases.codePoint,
+            ),
+            ["обеспеч", "управл", "документ"]: LessonModel._(
+              AppLocalizations.of(ctx).documentManagementSupport,
+              TimetableIcons.documentManagementSupport.codePoint,
+            ),
+            ["бухучет"]: LessonModel._(
+              AppLocalizations.of(ctx).accounting,
+              TimetableIcons.accounting.codePoint,
+            ),
+            ["анализ", "бухгалтер"]: LessonModel._(
+              AppLocalizations.of(ctx).accountingAnalysis,
+              TimetableIcons.accountingAnalysis.codePoint,
+            ),
+            ["расчет", "бюдж"]: LessonModel._(
+              AppLocalizations.of(ctx).budgetCalculations,
+              TimetableIcons.budgetCalculations.codePoint,
+            ),
+            ["налогообложен"]: LessonModel._(
+              AppLocalizations.of(ctx).taxation,
+              TimetableIcons.taxation.codePoint,
+            ),
+            ["планирован", "бизнес"]: LessonModel._(
+              AppLocalizations.of(ctx).businessPlanning,
+              TimetableIcons.businessPlanning.codePoint,
+            ),
+            <String>["инвентар"]: LessonModel._(
+              AppLocalizations.of(ctx).inventory,
+              TimetableIcons.inventory.codePoint,
+            ),
+          },
+        );
 
   final BuildContext ctx;
 
-  final List<LessonModel> lessons;
+  final FindTree findTree;
+}
+
+enum CheckWordsMode { All, One }
+
+bool _containsWordsTree(
+  String str,
+  List words, [
+  CheckWordsMode checkMode = CheckWordsMode.All,
+]) {
+  for (var mWord in words) {
+    switch (mWord.runtimeType) {
+      case String:
+        switch (checkMode) {
+          case CheckWordsMode.All:
+            if (!str.contains(mWord)) return false;
+            break;
+          case CheckWordsMode.One:
+            if (str.contains(mWord)) return true;
+            break;
+          default:
+            throw Exception("findTree check words mode structure is fucked up");
+        }
+        break;
+      case List:
+        return _containsWordsTree(
+            str,
+            mWord,
+            checkMode == CheckWordsMode.All // inverse
+                ? CheckWordsMode.One
+                : CheckWordsMode.All);
+        break;
+      default:
+        throw Exception("findTree words structure is fucked up");
+    }
+  }
+  return checkMode != CheckWordsMode.One;
+}
+
+int getTreeModelsCount(FindTree tree) {
+  int count = 0;
+  tree.item2.forEach((key, val) {
+    switch(val.runtimeType) {
+      case FindableModel:
+        count++;
+        break;
+      case FindTree:
+        count += getTreeModelsCount(val);
+        break;
+      default:
+        throw Exception("findTree structure fucked up");
+    }
+  });
+  return count;
+}
+
+final _random = new Random();
+
+FindableModel getRandomTreeModel(FindTree tree) {
+  var randVal = tree.item2.values.elementAt(_random.nextInt(tree.item2.values.length - 1));
+
+  switch(randVal.runtimeType) {
+    case FindableModel:
+      return randVal;
+      break;
+    case FindTree:
+      return getRandomTreeModel(randVal);
+      break;
+    default:
+      throw Exception("findTree structure fucked up");
+  }
+}
+
+dynamic _findInTree(
+  String lesson,
+  FindTree tree,
+) {
+  var result = tree.item1;
+  tree.item2.forEach(
+    (key, val) {
+      if (!_containsWordsTree(lesson, key)) return;
+      switch (val.runtimeType) {
+        case FindableModel:
+          result = val;
+          break;
+        case FindTree:
+          result = _findInTree(lesson, val);
+          break;
+        default:
+          throw Exception("findTree structure fucked up");
+      }
+    },
+  );
+  return result;
 }
 
 @JsonSerializable(nullable: false)

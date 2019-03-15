@@ -97,7 +97,7 @@ class Intro extends StatelessWidget {
                     finish: TimeOfDay(hour: 12, minute: 50),
                     room: RoomModel("407", RoomLocation.Academy),
                     group: "Иб-021",
-                    lesson: Lessons(ctx).lessons[LessonIds.history.index]
+                    lesson: Lessons(ctx).findTree[LessonIds.history.index]
                       ..action = LessonActions(ctx)
                           .actions[LessonActionIds.Practice.index],
                     teacher: TeacherModel("Егоров", "Вадим", "Валерьевич"),
