@@ -4,11 +4,10 @@ import 'package:flutter/widgets.dart';
 import 'package:intro_views_flutter/Models/page_view_model.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
 import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/timeline.dart';
-import 'package:ranepa_timetable/timeline_models.dart';
+import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,82 +39,7 @@ class Intro extends StatelessWidget {
                     tileMode: TileMode.mirror,
                   ).createShader(bounds),
               child: TimelineComponent(
-                prefs,
-                <TimelineModel>[
-                  TimelineModel(
-                    first: true,
-                    mergeBottom: true,
-                    date: DateTime(2018, 9),
-                    start: TimeOfDay(hour: 8, minute: 0),
-                    finish: TimeOfDay(hour: 9, minute: 30),
-                    room: RoomModel("24", RoomLocation.Hotel),
-                    group: "Иб-021",
-                    lesson:
-                        Lessons(ctx).lessons[LessonIds.physicalCulture.index]
-                          ..action = LessonActions(ctx)
-                              .actions[LessonActionIds.Lecture.index],
-                    teacher: TeacherModel("Дмитрий", "Киселев", "Михайлович"),
-                  ),
-                  TimelineModel(
-                    mergeTop: true,
-                    date: DateTime(2018, 9),
-                    start: TimeOfDay(hour: 8, minute: 0),
-                    finish: TimeOfDay(hour: 9, minute: 30),
-                    room: RoomModel("24", RoomLocation.Hotel),
-                    group: "Иб-021",
-                    lesson:
-                        Lessons(ctx).lessons[LessonIds.physicalCulture.index]
-                          ..action = LessonActions(ctx)
-                              .actions[LessonActionIds.ExamConsultation.index],
-                    teacher: TeacherModel("Иван", "Шамин", "Александрович"),
-                  ),
-                  TimelineModel(
-                    date: DateTime(2018, 9),
-                    start: TimeOfDay(hour: 9, minute: 40),
-                    finish: TimeOfDay(hour: 11, minute: 10),
-                    room: RoomModel("109a", RoomLocation.Academy),
-                    group: "Иб-021",
-                    lesson: Lessons(ctx).lessons[LessonIds.ethics.index]
-                      ..action = LessonActions(ctx)
-                          .actions[LessonActionIds.ReceptionExamination.index],
-                    teacher: TeacherModel("Вера", "Дряхлова", "Рачиковна"),
-                  ),
-                  TimelineModel(
-                    date: DateTime(2018, 9),
-                    start: TimeOfDay(hour: 11, minute: 20),
-                    finish: TimeOfDay(hour: 12, minute: 50),
-                    room: RoomModel("109", RoomLocation.Academy),
-                    group: "Иб-021",
-                    lesson: Lessons(ctx).lessons[LessonIds.economics.index]
-                      ..action = LessonActions(ctx)
-                          .actions[LessonActionIds.Lecture.index],
-                    teacher: TeacherModel("Александр", "Гришин", "Юрьевич"),
-                  ),
-                  TimelineModel(
-                    date: DateTime(2018, 9),
-                    start: TimeOfDay(hour: 11, minute: 20),
-                    finish: TimeOfDay(hour: 12, minute: 50),
-                    room: RoomModel("407", RoomLocation.Academy),
-                    group: "Иб-021",
-                    lesson: Lessons(ctx).findTree[LessonIds.history.index]
-                      ..action = LessonActions(ctx)
-                          .actions[LessonActionIds.Practice.index],
-                    teacher: TeacherModel("Егоров", "Вадим", "Валерьевич"),
-                  ),
-                  TimelineModel(
-                    date: DateTime(2018, 9),
-                    start: TimeOfDay(hour: 13, minute: 20),
-                    finish: TimeOfDay(hour: 14, minute: 50),
-                    room: RoomModel("302", RoomLocation.Academy),
-                    group: "Иб-021",
-                    lesson: Lessons(ctx).lessons[LessonIds.lifeSafety.index]
-                      ..action = LessonActions(ctx)
-                          .actions[LessonActionIds.Exam.index],
-                    teacher: TeacherModel("Обносова", "Нина", "Юрьевна"),
-                    last: true,
-                  ),
-                ],
-              ),
+                  prefs, Timetable.generateRandomTimetable(ctx, 6)),
             ),
           ),
         ),

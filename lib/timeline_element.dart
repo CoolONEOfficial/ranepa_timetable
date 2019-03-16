@@ -38,7 +38,7 @@ class TimelineElement extends StatelessWidget {
                 ? PrefsIds.SELECTED_SEARCH_ITEM_PREFIX
                 : PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX) +
             PrefsIds.ITEM_TYPE) ??
-        0];
+        User.Student.index];
     return Tooltip(
       message: user == User.Student ? model.teacher.toString() : model.group,
       child: Text(

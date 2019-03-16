@@ -12,12 +12,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
 import 'package:tuple/tuple.dart';
 
@@ -29,7 +28,8 @@ abstract class FindableModel {
 
 mixin ToAlias {}
 
-class FindTree = Tuple2<FindableModel, Map<List<dynamic>, dynamic>> with ToAlias;
+class FindTree = Tuple2<FindableModel, Map<List<dynamic>, dynamic>>
+    with ToAlias;
 
 enum User { Teacher, Student }
 
@@ -128,7 +128,7 @@ class RoomModel extends FindableModel {
 }
 
 @JsonSerializable(nullable: false)
-class LessonAction {
+class LessonAction extends FindableModel {
   final String title;
 
   LessonAction copy() => LessonAction(title);
@@ -156,11 +156,13 @@ class LessonActions {
   LessonActions._(this.ctx)
       : findTree = FindTree(null, {
           ["прием", "зачет"]: LessonAction(AppLocalizations.of(ctx).credit),
-          ["прием", "экзамен"]: AppLocalizations.of(ctx).exam,
-          ["консульт", "экзамен"]: AppLocalizations.of(ctx).examConsultation,
-          ["практ"]: AppLocalizations.of(ctx).practice,
-          ["прием", "защит"]: AppLocalizations.of(ctx).receptionExamination,
-          ["лекция"]: AppLocalizations.of(ctx).lecture,
+          ["прием", "экзамен"]: LessonAction(AppLocalizations.of(ctx).exam),
+          ["консульт", "экзамен"]:
+              LessonAction(AppLocalizations.of(ctx).examConsultation),
+          ["практ"]: LessonAction(AppLocalizations.of(ctx).practice),
+          ["прием", "защит"]:
+              LessonAction(AppLocalizations.of(ctx).receptionExamination),
+          ["лекция"]: LessonAction(AppLocalizations.of(ctx).lecture),
         });
 }
 
@@ -386,6 +388,11 @@ class Lessons {
   final FindTree findTree;
 }
 
+LessonModel generateRandomLesson(BuildContext ctx) =>
+    (getRandomTreeModel(Lessons(ctx).findTree) as LessonModel)
+      ..action =
+          getRandomTreeModel(LessonActions(ctx).findTree) as LessonAction;
+
 enum CheckWordsMode { All, One }
 
 bool _containsWordsTree(
@@ -394,30 +401,27 @@ bool _containsWordsTree(
   CheckWordsMode checkMode = CheckWordsMode.All,
 ]) {
   for (var mWord in words) {
-    switch (mWord.runtimeType) {
-      case String:
-        switch (checkMode) {
-          case CheckWordsMode.All:
-            if (!str.contains(mWord)) return false;
-            break;
-          case CheckWordsMode.One:
-            if (str.contains(mWord)) return true;
-            break;
-          default:
-            throw Exception("findTree check words mode structure is fucked up");
-        }
-        break;
-      case List:
-        return _containsWordsTree(
-            str,
-            mWord,
-            checkMode == CheckWordsMode.All // inverse
-                ? CheckWordsMode.One
-                : CheckWordsMode.All);
-        break;
-      default:
-        throw Exception("findTree words structure is fucked up");
-    }
+    if (mWord is String) {
+      switch (checkMode) {
+        case CheckWordsMode.All:
+          if (!str.contains(mWord)) return false;
+          break;
+        case CheckWordsMode.One:
+          if (str.contains(mWord)) return true;
+          break;
+        default:
+          throw Exception("findTree check words mode structure is fucked up");
+      }
+    } else if (mWord is List) {
+      return _containsWordsTree(
+        str,
+        mWord,
+        checkMode == CheckWordsMode.All // inverse
+            ? CheckWordsMode.One
+            : CheckWordsMode.All,
+      );
+    } else
+      throw Exception("findTree words structure is fucked up");
   }
   return checkMode != CheckWordsMode.One;
 }
@@ -425,7 +429,7 @@ bool _containsWordsTree(
 int getTreeModelsCount(FindTree tree) {
   int count = 0;
   tree.item2.forEach((key, val) {
-    switch(val.runtimeType) {
+    switch (val.runtimeType) {
       case FindableModel:
         count++;
         break;
@@ -439,21 +443,16 @@ int getTreeModelsCount(FindTree tree) {
   return count;
 }
 
-final _random = new Random();
-
 FindableModel getRandomTreeModel(FindTree tree) {
-  var randVal = tree.item2.values.elementAt(_random.nextInt(tree.item2.values.length - 1));
+  var randVal =
+      tree.item2.values.elementAt(random.nextInt(tree.item2.values.length));
 
-  switch(randVal.runtimeType) {
-    case FindableModel:
-      return randVal;
-      break;
-    case FindTree:
-      return getRandomTreeModel(randVal);
-      break;
-    default:
-      throw Exception("findTree structure fucked up");
-  }
+  if (randVal is FindableModel)
+    return randVal;
+  else if (randVal is FindTree)
+    return getRandomTreeModel(randVal);
+  else
+    throw Exception("findTree structure fucked up");
 }
 
 dynamic _findInTree(
@@ -464,16 +463,12 @@ dynamic _findInTree(
   tree.item2.forEach(
     (key, val) {
       if (!_containsWordsTree(lesson, key)) return;
-      switch (val.runtimeType) {
-        case FindableModel:
-          result = val;
-          break;
-        case FindTree:
-          result = _findInTree(lesson, val);
-          break;
-        default:
-          throw Exception("findTree structure fucked up");
-      }
+      if (val is FindableModel)
+        result = val;
+      else if (val is FindTree)
+        result = _findInTree(lesson, val);
+      else
+        throw Exception("findTree structure fucked up");
     },
   );
   return result;

@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/platform_channels.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/search.dart';
@@ -32,10 +33,48 @@ class Timetable extends StatelessWidget {
       : _deviceCalendarPlugin = DeviceCalendarPlugin(),
         super(key: key);
 
-  static DateTime _toDateTime(TimeOfDay tod, [DateTime date]) {
-    date ??= DateTime.now();
-    return DateTime(date.year, date.month, date.day, tod.hour, tod.minute);
+  static DateTime _toDateTime(TimeOfDay tod, [DateTime dt]) {
+    dt ??= DateTime.now();
+    return DateTime(dt.year, dt.month, dt.day, tod.hour, tod.minute);
   }
+
+  static TimeOfDay _toTimeOfDay([DateTime dt]) {
+    dt ??= DateTime.now();
+    return TimeOfDay(hour: dt.hour, minute: dt.minute);
+  }
+
+  static T _randomElement<T>(List<T> arr) => arr[random.nextInt(arr.length)];
+
+  static List<TimelineModel> generateRandomTimetable(
+    BuildContext ctx,
+    int length,
+  ) =>
+      List<TimelineModel>.generate(
+        length,
+        (index) {
+          final startTime = _toTimeOfDay(
+            _toDateTime(TimeOfDay(hour: 8, minute: 0))
+                .add(Duration(hours: 1, minutes: 40) * index),
+          );
+          return TimelineModel(
+              date: todayMidnight,
+              start: startTime,
+              finish: _toTimeOfDay(
+                _toDateTime(startTime).add(Duration(hours: 1, minutes: 30)),
+              ),
+              group: "Иб-021",
+              room: RoomModel(
+                random.nextInt(999).toString(),
+                _randomElement(RoomLocation.values),
+              ),
+              lesson: generateRandomLesson(ctx),
+              teacher: TeacherModel(
+                _randomElement(["Вася", "Петя", "Никита"]),
+                _randomElement(["Картошкин", "Инютин", "Егоров"]),
+                _randomElement(["Александрович", "Валерьевич", "Михайлович"]),
+              ));
+        },
+      );
 
   static const dayCount = 6;
 
@@ -154,7 +193,8 @@ class Timetable extends StatelessWidget {
       final String mItemName = mItem["name"];
       String bracketsInner =
           RegExp(r"\(([^)]*)\)[^(]*$").stringMatch(mItemName).substring(1);
-      bracketsInner = bracketsInner.substring(0, bracketsInner.lastIndexOf(')'));
+      bracketsInner =
+          bracketsInner.substring(0, bracketsInner.lastIndexOf(')'));
 
       final mLesson = TimelineModel(
         date: mItemDate,
