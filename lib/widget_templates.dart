@@ -60,8 +60,11 @@ class WidgetTemplates {
         ),
       );
 
-  static Widget _buildIconNotification(BuildContext ctx, String text,
-          [IconData icon]) =>
+  static Widget _buildIconNotification(
+    BuildContext ctx,
+    String text, [
+    IconData icon,
+  ]) =>
       _buildNotification(
         ctx,
         text,
@@ -135,8 +138,7 @@ class WidgetTemplates {
         break;
     }
 
-    return _buildIconNotification(
-        ctx, AppLocalizations.of(ctx).freeDay, icon);
+    return _buildIconNotification(ctx, AppLocalizations.of(ctx).freeDay, icon);
   }
 
   static Widget buildFutureBuilder<T>(
@@ -145,24 +147,22 @@ class WidgetTemplates {
     @required AsyncWidgetBuilder<T> builder,
     Widget loading,
     Widget error,
-  }) {
-    return FutureBuilder<T>(
-        future: future,
-        builder: (BuildContext ctx, AsyncSnapshot snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-            case ConnectionState.active:
-            case ConnectionState.waiting:
-              return loading ??
-                  WidgetTemplates.buildLoadingNotification(ctx);
-              break;
-            case ConnectionState.done:
-              if (snapshot.hasError)
-                return error ??
-                    WidgetTemplates.buildErrorNotification(
-                        ctx, snapshot.error.toString() ?? "Unknown");
-              return builder(ctx, snapshot);
-          }
-        });
-  }
+  }) =>
+      FutureBuilder<T>(
+          future: future,
+          builder: (BuildContext ctx, AsyncSnapshot snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.active:
+              case ConnectionState.waiting:
+                return loading ?? WidgetTemplates.buildLoadingNotification(ctx);
+                break;
+              case ConnectionState.done:
+                if (snapshot.hasError)
+                  return error ??
+                      WidgetTemplates.buildErrorNotification(
+                          ctx, "${snapshot.error}" ?? "Unknown");
+                return builder(ctx, snapshot);
+            }
+          });
 }
