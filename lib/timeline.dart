@@ -21,10 +21,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class TimelineComponent extends StatelessWidget {
   final List<TimelineModel> timelineList;
-  final SharedPreferences prefs;
 
-  const TimelineComponent(this.prefs, this.timelineList, {Key key})
-      : super(key: key);
+  const TimelineComponent(
+    this.timelineList, {
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext ctx) {
@@ -32,7 +33,7 @@ class TimelineComponent extends StatelessWidget {
       child: ListView.builder(
         itemCount: timelineList.length,
         itemBuilder: (_, index) {
-          return TimelineElement(timelineList[index], prefs);
+          return TimelineElement(timelineList[index]);
         },
       ),
     );

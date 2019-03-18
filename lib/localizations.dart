@@ -635,6 +635,41 @@ class AppLocalizations {
     );
   }
 
+  String get siteApiTitle {
+    return Intl.message(
+      'Site API',
+      name: 'siteApiTitle',
+    );
+  }
+
+  String get siteApiDescription {
+    return Intl.message(
+      'How the app will receive the schedule',
+      name: 'siteApiDescription',
+    );
+  }
+
+  String get siteApiSite {
+    return Intl.message(
+      'Official site API',
+      name: 'siteApiSite',
+    );
+  }
+
+  String get siteApiOldApp {
+    return Intl.message(
+      'Old app API',
+      name: 'siteApiOldApp',
+    );
+  }
+
+  String get siteApiNewApp {
+    return Intl.message(
+      'New app API',
+      name: 'siteApiNewApp',
+    );
+  }
+
   // Themes titles
 
   String get themeDark {

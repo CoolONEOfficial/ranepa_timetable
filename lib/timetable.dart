@@ -24,7 +24,7 @@ class Timetable extends StatelessWidget {
   final Drawer drawer;
   final SharedPreferences prefs;
 
-  static bool showSelected = false;
+  static SearchItem selected;
 
   static final LinkedHashMap<DateTime, List<TimelineModel>> timetable =
       LinkedHashMap<DateTime, List<TimelineModel>>();
@@ -303,7 +303,7 @@ class Timetable extends StatelessWidget {
     var beforeAlarmClockStr = prefs.getInt(PrefsIds.BEFORE_ALARM_CLOCK);
     if (beforeAlarmClockStr == null) {
       beforeAlarmClockStr =
-          (await Prefs.showBeforeAlarmClockSelect(ctx, prefs)).inMinutes;
+          (await Prefs.showBeforeAlarmClockSelect(ctx)).inMinutes;
     }
     final beforeAlarmClock = Duration(minutes: beforeAlarmClockStr);
 
@@ -317,17 +317,15 @@ class Timetable extends StatelessWidget {
       final alarmClock =
           _toDateTime(alarmLesson.start).subtract(beforeAlarmClock);
 
-      // TODO: ios support
-      if (Platform.isAndroid)
-        await AndroidIntent(
-          action: 'android.intent.action.SET_ALARM',
-          arguments: <String, dynamic>{
-            'android.intent.extra.alarm.HOUR': alarmClock.hour,
-            'android.intent.extra.alarm.MINUTES': alarmClock.minute,
-            'android.intent.extra.alarm.SKIP_UI': true,
-            'android.intent.extra.alarm.MESSAGE': alarmLesson.lesson.title,
-          },
-        ).launch();
+      await AndroidIntent(
+        action: 'android.intent.action.SET_ALARM',
+        arguments: <String, dynamic>{
+          'android.intent.extra.alarm.HOUR': alarmClock.hour,
+          'android.intent.extra.alarm.MINUTES': alarmClock.minute,
+          'android.intent.extra.alarm.SKIP_UI': true,
+          'android.intent.extra.alarm.MESSAGE': alarmLesson.lesson.title,
+        },
+      ).launch();
 
       snackBarText = AppLocalizations.of(ctx).alarmAddSuccess +
           TimeOfDay.fromDateTime(alarmClock).format(ctx);
@@ -427,8 +425,11 @@ class Timetable extends StatelessWidget {
       length: dayCount,
       child: StreamBuilder<Tuple2<bool, SearchItem>>(
         stream: timetableIdBloc.stream,
-        initialData: Tuple2<bool, SearchItem>(true,
-            SearchItem.fromPrefs(prefs, PrefsIds.SELECTED_SEARCH_ITEM_PREFIX)),
+        initialData: Tuple2<bool, SearchItem>(
+            true,
+            Timetable.selected ??
+                SearchItem.fromPrefs(
+                    prefs, PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX)),
         builder: (ctx, ssSearchItem) => Scaffold(
               drawer: drawer,
               key: scaffoldKey,
@@ -486,7 +487,6 @@ class Timetable extends StatelessWidget {
                                         ctx, ssSearchItem.data.item2);
                               else
                                 mWidget = TimelineComponent(
-                                  prefs,
                                   timetableIter.current.value,
                                 );
                             } else
@@ -542,7 +542,6 @@ class Timetable extends StatelessWidget {
                       icon: const Icon(Icons.search),
                       onPressed: () => showSearchItemSelect(
                             ctx,
-                            prefs,
                             primary: false,
                           ),
                     ),

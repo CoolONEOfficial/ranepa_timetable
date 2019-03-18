@@ -20,8 +20,9 @@ import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:package_info/package_info.dart';
 
 class BaseWidget extends StatelessWidget {
-  Widget buildBase(BuildContext ctx, SharedPreferences prefs) {
+  Widget buildBase(BuildContext ctx) {
     return Timetable(
+      prefs: prefs,
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -66,7 +67,6 @@ class BaseWidget extends StatelessWidget {
               : []),
         ),
       ),
-      prefs: prefs,
     );
   }
 
@@ -136,8 +136,8 @@ class BaseWidget extends StatelessWidget {
                           PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX +
                               PrefsIds.ITEM_ID) ==
                       null
-                  ? Intro(base: buildBase(ctx, prefs), prefs: prefs)
-                  : buildBase(ctx, prefs),
+                  ? Intro(base: buildBase(ctx))
+                  : buildBase(ctx),
             ),
           );
         },

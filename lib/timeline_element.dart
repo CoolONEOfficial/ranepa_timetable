@@ -34,10 +34,9 @@ class TimelineElement extends StatelessWidget {
       );
 
   Widget _buildTeacherGroup(BuildContext ctx) {
-    final user = User.values[prefs.getInt((Timetable.showSelected
-                ? PrefsIds.SELECTED_SEARCH_ITEM_PREFIX
-                : PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX) +
-            PrefsIds.ITEM_TYPE) ??
+    final user = User.values[Timetable.selected?.typeId?.index ??
+        prefs.getInt(
+            (PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX) + PrefsIds.ITEM_TYPE) ??
         User.Student.index];
     return Tooltip(
       message: user == User.Student ? model.teacher.toString() : model.group,

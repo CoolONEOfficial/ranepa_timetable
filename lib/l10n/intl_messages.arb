@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2019-03-15T11:23:20.377340",
+  "@@last_modified": "2019-03-18T14:04:56.447435",
   "title": "RANEPA (Timetable)",
   "@title": {
     "type": "text",
@@ -417,6 +417,31 @@
   },
   "roomLocationStyleText": "Text",
   "@roomLocationStyleText": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "siteApiTitle": "Site API",
+  "@siteApiTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "siteApiDescription": "How the app will receive the schedule",
+  "@siteApiDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "siteApiSite": "Official site API",
+  "@siteApiSite": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "siteApiOldApp": "Old app API",
+  "@siteApiOldApp": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "siteApiNewApp": "New app API",
+  "@siteApiNewApp": {
     "type": "text",
     "placeholders": {}
   },

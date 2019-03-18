@@ -5,6 +5,7 @@ import 'package:duration/locale.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_duration_picker/flutter_duration_picker.dart';
+import 'package:ranepa_timetable/apis.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/platform_channels.dart';
@@ -29,36 +30,35 @@ class PrefsIds {
       THEME_BRIGHTNESS = "theme_brightness",
       BEFORE_ALARM_CLOCK = "before_alarm_clock",
       END_CACHE = "end_cache",
-      SELECTED_SEARCH_ITEM_PREFIX = "selected_search_item_",
       PRIMARY_SEARCH_ITEM_PREFIX = "primary_search_item_",
       ITEM_TYPE = "type",
       ITEM_ID = "id",
-      ITEM_TITLE = "title";
+      ITEM_TITLE = "title",
+      SITE_API = "site_api";
 }
 
 Future<SearchItem> showSearchItemSelect(
-        BuildContext ctx, SharedPreferences prefs,
-        {primary = true}) =>
+  BuildContext ctx, {
+  primary = true,
+}) =>
     showSearch<SearchItem>(
       context: ctx,
       delegate: Search(ctx),
     ).then(
       (searchItem) async {
         if (searchItem != null) {
-          searchItem.toPrefs(prefs, PrefsIds.SELECTED_SEARCH_ITEM_PREFIX);
           if (primary) {
             searchItem.toPrefs(prefs, PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX);
             await PlatformChannels.deleteDb();
           } else
-            Timetable.showSelected = true;
+            Timetable.selected = searchItem;
           timetableIdBloc.add(Tuple2<bool, SearchItem>(primary, searchItem));
         }
         return searchItem;
       },
     );
 
-Future<Brightness> showThemeBrightnessSelect(
-    BuildContext ctx, SharedPreferences prefs) {
+Future<Brightness> showThemeBrightnessSelect(BuildContext ctx) {
   final dialogItems = List<Widget>();
 
   for (var mBrightness in Brightness.values) {
@@ -110,26 +110,25 @@ void showMaterialColorPicker(BuildContext ctx) => showDialog(
       },
     );
 
+final widgetTranslucentBloc = StreamController<bool>();
+final roomLocationStyleBloc = StreamController<RoomLocationStyle>();
+
 class Prefs extends StatelessWidget {
   static const ROUTE = "/prefs";
 
-  final widgetTranslucentBloc = StreamController<bool>();
-  final roomLocationStyleBloc = StreamController<RoomLocationStyle>();
-
-  Widget _buildThemePreference(BuildContext ctx, SharedPreferences prefs) =>
+  static Widget _buildThemePreference(BuildContext ctx) =>
       WidgetTemplates.buildPreferenceButton(
         ctx,
         title: AppLocalizations.of(ctx).themeTitle,
         description: AppLocalizations.of(ctx).themeDescription,
-        onPressed: () => showThemeBrightnessSelect(ctx, prefs),
+        onPressed: () => showThemeBrightnessSelect(ctx),
         rightWidget: buildThemeStream(
           (ctx, snapshot) => Text(ThemeBrightnessTitles(ctx)
               .titles[snapshot.data.brightness.index]),
         ),
       );
 
-  Widget _buildThemeAccentPreference(
-          BuildContext ctx, SharedPreferences prefs) =>
+  static Widget _buildThemeAccentPreference(BuildContext ctx) =>
       WidgetTemplates.buildPreferenceButton(
         ctx,
         title: AppLocalizations.of(ctx).themeAccentTitle,
@@ -147,8 +146,7 @@ class Prefs extends StatelessWidget {
         ),
       );
 
-  Widget _buildWidgetTranslucentPreference(
-          BuildContext ctx, SharedPreferences prefs) =>
+  static Widget _buildWidgetTranslucentPreference(BuildContext ctx) =>
       StreamBuilder<bool>(
         initialData: prefs.getBool(PrefsIds.WIDGET_TRANSLUCENT) ?? true,
         stream: widgetTranslucentBloc.stream,
@@ -169,8 +167,7 @@ class Prefs extends StatelessWidget {
             ),
       );
 
-  static Future<Duration> showBeforeAlarmClockSelect(
-          BuildContext ctx, SharedPreferences prefs) =>
+  static Future<Duration> showBeforeAlarmClockSelect(BuildContext ctx) =>
       showDurationPicker(
         context: ctx,
         initialTime:
@@ -186,13 +183,12 @@ class Prefs extends StatelessWidget {
         return duration;
       });
 
-  Widget _buildBeforeAlarmClockPreference(
-          BuildContext ctx, SharedPreferences prefs) =>
+  static Widget _buildBeforeAlarmClockPreference(BuildContext ctx) =>
       WidgetTemplates.buildPreferenceButton(
         ctx,
         title: AppLocalizations.of(ctx).beforeAlarmClockTitle,
         description: AppLocalizations.of(ctx).beforeAlarmClockDescription,
-        onPressed: () => showBeforeAlarmClockSelect(ctx, prefs),
+        onPressed: () => showBeforeAlarmClockSelect(ctx),
         rightWidget: StreamBuilder<Duration>(
           stream: beforeAlarmBloc.stream,
           initialData:
@@ -211,13 +207,12 @@ class Prefs extends StatelessWidget {
         ),
       );
 
-  Widget _buildSearchItemPreference(
-          BuildContext ctx, SharedPreferences prefs) =>
+  static Widget _buildSearchItemPreference(BuildContext ctx) =>
       WidgetTemplates.buildPreferenceButton(
         ctx,
         title: AppLocalizations.of(ctx).groupTitle,
         description: AppLocalizations.of(ctx).groupDescription,
-        onPressed: () => showSearchItemSelect(ctx, prefs),
+        onPressed: () => showSearchItemSelect(ctx),
         rightWidget: StreamBuilder<Tuple2<bool, SearchItem>>(
           stream: timetableIdBloc.stream,
           initialData: Tuple2<bool, SearchItem>(null,
@@ -230,8 +225,7 @@ class Prefs extends StatelessWidget {
         ),
       );
 
-  Widget _buildRoomLocationStylePreference(
-          BuildContext ctx, SharedPreferences prefs) =>
+  static Widget _buildRoomLocationStylePreference(BuildContext ctx) =>
       StreamBuilder<RoomLocationStyle>(
         initialData: RoomLocationStyle
             .values[prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ?? 0],
@@ -254,14 +248,50 @@ class Prefs extends StatelessWidget {
                       roomLocationStyleBloc.add(rlStyle);
                       prefs
                           .setInt(PrefsIds.ROOM_LOCATION_STYLE, rlStyle.index)
-                          .then(
-                            (_) => PlatformChannels.refreshWidget(),
-                          );
+                          .then((_) => PlatformChannels.refreshWidget());
                     },
                   ),
                   Text(AppLocalizations.of(ctx).roomLocationStyleIcon),
                 ],
               ),
+            ),
+      );
+
+  static Widget _buildSiteApiPreference(BuildContext ctx) =>
+      WidgetTemplates.buildPreferenceButton(
+        ctx,
+        title: AppLocalizations.of(ctx).siteApiTitle,
+        description: AppLocalizations.of(ctx).siteApiDescription,
+        onPressed: () => showSiteApiSelect(ctx),
+        rightWidget: buildThemeStream(
+          (ctx, snapshot) => Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: snapshot.data.accentColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+        ),
+      );
+
+  static Future<SiteApi> showSiteApiSelect(BuildContext ctx) =>
+      showDialog<SiteApi>(
+        context: ctx,
+        builder: (BuildContext ctx) => SimpleDialog(
+              title: Text(AppLocalizations.of(ctx).themeTitle),
+              children: Brightness.values
+                  .map(
+                    (mBrightness) => SimpleDialogOption(
+                          onPressed: () {
+                            brightness = mBrightness;
+                            Navigator.pop(ctx, mBrightness);
+                          },
+                          child: Text(ThemeBrightnessTitles(ctx)
+                              .titles[mBrightness.index]),
+                        ),
+                  )
+                  .toList(),
             ),
       );
 
@@ -276,17 +306,19 @@ class Prefs extends StatelessWidget {
         ),
         body: ListView(
           children: <Widget>[
-            _buildThemePreference(ctx, prefs),
+            _buildThemePreference(ctx),
             Divider(height: 0),
-            _buildThemeAccentPreference(ctx, prefs),
+            _buildThemeAccentPreference(ctx),
             Divider(height: 0),
-            _buildSearchItemPreference(ctx, prefs),
+            _buildSearchItemPreference(ctx),
             Divider(height: 0),
-            _buildBeforeAlarmClockPreference(ctx, prefs),
+            _buildBeforeAlarmClockPreference(ctx),
             Divider(height: 0),
-            _buildWidgetTranslucentPreference(ctx, prefs),
+            _buildWidgetTranslucentPreference(ctx),
             Divider(height: 0),
-            _buildRoomLocationStylePreference(ctx, prefs),
+            _buildRoomLocationStylePreference(ctx),
+            Divider(height: 0),
+            _buildSiteApiPreference(ctx),
             Divider(height: 0),
           ],
         ),

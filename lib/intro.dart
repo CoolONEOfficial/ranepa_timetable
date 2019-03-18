@@ -13,9 +13,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Intro extends StatelessWidget {
   final Widget base;
-  final SharedPreferences prefs;
 
-  Intro({Key key, @required this.base, @required this.prefs}) : super(key: key);
+  Intro({
+    Key key,
+    @required this.base,
+  }) : super(key: key);
 
   PageViewModel _buildTimetable(BuildContext ctx) => PageViewModel(
         bubbleBackgroundColor: contentColor,
@@ -38,8 +40,8 @@ class Intro extends StatelessWidget {
                     colors: <Color>[Colors.transparent, Colors.white],
                     tileMode: TileMode.mirror,
                   ).createShader(bounds),
-              child: TimelineComponent(
-                  prefs, Timetable.generateRandomTimetable(ctx, 6)),
+              child:
+                  TimelineComponent(Timetable.generateRandomTimetable(ctx, 6)),
             ),
           ),
         ),
@@ -68,7 +70,7 @@ class Intro extends StatelessWidget {
         mainImage: Align(
           alignment: Alignment.center,
           child: _buildCircleButton(Icons.color_lens, onPressed: () async {
-            if (await showThemeBrightnessSelect(ctx, prefs) != null)
+            if (await showThemeBrightnessSelect(ctx) != null)
               showMaterialColorPicker(ctx);
           }),
         ),
@@ -89,7 +91,7 @@ class Intro extends StatelessWidget {
           alignment: Alignment.center,
           child: _buildCircleButton(
             Icons.search,
-            onPressed: () => showSearchItemSelect(ctx, prefs),
+            onPressed: () => showSearchItemSelect(ctx),
           ),
         ),
       );
