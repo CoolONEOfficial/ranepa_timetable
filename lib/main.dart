@@ -19,56 +19,57 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:package_info/package_info.dart';
 
+SharedPreferences prefs;
+String version;
+final random = new Random();
+
 class BaseWidget extends StatelessWidget {
-  Widget buildBase(BuildContext ctx) {
-    return Timetable(
-      prefs: prefs,
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.end,
-              ),
-              decoration: BoxDecoration(
-                color: Theme.of(ctx).primaryColor,
-                image: DecorationImage(
-                  image: AssetImage('assets/images/icon-foreground.png'),
+  Widget buildBase(BuildContext ctx) => Timetable(
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(ctx).primaryColor,
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/icon-foreground.png'),
+                  ),
                 ),
               ),
-            ),
-            ListTile(
-              leading: Icon(Icons.list),
-              title: Text(AppLocalizations.of(ctx).timetable),
-              onTap: () => Navigator.pop(ctx),
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text(AppLocalizations.of(ctx).prefs),
-              onTap: () => Navigator.popAndPushNamed(ctx, Prefs.ROUTE),
-            ),
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text(AppLocalizations.of(ctx).about),
-              onTap: () => Navigator.popAndPushNamed(ctx, About.ROUTE),
-            ),
-          ]..addAll(Platform.isAndroid
-              ? <Widget>[
-                  Divider(),
-                  ListTile(
-                    leading: Icon(Icons.close),
-                    title: Text(AppLocalizations.of(ctx).close),
-                    onTap: () => SystemNavigator.pop(),
-                  ),
-                ]
-              : []),
+              ListTile(
+                leading: Icon(Icons.list),
+                title: Text(AppLocalizations.of(ctx).timetable),
+                onTap: () => Navigator.pop(ctx),
+              ),
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text(AppLocalizations.of(ctx).prefs),
+                onTap: () => Navigator.popAndPushNamed(ctx, Prefs.ROUTE),
+              ),
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text(AppLocalizations.of(ctx).about),
+                onTap: () => Navigator.popAndPushNamed(ctx, About.ROUTE),
+              ),
+            ]..addAll(Platform.isAndroid
+                ? <Widget>[
+                    Divider(),
+                    ListTile(
+                      leading: Icon(Icons.close),
+                      title: Text(AppLocalizations.of(ctx).close),
+                      onTap: () => SystemNavigator.pop(),
+                    ),
+                  ]
+                : []),
+          ),
         ),
-      ),
-    );
-  }
+      );
 
   @override
   Widget build(BuildContext ctx) =>
@@ -193,9 +194,5 @@ Widget Function(FlutterErrorDetails) _buildError(BuildContext ctx) {
         ],
       ));
 }
-
-SharedPreferences prefs;
-String version;
-final random = new Random();
 
 Future main() async => runApp(BaseWidget());

@@ -670,6 +670,20 @@ class AppLocalizations {
     );
   }
 
+  String get optimizedLessonTitlesTitle {
+    return Intl.message(
+      'Replacing lesson names',
+      name: 'optimizedLessonTitlesTitle',
+    );
+  }
+
+  String get optimizedLessonTitlesDescription {
+    return Intl.message(
+      'Shortens the lesson names',
+      name: 'optimizedLessonTitlesDescription',
+    );
+  }
+
   // Themes titles
 
   String get themeDark {

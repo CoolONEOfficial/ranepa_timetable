@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,7 +50,7 @@ class SearchItem extends SearchItemBase {
       title +
       ".\n";
 
-  void toPrefs(SharedPreferences prefs, String prefix) {
+  void toPrefs(String prefix) {
     prefs.setInt(prefix + PrefsIds.ITEM_TYPE, typeId.index);
     prefs.setInt(prefix + PrefsIds.ITEM_ID, id);
     prefs.setString(prefix + PrefsIds.ITEM_TITLE, title);

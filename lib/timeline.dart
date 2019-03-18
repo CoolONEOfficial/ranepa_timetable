@@ -22,20 +22,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 class TimelineComponent extends StatelessWidget {
   final List<TimelineModel> timelineList;
 
+  final bool optimizeLessonTitles;
+
   const TimelineComponent(
     this.timelineList, {
+    this.optimizeLessonTitles = true,
     Key key,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext ctx) {
-    return Container(
-      child: ListView.builder(
-        itemCount: timelineList.length,
-        itemBuilder: (_, index) {
-          return TimelineElement(timelineList[index]);
-        },
-      ),
-    );
-  }
+  Widget build(BuildContext ctx) => Container(
+        child: ListView.builder(
+          itemCount: timelineList.length,
+          itemBuilder: (_, index) => TimelineElement(timelineList[index]),
+        ),
+      );
 }

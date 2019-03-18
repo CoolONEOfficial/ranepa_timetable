@@ -16,6 +16,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
@@ -24,9 +25,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class TimelinePainter extends CustomPainter {
   final TimelineModel model;
   final BuildContext ctx;
-  final SharedPreferences prefs;
 
-  TimelinePainter(this.ctx, this.model, this.prefs);
+  TimelinePainter(this.ctx, this.model);
 
   @override
   void paint(Canvas canvas, Size size) {

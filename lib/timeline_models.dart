@@ -118,13 +118,11 @@ class RoomModel extends FindableModel {
 
   Map<String, dynamic> toJson() => _$RoomModelToJson(this);
 
-  factory RoomModel.fromString(String str) {
-    return RoomModel(
-        RegExp(r"(\d{3}[А-я]?)").stringMatch(str),
-        str.startsWith("СО")
-            ? RoomLocation.StudyHostel
-            : str.startsWith("П8") ? RoomLocation.Hotel : RoomLocation.Academy);
-  }
+  factory RoomModel.fromString(String str) => RoomModel(
+      RegExp(r"(\d{3}[А-я]?)").stringMatch(str),
+      str.startsWith("СО")
+          ? RoomLocation.StudyHostel
+          : str.startsWith("П8") ? RoomLocation.Hotel : RoomLocation.Academy);
 }
 
 @JsonSerializable(nullable: false)
@@ -196,18 +194,16 @@ class LessonModel extends FindableModel {
     String subject,
     String type,
   ) {
-    LessonModel model;
-
     final lowerSubject = subject.toLowerCase();
 
-    model = _findInTree(lowerSubject, Lessons(ctx).findTree);
-    if (model == null)
-      model = LessonModel._(subject, TimetableIcons.unknownLesson.codePoint);
+    final LessonModel model =
+        _findInTree(lowerSubject, Lessons(ctx).findTree) ??
+            LessonModel._(subject, TimetableIcons.unknownLesson.codePoint);
 
-    final lowerType = type.toLowerCase();
-    model.action = _findInTree(lowerType, LessonActions(ctx).findTree);
-    if (model.action == null) model.action = LessonAction(type);
-    model.fullTitle = "$subject (${model.action.title})\n";
+    model.action =
+        _findInTree(type.toLowerCase(), LessonActions(ctx).findTree) ??
+            LessonAction(type);
+    model.fullTitle = subject;
 
     debugPrint("model type: ${model.action?.title}");
 

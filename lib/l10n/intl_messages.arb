@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2019-03-18T14:04:56.447435",
+  "@@last_modified": "2019-03-18T18:31:11.163482",
   "title": "RANEPA (Timetable)",
   "@title": {
     "type": "text",
@@ -442,6 +442,16 @@
   },
   "siteApiNewApp": "New app API",
   "@siteApiNewApp": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "optimizedLessonTitlesTitle": "Replacing lesson names",
+  "@optimizedLessonTitlesTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "optimizedLessonTitlesDescription": "Shortens the lesson names",
+  "@optimizedLessonTitlesDescription": {
     "type": "text",
     "placeholders": {}
   },

@@ -446,6 +446,16 @@
     "type": "text",
     "placeholders": {}
   },
+  "optimizedLessonTitlesTitle": "Замена названий предметов",
+  "@optimizedLessonTitlesTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "optimizedLessonTitlesDescription": "Упрощает названия пар",
+  "@optimizedLessonTitlesDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
   "themeDark": "Темная",
   "@themeDark": {
     "type": "text",

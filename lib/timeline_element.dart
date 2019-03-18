@@ -13,22 +13,22 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 import 'package:flutter/material.dart';
+import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/timeline_painter.dart';
 import 'package:ranepa_timetable/timetable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TimelineElement extends StatelessWidget {
   final TimelineModel model;
-  final SharedPreferences prefs;
+  final bool optimizeTitles;
 
-  TimelineElement([this.model, this.prefs]);
+  TimelineElement(this.model, {@required this.optimizeTitles});
 
   Widget _buildLine(BuildContext ctx) => SizedBox.expand(
         child: Container(
           child: CustomPaint(
-            painter: TimelinePainter(ctx, model, prefs),
+            painter: TimelinePainter(ctx, model),
           ),
         ),
       );
@@ -69,7 +69,8 @@ class TimelineElement extends StatelessWidget {
         ),
       );
 
-  Widget _buildLessonTitle(BuildContext ctx) => Tooltip(
+  Widget _buildLessonTitle(BuildContext ctx, {@required bool optimizeTitles}) =>
+      Tooltip(
         message: model.lesson.fullTitle ?? model.lesson.title,
         child: Text(
           model.lesson.title,
@@ -139,7 +140,11 @@ class TimelineElement extends StatelessWidget {
         ),
       );
 
-  Widget _buildRightContent(BuildContext ctx) => Expanded(
+  Widget _buildRightContent(
+    BuildContext ctx, {
+    @required bool optimizeTitles,
+  }) =>
+      Expanded(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           mainAxisSize: MainAxisSize.max,
@@ -148,31 +153,29 @@ class TimelineElement extends StatelessWidget {
               ? <Widget>[_buildLessonType(ctx)]
               : <Widget>[])
             ..addAll(<Widget>[
-              _buildLessonTitle(ctx),
+              _buildLessonTitle(ctx, optimizeTitles: optimizeTitles),
               _buildTeacherGroup(ctx),
             ]),
         ),
       );
 
-  Widget _buildContentColumn(BuildContext ctx) {
-    return Padding(
-      padding: EdgeInsets.only(
-        top: TimelinePainter.rectMargins + innerPadding,
-        left: TimelinePainter.rectMargins * 2,
-        right: TimelinePainter.rectMargins * 2,
-        bottom: innerPadding,
-      ),
-      child: Row(
-        children: <Widget>[
-          _buildLeftContent(ctx),
-          Container(
-            width: 50 + innerPadding + TimelinePainter.circleRadiusAdd,
-          ),
-          _buildRightContent(ctx),
-        ],
-      ),
-    );
-  }
+  Widget _buildContentColumn(BuildContext ctx) => Padding(
+        padding: EdgeInsets.only(
+          top: TimelinePainter.rectMargins + innerPadding,
+          left: TimelinePainter.rectMargins * 2,
+          right: TimelinePainter.rectMargins * 2,
+          bottom: innerPadding,
+        ),
+        child: Row(
+          children: <Widget>[
+            _buildLeftContent(ctx),
+            Container(
+              width: 50 + innerPadding + TimelinePainter.circleRadiusAdd,
+            ),
+            _buildRightContent(ctx, optimizeTitles: optimizeTitles),
+          ],
+        ),
+      );
 
   Widget _buildRow(BuildContext ctx) => Container(
         height: 85,

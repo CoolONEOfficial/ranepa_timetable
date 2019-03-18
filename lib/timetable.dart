@@ -22,14 +22,13 @@ import 'package:tuple/tuple.dart';
 
 class Timetable extends StatelessWidget {
   final Drawer drawer;
-  final SharedPreferences prefs;
 
   static SearchItem selected;
 
   static final LinkedHashMap<DateTime, List<TimelineModel>> timetable =
       LinkedHashMap<DateTime, List<TimelineModel>>();
 
-  Timetable({Key key, @required this.drawer, @required this.prefs})
+  Timetable({Key key, @required this.drawer})
       : _deviceCalendarPlugin = DeviceCalendarPlugin(),
         super(key: key);
 
@@ -99,8 +98,7 @@ class Timetable extends StatelessWidget {
 
   static Future<void> _loadAllTimetable(
     BuildContext ctx,
-    SearchItem searchItem,
-    SharedPreferences prefs, {
+    SearchItem searchItem, {
     bool updateDb = true,
   }) {
     timetable.clear();
@@ -109,7 +107,6 @@ class Timetable extends StatelessWidget {
       Timetable.todayMidnight,
       Timetable.todayMidnight.add(Duration(days: dayCount - 1)),
       searchItem,
-      prefs,
       updateDb,
     );
   }
@@ -125,7 +122,7 @@ class Timetable extends StatelessWidget {
     final today = Timetable.todayMidnight;
 
     if (dbTimetable == null)
-      await _loadAllTimetable(ctx, searchItem, prefs);
+      await _loadAllTimetable(ctx, searchItem);
     else {
       timetable.clear();
       timetable.addAll(dbTimetable);
@@ -137,7 +134,6 @@ class Timetable extends StatelessWidget {
           endCache,
           today.add(Duration(days: dayCount - 1)),
           searchItem,
-          prefs,
         );
       }
     }
@@ -152,8 +148,7 @@ class Timetable extends StatelessWidget {
     BuildContext ctx,
     DateTime from,
     DateTime to,
-    SearchItem searchItem,
-    SharedPreferences prefs, [
+    SearchItem searchItem, [
     bool updateDb = true,
   ]) async {
     if (!await _checkInternetConnection()) return;
@@ -449,7 +444,6 @@ class Timetable extends StatelessWidget {
                             : _loadAllTimetable(
                                 ctx,
                                 ssSearchItem.data.item2,
-                                prefs,
                                 updateDb: false,
                               ),
                         builder: (ctx, _) {
@@ -475,26 +469,31 @@ class Timetable extends StatelessWidget {
 
                           var timetableIter = timetable.entries.iterator;
                           var mDate = timetable.entries.first.key;
+                          final optimizeTitles =
+                              prefs.getBool(PrefsIds.OPTIMIZED_LESSON_TITLES);
                           while (tabViews.length < dayCount) {
-                            Widget mWidget;
-                            if (mDate.compareTo(endCache) > 0)
-                              mWidget =
-                                  WidgetTemplates.buildNoCacheNotification(ctx);
-                            else if (timetableIter.moveNext()) {
-                              if (timetableIter.current.value.isEmpty)
-                                mWidget =
-                                    WidgetTemplates.buildFreeDayNotification(
-                                        ctx, ssSearchItem.data.item2);
-                              else
-                                mWidget = TimelineComponent(
-                                  timetableIter.current.value,
-                                );
-                            } else
-                              mWidget =
-                                  WidgetTemplates.buildFreeDayNotification(
-                                      ctx, ssSearchItem.data.item2);
-
-                            tabViews.add(mWidget);
+                            tabViews.add(
+                              mDate.compareTo(endCache) > 0
+                                  ? WidgetTemplates.buildNoCacheNotification(
+                                      ctx)
+                                  : timetableIter.moveNext()
+                                      ? timetableIter.current.value.isEmpty
+                                          ? WidgetTemplates
+                                              .buildFreeDayNotification(
+                                              ctx,
+                                              ssSearchItem.data.item2,
+                                            )
+                                          : TimelineComponent(
+                                              timetableIter.current.value,
+                                              optimizeLessonTitles:
+                                                  optimizeTitles,
+                                            )
+                                      : WidgetTemplates
+                                          .buildFreeDayNotification(
+                                          ctx,
+                                          ssSearchItem.data.item2,
+                                        ),
+                            );
 
                             mDate.add(Duration(
                                 days: mDate.weekday == DateTime.saturday

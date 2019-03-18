@@ -13,7 +13,6 @@ import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 import 'package:ranepa_timetable/theme.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
@@ -34,7 +33,8 @@ class PrefsIds {
       ITEM_TYPE = "type",
       ITEM_ID = "id",
       ITEM_TITLE = "title",
-      SITE_API = "site_api";
+      SITE_API = "site_api",
+      OPTIMIZED_LESSON_TITLES = "optimized_lesson_titles";
 }
 
 Future<SearchItem> showSearchItemSelect(
@@ -48,7 +48,7 @@ Future<SearchItem> showSearchItemSelect(
       (searchItem) async {
         if (searchItem != null) {
           if (primary) {
-            searchItem.toPrefs(prefs, PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX);
+            searchItem.toPrefs(PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX);
             await PlatformChannels.deleteDb();
           } else
             Timetable.selected = searchItem;
@@ -58,35 +58,32 @@ Future<SearchItem> showSearchItemSelect(
       },
     );
 
-Future<Brightness> showThemeBrightnessSelect(BuildContext ctx) {
-  final dialogItems = List<Widget>();
-
-  for (var mBrightness in Brightness.values) {
-    dialogItems.add(
-      SimpleDialogOption(
-        onPressed: () {
-          brightness = mBrightness;
-          Navigator.pop(ctx, mBrightness);
-        },
-        child: Text(ThemeBrightnessTitles(ctx).titles[mBrightness.index]),
-      ),
+Future<Brightness> showThemeBrightnessSelect(BuildContext ctx) =>
+    showDialog<Brightness>(
+      context: ctx,
+      builder: (BuildContext ctx) => SimpleDialog(
+            title: Text(AppLocalizations.of(ctx).themeTitle),
+            children: Brightness.values
+                .map(
+                  (mBrightness) => SimpleDialogOption(
+                        onPressed: () {
+                          brightness = mBrightness;
+                          Navigator.pop(ctx, mBrightness);
+                        },
+                        child: Text(ThemeBrightnessTitles(ctx)
+                            .titles[mBrightness.index]),
+                      ),
+                )
+                .toList(),
+          ),
     );
-  }
-
-  return showDialog<Brightness>(
-    context: ctx,
-    builder: (BuildContext ctx) => SimpleDialog(
-          title: Text(AppLocalizations.of(ctx).themeTitle),
-          children: dialogItems,
-        ),
-  );
-}
 
 void showMaterialColorPicker(BuildContext ctx) => showDialog(
       context: ctx,
       builder: (ctx) {
         var pickedColor = accentColor;
         return AlertDialog(
+          title: Text(AppLocalizations.of(ctx).siteApiTitle),
           contentPadding: const EdgeInsets.all(6.0),
           content: MaterialColorPicker(
             selectedColor: pickedColor,
@@ -110,8 +107,10 @@ void showMaterialColorPicker(BuildContext ctx) => showDialog(
       },
     );
 
-final widgetTranslucentBloc = StreamController<bool>();
-final roomLocationStyleBloc = StreamController<RoomLocationStyle>();
+final widgetTranslucentBloc = StreamController<bool>.broadcast(),
+    roomLocationStyleBloc = StreamController<RoomLocationStyle>.broadcast(),
+    siteApiBloc = StreamController<SiteApi>.broadcast(),
+    optimizedLessonTitlesBloc = StreamController<bool>.broadcast();
 
 class Prefs extends StatelessWidget {
   static const ROUTE = "/prefs";
@@ -257,21 +256,38 @@ class Prefs extends StatelessWidget {
             ),
       );
 
+  static Widget _buildOptimizedLessonTitlesPreference(BuildContext ctx) =>
+      StreamBuilder<bool>(
+        initialData: prefs.getBool(PrefsIds.OPTIMIZED_LESSON_TITLES) ?? true,
+        stream: optimizedLessonTitlesBloc.stream,
+        builder: (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
+          ctx,
+          title: AppLocalizations.of(ctx).optimizedLessonTitlesTitle,
+          description: AppLocalizations.of(ctx).optimizedLessonTitlesDescription,
+          rightWidget: Switch(
+            value: snapshot.data,
+            onChanged: (value) async {
+              optimizedLessonTitlesBloc.add(value);
+              await prefs
+                  .setBool(PrefsIds.OPTIMIZED_LESSON_TITLES, value);
+              await PlatformChannels.deleteDb();
+              PlatformChannels.refreshWidget();
+            },
+          ),
+        ),
+      );
+
   static Widget _buildSiteApiPreference(BuildContext ctx) =>
       WidgetTemplates.buildPreferenceButton(
         ctx,
         title: AppLocalizations.of(ctx).siteApiTitle,
         description: AppLocalizations.of(ctx).siteApiDescription,
         onPressed: () => showSiteApiSelect(ctx),
-        rightWidget: buildThemeStream(
-          (ctx, snapshot) => Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: snapshot.data.accentColor,
-                  shape: BoxShape.circle,
-                ),
-              ),
+        rightWidget: StreamBuilder<SiteApi>(
+          builder: (BuildContext ctx, AsyncSnapshot<SiteApi> snapshot) =>
+              Text(snapshot.data.title),
+          stream: siteApiBloc.stream,
+          initialData: SiteApis(ctx).apis[prefs.getInt(PrefsIds.SITE_API) ?? 0],
         ),
       );
 
@@ -279,18 +295,23 @@ class Prefs extends StatelessWidget {
       showDialog<SiteApi>(
         context: ctx,
         builder: (BuildContext ctx) => SimpleDialog(
-              title: Text(AppLocalizations.of(ctx).themeTitle),
-              children: Brightness.values
+              title: Text(AppLocalizations.of(ctx).siteApiTitle),
+              children: SiteApis(ctx)
+                  .apis
+                  .asMap()
                   .map(
-                    (mBrightness) => SimpleDialogOption(
+                    (index, mApi) => MapEntry(
+                        index,
+                        SimpleDialogOption(
                           onPressed: () {
-                            brightness = mBrightness;
-                            Navigator.pop(ctx, mBrightness);
+                            prefs.setInt(PrefsIds.SITE_API, index);
+                            siteApiBloc.add(mApi);
+                            Navigator.pop(ctx, mApi);
                           },
-                          child: Text(ThemeBrightnessTitles(ctx)
-                              .titles[mBrightness.index]),
-                        ),
+                          child: Text(mApi.title),
+                        )),
                   )
+                  .values
                   .toList(),
             ),
       );
@@ -319,6 +340,8 @@ class Prefs extends StatelessWidget {
             _buildRoomLocationStylePreference(ctx),
             Divider(height: 0),
             _buildSiteApiPreference(ctx),
+            Divider(height: 0),
+            _buildOptimizedLessonTitlesPreference(ctx),
             Divider(height: 0),
           ],
         ),
