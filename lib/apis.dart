@@ -8,6 +8,15 @@ class SiteApi {
   const SiteApi(this.title, this.url);
 }
 
+enum OldApiResponseIndexes {
+  Date,
+  TimeStart,
+  TimeFinish,
+  Name,
+  Room,
+  Group,
+}
+
 enum SiteApiIds {
   APP_OLD,
   APP_NEW,

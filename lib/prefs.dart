@@ -258,7 +258,7 @@ class Prefs extends StatelessWidget {
 
   static Widget _buildOptimizedLessonTitlesPreference(BuildContext ctx) =>
       StreamBuilder<bool>(
-        initialData: prefs.get(PrefsIds.OPTIMIZED_LESSON_TITLES) ?? true,
+        initialData: prefs.getBool(PrefsIds.OPTIMIZED_LESSON_TITLES) ?? true,
         stream: optimizedLessonTitlesBloc.stream,
         builder: (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
               ctx,
@@ -303,8 +303,9 @@ class Prefs extends StatelessWidget {
                     (index, mApi) => MapEntry(
                         index,
                         SimpleDialogOption(
-                          onPressed: () {
-                            prefs.setInt(PrefsIds.SITE_API, index);
+                          onPressed: () async {
+                            await prefs.setInt(PrefsIds.SITE_API, index);
+                            await PlatformChannels.deleteDb();
                             siteApiBloc.add(mApi);
                             Navigator.pop(ctx, mApi);
                           },

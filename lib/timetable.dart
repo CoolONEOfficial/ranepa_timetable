@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:ranepa_timetable/apis.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/platform_channels.dart';
@@ -18,6 +19,7 @@ import 'package:ranepa_timetable/timeline.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xml/xml.dart' as xml;
 import 'package:tuple/tuple.dart';
 
 class Timetable extends StatelessWidget {
@@ -144,28 +146,131 @@ class Timetable extends StatelessWidget {
   ]) async {
     if (!await WidgetTemplates.checkInternetConnection()) return;
 
-    final response = await http.get('http://services.niu.ranepa.ru/'
-        'wp-content/plugins/rasp/rasp_json_data.php'
-        '?user=${searchItem.title}'
-        '&dstart=${formatDateTime(from)}'
-        '&dfinish=${formatDateTime(to)}');
+    final api = SiteApiIds.values[prefs.getInt(PrefsIds.SITE_API) ?? 0];
+
+    debugPrint("Started load timetable via API №${api.index}");
+
+    var resp;
+
+    switch (api) {
+      case SiteApiIds.APP_NEW:
+        resp = await http.get('http://services.niu.ranepa.ru/API/public/'
+            '${searchItemTypes[searchItem.typeId.index].getStr}/${searchItem.id}'
+            '/schedule/${formatDateTime(from)}/${formatDateTime(to)}');
+        break;
+      case SiteApiIds.APP_OLD:
+        resp = await http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
+            headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <GetRasp${searchItemTypes[searchItem.typeId.index].getStr} xmlns="http://tempuri.org/">
+      <d1>${from.toIso8601String()}</d1>
+      <d2>${to.toIso8601String()}</d2>
+      <id>${searchItem.id}</id>
+    </GetRasp${searchItemTypes[searchItem.typeId.index].getStr}>
+  </soap:Body>
+</soap:Envelope>
+''');
+        break;
+      case SiteApiIds.SITE:
+        resp = await http.get('http://services.niu.ranepa.ru/'
+            'wp-content/plugins/rasp/rasp_json_data.php'
+            '?user=${searchItem.title}'
+            '&dstart=${formatDateTime(from)}'
+            '&dfinish=${formatDateTime(to)}');
+        break;
+    }
 
     debugPrint("http load end. starting parse request..");
 
-    final itemArr =
-        json.decode(response.body).entries.first.value.entries.first.value;
+    var itemArr;
+
+    switch (api) {
+      case SiteApiIds.APP_NEW:
+        itemArr = json.decode(resp.body);
+        break;
+      case SiteApiIds.APP_OLD:
+        itemArr = xml
+            .parse(resp.body)
+            .children[1]
+            .firstChild
+            .firstChild
+            .firstChild
+            .children;
+        break;
+      case SiteApiIds.SITE:
+        itemArr =
+            json.decode(resp.body).entries.first.value.entries.first.value;
+        break;
+    }
 
     var mDate = from.subtract(Duration(days: 1));
     final _startDayId = timetable.keys.length;
     for (var mItem in itemArr != null && itemArr is! Iterable
         ? <dynamic>[itemArr]
         : itemArr) {
-      final String mItemDateStr = mItem["date"];
-      final mItemDate = DateTime(
-        int.parse(mItemDateStr.substring(6)),
-        int.parse(mItemDateStr.substring(3, 5)),
-        int.parse(mItemDateStr.substring(0, 2)),
-      );
+      DateTime mItemDate;
+      var mItemTimeStart;
+      var mItemTimeFinish;
+      String mItemName;
+      String mItemRoomStr;
+      String mItemGroup;
+
+      switch (api) {
+        case SiteApiIds.APP_NEW:
+          mItemDate = DateTime.parse(mItem["xdt"]);
+          mItemTimeStart = mItem["nf"];
+          mItemTimeFinish = mItem["kf"];
+          mItemName = mItem["teacher"];
+          mItemRoomStr = mItem["number"];
+          mItemGroup = mItem["group"];
+          break;
+        case SiteApiIds.APP_OLD:
+          mItemDate = DateTime.parse(
+              mItem.children[OldApiResponseIndexes.Date.index].text);
+          mItemTimeStart =
+              mItem.children[OldApiResponseIndexes.TimeStart.index].text;
+          mItemTimeFinish =
+              mItem.children[OldApiResponseIndexes.TimeFinish.index].text;
+          mItemName = mItem.children[OldApiResponseIndexes.Name.index].text;
+          mItemRoomStr = mItem.children[OldApiResponseIndexes.Room.index].text;
+          mItemGroup = mItem.children[OldApiResponseIndexes.Group.index].text;
+
+          break;
+        case SiteApiIds.SITE:
+          String mItemDateStr = mItem["date"];
+          mItemDate = DateTime(
+            int.parse(mItemDateStr.substring(6)),
+            int.parse(mItemDateStr.substring(3, 5)),
+            int.parse(mItemDateStr.substring(0, 2)),
+          );
+          mItemTimeStart = mItem["timestart"];
+          mItemTimeFinish = mItem["timefinish"];
+          mItemName = mItem["name"];
+          mItemRoomStr = mItem["aydit"];
+          mItemGroup = mItem["namegroup"];
+          break;
+      }
+
+      String mItemSubject;
+      String mItemType;
+
+      switch (api) {
+        case SiteApiIds.APP_NEW:
+          mItemSubject = mItem["subject"];
+          mItemType = mItem["type"];
+          break;
+        case SiteApiIds.SITE:
+        case SiteApiIds.APP_OLD:
+          mItemName = mItemName.substring(mItemName.indexOf('>') + 1);
+          mItemSubject = mItemName.substring(0, mItemName.indexOf('('));
+          mItemType = RegExp(r"\(([^)]*)\)[^(]*$")
+              .stringMatch(mItemName)
+              .substring(1, mItemType.lastIndexOf(')'));
+          break;
+      }
+
       while (mDate != mItemDate) {
         mDate = mDate.add(Duration(days: 1));
         // skip sunday
@@ -173,14 +278,6 @@ class Timetable extends StatelessWidget {
           timetable[mDate] = List<TimelineModel>();
         }
       }
-
-      final mItemTimeStart = mItem["timestart"];
-      final mItemTimeFinish = mItem["timefinish"];
-      final String mItemName = mItem["name"];
-      String bracketsInner =
-          RegExp(r"\(([^)]*)\)[^(]*$").stringMatch(mItemName).substring(1);
-      bracketsInner =
-          bracketsInner.substring(0, bracketsInner.lastIndexOf(')'));
 
       final mLesson = TimelineModel(
         date: mItemDate,
@@ -194,16 +291,16 @@ class Timetable extends StatelessWidget {
                 mItemTimeFinish.substring(0, mItemTimeFinish.length - 3)),
             minute: int.parse(mItemTimeFinish.substring(
                 mItemTimeFinish.length - 2, mItemTimeFinish.length))),
-        room: RoomModel.fromString(mItem["aydit"]),
-        group: mItem["namegroup"],
+        room: RoomModel.fromString(mItemRoomStr),
+        group: mItemGroup,
         lesson: LessonModel.build(
           ctx,
-          mItemName.substring(0, mItemName.indexOf('(')),
-          bracketsInner,
+          mItemSubject,
+          mItemType,
         ),
         teacher: TeacherModel.fromString(
             searchItem.typeId == SearchItemTypeId.Group
-                ? mItemName.substring(mItemName.indexOf('>') + 1)
+                ? mItemName
                 : searchItem.title),
       );
 
@@ -457,8 +554,9 @@ class Timetable extends StatelessWidget {
                           final tabViews = List<Widget>(),
                               endCache = DateTime.parse(
                                   prefs.getString(PrefsIds.END_CACHE)),
-                              optimizeLessonTitles = prefs.get(
-                                      PrefsIds.OPTIMIZED_LESSON_TITLES) ?? true;
+                              optimizeLessonTitles = prefs.getBool(
+                                      PrefsIds.OPTIMIZED_LESSON_TITLES) ??
+                                  true;
 
                           var timetableIter = timetable.entries.iterator,
                               mDate = timetable.entries.first.key;
