@@ -355,6 +355,8 @@ public class WidgetProvider extends AppWidgetProvider {
     private static final String FLUTTER_PREFIX = "flutter.";
 
     enum PrefsIds {
+        OptimizedLessonTitles("optimized_lesson_titles"),
+
         RoomLocationStyle("room_location_style"),
 
         WidgetTranslucent("widget_translucent"),

@@ -154,7 +154,7 @@ class Prefs extends StatelessWidget {
               title: AppLocalizations.of(ctx).widgetTranslucentTitle,
               description:
                   AppLocalizations.of(ctx).widgetTranslucentDescription,
-              rightWidget: Checkbox(
+              rightWidget: Switch(
                 value: snapshot.data,
                 onChanged: (value) {
                   widgetTranslucentBloc.add(value);
@@ -258,7 +258,7 @@ class Prefs extends StatelessWidget {
 
   static Widget _buildOptimizedLessonTitlesPreference(BuildContext ctx) =>
       StreamBuilder<bool>(
-        initialData: prefs.getBool(PrefsIds.OPTIMIZED_LESSON_TITLES) ?? true,
+        initialData: prefs.get(PrefsIds.OPTIMIZED_LESSON_TITLES) ?? true,
         stream: optimizedLessonTitlesBloc.stream,
         builder: (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
           ctx,

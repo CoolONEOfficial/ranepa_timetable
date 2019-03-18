@@ -34,7 +34,10 @@ class TimelineComponent extends StatelessWidget {
   Widget build(BuildContext ctx) => Container(
         child: ListView.builder(
           itemCount: timelineList.length,
-          itemBuilder: (_, index) => TimelineElement(timelineList[index]),
+          itemBuilder: (_, index) => TimelineElement(
+                timelineList[index],
+                optimizeLessonTitles: optimizeLessonTitles,
+              ),
         ),
       );
 }

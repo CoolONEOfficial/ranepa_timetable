@@ -21,9 +21,9 @@ import 'package:ranepa_timetable/timetable.dart';
 
 class TimelineElement extends StatelessWidget {
   final TimelineModel model;
-  final bool optimizeTitles;
+  final bool optimizeLessonTitles;
 
-  TimelineElement(this.model, {@required this.optimizeTitles});
+  TimelineElement(this.model, {@required this.optimizeLessonTitles});
 
   Widget _buildLine(BuildContext ctx) => SizedBox.expand(
         child: Container(
@@ -73,7 +73,7 @@ class TimelineElement extends StatelessWidget {
       Tooltip(
         message: model.lesson.fullTitle ?? model.lesson.title,
         child: Text(
-          model.lesson.title,
+          optimizeTitles ? model.lesson.title : model.lesson.fullTitle,
           overflow: TextOverflow.ellipsis,
           softWrap: false,
           style: Theme.of(ctx).textTheme.title,
@@ -172,7 +172,7 @@ class TimelineElement extends StatelessWidget {
             Container(
               width: 50 + innerPadding + TimelinePainter.circleRadiusAdd,
             ),
-            _buildRightContent(ctx, optimizeTitles: optimizeTitles),
+            _buildRightContent(ctx, optimizeTitles: optimizeLessonTitles),
           ],
         ),
       );

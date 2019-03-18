@@ -11,6 +11,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -37,6 +38,8 @@ import static ru.coolone.ranepatimetable.Timeline.PREFIX_TEACHER;
 import static ru.coolone.ranepatimetable.Timeline.RoomModel;
 import static ru.coolone.ranepatimetable.Timeline.TeacherModel;
 import static ru.coolone.ranepatimetable.Timeline.TimeOfDayModel;
+import static ru.coolone.ranepatimetable.WidgetProvider.RoomLocationStyle.Icon;
+import static ru.coolone.ranepatimetable.WidgetProvider.RoomLocationStyle.Text;
 import static ru.coolone.ranepatimetable.WidgetProvider.defaultTheme;
 import static ru.coolone.ranepatimetable.WidgetProvider.getPrefs;
 import static ru.coolone.ranepatimetable.WidgetProvider.widgetSize;
@@ -269,7 +272,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         // Draw room location icon
         if (WidgetProvider.RoomLocationStyle.values()[
                 (int) getPrefs(ctx).getLong(WidgetProvider.PrefsIds.RoomLocationStyle.prefId, 0)
-                ] == WidgetProvider.RoomLocationStyle.Icon) {
+                ] == Icon) {
             var roomLocation = Location.values()[cursor.getInt(cursor.getColumnIndex(
                     PREFIX_ROOM
                             + RoomModel.COLUMN_ROOM_LOCATION)
@@ -316,11 +319,14 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             rv.setTextViewText(R.id.widget_item_lesson_title,
                     cursor.getString(
                             cursor.getColumnIndex(
-                                    PREFIX_LESSON
-                                            + LessonModel.COLUMN_LESSON_TITLE
-                            )
-                    )
-            );
+                                    PREFIX_LESSON + (
+                                            getPrefs(ctx).getBoolean(
+                                                    WidgetProvider.PrefsIds.OptimizedLessonTitles.prefId,
+                                                    true
+                                            )
+                                                    ? LessonModel.COLUMN_LESSON_TITLE
+                                                    : LessonModel.COLUMN_LESSON_FULL_TITLE
+                                    ))));
             var teacherName = cursor.getString(cursor.getColumnIndex(PREFIX_TEACHER + TeacherModel.COLUMN_TEACHER_NAME));
             var teacherSurname = cursor.getString(cursor.getColumnIndex(PREFIX_TEACHER + TeacherModel.COLUMN_TEACHER_SURNAME));
             var teacherPatronymic = cursor.getString(cursor.getColumnIndex(PREFIX_TEACHER + TeacherModel.COLUMN_TEACHER_PATRONYMIC));
@@ -338,19 +344,29 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             rv.setTextViewText(R.id.widget_item_finish, String.format(getCurrentLocale(), "%d:%02d", finish.hour, finish.minute));
 
             var prefix = "";
-            if (WidgetProvider.RoomLocationStyle.values()[
+            var roomLocationStyle = WidgetProvider.RoomLocationStyle.values()[
                     (int) getPrefs(ctx).getLong(WidgetProvider.PrefsIds.RoomLocationStyle.prefId, 0)
-                    ] == WidgetProvider.RoomLocationStyle.Text)
-                switch (Location.values()[cursor.getInt(cursor.getColumnIndex(
-                        PREFIX_ROOM
-                                + RoomModel.COLUMN_ROOM_LOCATION))]) {
-                    case Hotel:
-                        prefix = "П8-";
-                        break;
-                    case StudyHostel:
-                        prefix = "СО-";
-                        break;
-                }
+                    ];
+            switch (roomLocationStyle) {
+                case Icon:
+                    rv.setViewPadding(R.id.widget_item_room_number,
+                            (int) dpToPixel(ctx, 22),
+                            0, 0, 0
+                    );
+                    break;
+                case Text:
+                    switch (Location.values()[cursor.getInt(cursor.getColumnIndex(
+                            PREFIX_ROOM
+                                    + RoomModel.COLUMN_ROOM_LOCATION))]) {
+                        case Hotel:
+                            prefix = "П8-";
+                            break;
+                        case StudyHostel:
+                            prefix = "СО-";
+                            break;
+                    }
+                    break;
+            }
             rv.setTextViewText(R.id.widget_item_room_number,
                     prefix + cursor.getString(cursor.getColumnIndex(
                             PREFIX_ROOM
@@ -376,9 +392,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
 
             rv.setImageViewBitmap(
                     R.id.widget_item_image,
-                    buildItemBitmap(
-                            ctx
-                    )
+                    buildItemBitmap(ctx)
             );
         }
 

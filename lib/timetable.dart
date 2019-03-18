@@ -463,14 +463,15 @@ class Timetable extends StatelessWidget {
                               ),
                             );
 
-                          final tabViews = List<Widget>();
-                          final endCache = DateTime.parse(
-                              prefs.getString(PrefsIds.END_CACHE));
+                          final tabViews = List<Widget>(),
+                              endCache = DateTime.parse(
+                                  prefs.getString(PrefsIds.END_CACHE)),
+                              optimizeLessonTitles = prefs.get(
+                                      PrefsIds.OPTIMIZED_LESSON_TITLES) ?? true;
 
-                          var timetableIter = timetable.entries.iterator;
-                          var mDate = timetable.entries.first.key;
-                          final optimizeTitles =
-                              prefs.getBool(PrefsIds.OPTIMIZED_LESSON_TITLES);
+                          var timetableIter = timetable.entries.iterator,
+                              mDate = timetable.entries.first.key;
+
                           while (tabViews.length < dayCount) {
                             tabViews.add(
                               mDate.compareTo(endCache) > 0
@@ -486,7 +487,7 @@ class Timetable extends StatelessWidget {
                                           : TimelineComponent(
                                               timetableIter.current.value,
                                               optimizeLessonTitles:
-                                                  optimizeTitles,
+                                                  optimizeLessonTitles,
                                             )
                                       : WidgetTemplates
                                           .buildFreeDayNotification(
