@@ -87,15 +87,6 @@ class Timetable extends StatelessWidget {
     return mDate;
   }
 
-  static Future<bool> _checkInternetConnection() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-    } on SocketException catch (_) {
-      return false;
-    }
-  }
-
   static Future<void> _loadAllTimetable(
     BuildContext ctx,
     SearchItem searchItem, {
@@ -151,7 +142,7 @@ class Timetable extends StatelessWidget {
     SearchItem searchItem, [
     bool updateDb = true,
   ]) async {
-    if (!await _checkInternetConnection()) return;
+    if (!await WidgetTemplates.checkInternetConnection()) return;
 
     final response = await http.get('http://services.niu.ranepa.ru/'
         'wp-content/plugins/rasp/rasp_json_data.php'
@@ -431,7 +422,7 @@ class Timetable extends StatelessWidget {
               body: StreamBuilder<void>(
                 stream: timetableFutureBuilderBloc.stream,
                 builder: (ctx, _) => WidgetTemplates.buildFutureBuilder(ctx,
-                        future: _checkInternetConnection(),
+                        future: WidgetTemplates.checkInternetConnection(),
                         builder: (ctx, internetConn) {
                       if (!internetConn.data &&
                           (!Platform.isAndroid || !ssSearchItem.data.item1))

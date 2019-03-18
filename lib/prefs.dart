@@ -83,7 +83,7 @@ void showMaterialColorPicker(BuildContext ctx) => showDialog(
       builder: (ctx) {
         var pickedColor = accentColor;
         return AlertDialog(
-          title: Text(AppLocalizations.of(ctx).siteApiTitle),
+          title: Text(AppLocalizations.of(ctx).themeAccentTitle),
           contentPadding: const EdgeInsets.all(6.0),
           content: MaterialColorPicker(
             selectedColor: pickedColor,
@@ -261,20 +261,20 @@ class Prefs extends StatelessWidget {
         initialData: prefs.get(PrefsIds.OPTIMIZED_LESSON_TITLES) ?? true,
         stream: optimizedLessonTitlesBloc.stream,
         builder: (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
-          ctx,
-          title: AppLocalizations.of(ctx).optimizedLessonTitlesTitle,
-          description: AppLocalizations.of(ctx).optimizedLessonTitlesDescription,
-          rightWidget: Switch(
-            value: snapshot.data,
-            onChanged: (value) async {
-              optimizedLessonTitlesBloc.add(value);
-              await prefs
-                  .setBool(PrefsIds.OPTIMIZED_LESSON_TITLES, value);
-              await PlatformChannels.deleteDb();
-              PlatformChannels.refreshWidget();
-            },
-          ),
-        ),
+              ctx,
+              title: AppLocalizations.of(ctx).optimizedLessonTitlesTitle,
+              description:
+                  AppLocalizations.of(ctx).optimizedLessonTitlesDescription,
+              rightWidget: Switch(
+                value: snapshot.data,
+                onChanged: (value) async {
+                  optimizedLessonTitlesBloc.add(value);
+                  await prefs.setBool(PrefsIds.OPTIMIZED_LESSON_TITLES, value);
+                  await PlatformChannels.deleteDb();
+                  PlatformChannels.refreshWidget();
+                },
+              ),
+            ),
       );
 
   static Widget _buildSiteApiPreference(BuildContext ctx) =>
@@ -308,7 +308,23 @@ class Prefs extends StatelessWidget {
                             siteApiBloc.add(mApi);
                             Navigator.pop(ctx, mApi);
                           },
-                          child: Text(mApi.title),
+                          child: Row(
+                            children: <Widget>[
+                              Expanded(child: Text(mApi.title)),
+                              WidgetTemplates.buildFutureBuilder(
+                                ctx,
+                                loading: Container(),
+                                future: WidgetTemplates.checkInternetConnection(
+                                  mApi.url.host,
+                                ),
+                                builder: (BuildContext ctx,
+                                        AsyncSnapshot snapshot) =>
+                                    Icon(snapshot.data
+                                        ? Icons.done
+                                        : Icons.clear),
+                              ),
+                            ],
+                          ),
                         )),
                   )
                   .values
