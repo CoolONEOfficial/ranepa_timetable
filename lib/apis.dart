@@ -4,6 +4,14 @@ import 'package:flutter/widgets.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:xml/xml.dart' as xml;
 
+const DEFAULT_API_ID = SiteApiIds.APP_NEW;
+
+enum SiteApiIds {
+  APP_OLD,
+  APP_NEW,
+  SITE,
+}
+
 class SiteApi {
   final String title;
   final Uri url;
@@ -24,14 +32,6 @@ enum OldAppApiSearchIndexes {
   Type,
   Id,
   Title,
-}
-
-const DEFAULT_API_ID = SiteApiIds.APP_OLD;
-
-enum SiteApiIds {
-  APP_OLD,
-  APP_NEW,
-  SITE,
 }
 
 class SiteApis {
@@ -78,7 +78,8 @@ class SiteApis {
 parseResp(SiteApiIds api, String resp) {
   switch (api) {
     case SiteApiIds.APP_NEW:
-      return json.decode(resp);
+      var arr = json.decode(resp);
+      return arr is Iterable ? arr : [arr];
     case SiteApiIds.APP_OLD:
       return xml
           .parse(resp)
@@ -89,6 +90,11 @@ parseResp(SiteApiIds api, String resp) {
           .children;
     case SiteApiIds.SITE:
       final arr = json.decode(resp).entries.first.value.entries;
-      return arr.isNotEmpty ? arr.first.value : [];
+
+      var key = arr.first.key;
+
+      return arr.isNotEmpty // TODO: fix this shit..
+          ? key == "ItemRaspUID" || key == "RaspItem" ? arr.first.value : arr
+          : [];
   }
 }

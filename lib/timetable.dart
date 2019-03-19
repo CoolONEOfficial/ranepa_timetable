@@ -145,8 +145,8 @@ class Timetable extends StatelessWidget {
   ]) async {
     if (!await WidgetTemplates.checkInternetConnection()) return;
 
-    final api =
-        SiteApiIds.values[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index];
+    final api = SiteApiIds
+        .values[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index];
 
     debugPrint("Started load timetable via API №${api.index}");
 
@@ -155,7 +155,7 @@ class Timetable extends StatelessWidget {
     switch (api) {
       case SiteApiIds.APP_NEW:
         resp = await http.get('http://services.niu.ranepa.ru/API/public/'
-            '${searchItemTypes[searchItem.typeId.index].getStr}/${searchItem.id}'
+            '${searchItemTypes[searchItem.typeId.index].newApiStr}/${searchItem.id}'
             '/schedule/${formatDateTime(from)}/${formatDateTime(to)}');
         break;
       case SiteApiIds.APP_OLD:
@@ -164,11 +164,11 @@ class Timetable extends StatelessWidget {
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
-    <GetRasp${searchItemTypes[searchItem.typeId.index].getStr} xmlns="http://tempuri.org/">
+    <GetRasp${searchItemTypes[searchItem.typeId.index].oldApiStr} xmlns="http://tempuri.org/">
       <d1>${from.toIso8601String()}</d1>
       <d2>${to.toIso8601String()}</d2>
       <id>${searchItem.id}</id>
-    </GetRasp${searchItemTypes[searchItem.typeId.index].getStr}>
+    </GetRasp${searchItemTypes[searchItem.typeId.index].oldApiStr}>
   </soap:Body>
 </soap:Envelope>
 ''');
@@ -188,12 +188,11 @@ class Timetable extends StatelessWidget {
 
     var mDate = from.subtract(Duration(days: 1));
     final _startDayId = timetable.keys.length;
-    for (var mItem in itemArr != null && itemArr is! Iterable
-        ? <dynamic>[itemArr]
-        : itemArr) {
+    for (var mItem in itemArr) {
       DateTime mItemDate;
       var mItemTimeStart;
       var mItemTimeFinish;
+      String mItemTeacher;
       String mItemName;
       String mItemRoomStr;
       String mItemGroup;
@@ -203,9 +202,13 @@ class Timetable extends StatelessWidget {
           mItemDate = DateTime.parse(mItem["xdt"]);
           mItemTimeStart = mItem["nf"];
           mItemTimeFinish = mItem["kf"];
-          mItemName = mItem["teacher"];
+          mItemTeacher = searchItem.typeId == SearchItemTypeId.Group
+              ? mItem["teacher"]
+              : searchItem.title;
           mItemRoomStr = mItem["number"];
-          mItemGroup = mItem["group"];
+          mItemGroup = searchItem.typeId == SearchItemTypeId.Teacher
+              ? mItem["group"]
+              : searchItem.title;
           break;
         case SiteApiIds.APP_OLD:
           mItemDate = DateTime.parse(
@@ -247,10 +250,9 @@ class Timetable extends StatelessWidget {
         case SiteApiIds.SITE:
         case SiteApiIds.APP_OLD:
           mItemSubject = mItemName.substring(0, mItemName.indexOf('('));
-          mItemType = RegExp(r"\(([^)]*)\)[^(]*$")
-              .stringMatch(mItemName);
+          mItemType = RegExp(r"\(([^)]*)\)[^(]*$").stringMatch(mItemName);
           mItemType = mItemType.substring(1, mItemType.lastIndexOf(')'));
-          mItemName = mItemName.substring(mItemName.indexOf('>') + 1);
+          mItemTeacher = mItemName.substring(mItemName.indexOf('>') + 1);
           break;
       }
 
@@ -283,7 +285,7 @@ class Timetable extends StatelessWidget {
         ),
         teacher: TeacherModel.fromString(
             searchItem.typeId == SearchItemTypeId.Group
-                ? mItemName
+                ? mItemTeacher
                 : searchItem.title),
       );
 

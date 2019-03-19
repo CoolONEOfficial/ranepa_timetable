@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,25 +9,28 @@ import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xml/xml.dart';
 
 class SearchItemType {
   final IconData icon;
-  final String getStr;
+  final String oldApiStr;
+  final String newApiStr;
 
-  const SearchItemType(this.icon, this.getStr);
+  const SearchItemType(this.icon, this.oldApiStr, this.newApiStr);
 }
 
-enum SearchItemTypeId { Teacher, Group }
+enum SearchItemTypeId {
+  Group,
+  Teacher,
+}
 
 final searchItemTypes = List<SearchItemType>.generate(
   SearchItemTypeId.values.length,
   (index) {
     switch (SearchItemTypeId.values[index]) {
       case SearchItemTypeId.Teacher:
-        return SearchItemType(Icons.person, "teacher");
+        return SearchItemType(Icons.person, "Prep", "teacher");
       case SearchItemTypeId.Group:
-        return SearchItemType(Icons.group, "group");
+        return SearchItemType(Icons.group, "Group", "group");
     }
   },
 );
@@ -121,6 +124,133 @@ class Search extends SearchDelegate<SearchItem> {
         onPressed: () {
           close(ctx, null);
         });
+  }
+
+  static Response _newApiCachedResults;
+
+  Future<Response> _buildHttpRequest(SiteApiIds api) {
+    switch (api) {
+      case SiteApiIds.APP_NEW:
+        return _newApiCachedResults == null
+            ? http.get('http://services.niu.ranepa.ru/'
+                'API/public/teacher/teachersAndGroupsList')
+            : Future<Response>.value(_newApiCachedResults);
+      case SiteApiIds.APP_OLD:
+        return http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
+            headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <GetNameUidForRasp xmlns="http://tempuri.org/">
+      <str>$query</str>
+    </GetNameUidForRasp>
+  </soap:Body>
+</soap:Envelope>
+''');
+      case SiteApiIds.SITE:
+        return http.get('http://services.niu.ranepa.ru/'
+            'wp-content/plugins/rasp/rasp_json_data.php?name=$query');
+      default:
+        throw Exception("api is fucked up");
+    }
+  }
+
+  @override
+  Widget buildSuggestions(ctx) {
+    debugPrint("Suggestions build start");
+    webSuggestions.clear();
+    var api = SiteApiIds
+        .values[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index];
+    return query.isEmpty
+        ? _buildSuggestions()
+        : RegExp(r"^[(А-я)\d\s\-]+$").hasMatch(query)
+            ? WidgetTemplates.buildFutureBuilder(
+                ctx,
+                future: _buildHttpRequest(api).then((response) => response),
+                builder: (ctx, snapshot) {
+                  if (_newApiCachedResults == null)
+                    _newApiCachedResults = snapshot.data;
+                  final body = snapshot.data.body;
+
+                  debugPrint("Search snapshot data body: " + body);
+
+                  final resultArr = parseResp(api, body);
+
+                  for (var mItem in resultArr) {
+                    var mItemType;
+                    String mItemTitle;
+                    int mItemId;
+
+                    switch (api) {
+                      case SiteApiIds.APP_NEW:
+                        mItemType = mItem["type"];
+                        mItemTitle = mItem["value"];
+                        if (!mItemTitle
+                            .toLowerCase()
+                            .contains(query.toLowerCase())) continue;
+                        mItemId = int.parse(mItem["oid"]);
+                        break;
+                      case SiteApiIds.APP_OLD:
+                        mItemType = mItem
+                            .children[OldAppApiSearchIndexes.Type.index].text;
+                        mItemTitle = mItem
+                            .children[OldAppApiSearchIndexes.Title.index].text;
+                        mItemId = int.parse(mItem
+                            .children[OldAppApiSearchIndexes.Id.index].text);
+                        break;
+                      case SiteApiIds.SITE:
+                        mItemType = mItem["Type"];
+                        mItemTitle = mItem["Title"];
+                        mItemId = mItem["id"];
+                        break;
+                    }
+
+                    SearchItemTypeId mItemTypeId;
+
+                    switch (api) {
+                      case SiteApiIds.APP_NEW:
+                        mItemTypeId =
+                            SearchItemTypeId.values[int.parse(mItemType)];
+                        break;
+                      case SiteApiIds.APP_OLD:
+                      case SiteApiIds.SITE:
+                        switch (mItemType) {
+                          case "Prep":
+                            mItemTypeId = SearchItemTypeId.Teacher;
+                            break;
+                          case "Group":
+                            mItemTypeId = SearchItemTypeId.Group;
+                            break;
+                        }
+                        break;
+                    }
+
+                    webSuggestions.add(SearchItem(
+                      mItemTypeId,
+                      mItemId,
+                      mItemTitle,
+                    ));
+                  }
+                  debugPrint(webSuggestions.toString());
+
+                  return _buildSuggestions();
+                },
+                loading: Stack(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.only(right: 10, top: 10),
+                      alignment: Alignment.topRight,
+                      child: SizedBox(
+                        child: CircularProgressIndicator(),
+                        height: 15.0,
+                        width: 15.0,
+                      ),
+                    ),
+                    _buildSuggestions()
+                  ],
+                ),
+              )
+            : Container();
   }
 
   Widget _buildSuggestions() {
@@ -231,139 +361,6 @@ class Search extends SearchDelegate<SearchItem> {
           }
         },
         itemCount: suggestions.length);
-  }
-
-  Future<Response> _buildHttpRequest(SiteApiIds api) {
-    switch (api) {
-      case SiteApiIds.APP_NEW:
-        return http.get('http://services.niu.ranepa.ru/'
-            '/API/public/teacher/teachersAndGroupsList');
-      case SiteApiIds.APP_OLD:
-        return http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
-            headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
-<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <GetNameUidForRasp xmlns="http://tempuri.org/">
-      <str>$query</str>
-    </GetNameUidForRasp>
-  </soap:Body>
-</soap:Envelope>
-''');
-      case SiteApiIds.SITE:
-        return http.get('http://services.niu.ranepa.ru/'
-            'wp-content/plugins/rasp/rasp_json_data.php?name=$query');
-      default:
-        throw Exception("api is fucked up");
-    }
-  }
-
-  @override
-  Widget buildSuggestions(ctx) {
-    debugPrint("Suggestions build start");
-    webSuggestions.clear();
-    var api = SiteApiIds
-        .values[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index];
-    return query.isEmpty
-        ? _buildSuggestions()
-        : RegExp(r"^[(А-я)\d\s\-]+$").hasMatch(query)
-            ? WidgetTemplates.buildFutureBuilder(
-                ctx,
-                future:
-                    _buildHttpRequest(api).then((response) => response.body),
-                builder: (ctx, snapshot) {
-                  debugPrint("Search snapshot data: " + snapshot.data);
-
-                  final resultArr = parseResp(api, snapshot.data);
-
-                  if (resultArr.isNotEmpty) {
-                    var itemArr;
-
-                    switch (api) {
-                      case SiteApiIds.APP_NEW:
-                        itemArr = resultArr.first.value;
-                        break;
-                      case SiteApiIds.SITE:
-                      case SiteApiIds.APP_OLD:
-                        itemArr = resultArr;
-                        break;
-                    }
-
-                    for (var mItem
-                        in itemArr is Iterable ? itemArr : <dynamic>[itemArr]) {
-                      var mItemType;
-                      String mItemTitle;
-                      int mItemId;
-
-                      switch (api) {
-                        case SiteApiIds.APP_NEW:
-                          mItemType = mItem["type"];
-                          mItemTitle = mItem["value"];
-                          mItemId = mItem["oid"];
-                          break;
-                        case SiteApiIds.APP_OLD:
-                          mItemType = mItem
-                              .children[OldAppApiSearchIndexes.Type.index].text;
-                          mItemTitle = mItem
-                              .children[OldAppApiSearchIndexes.Title.index]
-                              .text;
-                          mItemId = int.parse(mItem
-                              .children[OldAppApiSearchIndexes.Type.index]
-                              .text);
-                          break;
-                        case SiteApiIds.SITE:
-                          mItemType = mItem["Type"];
-                          mItemTitle = mItem["Title"];
-                          break;
-                      }
-
-                      SearchItemTypeId mItemTypeId;
-
-                      switch (api) {
-                        case SiteApiIds.APP_NEW:
-                          mItemTypeId =
-                              SearchItemTypeId.values[int.parse(mItemType)];
-                          break;
-                        case SiteApiIds.APP_OLD:
-                        case SiteApiIds.SITE:
-                          switch (mItemType) {
-                            case "Prep":
-                              mItemTypeId = SearchItemTypeId.Teacher;
-                              break;
-                            case "Group":
-                              mItemTypeId = SearchItemTypeId.Group;
-                              break;
-                          }
-                          break;
-                      }
-
-                      webSuggestions.add(SearchItem(
-                        mItemTypeId,
-                        mItemId,
-                        mItemTitle,
-                      ));
-                    }
-                  }
-                  debugPrint(webSuggestions.toString());
-
-                  return _buildSuggestions();
-                },
-                loading: Stack(
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.only(right: 10, top: 10),
-                      alignment: Alignment.topRight,
-                      child: SizedBox(
-                        child: CircularProgressIndicator(),
-                        height: 15.0,
-                        width: 15.0,
-                      ),
-                    ),
-                    _buildSuggestions()
-                  ],
-                ),
-              )
-            : Container();
   }
 
   @override
