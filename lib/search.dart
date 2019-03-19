@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:ranepa_timetable/apis.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
@@ -230,19 +232,44 @@ class Search extends SearchDelegate<SearchItem> {
         itemCount: suggestions.length);
   }
 
+  Future<Response> _buildHttpRequest(SiteApiIds api) {
+    switch(api) {
+      case SiteApiIds.APP_NEW:
+        return http
+            .get('http://services.niu.ranepa.ru/'
+            '/API/public/teacher/teachersAndGroupsList');
+      case SiteApiIds.APP_OLD:
+        return http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
+            headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <GetNameUidForRasp xmlns="http://tempuri.org/">
+      <str>$query</str>
+    </GetNameUidForRasp>
+  </soap:Body>
+</soap:Envelope>
+''');
+      case SiteApiIds.SITE:
+        return http
+            .get('http://services.niu.ranepa.ru/'
+            'wp-content/plugins/rasp/rasp_json_data.php?name=$query');
+      default:
+        throw Exception("api is fucked up");
+    }
+  }
+
   @override
   Widget buildSuggestions(ctx) {
     debugPrint("Suggestions build start");
     webSuggestions.clear();
+    var api = SiteApiIds.values[prefs.getInt(PrefsIds.SITE_API)];
     return query.isEmpty
         ? _buildSuggestions()
-        : new RegExp(r"^[(А-я)\d\s\-]+$").hasMatch(query)
+        : RegExp(r"^[(А-я)\d\s\-]+$").hasMatch(query)
             ? WidgetTemplates.buildFutureBuilder(
                 ctx,
-                future: http
-                    .get('http://services.niu.ranepa.ru/'
-                        'wp-content/plugins/rasp/rasp_json_data.php?name=$query')
-                    .then((response) => response.body),
+                future: _buildHttpRequest(api).then((response) => response.body),
                 builder: (ctx, snapshot) {
                   debugPrint("Search snapshot data: " + snapshot.data);
 
@@ -254,17 +281,39 @@ class Search extends SearchDelegate<SearchItem> {
 
                     for (var mItem
                         in itemArr is Iterable ? itemArr : <dynamic>[itemArr]) {
+
                       SearchItemTypeId mItemTypeId;
 
-                      switch (mItem["Type"]) {
-                        case "Prep":
-                          mItemTypeId = SearchItemTypeId.Teacher;
+                      String mItemType; // TODO: search multiapi
+
+                      switch(api) {
+                        case SiteApiIds.APP_NEW:
+                          mItemType = mItem["type"];
                           break;
-                        case "Group":
-                          mItemTypeId = SearchItemTypeId.Group;
+                        case SiteApiIds.APP_OLD:
+                          mItemType = mItem.children[OldAppApiSearchIndexes.Type.index].text;
+
+                          switch (mItem["Type"]) {
+                            case "Prep":
+                              mItemTypeId = SearchItemTypeId.Teacher;
+                              break;
+                            case "Group":
+                              mItemTypeId = SearchItemTypeId.Group;
+                              break;
+                          }
                           break;
-                        default:
-                          mItemTypeId = null;
+                        case SiteApiIds.SITE:
+                          mItemType = mItem["Type"];
+
+                          switch (mItem["Type"]) {
+                            case "Prep":
+                              mItemTypeId = SearchItemTypeId.Teacher;
+                              break;
+                            case "Group":
+                              mItemTypeId = SearchItemTypeId.Group;
+                              break;
+                          }
+                          break;
                       }
 
                       webSuggestions.add(SearchItem(

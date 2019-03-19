@@ -19,7 +19,6 @@ import 'package:ranepa_timetable/timeline.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xml/xml.dart' as xml;
 import 'package:tuple/tuple.dart';
 
 class Timetable extends StatelessWidget {
@@ -184,26 +183,7 @@ class Timetable extends StatelessWidget {
 
     debugPrint("http load end. starting parse request..");
 
-    var itemArr;
-
-    switch (api) {
-      case SiteApiIds.APP_NEW:
-        itemArr = json.decode(resp.body);
-        break;
-      case SiteApiIds.APP_OLD:
-        itemArr = xml
-            .parse(resp.body)
-            .children[1]
-            .firstChild
-            .firstChild
-            .firstChild
-            .children;
-        break;
-      case SiteApiIds.SITE:
-        itemArr =
-            json.decode(resp.body).entries.first.value.entries.first.value;
-        break;
-    }
+    var itemArr = parseResp(api, resp);
 
     var mDate = from.subtract(Duration(days: 1));
     final _startDayId = timetable.keys.length;
@@ -228,14 +208,14 @@ class Timetable extends StatelessWidget {
           break;
         case SiteApiIds.APP_OLD:
           mItemDate = DateTime.parse(
-              mItem.children[OldApiResponseIndexes.Date.index].text);
+              mItem.children[OldAppApiTimetableIndexes.Date.index].text);
           mItemTimeStart =
-              mItem.children[OldApiResponseIndexes.TimeStart.index].text;
+              mItem.children[OldAppApiTimetableIndexes.TimeStart.index].text;
           mItemTimeFinish =
-              mItem.children[OldApiResponseIndexes.TimeFinish.index].text;
-          mItemName = mItem.children[OldApiResponseIndexes.Name.index].text;
-          mItemRoomStr = mItem.children[OldApiResponseIndexes.Room.index].text;
-          mItemGroup = mItem.children[OldApiResponseIndexes.Group.index].text;
+              mItem.children[OldAppApiTimetableIndexes.TimeFinish.index].text;
+          mItemName = mItem.children[OldAppApiTimetableIndexes.Name.index].text;
+          mItemRoomStr = mItem.children[OldAppApiTimetableIndexes.Room.index].text;
+          mItemGroup = mItem.children[OldAppApiTimetableIndexes.Group.index].text;
 
           break;
         case SiteApiIds.SITE:

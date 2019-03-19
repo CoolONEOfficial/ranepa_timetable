@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/widgets.dart';
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:xml/xml.dart' as xml;
 
 class SiteApi {
   final String title;
@@ -8,13 +11,19 @@ class SiteApi {
   const SiteApi(this.title, this.url);
 }
 
-enum OldApiResponseIndexes {
+enum OldAppApiTimetableIndexes {
   Date,
   TimeStart,
   TimeFinish,
   Name,
   Room,
   Group,
+}
+
+enum OldAppApiSearchIndexes {
+  Type,
+  Id,
+  Title,
 }
 
 enum SiteApiIds {
@@ -62,4 +71,21 @@ class SiteApis {
             ),
           ),
         ];
+}
+
+parseResp(SiteApiIds api, resp) {
+  switch (api) {
+    case SiteApiIds.APP_NEW:
+      return json.decode(resp.body);
+    case SiteApiIds.APP_OLD:
+      return xml
+          .parse(resp.body)
+          .children[1]
+          .firstChild
+          .firstChild
+          .firstChild
+          .children;
+    case SiteApiIds.SITE:
+      return json.decode(resp.body).entries.first.value.entries.first.value;
+  }
 }
