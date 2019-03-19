@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';

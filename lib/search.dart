@@ -9,6 +9,7 @@ import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xml/xml.dart';
 
 class SearchItemType {
   final IconData icon;
@@ -233,10 +234,9 @@ class Search extends SearchDelegate<SearchItem> {
   }
 
   Future<Response> _buildHttpRequest(SiteApiIds api) {
-    switch(api) {
+    switch (api) {
       case SiteApiIds.APP_NEW:
-        return http
-            .get('http://services.niu.ranepa.ru/'
+        return http.get('http://services.niu.ranepa.ru/'
             '/API/public/teacher/teachersAndGroupsList');
       case SiteApiIds.APP_OLD:
         return http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
@@ -251,8 +251,7 @@ class Search extends SearchDelegate<SearchItem> {
 </soap:Envelope>
 ''');
       case SiteApiIds.SITE:
-        return http
-            .get('http://services.niu.ranepa.ru/'
+        return http.get('http://services.niu.ranepa.ru/'
             'wp-content/plugins/rasp/rasp_json_data.php?name=$query');
       default:
         throw Exception("api is fucked up");
@@ -263,49 +262,71 @@ class Search extends SearchDelegate<SearchItem> {
   Widget buildSuggestions(ctx) {
     debugPrint("Suggestions build start");
     webSuggestions.clear();
-    var api = SiteApiIds.values[prefs.getInt(PrefsIds.SITE_API)];
+    var api = SiteApiIds
+        .values[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index];
     return query.isEmpty
         ? _buildSuggestions()
         : RegExp(r"^[(А-я)\d\s\-]+$").hasMatch(query)
             ? WidgetTemplates.buildFutureBuilder(
                 ctx,
-                future: _buildHttpRequest(api).then((response) => response.body),
+                future:
+                    _buildHttpRequest(api).then((response) => response.body),
                 builder: (ctx, snapshot) {
                   debugPrint("Search snapshot data: " + snapshot.data);
 
-                  final resultArr =
-                      json.decode(snapshot.data).entries.first.value.entries;
+                  final resultArr = parseResp(api, snapshot.data);
 
                   if (resultArr.isNotEmpty) {
-                    final itemArr = resultArr.first.value;
+                    var itemArr;
+
+                    switch (api) {
+                      case SiteApiIds.APP_NEW:
+                        itemArr = resultArr.first.value;
+                        break;
+                      case SiteApiIds.SITE:
+                      case SiteApiIds.APP_OLD:
+                        itemArr = resultArr;
+                        break;
+                    }
 
                     for (var mItem
                         in itemArr is Iterable ? itemArr : <dynamic>[itemArr]) {
+                      var mItemType;
+                      String mItemTitle;
+                      int mItemId;
 
-                      SearchItemTypeId mItemTypeId;
-
-                      String mItemType; // TODO: search multiapi
-
-                      switch(api) {
+                      switch (api) {
                         case SiteApiIds.APP_NEW:
                           mItemType = mItem["type"];
+                          mItemTitle = mItem["value"];
+                          mItemId = mItem["oid"];
                           break;
                         case SiteApiIds.APP_OLD:
-                          mItemType = mItem.children[OldAppApiSearchIndexes.Type.index].text;
-
-                          switch (mItem["Type"]) {
-                            case "Prep":
-                              mItemTypeId = SearchItemTypeId.Teacher;
-                              break;
-                            case "Group":
-                              mItemTypeId = SearchItemTypeId.Group;
-                              break;
-                          }
+                          mItemType = mItem
+                              .children[OldAppApiSearchIndexes.Type.index].text;
+                          mItemTitle = mItem
+                              .children[OldAppApiSearchIndexes.Title.index]
+                              .text;
+                          mItemId = int.parse(mItem
+                              .children[OldAppApiSearchIndexes.Type.index]
+                              .text);
                           break;
                         case SiteApiIds.SITE:
                           mItemType = mItem["Type"];
+                          mItemTitle = mItem["Title"];
+                          break;
+                      }
 
-                          switch (mItem["Type"]) {
+                      SearchItemTypeId mItemTypeId;
+
+                      switch (api) {
+                        case SiteApiIds.APP_NEW:
+                          mItemTypeId =
+                              SearchItemTypeId.values[int.parse(mItemType)];
+                          break;
+                        case SiteApiIds.APP_OLD:
+                        case SiteApiIds.SITE:
+                          switch (mItemType) {
                             case "Prep":
                               mItemTypeId = SearchItemTypeId.Teacher;
                               break;
@@ -318,8 +339,8 @@ class Search extends SearchDelegate<SearchItem> {
 
                       webSuggestions.add(SearchItem(
                         mItemTypeId,
-                        mItem["id"],
-                        mItem["Title"],
+                        mItemId,
+                        mItemTitle,
                       ));
                     }
                   }

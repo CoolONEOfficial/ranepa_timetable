@@ -26,6 +26,8 @@ enum OldAppApiSearchIndexes {
   Title,
 }
 
+const DEFAULT_API_ID = SiteApiIds.APP_OLD;
+
 enum SiteApiIds {
   APP_OLD,
   APP_NEW,
@@ -73,19 +75,20 @@ class SiteApis {
         ];
 }
 
-parseResp(SiteApiIds api, resp) {
+parseResp(SiteApiIds api, String resp) {
   switch (api) {
     case SiteApiIds.APP_NEW:
-      return json.decode(resp.body);
+      return json.decode(resp);
     case SiteApiIds.APP_OLD:
       return xml
-          .parse(resp.body)
+          .parse(resp)
           .children[1]
           .firstChild
           .firstChild
           .firstChild
           .children;
     case SiteApiIds.SITE:
-      return json.decode(resp.body).entries.first.value.entries.first.value;
+      final arr = json.decode(resp).entries.first.value.entries;
+      return arr.isNotEmpty ? arr.first.value : [];
   }
 }

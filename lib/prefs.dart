@@ -287,7 +287,7 @@ class Prefs extends StatelessWidget {
           builder: (BuildContext ctx, AsyncSnapshot<SiteApi> snapshot) =>
               Text(snapshot.data.title),
           stream: siteApiBloc.stream,
-          initialData: SiteApis(ctx).apis[prefs.getInt(PrefsIds.SITE_API) ?? 0],
+          initialData: SiteApis(ctx).apis[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index],
         ),
       );
 

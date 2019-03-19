@@ -145,7 +145,8 @@ class Timetable extends StatelessWidget {
   ]) async {
     if (!await WidgetTemplates.checkInternetConnection()) return;
 
-    final api = SiteApiIds.values[prefs.getInt(PrefsIds.SITE_API) ?? 0];
+    final api =
+        SiteApiIds.values[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index];
 
     debugPrint("Started load timetable via API №${api.index}");
 
@@ -183,7 +184,7 @@ class Timetable extends StatelessWidget {
 
     debugPrint("http load end. starting parse request..");
 
-    var itemArr = parseResp(api, resp);
+    var itemArr = parseResp(api, resp.body);
 
     var mDate = from.subtract(Duration(days: 1));
     final _startDayId = timetable.keys.length;
@@ -214,8 +215,10 @@ class Timetable extends StatelessWidget {
           mItemTimeFinish =
               mItem.children[OldAppApiTimetableIndexes.TimeFinish.index].text;
           mItemName = mItem.children[OldAppApiTimetableIndexes.Name.index].text;
-          mItemRoomStr = mItem.children[OldAppApiTimetableIndexes.Room.index].text;
-          mItemGroup = mItem.children[OldAppApiTimetableIndexes.Group.index].text;
+          mItemRoomStr =
+              mItem.children[OldAppApiTimetableIndexes.Room.index].text;
+          mItemGroup =
+              mItem.children[OldAppApiTimetableIndexes.Group.index].text;
 
           break;
         case SiteApiIds.SITE:
@@ -243,11 +246,11 @@ class Timetable extends StatelessWidget {
           break;
         case SiteApiIds.SITE:
         case SiteApiIds.APP_OLD:
-          mItemName = mItemName.substring(mItemName.indexOf('>') + 1);
           mItemSubject = mItemName.substring(0, mItemName.indexOf('('));
           mItemType = RegExp(r"\(([^)]*)\)[^(]*$")
-              .stringMatch(mItemName)
-              .substring(1, mItemType.lastIndexOf(')'));
+              .stringMatch(mItemName);
+          mItemType = mItemType.substring(1, mItemType.lastIndexOf(')'));
+          mItemName = mItemName.substring(mItemName.indexOf('>') + 1);
           break;
       }
 
