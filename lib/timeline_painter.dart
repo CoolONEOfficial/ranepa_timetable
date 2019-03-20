@@ -139,9 +139,10 @@ class TimelinePainter extends CustomPainter {
     TextPainter(
       text: TextSpan(
         style: TextStyle(
-            fontFamily: fontFamily,
-            color: theme.accentTextTheme.body1.color,
-            fontSize: ScreenUtil().setSp((iconSize * 2).round())),
+          fontFamily: fontFamily,
+          color: theme.accentTextTheme.body1.color,
+          fontSize: iconSize * 2,
+        ),
         text: String.fromCharCode(model.lesson.iconCodePoint),
       ),
       textAlign: TextAlign.center,
