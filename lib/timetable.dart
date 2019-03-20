@@ -494,10 +494,7 @@ class Timetable extends StatelessWidget {
       child: StreamBuilder<Tuple2<bool, SearchItem>>(
         stream: timetableIdBloc.stream,
         initialData: Tuple2<bool, SearchItem>(
-            true,
-            Timetable.selected ??
-                SearchItem.fromPrefs(
-                    prefs, PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX)),
+            true, Timetable.selected ?? SearchItem.fromPrefs()),
         builder: (ctx, ssSearchItem) => Scaffold(
               drawer: drawer,
               key: scaffoldKey,

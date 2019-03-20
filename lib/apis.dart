@@ -91,10 +91,8 @@ parseResp(SiteApiIds api, String resp) {
     case SiteApiIds.SITE:
       final arr = json.decode(resp).entries.first.value.entries;
 
-      var key = arr.first.key;
-
-      return arr.isNotEmpty // TODO: fix this shit..
-          ? key == "ItemRaspUID" || key == "RaspItem" ? arr.first.value : arr
+      return arr.isNotEmpty
+          ? arr.first.value is Iterable ? arr.first.value : [arr.first.value]
           : [];
   }
 }

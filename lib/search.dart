@@ -8,7 +8,6 @@ import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchItemType {
   final IconData icon;
@@ -22,6 +21,8 @@ enum SearchItemTypeId {
   Group,
   Teacher,
 }
+
+const SearchItemTypeId DEFAULT_ITEM_TYPE_ID = SearchItemTypeId.Group;
 
 final searchItemTypes = List<SearchItemType>.generate(
   SearchItemTypeId.values.length,
@@ -62,9 +63,12 @@ class SearchItem extends SearchItemBase {
     prefs.setString(prefix + PrefsIds.ITEM_TITLE, title);
   }
 
-  factory SearchItem.fromPrefs(SharedPreferences prefs, String prefix) =>
+  factory SearchItem.fromPrefs([
+    String prefix = PrefsIds.SEARCH_ITEM_PREFIX,
+  ]) =>
       SearchItem(
-        SearchItemTypeId.values[prefs.getInt(prefix + PrefsIds.ITEM_TYPE)],
+        SearchItemTypeId.values[prefs.getInt(prefix + PrefsIds.ITEM_TYPE) ??
+            DEFAULT_ITEM_TYPE_ID.index],
         prefs.getInt(prefix + PrefsIds.ITEM_ID),
         prefs.getString(prefix + PrefsIds.ITEM_TITLE),
       );

@@ -15,6 +15,7 @@ limitations under the License. */
 import 'package:flutter/material.dart';
 import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
+import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/timeline_painter.dart';
 import 'package:ranepa_timetable/timetable.dart';
@@ -35,9 +36,7 @@ class TimelineElement extends StatelessWidget {
 
   Widget _buildTeacherGroup(BuildContext ctx) {
     final user = User.values[Timetable.selected?.typeId?.index ??
-        prefs.getInt(
-            (PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX) + PrefsIds.ITEM_TYPE) ??
-        User.Student.index];
+        SearchItem.fromPrefs().typeId.index];
     return Tooltip(
       message: user == User.Student ? model.teacher.toString() : model.group,
       child: Text(

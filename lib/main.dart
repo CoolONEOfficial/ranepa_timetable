@@ -134,7 +134,7 @@ class BaseWidget extends StatelessWidget {
             },
             home: Builder(
               builder: (ctx) => prefs.getInt(
-                          PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX +
+                          PrefsIds.SEARCH_ITEM_PREFIX +
                               PrefsIds.ITEM_ID) ==
                       null
                   ? Intro(base: buildBase(ctx))

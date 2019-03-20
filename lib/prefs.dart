@@ -29,7 +29,7 @@ class PrefsIds {
       THEME_BRIGHTNESS = "theme_brightness",
       BEFORE_ALARM_CLOCK = "before_alarm_clock",
       END_CACHE = "end_cache",
-      PRIMARY_SEARCH_ITEM_PREFIX = "primary_search_item_",
+      SEARCH_ITEM_PREFIX = "primary_search_item_",
       ITEM_TYPE = "type",
       ITEM_ID = "id",
       ITEM_TITLE = "title",
@@ -48,7 +48,7 @@ Future<SearchItem> showSearchItemSelect(
       (searchItem) async {
         if (searchItem != null) {
           if (primary) {
-            searchItem.toPrefs(PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX);
+            searchItem.toPrefs(PrefsIds.SEARCH_ITEM_PREFIX);
             await PlatformChannels.deleteDb();
           } else
             Timetable.selected = searchItem;
@@ -215,7 +215,7 @@ class Prefs extends StatelessWidget {
         rightWidget: StreamBuilder<Tuple2<bool, SearchItem>>(
           stream: timetableIdBloc.stream,
           initialData: Tuple2<bool, SearchItem>(null,
-              SearchItem.fromPrefs(prefs, PrefsIds.PRIMARY_SEARCH_ITEM_PREFIX)),
+              SearchItem.fromPrefs()),
           builder: (ctx, snapshot) => Text(
                 snapshot.data.item2.typeId == SearchItemTypeId.Group
                     ? snapshot.data.item2.title

@@ -31,7 +31,10 @@ mixin ToAlias {}
 class FindTree = Tuple2<FindableModel, Map<List<dynamic>, dynamic>>
     with ToAlias;
 
-enum User { Teacher, Student }
+enum User {
+  Student,
+  Teacher,
+}
 
 @JsonSerializable(nullable: false)
 class TimelineModel {
