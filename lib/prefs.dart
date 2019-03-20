@@ -231,7 +231,7 @@ class Prefs extends StatelessWidget {
         stream: roomLocationStyleBloc.stream,
         builder: (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
               ctx,
-              title: AppLocalizations.of(ctx).widgetTranslucentTitle,
+              title: AppLocalizations.of(ctx).roomLocationStyleText,
               description: snapshot.data == RoomLocationStyle.Icon
                   ? AppLocalizations.of(ctx).roomLocationStyleDescriptionIcon
                   : AppLocalizations.of(ctx).roomLocationStyleDescriptionText,
