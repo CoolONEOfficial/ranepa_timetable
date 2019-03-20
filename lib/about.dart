@@ -4,6 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
@@ -178,6 +179,20 @@ class About extends StatelessWidget {
         ),
       ];
 
+  Column _buildLogoTextColumn(
+    BuildContext ctx,
+    TextTheme textTheme,
+  ) =>
+      Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisSize: MainAxisSize.max,
+        children: Intro.buildWelcomeTextList(
+          AppLocalizations.of(ctx),
+          Theme.of(ctx),
+          autoSize: false,
+        ),
+      );
+
   List<Widget> _buildLogoText(
     BuildContext ctx,
     TextTheme textTheme,
@@ -194,16 +209,9 @@ class About extends StatelessWidget {
         orientation == Orientation.landscape
             ? Container(
                 width: 200,
-                child: AutoSizeText(
-                  AppLocalizations.of(ctx).introWelcomeDescription,
-                  style: textTheme.title,
-                  textAlign: TextAlign.center,
-                ))
-            : AutoSizeText(
-                AppLocalizations.of(ctx).introWelcomeDescription,
-                style: textTheme.title,
-                textAlign: TextAlign.center,
-              ),
+                child: _buildLogoTextColumn(ctx, textTheme),
+              )
+            : _buildLogoTextColumn(ctx, textTheme),
       ];
 
   @override
@@ -288,7 +296,7 @@ class About extends StatelessWidget {
     );
   }
 
-  void openUrl(String url) async {
+  static openUrl(String url) async {
     if (await canLaunch(url)) await launch(url);
   }
 }

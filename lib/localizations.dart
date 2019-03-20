@@ -739,8 +739,23 @@ class AppLocalizations {
 
   String get introWelcomeDescription {
     return Intl.message(
-      'To use the application, you must pass the initial setup.\n\nThis application is an unofficial client of the site of the Nizhny Novgorod RANEPA and has no relation to its administration.',
+      'This application is an unofficial client of the site of the Nizhny Novgorod RANEPA and has no relation to its administration.',
       name: 'introWelcomeDescription',
+    );
+  }
+
+  String get introWelcomeInitialSetup {
+    return Intl.message(
+      'To use the application, you must pass the initial setup.',
+      name: 'introWelcomeInitialSetup',
+    );
+  }
+
+
+  String get introWelcomeSupportBy {
+    return Intl.message(
+      'with the support of trade Union Nizhny Novgorod RANEPA',
+      name: 'introWelcomeSupportBy',
     );
   }
 

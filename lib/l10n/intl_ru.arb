@@ -491,8 +491,18 @@
     "type": "text",
     "placeholders": {}
   },
-  "introWelcomeDescription": "Для использования приложения необходимо пройти начальную настройку.\n\nЭто приложение является неофициальным клиентом сайта РАНХиГС Нижнего Новгорода и не имеет ничего общего с его админинстрацией.",
+  "introWelcomeDescription": "Это приложение является неофициальным клиентом сайта РАНХиГС Нижнего Новгорода и не имеет ничего общего с его админинстрацией.",
   "@introWelcomeDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introWelcomeInitialSetup": "Для использования приложения необходимо пройти начальную настройку.",
+  "@introWelcomeInitialSetup": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "introWelcomeSupportBy": "при поддержке Профкома НИУ РАНХиГС",
+  "@introWelcomeSupportBy": {
     "type": "text",
     "placeholders": {}
   },

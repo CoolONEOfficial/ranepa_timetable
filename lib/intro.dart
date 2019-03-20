@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intro_views_flutter/Models/page_view_model.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
+import 'package:ranepa_timetable/about.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/theme.dart';
@@ -47,13 +48,47 @@ class Intro extends StatelessWidget {
         ),
       );
 
+  static List<Widget> buildWelcomeTextList(
+    AppLocalizations localizations,
+    ThemeData theme, {
+    bool showInitialSetup = false,
+    bool autoSize = true,
+  }) =>
+      (showInitialSetup
+          ? <Widget>[AutoSizeText(localizations.introWelcomeInitialSetup)]
+          : [])
+        ..addAll(<Widget>[
+          AutoSizeText(
+            localizations.introWelcomeDescription,
+            minFontSize: autoSize ? 12 : 25,
+            textAlign: TextAlign.center,
+          ),
+          InkWell(
+            child: AutoSizeText(
+              localizations.introWelcomeSupportBy,
+              style: theme.textTheme.caption,
+              maxFontSize: 20,
+              minFontSize: autoSize ? 12 : 20,
+              textAlign: TextAlign.center,
+            ),
+            onTap: () => About.openUrl('https://vk.com/profcomniu_online'),
+          ),
+        ]);
+
   PageViewModel _buildWelcome() => PageViewModel(
         pageColor: Colors.black,
         bubble: Icon(
           Icons.school,
           color: Colors.black,
         ),
-        body: AutoSizeText(localizations.introWelcomeDescription),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: buildWelcomeTextList(
+            localizations,
+            theme,
+            showInitialSetup: true,
+          ),
+        ),
         title: _buildTitleText(localizations.introWelcomeTitle),
         mainImage: WidgetTemplates.buildLogo(theme),
       );
