@@ -31,6 +31,7 @@ dependencies:
   flutter_email_sender: ^2.0.0
   flutter_material_color_picker: ^0.0.5
   package_info: ^0.4.0+2
+  flutter_screenutil: ^0.5.1
 
 dev_dependencies:
   flutter_test:

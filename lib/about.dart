@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
@@ -183,15 +184,12 @@ class About extends StatelessWidget {
     BuildContext ctx,
     TextTheme textTheme,
   ) =>
-      SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          mainAxisSize: MainAxisSize.max,
-          children: Intro.buildWelcomeTextList(
-            AppLocalizations.of(ctx),
-            Theme.of(ctx),
-            autoSize: false,
-          ),
+      Container(
+        height: ScreenUtil().setHeight(300),
+        child: Intro.buildWelcomeTextList(
+          AppLocalizations.of(ctx),
+          Theme.of(ctx),
+          autoSize: false,
         ),
       );
 

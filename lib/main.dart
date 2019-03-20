@@ -18,6 +18,7 @@ import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:package_info/package_info.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 SharedPreferences prefs;
 String version;
@@ -110,6 +111,7 @@ class BaseWidget extends StatelessWidget {
           final theme = snapshot.data;
           return MaterialApp(
             builder: (ctx, child) {
+              ScreenUtil.instance = ScreenUtil.getInstance()..init(ctx);
               ErrorWidget.builder = _buildError(ctx);
               return MediaQuery(
                   data:
@@ -162,7 +164,7 @@ Widget Function(FlutterErrorDetails) _buildError(BuildContext ctx) {
         children: <Widget>[
           AutoSizeText(
             AppLocalizations.of(ctx).errorMessage,
-            style: TextStyle(fontSize: 25.0),
+            style: TextStyle(fontSize: ScreenUtil().setSp(25)),
             maxLines: 1,
           ),
           Container(
@@ -178,7 +180,7 @@ Widget Function(FlutterErrorDetails) _buildError(BuildContext ctx) {
           ),
           AutoSizeText(
             AppLocalizations.of(ctx).sendError,
-            style: TextStyle(fontSize: 15.0),
+            style: TextStyle(fontSize: ScreenUtil().setSp(15)),
             maxLines: 2,
           ),
           IconButton(

@@ -16,6 +16,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
@@ -140,7 +141,7 @@ class TimelinePainter extends CustomPainter {
         style: TextStyle(
             fontFamily: fontFamily,
             color: theme.accentTextTheme.body1.color,
-            fontSize: iconSize * 2),
+            fontSize: ScreenUtil().setSp((iconSize * 2).round())),
         text: String.fromCharCode(model.lesson.iconCodePoint),
       ),
       textAlign: TextAlign.center,
@@ -162,7 +163,7 @@ class TimelinePainter extends CustomPainter {
             style: TextStyle(
               fontFamily: fontFamily,
               color: theme.textTheme.body1.color,
-              fontSize: 20.0,
+              fontSize: ScreenUtil().setSp(20),
             ),
             text: String.fromCharCode(
                 (model.room.location == RoomLocation.StudyHostel

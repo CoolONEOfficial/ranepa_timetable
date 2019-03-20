@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intro_views_flutter/Models/page_view_model.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
 import 'package:ranepa_timetable/about.dart';
@@ -49,28 +50,29 @@ class Intro extends StatelessWidget {
         ),
       );
 
-  static List<Widget> buildWelcomeTextList(
+  static Widget buildWelcomeTextList(
     AppLocalizations localizations,
     ThemeData theme, {
     bool autoSize = true,
   }) =>
-      <Widget>[
-        AutoSizeText(
-          localizations.introWelcomeDescription,
-          minFontSize: autoSize ? 12 : 25,
-          textAlign: TextAlign.center,
-        ),
-        InkWell(
-          child: AutoSizeText(
-            localizations.introWelcomeSupportBy,
-            style: theme.textTheme.caption,
-            maxFontSize: 20,
-            minFontSize: autoSize ? 12 : 20,
-            textAlign: TextAlign.center,
+      SingleChildScrollView(
+        child: AutoSizeText.rich(
+          TextSpan(
+            text: localizations.introWelcomeDescription + '\n',
+            children: <TextSpan>[
+              TextSpan(
+                text: localizations.introWelcomeSupportBy,
+                style: theme.textTheme.caption,
+                recognizer: TapGestureRecognizer()
+                  ..onTap =
+                      () => About.openUrl('https://vk.com/profcomniu_online'),
+              ),
+            ],
           ),
-          onTap: () => About.openUrl('https://vk.com/profcomniu_online'),
+          textAlign: TextAlign.center,
+          minFontSize: autoSize ? 12 : 25,
         ),
-      ];
+      );
 
   PageViewModel _buildWelcome() => PageViewModel(
         pageColor: Colors.black,
@@ -78,23 +80,7 @@ class Intro extends StatelessWidget {
           Icons.school,
           color: Colors.black,
         ),
-        body: SingleChildScrollView(
-          child: AutoSizeText.rich(
-            TextSpan(
-              text: localizations.introWelcomeDescription + '\n',
-              children: <TextSpan>[
-                TextSpan(
-                  text: localizations.introWelcomeSupportBy,
-                  style: theme.textTheme.caption,
-                  recognizer: TapGestureRecognizer()
-                    ..onTap =
-                        () => About.openUrl('https://vk.com/profcomniu_online'),
-                ),
-              ],
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
+        body: buildWelcomeTextList(localizations, theme),
         title: _buildTitleText(localizations.introWelcomeTitle),
         mainImage: WidgetTemplates.buildLogo(theme),
       );
@@ -194,7 +180,7 @@ class Intro extends StatelessWidget {
             showSkipButton: false,
             pageButtonTextStyles: TextStyle(
               color: contentColor,
-              fontSize: 18.0,
+              fontSize: ScreenUtil().setSp(18),
             ),
           );
         },
