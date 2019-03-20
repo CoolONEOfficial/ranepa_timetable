@@ -179,17 +179,19 @@ class About extends StatelessWidget {
         ),
       ];
 
-  Column _buildLogoTextColumn(
+  Widget _buildLogoTextColumn(
     BuildContext ctx,
     TextTheme textTheme,
   ) =>
-      Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        mainAxisSize: MainAxisSize.max,
-        children: Intro.buildWelcomeTextList(
-          AppLocalizations.of(ctx),
-          Theme.of(ctx),
-          autoSize: false,
+      SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisSize: MainAxisSize.max,
+          children: Intro.buildWelcomeTextList(
+            AppLocalizations.of(ctx),
+            Theme.of(ctx),
+            autoSize: false,
+          ),
         ),
       );
 

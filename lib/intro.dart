@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intro_views_flutter/Models/page_view_model.dart';
@@ -51,29 +52,25 @@ class Intro extends StatelessWidget {
   static List<Widget> buildWelcomeTextList(
     AppLocalizations localizations,
     ThemeData theme, {
-    bool showInitialSetup = false,
     bool autoSize = true,
   }) =>
-      (showInitialSetup
-          ? <Widget>[AutoSizeText(localizations.introWelcomeInitialSetup)]
-          : [])
-        ..addAll(<Widget>[
-          AutoSizeText(
-            localizations.introWelcomeDescription,
-            minFontSize: autoSize ? 12 : 25,
+      <Widget>[
+        AutoSizeText(
+          localizations.introWelcomeDescription,
+          minFontSize: autoSize ? 12 : 25,
+          textAlign: TextAlign.center,
+        ),
+        InkWell(
+          child: AutoSizeText(
+            localizations.introWelcomeSupportBy,
+            style: theme.textTheme.caption,
+            maxFontSize: 20,
+            minFontSize: autoSize ? 12 : 20,
             textAlign: TextAlign.center,
           ),
-          InkWell(
-            child: AutoSizeText(
-              localizations.introWelcomeSupportBy,
-              style: theme.textTheme.caption,
-              maxFontSize: 20,
-              minFontSize: autoSize ? 12 : 20,
-              textAlign: TextAlign.center,
-            ),
-            onTap: () => About.openUrl('https://vk.com/profcomniu_online'),
-          ),
-        ]);
+          onTap: () => About.openUrl('https://vk.com/profcomniu_online'),
+        ),
+      ];
 
   PageViewModel _buildWelcome() => PageViewModel(
         pageColor: Colors.black,
@@ -81,12 +78,21 @@ class Intro extends StatelessWidget {
           Icons.school,
           color: Colors.black,
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: buildWelcomeTextList(
-            localizations,
-            theme,
-            showInitialSetup: true,
+        body: SingleChildScrollView(
+          child: AutoSizeText.rich(
+            TextSpan(
+              text: localizations.introWelcomeDescription + '\n',
+              children: <TextSpan>[
+                TextSpan(
+                  text: localizations.introWelcomeSupportBy,
+                  style: theme.textTheme.caption,
+                  recognizer: TapGestureRecognizer()
+                    ..onTap =
+                        () => About.openUrl('https://vk.com/profcomniu_online'),
+                ),
+              ],
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
         title: _buildTitleText(localizations.introWelcomeTitle),
