@@ -79,12 +79,10 @@ class Timetable extends StatelessWidget {
   static const dayCount = 6;
 
   static DateTime get endCacheMidnight {
-    var mDate = todayMidnight;
-    for (int mDayId = 0; mDayId < dayCount - 1; mDayId++) {
-      do {
-        mDate = mDate.add(Duration(days: 1));
-      } while (mDate.weekday == DateTime.sunday);
-    }
+    var mDate = todayMidnight.add(Duration(days: dayCount - 1));
+
+    if (mDate.weekday == DateTime.sunday)
+      mDate = mDate.add(Duration(days: 1));
     return mDate;
   }
 
@@ -156,7 +154,7 @@ class Timetable extends StatelessWidget {
       case SiteApiIds.APP_NEW:
         resp = await http.get('http://services.niu.ranepa.ru/API/public/'
             '${searchItemTypes[searchItem.typeId.index].newApiStr}/${searchItem.id}'
-            '/schedule/${formatDateTime(from)}/${formatDateTime(to)}');
+            '/schedule/${formatDateTime(from)}/${formatDateTime(to.add(Duration(days: 1)))}');
         break;
       case SiteApiIds.APP_OLD:
         resp = await http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
