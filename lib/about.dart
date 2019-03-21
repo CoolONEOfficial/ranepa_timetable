@@ -7,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:url_launcher/url_launcher.dart';
 

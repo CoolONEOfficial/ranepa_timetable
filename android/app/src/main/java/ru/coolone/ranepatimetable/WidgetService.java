@@ -11,7 +11,6 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -39,7 +38,6 @@ import static ru.coolone.ranepatimetable.Timeline.RoomModel;
 import static ru.coolone.ranepatimetable.Timeline.TeacherModel;
 import static ru.coolone.ranepatimetable.Timeline.TimeOfDayModel;
 import static ru.coolone.ranepatimetable.WidgetProvider.RoomLocationStyle.Icon;
-import static ru.coolone.ranepatimetable.WidgetProvider.RoomLocationStyle.Text;
 import static ru.coolone.ranepatimetable.WidgetProvider.defaultTheme;
 import static ru.coolone.ranepatimetable.WidgetProvider.getPrefs;
 import static ru.coolone.ranepatimetable.WidgetProvider.widgetSize;
@@ -132,6 +130,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
 
     private Bitmap buildItemBitmap(Context ctx) {
         var dpScale = dpScale(ctx);
+        var widgetSize = widgetSize(ctx);
 
         var w = (widgetSize.first > 0 ? widgetSize.first : 100) * dpScale;
         var h = 80 * dpScale;

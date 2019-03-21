@@ -82,7 +82,9 @@ public class WidgetProvider extends AppWidgetProvider {
 
     static private int dateOffset;
 
-    enum SearchItemTypeId {Teacher, Group}
+    enum SearchItemTypeId {
+        Teacher, Group
+    }
 
     private static SharedPreferences _prefs;
 
@@ -102,14 +104,14 @@ public class WidgetProvider extends AppWidgetProvider {
     public void onEnabled(Context ctx) {
         AndroidThreeTen.init(ctx);
 
-        widgetSize = Pair.create(
+        _widgetSize = Pair.create(
                 getPrefs(ctx).getInt(PrefsIds.WidgetSizeWidth.prefId, 1),
                 getPrefs(ctx).getInt(PrefsIds.WidgetSizeHeight.prefId, 1)
         );
 
         log.info("Create widget size from prefs: \n"
-                + "w: " + widgetSize.first + "\n"
-                + "h: " + widgetSize.second + "\n"
+                + "w: " + _widgetSize.first + "\n"
+                + "h: " + _widgetSize.second + "\n"
         );
 
         manager = (AlarmManager) ctx.getSystemService(Context.ALARM_SERVICE);
@@ -468,6 +470,7 @@ public class WidgetProvider extends AppWidgetProvider {
             float headHeight
     ) {
         var dpScale = dpScale(ctx);
+        var widgetSize = widgetSize(ctx);
 
         var bitmap = Bitmap.createBitmap((int) (widgetSize.first * dpScale), (int) (widgetSize.second * dpScale), Bitmap.Config.ARGB_8888);
         var canvas = new Canvas(bitmap);
@@ -528,7 +531,6 @@ public class WidgetProvider extends AppWidgetProvider {
             int appWidgetId,
             AppWidgetManager manager
     ) {
-
         AppWidgetProviderInfo providerInfo = AppWidgetManager.getInstance(
                 ctx.getApplicationContext()
         ).getAppWidgetInfo(appWidgetId);
@@ -580,7 +582,16 @@ public class WidgetProvider extends AppWidgetProvider {
                 : mWidgetLandSize;
     }
 
-    public static Pair<Integer, Integer> widgetSize;
+    public static Pair<Integer, Integer> _widgetSize;
+
+    public static Pair<Integer, Integer> widgetSize(Context ctx) {
+        if (_widgetSize == null)
+            _widgetSize = Pair.create(
+                    getPrefs(ctx).getInt(PrefsIds.WidgetSizeWidth.prefId, 1),
+                    getPrefs(ctx).getInt(PrefsIds.WidgetSizeHeight.prefId, 1)
+            );
+        return _widgetSize;
+    }
 
     private RemoteViews buildLayout(Context ctx, int appWidgetId, AppWidgetManager manager, boolean updateSize) {
         val prefs = getPrefs(ctx);
@@ -598,11 +609,11 @@ public class WidgetProvider extends AppWidgetProvider {
 
         // Set the size
         if (updateSize) {
-            widgetSize = getWidgetSize(ctx, appWidgetId, manager);
-            var prefsEditor = getPrefs(ctx).edit();
-            prefsEditor.putInt(PrefsIds.WidgetSizeWidth.prefId, widgetSize.first);
-            prefsEditor.putInt(PrefsIds.WidgetSizeHeight.prefId, widgetSize.second);
-            prefsEditor.apply();
+            _widgetSize = getWidgetSize(ctx, appWidgetId, manager);
+            getPrefs(ctx).edit()
+                    .putInt(PrefsIds.WidgetSizeWidth.prefId, _widgetSize.first)
+                    .putInt(PrefsIds.WidgetSizeHeight.prefId, _widgetSize.second)
+                    .apply();
         }
 
         // Get rounded background layout ids
