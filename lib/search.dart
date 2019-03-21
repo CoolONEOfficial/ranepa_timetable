@@ -83,10 +83,6 @@ class SearchDivider extends SearchItemBase {
 class Search extends SearchDelegate<SearchItem> {
   List<SearchItemBase> webSuggestions = [];
 
-  // Check 2018-2019 academic year because all item ids in next year will be refreshed
-  final bool predefinedSuggestionsValid =
-      DateTime.now().isBefore(DateTime(2019, 9));
-
   final List<SearchItemBase> predefinedSuggestions;
 
   Search(BuildContext ctx)
@@ -275,9 +271,8 @@ class Search extends SearchDelegate<SearchItem> {
             return false;
           }).toList();
 
-    final List<SearchItemBase> suggestions = predefinedSuggestionsValid
-        ? (List.from(queryPredefinedSuggestions)..addAll(webSuggestions))
-        : webSuggestions;
+    final List<SearchItemBase> suggestions =
+        List.from(queryPredefinedSuggestions)..addAll(webSuggestions);
 
     for (var mIndex = 0; mIndex < suggestions.length - 1; mIndex++) {
       final mSuggestion = suggestions.elementAt(mIndex);
@@ -364,7 +359,7 @@ class Search extends SearchDelegate<SearchItem> {
             );
           }
         },
-        itemCount: suggestions.length);
+        itemCount: suggestions?.length ?? 0);
   }
 
   @override
