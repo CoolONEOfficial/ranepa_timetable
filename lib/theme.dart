@@ -66,7 +66,8 @@ Brightness _brightness;
 
 get brightness => _brightness != null
     ? _brightness
-    : Brightness.values[prefs.getInt(PrefsIds.THEME_BRIGHTNESS) ?? 0];
+    : Brightness.values[prefs.getInt(PrefsIds.THEME_BRIGHTNESS) ??
+        defaultTheme.brightness.index];
 
 set brightness(value) {
   _brightness = value;
@@ -90,7 +91,7 @@ MaterialColor _toMaterialColor(Color color) {
 MaterialColor _accentColor;
 
 get accentColor {
-  var prefColor = prefs.getString(PrefsIds.THEME_PRIMARY);
+  final prefColor = prefs.getString(PrefsIds.THEME_PRIMARY);
 
   return _accentColor != null
       ? _accentColor

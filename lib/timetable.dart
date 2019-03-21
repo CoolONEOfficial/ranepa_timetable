@@ -280,6 +280,7 @@ class Timetable extends StatelessWidget {
           ctx,
           mItemSubject,
           mItemType,
+          api,
         ),
         teacher: TeacherModel.fromString(
             searchItem.typeId == SearchItemTypeId.Group

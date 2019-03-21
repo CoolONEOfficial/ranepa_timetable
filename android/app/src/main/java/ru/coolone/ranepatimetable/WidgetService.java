@@ -70,6 +70,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
     public static final String THEME_TEXT_PRIMARY = "themeTextPrimary";
     public static final String THEME_TEXT_ACCENT = "themeTextAccent";
     public static final String THEME_BACKGROUND = "themeBackground";
+    public static final String THEME_BRIGHTNESS = "themeBrightness";
 
     public WidgetRemoteViewsFactory(Context ctx, Intent intent) {
         this.ctx = ctx;
@@ -80,7 +81,8 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
                 intent.getIntExtra(THEME_ACCENT, defaultTheme.accent),
                 intent.getIntExtra(THEME_TEXT_PRIMARY, defaultTheme.textPrimary),
                 intent.getIntExtra(THEME_TEXT_ACCENT, defaultTheme.textAccent),
-                intent.getIntExtra(THEME_BACKGROUND, defaultTheme.background)
+                intent.getIntExtra(THEME_BACKGROUND, defaultTheme.background),
+                WidgetProvider.Brightness.values()[intent.getIntExtra(THEME_BRIGHTNESS, defaultTheme.brightness.ordinal())]
         );
     }
 

@@ -342,14 +342,16 @@ public class WidgetProvider extends AppWidgetProvider {
         final int primary, accent,
                 textPrimary, textAccent,
                 background;
+        final Brightness brightness;
     }
 
     public static final Theme defaultTheme = new Theme(
-            Color.BLUE,
             0xFF2196F3,
-            Color.WHITE,
+            0xFF2196F3,
             Color.BLACK,
-            0xFF90CAF9
+            Color.WHITE,
+            0xFF90CAF9,
+            Brightness.Light
     );
 
     private static final String FLUTTER_PREFIX = "flutter.";
@@ -482,7 +484,7 @@ public class WidgetProvider extends AppWidgetProvider {
         );
 
         iconPaint.setTextSize(dpScale * (Math.min(widgetSize.first, widgetSize.second) / 3f));
-        iconPaint.setColor(theme.textAccent);
+        iconPaint.setColor(theme.textPrimary);
 
         canvas.drawText(
                 String.valueOf(icon),
@@ -497,7 +499,7 @@ public class WidgetProvider extends AppWidgetProvider {
         textPaint.setTextAlign(Paint.Align.CENTER);
 
         textPaint.setTextSize(dpScale * (Math.min(widgetSize.first, widgetSize.second) / textScale));
-        textPaint.setColor(theme.textAccent);
+        textPaint.setColor(theme.textPrimary);
 
         var mTextY = (
                 headHeight +
@@ -528,7 +530,8 @@ public class WidgetProvider extends AppWidgetProvider {
     ) {
 
         AppWidgetProviderInfo providerInfo = AppWidgetManager.getInstance(
-                ctx.getApplicationContext()).getAppWidgetInfo(appWidgetId);
+                ctx.getApplicationContext()
+        ).getAppWidgetInfo(appWidgetId);
 
         // Since min and max is usually the same, just take min
         var mWidgetLandSize = new Pair<>(providerInfo.minWidth, providerInfo.minHeight);
@@ -589,7 +592,8 @@ public class WidgetProvider extends AppWidgetProvider {
                 Color.parseColor('#' + prefs.getString(PrefsIds.ThemeAccent.prefId, Integer.toHexString(defaultTheme.accent))),
                 Color.parseColor('#' + prefs.getString(PrefsIds.ThemeTextPrimary.prefId, Integer.toHexString(defaultTheme.textPrimary))),
                 Color.parseColor('#' + prefs.getString(PrefsIds.ThemeTextAccent.prefId, Integer.toHexString(defaultTheme.textAccent))),
-                Color.parseColor('#' + prefs.getString(PrefsIds.ThemeBackground.prefId, Integer.toHexString(defaultTheme.background)))
+                Color.parseColor('#' + prefs.getString(PrefsIds.ThemeBackground.prefId, Integer.toHexString(defaultTheme.background))),
+                Brightness.values()[(int) prefs.getLong(PrefsIds.ThemeBrightness.prefId, defaultTheme.brightness.ordinal())]
         );
 
         // Set the size
@@ -609,7 +613,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
         var translucent = getPrefs(ctx).getBoolean(PrefsIds.WidgetTranslucent.prefId, true);
 
-        switch (Brightness.values()[(int) prefs.getLong(PrefsIds.ThemeBrightness.prefId, 0)]) {
+        switch (theme.brightness) {
             case Dark:
                 bodyLayoutResId = translucent
                         ? R.drawable.rounded_body_layout_dark_translucent

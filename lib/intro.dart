@@ -52,17 +52,18 @@ class Intro extends StatelessWidget {
 
   static Widget buildWelcomeTextList(
     AppLocalizations localizations,
-    ThemeData theme, {
+    TextTheme textTheme, {
     bool autoSize = true,
   }) =>
       SingleChildScrollView(
         child: AutoSizeText.rich(
           TextSpan(
+            style: textTheme.body1,
             text: localizations.introWelcomeDescription + '\n',
             children: <TextSpan>[
               TextSpan(
                 text: localizations.introWelcomeSupportBy,
-                style: theme.textTheme.caption,
+                style: textTheme.caption,
                 recognizer: TapGestureRecognizer()
                   ..onTap =
                       () => About.openUrl('https://vk.com/profcomniu_online'),
@@ -80,7 +81,13 @@ class Intro extends StatelessWidget {
           Icons.school,
           color: Colors.black,
         ),
-        body: buildWelcomeTextList(localizations, theme),
+        body: buildWelcomeTextList(
+          localizations,
+          TextTheme(
+            body1: TextStyle(color: Colors.white),
+            caption: TextStyle(color: Colors.grey),
+          ),
+        ),
         title: _buildTitleText(localizations.introWelcomeTitle),
         mainImage: WidgetTemplates.buildLogo(theme),
       );

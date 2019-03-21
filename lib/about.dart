@@ -188,7 +188,7 @@ class About extends StatelessWidget {
         height: ScreenUtil().setHeight(300),
         child: Intro.buildWelcomeTextList(
           AppLocalizations.of(ctx),
-          Theme.of(ctx),
+          Theme.of(ctx).accentTextTheme,
           autoSize: false,
         ),
       );

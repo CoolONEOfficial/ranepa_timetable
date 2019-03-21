@@ -15,6 +15,7 @@ limitations under the License. */
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:ranepa_timetable/apis.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
@@ -145,17 +146,32 @@ class LessonAction extends FindableModel {
 class LessonActions {
   static LessonActions _singleton;
 
-  factory LessonActions(BuildContext ctx) {
-    if (_singleton == null) _singleton = LessonActions._(ctx);
+  factory LessonActions(BuildContext ctx, SiteApiIds api) {
+    if (_singleton == null) _singleton = LessonActions._(ctx, api);
 
     return _singleton;
   }
 
-  final BuildContext ctx;
-  final FindTree findTree;
+  final SiteApiIds api;
 
-  LessonActions._(this.ctx)
-      : findTree = FindTree(null, {
+  get findTree {
+    switch (api) {
+      case SiteApiIds.SITE:
+      case SiteApiIds.APP_OLD:
+        return _oldApiFindTree;
+      case SiteApiIds.APP_NEW:
+        return _newApiFindTree;
+      default:
+        throw Exception("Api is null wtf");
+    }
+  }
+
+  final BuildContext ctx;
+
+  final FindTree _oldApiFindTree, _newApiFindTree;
+
+  LessonActions._(this.ctx, this.api)
+      : _oldApiFindTree = FindTree(null, {
           ["прием", "зачет"]: LessonAction(AppLocalizations.of(ctx).credit),
           ["прием", "экзамен"]: LessonAction(AppLocalizations.of(ctx).exam),
           ["консульт", "экзамен"]:
@@ -164,6 +180,17 @@ class LessonActions {
           ["прием", "защит"]:
               LessonAction(AppLocalizations.of(ctx).receptionExamination),
           ["лекция"]: LessonAction(AppLocalizations.of(ctx).lecture),
+        }),
+        _newApiFindTree = FindTree(null, {
+          // TODO: new api actions findTree
+//          ["прием", "зачет"]: LessonAction(AppLocalizations.of(ctx).credit),
+//          ["прием", "экзамен"]: LessonAction(AppLocalizations.of(ctx).exam),
+//          ["консульт", "экзамен"]:
+//              LessonAction(AppLocalizations.of(ctx).examConsultation),
+          ["прак"]: LessonAction(AppLocalizations.of(ctx).practice),
+//          ["прием", "защит"]:
+//              LessonAction(AppLocalizations.of(ctx).receptionExamination),
+          ["лек"]: LessonAction(AppLocalizations.of(ctx).lecture),
         });
 }
 
@@ -196,6 +223,7 @@ class LessonModel extends FindableModel {
     BuildContext ctx,
     String subject,
     String type,
+    SiteApiIds api,
   ) {
     final lowerSubject = subject.toLowerCase();
 
@@ -204,7 +232,7 @@ class LessonModel extends FindableModel {
             LessonModel._(subject, TimetableIcons.unknownLesson.codePoint);
 
     model.action =
-        _findInTree(type.toLowerCase(), LessonActions(ctx).findTree) ??
+        _findInTree(type.toLowerCase(), LessonActions(ctx, api).findTree) ??
             LessonAction(type);
     model.fullTitle = subject;
 
@@ -389,10 +417,17 @@ class Lessons {
 
 LessonModel generateRandomLesson(BuildContext ctx) =>
     (getRandomTreeModel(Lessons(ctx).findTree) as LessonModel)
-      ..action =
-          getRandomTreeModel(LessonActions(ctx).findTree) as LessonAction;
+      ..action = getRandomTreeModel(
+        LessonActions(
+          ctx,
+          SiteApiIds.values[random.nextInt(SiteApiIds.values.length)],
+        ).findTree,
+      ) as LessonAction;
 
-enum CheckWordsMode { All, One }
+enum CheckWordsMode {
+  All,
+  One,
+}
 
 bool _containsWordsTree(
   String str,
