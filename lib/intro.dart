@@ -55,24 +55,27 @@ class Intro extends StatelessWidget {
     TextTheme textTheme, {
     bool autoSize = true,
   }) =>
-      SingleChildScrollView(
-        child: AutoSizeText.rich(
-          TextSpan(
-            style: textTheme.body1,
-            text: localizations.introWelcomeDescription + '\n',
-            children: <TextSpan>[
-              TextSpan(
-                text: localizations.introWelcomeSupportBy,
-                style: textTheme.caption,
-                recognizer: TapGestureRecognizer()
-                  ..onTap =
-                      () => About.openUrl('https://vk.com/profcomniu_online'),
+      Column(
+        children: <Widget>[
+          Expanded(
+            child: SingleChildScrollView(
+              child: AutoSizeText(
+                localizations.introWelcomeDescription + '\n',
+                style: textTheme.body1,
+                textAlign: TextAlign.center,
+                minFontSize: autoSize ? 12 : 25,
               ),
-            ],
+            ),
           ),
-          textAlign: TextAlign.center,
-          minFontSize: autoSize ? 12 : 25,
-        ),
+          InkWell(
+            child: Text(
+              localizations.introWelcomeSupportBy,
+              textAlign: TextAlign.center,
+              style: textTheme.caption.merge(TextStyle(fontSize: 20)),
+            ),
+            onTap: () => About.openUrl('https://vk.com/profcomniu_online'),
+          ),
+        ],
       );
 
   PageViewModel _buildWelcome() => PageViewModel(
