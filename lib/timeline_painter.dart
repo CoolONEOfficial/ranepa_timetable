@@ -164,7 +164,7 @@ class TimelinePainter extends CustomPainter {
             style: TextStyle(
               fontFamily: fontFamily,
               color: theme.textTheme.body1.color,
-              fontSize: ScreenUtil().setSp(20),
+              fontSize: 20,
             ),
             text: String.fromCharCode(
                 (model.room.location == RoomLocation.StudyHostel

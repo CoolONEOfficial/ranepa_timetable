@@ -81,8 +81,7 @@ class Timetable extends StatelessWidget {
   static DateTime get endCacheMidnight {
     var mDate = todayMidnight.add(Duration(days: dayCount - 1));
 
-    if (mDate.weekday == DateTime.sunday)
-      mDate = mDate.add(Duration(days: 1));
+    if (mDate.weekday == DateTime.sunday) mDate = mDate.add(Duration(days: 1));
     return mDate;
   }
 

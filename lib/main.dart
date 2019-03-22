@@ -114,9 +114,9 @@ class BaseWidget extends StatelessWidget {
               ScreenUtil.instance = ScreenUtil.getInstance()..init(ctx);
               ErrorWidget.builder = _buildError(ctx);
               return MediaQuery(
-                  data:
-                      MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
-                  child: child);
+                data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
+                child: child,
+              );
             },
             localizationsDelegates: [
               AppLocalizationsDelegate(),
@@ -136,8 +136,7 @@ class BaseWidget extends StatelessWidget {
             },
             home: Builder(
               builder: (ctx) => prefs.getInt(
-                          PrefsIds.SEARCH_ITEM_PREFIX +
-                              PrefsIds.ITEM_ID) ==
+                          PrefsIds.SEARCH_ITEM_PREFIX + PrefsIds.ITEM_ID) ==
                       null
                   ? Intro(base: buildBase(ctx))
                   : buildBase(ctx),
