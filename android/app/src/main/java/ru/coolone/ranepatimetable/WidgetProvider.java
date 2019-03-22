@@ -83,7 +83,7 @@ public class WidgetProvider extends AppWidgetProvider {
     static private int dateOffset;
 
     enum SearchItemTypeId {
-        Teacher, Group
+        Group, Teacher
     }
 
     private static SharedPreferences _prefs;
