@@ -42,7 +42,7 @@ class TimelineElement extends StatelessWidget {
       child: Text(
         user == User.Student ? model.teacher.initials() : model.group,
         overflow: TextOverflow.ellipsis,
-        style: Theme.of(ctx).textTheme.title,
+        style: Theme.of(ctx).textTheme.body2,
       ),
     );
   }
@@ -74,7 +74,8 @@ class TimelineElement extends StatelessWidget {
         child: Text(
           optimizeTitles ? model.lesson.title : model.lesson.fullTitle,
           overflow: TextOverflow.ellipsis,
-          softWrap: false,
+          softWrap: true,
+          maxLines: 2,
           style: Theme.of(ctx).textTheme.title,
         ),
       );
@@ -145,25 +146,31 @@ class TimelineElement extends StatelessWidget {
   }) =>
       Expanded(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: (model.lesson.action != null
-              ? <Widget>[_buildLessonType(ctx)]
-              : <Widget>[])
-            ..addAll(<Widget>[
-              _buildLessonTitle(ctx, optimizeTitles: optimizeTitles),
-              _buildTeacherGroup(ctx),
-            ]),
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                _buildLessonType(ctx),
+                _buildTeacherGroup(ctx),
+              ],
+            ),
+            Expanded(child: Container()),
+            _buildLessonTitle(ctx, optimizeTitles: optimizeTitles),
+            Expanded(child: Container()),
+          ],
         ),
       );
 
   Widget _buildContentColumn(BuildContext ctx) => Padding(
         padding: EdgeInsets.only(
-          top: TimelinePainter.rectMargins + innerPadding,
+          top: TimelinePainter.rectMargins * 2,
           left: TimelinePainter.rectMargins * 2,
           right: TimelinePainter.rectMargins * 2,
-          bottom: innerPadding,
+          bottom: TimelinePainter.rectMargins,
         ),
         child: Row(
           children: <Widget>[

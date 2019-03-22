@@ -17,7 +17,7 @@
         android:layout_marginStart="@dimen/widget_item_margins"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="@dimen/widget_item_margins"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="8dp"
         android:clipChildren="false"
         android:clipToPadding="false"
         android:orientation="horizontal">
@@ -33,31 +33,30 @@
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeTextType="uniform"
                 android:gravity="center"
+                android:maxLines="1"
                 android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/widget_item_finish"
                 style="@style/TextAppearance.AppCompat.Body2"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="-4dp"
-                android:layout_marginBottom="4dp"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:maxLines="1"
-                android:gravity="center"
-                android:textAlignment="center" />
+                android:layout_marginBottom="-4dp"
+                android:gravity="center_horizontal"
+                android:maxLines="1" />
 
             <TextView
                 android:id="@+id/widget_item_room_number"
                 style="@style/TextAppearance.AppCompat.Body2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:gravity="bottom|center_horizontal"
-                android:maxLines="1"
-                android:textAlignment="gravity" />
+                android:maxLines="1"/>
         </LinearLayout>
 
         <LinearLayout
@@ -73,6 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/widget_item_lesson_action"
                     style="@style/TextAppearance.AppCompat.Body2"
@@ -80,6 +80,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:maxLines="1" />
+
                 <TextView
                     android:id="@+id/widget_item_teacher_or_group"
                     style="@style/TextAppearance.AppCompat.Body2"
@@ -90,12 +91,14 @@
 
             <TextView
                 android:id="@+id/widget_item_lesson_title"
-                android:autoSizeTextType="uniform"
-                android:autoSizeMaxTextSize="20sp"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:maxLines="2" />
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeTextType="uniform"
+                android:gravity="center_vertical"
+                android:maxLines="2"
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

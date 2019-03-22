@@ -333,8 +333,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
             var teacherPatronymic = cursor.getString(cursor.getColumnIndex(PREFIX_TEACHER + TeacherModel.COLUMN_TEACHER_PATRONYMIC));
             var group = cursor.getString(cursor.getColumnIndex(COLUMN_GROUP));
             var user = WidgetProvider.SearchItemTypeId.values()[(int) getPrefs(ctx).getLong(
-                    WidgetProvider.PrefsIds.PrimarySearchItemPrefix.prefId +
-                            WidgetProvider.PrefsIds.ItemType.prefId,
+                    WidgetProvider.PrefsIds.ItemType.prefId,
                     -1
             )];
             rv.setTextViewText(R.id.widget_item_teacher_or_group,

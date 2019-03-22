@@ -378,20 +378,19 @@ public class WidgetProvider extends AppWidgetProvider {
         WidgetSizeWidth("widget_size_width"),
         WidgetSizeHeight("widget_size_height"),
 
-        SelectedSearchItemPrefix("selected_search_item_"),
         PrimarySearchItemPrefix("primary_search_item_"),
-        ItemType("type", false),
-        ItemId("id", false),
-        ItemTitle("title", false);
+        ItemType("type", PrimarySearchItemPrefix.prefId),
+        ItemId("id", PrimarySearchItemPrefix.prefId),
+        ItemTitle("title", PrimarySearchItemPrefix.prefId);
 
         final String prefId;
 
         PrefsIds(String prefId) {
-            this(prefId, true);
+            this(prefId, FLUTTER_PREFIX);
         }
 
-        PrefsIds(String prefId, boolean flutterPrefix) {
-            this.prefId = flutterPrefix ? FLUTTER_PREFIX.concat(prefId) : prefId;
+        PrefsIds(String prefId, String prefix) {
+            this.prefId = prefix.concat(prefId);
         }
     }
 
@@ -412,7 +411,7 @@ public class WidgetProvider extends AppWidgetProvider {
     static Bitmap buildEmptyViewBitmap(Context ctx, Theme theme) {
         var type = SearchItemTypeId.values()[
                 (int) getPrefs(ctx).getLong(
-                        PrefsIds.PrimarySearchItemPrefix.prefId + PrefsIds.ItemType.prefId,
+                        PrefsIds.ItemType.prefId,
                         0
                 )
                 ];
