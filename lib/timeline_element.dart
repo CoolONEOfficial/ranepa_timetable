@@ -12,6 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
@@ -47,16 +48,20 @@ class TimelineElement extends StatelessWidget {
     );
   }
 
-  Widget _buildStart(BuildContext ctx) => Text(
+  Widget _buildStart(BuildContext ctx) => AutoSizeText(
         model.start.format(ctx),
         textAlign: TextAlign.center,
         style: Theme.of(ctx).textTheme.title,
+        maxFontSize: 20,
+        maxLines: 1,
       );
 
-  Widget _buildFinish(BuildContext ctx) => Text(
+  Widget _buildFinish(BuildContext ctx) => AutoSizeText(
         model.finish.format(ctx),
         textAlign: TextAlign.center,
         style: Theme.of(ctx).textTheme.body2,
+        maxFontSize: 14,
+        maxLines: 1,
       );
 
   Widget _buildLessonType(BuildContext ctx) => Tooltip(
@@ -65,6 +70,7 @@ class TimelineElement extends StatelessWidget {
           model.lesson.action.title,
           overflow: TextOverflow.ellipsis,
           style: Theme.of(ctx).textTheme.body2,
+          maxLines: 1,
         ),
       );
 
@@ -113,27 +119,20 @@ class TimelineElement extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                _buildStart(ctx),
-                _buildFinish(ctx),
-              ],
-            ),
+            _buildStart(ctx),
+            _buildFinish(ctx),
             Padding(
               padding: EdgeInsets.only(
-                  left: RoomLocationStyle.values[
-                              prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ??
-                                  0] ==
-                          RoomLocationStyle.Icon
-                      ? 22
-                      : 2,
-                  bottom: 2,
-                  top: 8),
+                left: RoomLocationStyle.values[
+                            prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ?? 0] ==
+                        RoomLocationStyle.Icon
+                    ? 22
+                    : 2,
+                bottom: 2,
+                top: 8,
+              ),
               child: _buildRoomLocation(ctx),
             ),
           ],
@@ -154,8 +153,8 @@ class TimelineElement extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                _buildLessonType(ctx),
-                _buildTeacherGroup(ctx),
+                Flexible(child: _buildLessonType(ctx)),
+                Flexible(child: _buildTeacherGroup(ctx)),
               ],
             ),
             Expanded(child: Container()),
@@ -194,7 +193,5 @@ class TimelineElement extends StatelessWidget {
       );
 
   @override
-  Widget build(BuildContext ctx) {
-    return _buildRow(ctx);
-  }
+  Widget build(BuildContext ctx) => _buildRow(ctx);
 }
