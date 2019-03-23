@@ -56,7 +56,7 @@ class BaseWidget extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.info),
                 title: Text(AppLocalizations.of(ctx).about),
-                onTap: () => Navigator.popAndPushNamed(ctx, About.ROUTE),
+                onTap: () => Navigator.popAndPushNamed(ctx, HomeScreen.ROUTE),
               ),
             ]..addAll(Platform.isAndroid
                 ? <Widget>[
@@ -132,7 +132,7 @@ class BaseWidget extends StatelessWidget {
             theme: theme,
             routes: <String, WidgetBuilder>{
               Prefs.ROUTE: (ctx) => Prefs(),
-              About.ROUTE: (ctx) => About(),
+              HomeScreen.ROUTE: (ctx) => HomeScreen(),
             },
             home: Builder(
               builder: (ctx) => prefs.getInt(

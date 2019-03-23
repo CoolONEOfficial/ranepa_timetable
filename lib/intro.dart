@@ -73,7 +73,7 @@ class Intro extends StatelessWidget {
               textAlign: TextAlign.center,
               style: textTheme.caption.merge(TextStyle(fontSize: 20)),
             ),
-            onTap: () => About.openUrl('https://vk.com/profcomniu_online'),
+            onTap: () => HomeScreen.openUrl('https://vk.com/profcomniu_online'),
           ),
         ],
       );

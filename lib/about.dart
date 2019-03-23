@@ -9,20 +9,44 @@ import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:ranepa_timetable/CustomShapeClipper.dart';
 
-class About extends StatelessWidget {
+class HexColor extends Color {
+  static int _getColorFromHex(String hexColor) {
+    hexColor = hexColor.toUpperCase().replaceAll("#", "");
+    if (hexColor.length == 6) {
+      hexColor = "FF" + hexColor;
+    }
+    return int.parse(hexColor, radix: 16);
+  }
+
+  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
+}
+
+void main() =>
+    runApp(MaterialApp(
+      title: 'TITLE',
+      debugShowCheckedModeBanner: false,
+      home: HomeScreen(),
+    ));
+
+Color firstColor = HexColor("000000");
+Color secondColor = HexColor("000000");
+
+class HomeScreen extends StatelessWidget {
+  BuildContext ctx;
   static const ROUTE = "/about";
 
   Widget _buildGuyIconContent(
-    BuildContext ctx,
-    TextTheme textTheme,
-    String name,
-    String url,
-    String image, {
-    String descriptionLeft,
-    String descriptionRight,
-    String singleStr,
-  }) =>
+      BuildContext ctx,
+      TextTheme textTheme,
+      String name,
+      String url,
+      String image, {
+        String descriptionLeft,
+        String descriptionRight,
+        String singleStr,
+      }) =>
       Container(
         height: 220,
         child: GestureDetector(
@@ -66,39 +90,39 @@ class About extends StatelessWidget {
                 child: Center(
                   child: singleStr != null
                       ? AutoSizeText(
-                          singleStr,
-                          style: textTheme.subtitle,
-                          textAlign: TextAlign.center,
-                        )
+                    singleStr,
+                    style: textTheme.subtitle,
+                    textAlign: TextAlign.center,
+                  )
                       : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.max,
-                          verticalDirection: VerticalDirection.down,
-                          children: <Widget>[
-                            Flexible(
-                              child: AutoSizeText(
-                                descriptionLeft,
-                                style: textTheme.subtitle,
-                                textAlign: TextAlign.right,
-                                minFontSize: 2,
-                                maxLines: descriptionLeft.split('\n').length,
-                                softWrap: false,
-                              ),
-                            ),
-                            Container(width: 4),
-                            Flexible(
-                              child: AutoSizeText(
-                                descriptionRight,
-                                style: textTheme.subtitle,
-                                textAlign: TextAlign.left,
-                                maxLines: descriptionRight.split('\n').length,
-                                minFontSize: 2,
-                                softWrap: false,
-                              ),
-                            ),
-                          ],
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    verticalDirection: VerticalDirection.down,
+                    children: <Widget>[
+                      Flexible(
+                        child: AutoSizeText(
+                          descriptionLeft,
+                          style: textTheme.subtitle,
+                          textAlign: TextAlign.right,
+                          minFontSize: 2,
+                          maxLines: descriptionLeft.split('\n').length,
+                          softWrap: false,
                         ),
+                      ),
+                      Container(width: 4),
+                      Flexible(
+                        child: AutoSizeText(
+                          descriptionRight,
+                          style: textTheme.subtitle,
+                          textAlign: TextAlign.left,
+                          maxLines: descriptionRight.split('\n').length,
+                          minFontSize: 2,
+                          softWrap: false,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -107,46 +131,46 @@ class About extends StatelessWidget {
       );
 
   Widget _buildGuyIcon(
-    BuildContext ctx,
-    TextTheme textTheme,
-    String name,
-    String url,
-    String image,
-    Orientation orientation, {
-    String descriptionLeft,
-    String descriptionRight,
-    String singleStr,
-  }) =>
+      BuildContext ctx,
+      TextTheme textTheme,
+      String name,
+      String url,
+      String image,
+      Orientation orientation, {
+        String descriptionLeft,
+        String descriptionRight,
+        String singleStr,
+      }) =>
       orientation == Orientation.portrait
           ? Flexible(
-              child: _buildGuyIconContent(
-              ctx,
-              textTheme,
-              name,
-              url,
-              image,
-              descriptionRight: descriptionRight,
-              descriptionLeft: descriptionLeft,
-              singleStr: singleStr,
-            ))
+          child: _buildGuyIconContent(
+            ctx,
+            textTheme,
+            name,
+            url,
+            image,
+            descriptionRight: descriptionRight,
+            descriptionLeft: descriptionLeft,
+            singleStr: singleStr,
+          ))
           : Container(
-              width: 130,
-              child: _buildGuyIconContent(
-                ctx,
-                textTheme,
-                name,
-                url,
-                image,
-                descriptionRight: descriptionRight,
-                descriptionLeft: descriptionLeft,
-                singleStr: singleStr,
-              ));
+          width: 130,
+          child: _buildGuyIconContent(
+            ctx,
+            textTheme,
+            name,
+            url,
+            image,
+            descriptionRight: descriptionRight,
+            descriptionLeft: descriptionLeft,
+            singleStr: singleStr,
+          ));
 
   List<Widget> _buildGuys(
-    BuildContext ctx,
-    TextTheme textTheme,
-    Orientation orientation,
-  ) =>
+      BuildContext ctx,
+      TextTheme textTheme,
+      Orientation orientation,
+      ) =>
       <Widget>[
         _buildGuyIcon(
           ctx,
@@ -180,9 +204,9 @@ class About extends StatelessWidget {
       ];
 
   Widget _buildLogoTextColumn(
-    BuildContext ctx,
-    TextTheme textTheme,
-  ) =>
+      BuildContext ctx,
+      TextTheme textTheme,
+      ) =>
       Container(
         height: ScreenUtil().setHeight(300),
         child: Intro.buildWelcomeTextList(
@@ -193,10 +217,10 @@ class About extends StatelessWidget {
       );
 
   List<Widget> _buildLogoText(
-    BuildContext ctx,
-    TextTheme textTheme,
-    Orientation orientation,
-  ) =>
+      BuildContext ctx,
+      TextTheme textTheme,
+      Orientation orientation,
+      ) =>
       <Widget>[
         Padding(
           padding: const EdgeInsets.all(20),
@@ -207,95 +231,66 @@ class About extends StatelessWidget {
         ),
         orientation == Orientation.landscape
             ? Container(
-                width: 200,
-                child: _buildLogoTextColumn(ctx, textTheme),
-              )
+          width: 200,
+          child: _buildLogoTextColumn(ctx, textTheme),
+        )
             : _buildLogoTextColumn(ctx, textTheme),
       ];
 
   @override
+
   Widget build(BuildContext ctx) {
+
     final currentTheme = Theme.of(ctx);
     final textTheme = (currentTheme.brightness == Brightness.dark
         ? Theme.of(ctx).accentTextTheme
         : Theme.of(ctx).primaryTextTheme);
 
     return Scaffold(
+      body: Column(
+        children: <Widget>[
+          HomeScreenTopPart(),
+        ],
+      ),
       appBar: AppBar(
-        backgroundColor: Theme.of(ctx).primaryColor,
+        title: new Text("О приложении"),
+        backgroundColor: Colors.black,
         elevation: 0,
-        title: Text(AppLocalizations.of(ctx).about),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back_ios),
           onPressed: () => Navigator.pop(ctx),
         ),
-        actions: Platform.isIOS
-            ? <Widget>[]
-            : <Widget>[
-                IconButton(
-                  icon: SvgPicture.asset(
-                    'assets/images/coolone_logo.svg',
-                    color: textTheme.title.color,
-                  ),
-                  onPressed: () => openUrl('http://coolone.ru/'),
-                ),
-                IconButton(
-                  icon: SvgPicture.asset(
-                    'assets/images/github.svg',
-                    color: textTheme.title.color,
-                  ),
-                  onPressed: () => openUrl(
-                      'https://github.com/CoolONEOfficial/ranepa_timetable'),
-                ),
-              ],
-      ),
-      body: OrientationBuilder(
-        builder: (ctx, orientation) => Container(
-              padding: EdgeInsets.all(10),
-              color: Theme.of(ctx).primaryColor,
-              child: orientation == Orientation.portrait
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        Expanded(
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children:
-                                    _buildLogoText(ctx, textTheme, orientation),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: _buildGuys(ctx, textTheme, orientation),
-                        ),
-                      ],
-                    )
-                  : Center(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: _buildLogoText(ctx, textTheme, orientation)
-                          ..addAll(_buildGuys(ctx, textTheme, orientation)),
-                      ),
-                    ),
-            ),
       ),
     );
   }
 
   static openUrl(String url) async {
     if (await canLaunch(url)) await launch(url);
+  }
+}
+
+
+class HomeScreenTopPart extends StatefulWidget {
+  @override
+  _HomeScreenTopPartState createState() => _HomeScreenTopPartState();
+}
+
+class _HomeScreenTopPartState extends State<HomeScreenTopPart> {
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        ClipPath(clipper: CustomShapeClipper(),
+            child: Container(height: 400.0,
+            decoration: BoxDecoration(gradient: LinearGradient(colors: [
+              firstColor,
+              secondColor
+            ],),),
+            ),
+
+          )
+      ],
+
+    );
   }
 }
