@@ -12,6 +12,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
+import 'dart:io';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:ranepa_timetable/main.dart';
@@ -66,18 +68,17 @@ class TimelineElement extends StatelessWidget {
 
   Widget _buildLessonType(BuildContext ctx) => Tooltip(
         message: model.lesson.action?.title ?? model.lesson.fullTitle,
-        child: Text(
+        child: AutoSizeText(
           model.lesson.action.title,
           overflow: TextOverflow.ellipsis,
           style: Theme.of(ctx).textTheme.body2,
           maxLines: 1,
         ),
       );
-
   Widget _buildLessonTitle(BuildContext ctx, {@required bool optimizeTitles}) =>
       Tooltip(
         message: model.lesson.fullTitle ?? model.lesson.title,
-        child: Text(
+        child: AutoSizeText(
           optimizeTitles ? model.lesson.title : model.lesson.fullTitle,
           overflow: TextOverflow.ellipsis,
           softWrap: true,
@@ -131,7 +132,8 @@ class TimelineElement extends StatelessWidget {
                     ? 22
                     : 2,
                 bottom: 2,
-                top: 8,
+                top: 1,
+
               ),
               child: _buildRoomLocation(ctx),
             ),
