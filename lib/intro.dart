@@ -36,15 +36,8 @@ class Intro extends StatelessWidget {
               .add(EdgeInsets.only(top: 30)),
           child: Container(
             height: 100,
-            child: ShaderMask(
-              shaderCallback: (Rect bounds) => LinearGradient(
-                    begin: Alignment(0.0, 0),
-                    end: Alignment(0.0, 1),
-                    colors: <Color>[Colors.transparent, Colors.white],
-                    tileMode: TileMode.mirror,
-                  ).createShader(bounds),
-              child:
-                  TimelineComponent(Timetable.generateRandomTimetable(ctx, 6)),
+            child: TimelineComponent(
+              Timetable.generateRandomTimetable(ctx, 6),
             ),
           ),
         ),
