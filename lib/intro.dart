@@ -45,11 +45,13 @@ class Intro extends StatelessWidget {
             ),
             Prefs.buildRoomLocationStyleStream(
               ctx,
-              (ctx, AsyncSnapshot<RoomLocationStyle> snapshot) => _buildCircleButton(
+              (ctx, AsyncSnapshot<RoomLocationStyle> snapshot) =>
+                  _buildCircleButton(
                     Icons.image,
                     onPressed: () async {
                       roomLocationStyleBloc.add(snapshot.data);
-                      prefs.setInt(PrefsIds.ROOM_LOCATION_STYLE, snapshot.data.index);
+                      prefs.setInt(
+                          PrefsIds.ROOM_LOCATION_STYLE, snapshot.data.index);
                     },
                     enabled: snapshot.data == RoomLocationStyle.Icon,
                   ),
@@ -69,25 +71,42 @@ class Intro extends StatelessWidget {
   static Widget buildWelcomeTextList(
     AppLocalizations localizations,
     TextTheme textTheme, {
-    bool autoSize = true,
+    Orientation orientation,
   }) =>
       Column(
+        mainAxisSize: orientation == Orientation.landscape
+            ? MainAxisSize.max
+            : MainAxisSize.max,
+        mainAxisAlignment: orientation == Orientation.landscape
+            ? MainAxisAlignment.center
+            : MainAxisAlignment.center,
+        crossAxisAlignment: orientation == Orientation.landscape
+            ? CrossAxisAlignment.center
+            : CrossAxisAlignment.center,
         children: <Widget>[
-          Expanded(
-            child: SingleChildScrollView(
-              child: AutoSizeText(
-                localizations.introWelcomeDescription + '\n',
-                style: textTheme.body1,
-                textAlign: TextAlign.center,
-                minFontSize: autoSize ? 12 : 25,
-              ),
-            ),
-          ),
+          orientation == Orientation.landscape
+              ? Expanded
+              : Flexible(
+                  child: SingleChildScrollView(
+                    child: AutoSizeText(
+                      localizations.introWelcomeDescription,
+                      style:
+                          textTheme.body1.merge(TextStyle(color: Colors.white)),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+          Container(height: 8),
           InkWell(
             child: Text(
               localizations.introWelcomeSupportBy,
               textAlign: TextAlign.center,
-              style: textTheme.caption.merge(TextStyle(fontSize: 20)),
+              style: textTheme.caption.merge(
+                TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey,
+                ),
+              ),
             ),
             onTap: () => HomeScreen.openUrl('https://vk.com/profcomniu_online'),
           ),

@@ -4,25 +4,42 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutBackgroundClipper extends CustomClipper<Path> {
+  final Orientation orientation;
+
+  AboutBackgroundClipper(this.orientation);
+
   @override
   Path getClip(Size size) {
     final Path path = Path();
-    path.lineTo(0.0, size.height);
+    Offset firstEndPoint, firstControlPoint;
 
-    var firstEndPoint = Offset(size.width, size.height);
-    var firstControlpoint = Offset(size.width * 0.50, size.height - 60.0);
-    path.quadraticBezierTo(firstControlpoint.dx, firstControlpoint.dy, firstEndPoint.dx, firstEndPoint.dy);
+    switch (orientation) {
+      case Orientation.landscape:
+        firstEndPoint = Offset(size.width, size.height);
+        firstControlPoint = Offset(size.width - 60.0, size.height * .50);
 
+        path.lineTo(size.width, 0.0);
+        path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
+            firstEndPoint.dx, firstEndPoint.dy);
+        path.lineTo(0.0, size.height);
+        break;
+      case Orientation.portrait:
+        firstEndPoint = Offset(size.width, size.height);
+        firstControlPoint = Offset(size.width * .50, size.height - 60.0);
 
+        path.lineTo(0.0, size.height);
+        path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
+            firstEndPoint.dx, firstEndPoint.dy);
+        path.lineTo(size.width, 0.0);
+        break;
+    }
 
-    path.lineTo(size.width, 0.0);
     path.close();
 
     return path;
@@ -194,7 +211,7 @@ class HomeScreen extends StatelessWidget {
           'cooloneofficial',
           'coolone',
           orientation,
-          descriptionLeft: 'Flutter\nAndroid',
+          descriptionLeft: 'Flutter\n${Platform.isIOS ? 'Java' : 'Android'}',
           descriptionRight: 'разработчик',
         ),
         _buildGuyIcon(
@@ -211,14 +228,11 @@ class HomeScreen extends StatelessWidget {
   Widget _buildLogoTextColumn(
     BuildContext ctx,
     TextTheme textTheme,
+    Orientation orientation,
   ) =>
-      Container(
-        height: ScreenUtil().setHeight(300),
-        child: Intro.buildWelcomeTextList(
-          AppLocalizations.of(ctx),
-          Theme.of(ctx).accentTextTheme,
-          autoSize: false,
-        ),
+      Intro.buildWelcomeTextList(
+        AppLocalizations.of(ctx),
+        Theme.of(ctx).accentTextTheme,
       );
 
   List<Widget> _buildLogoText(
@@ -237,9 +251,11 @@ class HomeScreen extends StatelessWidget {
         orientation == Orientation.landscape
             ? Container(
                 width: 200,
-                child: _buildLogoTextColumn(ctx, textTheme),
+                child: _buildLogoTextColumn(ctx, textTheme, orientation),
               )
-            : _buildLogoTextColumn(ctx, textTheme),
+            : Expanded(
+                child: _buildLogoTextColumn(ctx, textTheme, orientation),
+              ),
       ];
 
   @override
@@ -253,19 +269,20 @@ class HomeScreen extends StatelessWidget {
       body: OrientationBuilder(
         builder: (ctx, orientation) => Container(
               color: Theme.of(ctx).primaryColor,
+              padding: orientation == Orientation.portrait
+                  ? const EdgeInsets.only(bottom: 10)
+                  : null,
               child: Stack(
-                children: <Widget>[
-                  ClipPath(
-                    clipper: AboutBackgroundClipper(),
-                    child: Container(
-                      height: ScreenUtil().setHeight(1300),
-                      decoration: BoxDecoration(
-                        color: Colors.black
-                      ),
-                    ),
-                  ),
-                  orientation == Orientation.portrait
-                      ? Column(
+                children: orientation == Orientation.portrait
+                    ? <Widget>[
+                        ClipPath(
+                          clipper: AboutBackgroundClipper(orientation),
+                          child: Container(
+                            height: ScreenUtil().setHeight(1200),
+                            decoration: BoxDecoration(color: Colors.black),
+                          ),
+                        ),
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -280,7 +297,10 @@ class HomeScreen extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     children: _buildLogoText(
-                                        ctx, textTheme, orientation),
+                                      ctx,
+                                      textTheme,
+                                      orientation,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -292,27 +312,46 @@ class HomeScreen extends StatelessWidget {
                               children: _buildGuys(ctx, textTheme, orientation),
                             ),
                           ],
-                        )
-                      : Center(
+                        ),
+                      ]
+                    : <Widget>[
+                        ClipPath(
+                          clipper: AboutBackgroundClipper(orientation),
+                          child: Container(
+                            width: ScreenUtil().setWidth(565),
+                            decoration: BoxDecoration(color: Colors.black),
+                          ),
+                        ),
+                        Center(
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: _buildLogoText(
-                                ctx, textTheme, orientation)
+                              ctx,
+                              textTheme,
+                              orientation,
+                            )
+                              ..add(Container(width: 20))
                               ..addAll(_buildGuys(ctx, textTheme, orientation)),
                           ),
-                        ),
-                ],
+                        )
+                      ],
               ),
             ),
       ),
       appBar: AppBar(
-        title: Text(AppLocalizations.of(ctx).about),
+        title: Text(
+          AppLocalizations.of(ctx).about,
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
+          icon: Icon(
+            Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back,
+            color: Colors.white,
+          ),
           onPressed: () => Navigator.pop(ctx),
         ),
       ),

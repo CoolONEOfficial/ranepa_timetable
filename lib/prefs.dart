@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:duration/duration.dart';
 import 'package:duration/locale.dart';
@@ -347,7 +348,7 @@ class Prefs extends StatelessWidget {
         appBar: AppBar(
           title: Text(AppLocalizations.of(ctx).prefs),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: Icon(Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
             onPressed: () => Navigator.pop(ctx),
           ),
         ),

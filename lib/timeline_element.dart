@@ -77,12 +77,14 @@ class TimelineElement extends StatelessWidget {
   Widget _buildLessonTitle(BuildContext ctx, {@required bool optimizeTitles}) =>
       Tooltip(
         message: model.lesson.fullTitle ?? model.lesson.title,
-        child: Text(
+        child: AutoSizeText(
           optimizeTitles ? model.lesson.title : model.lesson.fullTitle,
           overflow: TextOverflow.ellipsis,
           softWrap: true,
           maxLines: 2,
+          textAlign: TextAlign.center,
           style: Theme.of(ctx).textTheme.title,
+          maxFontSize: 20,
         ),
       );
 
@@ -157,9 +159,7 @@ class TimelineElement extends StatelessWidget {
                 Flexible(child: _buildTeacherGroup(ctx)),
               ],
             ),
-            Expanded(child: Container()),
             _buildLessonTitle(ctx, optimizeTitles: optimizeTitles),
-            Expanded(child: Container()),
           ],
         ),
       );
