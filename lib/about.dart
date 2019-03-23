@@ -23,8 +23,7 @@ class HexColor extends Color {
   HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
 }
 
-void main() =>
-    runApp(MaterialApp(
+void main() => runApp(MaterialApp(
       title: 'TITLE',
       debugShowCheckedModeBanner: false,
       home: HomeScreen(),
@@ -38,15 +37,15 @@ class HomeScreen extends StatelessWidget {
   static const ROUTE = "/about";
 
   Widget _buildGuyIconContent(
-      BuildContext ctx,
-      TextTheme textTheme,
-      String name,
-      String url,
-      String image, {
-        String descriptionLeft,
-        String descriptionRight,
-        String singleStr,
-      }) =>
+    BuildContext ctx,
+    TextTheme textTheme,
+    String name,
+    String url,
+    String image, {
+    String descriptionLeft,
+    String descriptionRight,
+    String singleStr,
+  }) =>
       Container(
         height: 220,
         child: GestureDetector(
@@ -90,39 +89,39 @@ class HomeScreen extends StatelessWidget {
                 child: Center(
                   child: singleStr != null
                       ? AutoSizeText(
-                    singleStr,
-                    style: textTheme.subtitle,
-                    textAlign: TextAlign.center,
-                  )
+                          singleStr,
+                          style: textTheme.subtitle,
+                          textAlign: TextAlign.center,
+                        )
                       : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    verticalDirection: VerticalDirection.down,
-                    children: <Widget>[
-                      Flexible(
-                        child: AutoSizeText(
-                          descriptionLeft,
-                          style: textTheme.subtitle,
-                          textAlign: TextAlign.right,
-                          minFontSize: 2,
-                          maxLines: descriptionLeft.split('\n').length,
-                          softWrap: false,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+                          verticalDirection: VerticalDirection.down,
+                          children: <Widget>[
+                            Flexible(
+                              child: AutoSizeText(
+                                descriptionLeft,
+                                style: textTheme.subtitle,
+                                textAlign: TextAlign.right,
+                                minFontSize: 2,
+                                maxLines: descriptionLeft.split('\n').length,
+                                softWrap: false,
+                              ),
+                            ),
+                            Container(width: 4),
+                            Flexible(
+                              child: AutoSizeText(
+                                descriptionRight,
+                                style: textTheme.subtitle,
+                                textAlign: TextAlign.left,
+                                maxLines: descriptionRight.split('\n').length,
+                                minFontSize: 2,
+                                softWrap: false,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      Container(width: 4),
-                      Flexible(
-                        child: AutoSizeText(
-                          descriptionRight,
-                          style: textTheme.subtitle,
-                          textAlign: TextAlign.left,
-                          maxLines: descriptionRight.split('\n').length,
-                          minFontSize: 2,
-                          softWrap: false,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ],
@@ -131,46 +130,46 @@ class HomeScreen extends StatelessWidget {
       );
 
   Widget _buildGuyIcon(
-      BuildContext ctx,
-      TextTheme textTheme,
-      String name,
-      String url,
-      String image,
-      Orientation orientation, {
-        String descriptionLeft,
-        String descriptionRight,
-        String singleStr,
-      }) =>
+    BuildContext ctx,
+    TextTheme textTheme,
+    String name,
+    String url,
+    String image,
+    Orientation orientation, {
+    String descriptionLeft,
+    String descriptionRight,
+    String singleStr,
+  }) =>
       orientation == Orientation.portrait
           ? Flexible(
-          child: _buildGuyIconContent(
-            ctx,
-            textTheme,
-            name,
-            url,
-            image,
-            descriptionRight: descriptionRight,
-            descriptionLeft: descriptionLeft,
-            singleStr: singleStr,
-          ))
+              child: _buildGuyIconContent(
+              ctx,
+              textTheme,
+              name,
+              url,
+              image,
+              descriptionRight: descriptionRight,
+              descriptionLeft: descriptionLeft,
+              singleStr: singleStr,
+            ))
           : Container(
-          width: 130,
-          child: _buildGuyIconContent(
-            ctx,
-            textTheme,
-            name,
-            url,
-            image,
-            descriptionRight: descriptionRight,
-            descriptionLeft: descriptionLeft,
-            singleStr: singleStr,
-          ));
+              width: 130,
+              child: _buildGuyIconContent(
+                ctx,
+                textTheme,
+                name,
+                url,
+                image,
+                descriptionRight: descriptionRight,
+                descriptionLeft: descriptionLeft,
+                singleStr: singleStr,
+              ));
 
   List<Widget> _buildGuys(
-      BuildContext ctx,
-      TextTheme textTheme,
-      Orientation orientation,
-      ) =>
+    BuildContext ctx,
+    TextTheme textTheme,
+    Orientation orientation,
+  ) =>
       <Widget>[
         _buildGuyIcon(
           ctx,
@@ -204,9 +203,9 @@ class HomeScreen extends StatelessWidget {
       ];
 
   Widget _buildLogoTextColumn(
-      BuildContext ctx,
-      TextTheme textTheme,
-      ) =>
+    BuildContext ctx,
+    TextTheme textTheme,
+  ) =>
       Container(
         height: ScreenUtil().setHeight(300),
         child: Intro.buildWelcomeTextList(
@@ -217,10 +216,10 @@ class HomeScreen extends StatelessWidget {
       );
 
   List<Widget> _buildLogoText(
-      BuildContext ctx,
-      TextTheme textTheme,
-      Orientation orientation,
-      ) =>
+    BuildContext ctx,
+    TextTheme textTheme,
+    Orientation orientation,
+  ) =>
       <Widget>[
         Padding(
           padding: const EdgeInsets.all(20),
@@ -231,33 +230,86 @@ class HomeScreen extends StatelessWidget {
         ),
         orientation == Orientation.landscape
             ? Container(
-          width: 200,
-          child: _buildLogoTextColumn(ctx, textTheme),
-        )
+                width: 200,
+                child: _buildLogoTextColumn(ctx, textTheme),
+              )
             : _buildLogoTextColumn(ctx, textTheme),
       ];
 
   @override
-
   Widget build(BuildContext ctx) {
-
     final currentTheme = Theme.of(ctx);
     final textTheme = (currentTheme.brightness == Brightness.dark
         ? Theme.of(ctx).accentTextTheme
         : Theme.of(ctx).primaryTextTheme);
 
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          HomeScreenTopPart(),
-        ],
+      body: OrientationBuilder(
+        builder: (ctx, orientation) => Stack(
+              children: <Widget>[
+                ClipPath(
+                  clipper: CustomShapeClipper(),
+                  child: Container(
+                    height: 400.0,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [firstColor, secondColor],
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(10),
+                  color: Theme.of(ctx).primaryColor,
+                  child: orientation == Orientation.portrait
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            Expanded(
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: _buildLogoText(
+                                        ctx, textTheme, orientation),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: _buildGuys(ctx, textTheme, orientation),
+                            ),
+                          ],
+                        )
+                      : Center(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: _buildLogoText(
+                                ctx, textTheme, orientation)
+                              ..addAll(_buildGuys(ctx, textTheme, orientation)),
+                          ),
+                        ),
+                ),
+              ],
+            ),
       ),
       appBar: AppBar(
-        title: new Text("О приложении"),
+        title: Text(AppLocalizations.of(ctx).about),
         backgroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
           onPressed: () => Navigator.pop(ctx),
         ),
       ),
@@ -266,31 +318,5 @@ class HomeScreen extends StatelessWidget {
 
   static openUrl(String url) async {
     if (await canLaunch(url)) await launch(url);
-  }
-}
-
-
-class HomeScreenTopPart extends StatefulWidget {
-  @override
-  _HomeScreenTopPartState createState() => _HomeScreenTopPartState();
-}
-
-class _HomeScreenTopPartState extends State<HomeScreenTopPart> {
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        ClipPath(clipper: CustomShapeClipper(),
-            child: Container(height: 400.0,
-            decoration: BoxDecoration(gradient: LinearGradient(colors: [
-              firstColor,
-              secondColor
-            ],),),
-            ),
-
-          )
-      ],
-
-    );
   }
 }
