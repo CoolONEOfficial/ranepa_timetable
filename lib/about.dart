@@ -9,18 +9,31 @@ import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:ranepa_timetable/CustomShapeClipper.dart';
 
-class HexColor extends Color {
-  static int _getColorFromHex(String hexColor) {
-    hexColor = hexColor.toUpperCase().replaceAll("#", "");
-    if (hexColor.length == 6) {
-      hexColor = "FF" + hexColor;
-    }
-    return int.parse(hexColor, radix: 16);
+class AboutBackgroundClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final Path path = Path();
+    path.lineTo(0.0, size.height);
+
+    var firstEndPoint = Offset(size.width * .5, size.height - 35.0);
+    var firstControlpoint = Offset(size.width * 0.25, size.height - 50.0);
+    path.quadraticBezierTo(firstControlpoint.dx, firstControlpoint.dy,
+        firstEndPoint.dx, firstEndPoint.dy);
+
+    var secondEndPoint = Offset(size.width, size.height - 80.0);
+    var secondControlPoint = Offset(size.width * .75, size.height - 10);
+    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
+        secondEndPoint.dx, secondEndPoint.dy);
+
+    path.lineTo(size.width, 0.0);
+    path.close();
+
+    return path;
   }
 
-  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
+  @override
+  bool shouldReclip(CustomClipper oldClipper) => true;
 }
 
 void main() => runApp(MaterialApp(
@@ -28,9 +41,6 @@ void main() => runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
       home: HomeScreen(),
     ));
-
-Color firstColor = HexColor("000000");
-Color secondColor = HexColor("000000");
 
 class HomeScreen extends StatelessWidget {
   BuildContext ctx;
@@ -245,23 +255,20 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       body: OrientationBuilder(
-        builder: (ctx, orientation) => Stack(
-              children: <Widget>[
-                ClipPath(
-                  clipper: CustomShapeClipper(),
-                  child: Container(
-                    height: 400.0,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [firstColor, secondColor],
+        builder: (ctx, orientation) => Container(
+              color: Theme.of(ctx).primaryColor,
+              child: Stack(
+                children: <Widget>[
+                  ClipPath(
+                    clipper: AboutBackgroundClipper(),
+                    child: Container(
+                      height: ScreenUtil().setHeight(1470),
+                      decoration: BoxDecoration(
+                        color: Colors.black
                       ),
                     ),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.all(10),
-                  color: Theme.of(ctx).primaryColor,
-                  child: orientation == Orientation.portrait
+                  orientation == Orientation.portrait
                       ? Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisSize: MainAxisSize.max,
@@ -300,8 +307,8 @@ class HomeScreen extends StatelessWidget {
                               ..addAll(_buildGuys(ctx, textTheme, orientation)),
                           ),
                         ),
-                ),
-              ],
+                ],
+              ),
             ),
       ),
       appBar: AppBar(

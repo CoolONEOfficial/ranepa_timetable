@@ -7,9 +7,12 @@ import 'package:intro_views_flutter/Models/page_view_model.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
 import 'package:ranepa_timetable/about.dart';
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/main.dart';
+import 'package:ranepa_timetable/platform_channels.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/timeline.dart';
+import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,16 +32,36 @@ class Intro extends StatelessWidget {
           Icons.list,
           color: backgroundColor,
         ),
-        body: _buildBodyText(localizations.introTimetableDescription),
+        body: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _buildCircleButton(
+              Icons.color_lens,
+              onPressed: () async {
+                if (await showThemeBrightnessSelect(ctx) != null)
+                  showMaterialColorPicker(ctx);
+              },
+            ),
+            Prefs.buildRoomLocationStyleStream(
+              ctx,
+              (ctx, AsyncSnapshot<RoomLocationStyle> snapshot) => _buildCircleButton(
+                    Icons.image,
+                    onPressed: () async {
+                      roomLocationStyleBloc.add(snapshot.data);
+                      prefs.setInt(PrefsIds.ROOM_LOCATION_STYLE, snapshot.data.index);
+                    },
+                    enabled: snapshot.data == RoomLocationStyle.Icon,
+                  ),
+            ),
+          ],
+        ),
         title: _buildTitleText(localizations.introTimetableTitle),
         mainImage: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15)
               .add(EdgeInsets.only(top: 30)),
-          child: Container(
-            height: 100,
-            child: TimelineComponent(
-              Timetable.generateRandomTimetable(ctx, 6),
-            ),
+          child: TimelineComponent(
+            Timetable.generateRandomTimetable(ctx, 6),
           ),
         ),
       );
@@ -99,10 +122,13 @@ class Intro extends StatelessWidget {
         title: _buildTitleText(localizations.introThemeTitle),
         mainImage: Align(
           alignment: Alignment.center,
-          child: _buildCircleButton(Icons.color_lens, onPressed: () async {
-            if (await showThemeBrightnessSelect(ctx) != null)
-              showMaterialColorPicker(ctx);
-          }),
+          child: _buildCircleButton(
+            Icons.color_lens,
+            onPressed: () async {
+              if (await showThemeBrightnessSelect(ctx) != null)
+                showMaterialColorPicker(ctx);
+            },
+          ),
         ),
       );
 
@@ -138,19 +164,24 @@ class Intro extends StatelessWidget {
         style: TextStyle(color: contentColor),
       );
 
-  RawMaterialButton _buildCircleButton(IconData icon,
-          {VoidCallback onPressed}) =>
+  RawMaterialButton _buildCircleButton(
+    IconData icon, {
+    double size = 100,
+    VoidCallback onPressed,
+    bool enabled = true,
+  }) =>
       RawMaterialButton(
         onPressed: onPressed,
         child: Icon(
           icon,
           color: backgroundColor,
-          size: 100,
+          size: size,
         ),
         shape: CircleBorder(),
-        fillColor:
-            theme.brightness == Brightness.light ? contentColor : accentColor,
-        padding: const EdgeInsets.all(30),
+        fillColor: enabled
+            ? theme.brightness == Brightness.light ? contentColor : accentColor
+            : Colors.grey,
+        padding: EdgeInsets.all(size / 3),
       );
 
   ThemeData theme;

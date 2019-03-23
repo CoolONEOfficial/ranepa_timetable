@@ -214,8 +214,7 @@ class Prefs extends StatelessWidget {
         onPressed: () => showSearchItemSelect(ctx),
         rightWidget: StreamBuilder<Tuple2<bool, SearchItem>>(
           stream: timetableIdBloc.stream,
-          initialData: Tuple2<bool, SearchItem>(null,
-              SearchItem.fromPrefs()),
+          initialData: Tuple2<bool, SearchItem>(null, SearchItem.fromPrefs()),
           builder: (ctx, snapshot) => Text(
                 snapshot.data.item2.typeId == SearchItemTypeId.Group
                     ? snapshot.data.item2.title
@@ -224,12 +223,21 @@ class Prefs extends StatelessWidget {
         ),
       );
 
-  static Widget _buildRoomLocationStylePreference(BuildContext ctx) =>
+  static StreamBuilder<RoomLocationStyle> buildRoomLocationStyleStream(
+    BuildContext ctx,
+    AsyncWidgetBuilder<RoomLocationStyle> builder,
+  ) =>
       StreamBuilder<RoomLocationStyle>(
         initialData: RoomLocationStyle
             .values[prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ?? 0],
         stream: roomLocationStyleBloc.stream,
-        builder: (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
+        builder: builder,
+      );
+
+  static Widget _buildRoomLocationStylePreference(BuildContext ctx) =>
+      buildRoomLocationStyleStream(
+        ctx,
+        (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
               ctx,
               title: AppLocalizations.of(ctx).roomLocationStyleText,
               description: snapshot.data == RoomLocationStyle.Icon
@@ -287,7 +295,8 @@ class Prefs extends StatelessWidget {
           builder: (BuildContext ctx, AsyncSnapshot<SiteApi> snapshot) =>
               Text(snapshot.data.title),
           stream: siteApiBloc.stream,
-          initialData: SiteApis(ctx).apis[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index],
+          initialData: SiteApis(ctx)
+              .apis[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index],
         ),
       );
 
