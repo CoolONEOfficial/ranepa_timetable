@@ -49,24 +49,22 @@ class Intro extends StatelessWidget {
     Orientation orientation,
   }) =>
       Column(
-        mainAxisSize: orientation == Orientation.landscape
-            ? MainAxisSize.max
-            : MainAxisSize.max,
-        mainAxisAlignment: orientation == Orientation.landscape
-            ? MainAxisAlignment.center
-            : MainAxisAlignment.center,
-        crossAxisAlignment: orientation == Orientation.landscape
-            ? CrossAxisAlignment.center
-            : CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           orientation == Orientation.landscape
               ? Expanded
               : Flexible(
                   child: SingleChildScrollView(
-                    child: AutoSizeText(
+                    child: Text(
                       localizations.introWelcomeDescription,
-                      style:
-                          textTheme.body1.merge(TextStyle(color: Colors.white)),
+                      style: textTheme.body1.merge(
+                        TextStyle(
+                          color: Colors.white,
+                          fontSize: 20
+                        ),
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
