@@ -32,32 +32,7 @@ class Intro extends StatelessWidget {
           Icons.list,
           color: backgroundColor,
         ),
-        body: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _buildCircleButton(
-              Icons.color_lens,
-              onPressed: () async {
-                if (await showThemeBrightnessSelect(ctx) != null)
-                  showMaterialColorPicker(ctx);
-              },
-            ),
-            Prefs.buildRoomLocationStyleStream(
-              ctx,
-              (ctx, AsyncSnapshot<RoomLocationStyle> snapshot) =>
-                  _buildCircleButton(
-                    Icons.image,
-                    onPressed: () async {
-                      roomLocationStyleBloc.add(snapshot.data);
-                      prefs.setInt(
-                          PrefsIds.ROOM_LOCATION_STYLE, snapshot.data.index);
-                    },
-                    enabled: snapshot.data == RoomLocationStyle.Icon,
-                  ),
-            ),
-          ],
-        ),
+        body: _buildBodyText(localizations.introTimetableDescription),
         title: _buildTitleText(localizations.introTimetableTitle),
         mainImage: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15)
