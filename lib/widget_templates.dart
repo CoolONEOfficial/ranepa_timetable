@@ -150,24 +150,53 @@ class WidgetTemplates {
     Widget error,
   }) =>
       FutureBuilder<T>(
-          future: future,
-          builder: (BuildContext ctx, AsyncSnapshot snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.none:
-              case ConnectionState.active:
-              case ConnectionState.waiting:
-                return loading ?? WidgetTemplates.buildLoadingNotification(ctx);
-                break;
-              case ConnectionState.done:
-                if (snapshot.hasError)
-                  return error ??
-                      WidgetTemplates.buildErrorNotification(
-                          ctx, "${snapshot.error}" ?? "Unknown");
-                return builder(ctx, snapshot);
-            }
-          });
+        future: future,
+        builder: (BuildContext ctx, AsyncSnapshot snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+            case ConnectionState.active:
+            case ConnectionState.waiting:
+              return loading ?? WidgetTemplates.buildLoadingNotification(ctx);
+              break;
+            case ConnectionState.done:
+              if (snapshot.hasError)
+                return error ??
+                    WidgetTemplates.buildErrorNotification(
+                        ctx, "${snapshot.error}" ?? "Unknown");
+              return builder(ctx, snapshot);
+          }
+        },
+      );
 
-  static Future<bool> checkInternetConnection([String host = 'google.com']) async {
+//  static Widget buildFutureBuilder<T>(
+//    BuildContext ctx, {
+//    @required Future future,
+//    @required AsyncWidgetBuilder<T> builder,
+//    Widget loading,
+//    Widget error,
+//  }) {
+//    var result, error;
+//
+//    future.then((res) {
+//      result = res;
+//    }).catchError((e) {
+//      error = e;
+//    });
+//
+//    return AnimatedCrossFade(
+//      firstChild: loading ?? WidgetTemplates.buildLoadingNotification(ctx),
+//      secondChild: error != null
+//          ? WidgetTemplates.buildErrorNotification(ctx, "$error" ?? "Unknown")
+//          : builder(ctx, result),
+//      crossFadeState: result == null && error == null
+//          ? CrossFadeState.showFirst
+//          : CrossFadeState.showSecond,
+//      duration: Duration(seconds: 1),
+//    );
+//  }
+
+  static Future<bool> checkInternetConnection(
+      [String host = 'google.com']) async {
     try {
       final result = await InternetAddress.lookup(host);
       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;

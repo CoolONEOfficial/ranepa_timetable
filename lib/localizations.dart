@@ -684,6 +684,34 @@ class AppLocalizations {
     );
   }
 
+  String get dayStyleTitle {
+    return Intl.message(
+      'Date display format',
+      name: 'dayStyleTitle',
+    );
+  }
+
+  String get dayStyleDescription {
+    return Intl.message(
+      'Date display style',
+      name: 'dayStyleDescription',
+    );
+  }
+
+  String get dayStyleWeekday {
+    return Intl.message(
+      'Day of week',
+      name: 'dayStyleWeekday',
+    );
+  }
+
+  String get dayStyleDate {
+    return Intl.message(
+      'Date',
+      name: 'dayStyleDate',
+    );
+  }
+
   // Themes titles
 
   String get themeDark {

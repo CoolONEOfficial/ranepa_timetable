@@ -79,6 +79,8 @@ class TimelineModel {
 
 enum RoomLocationStyle { Text, Icon }
 
+enum DayStyle { Weekday, Date }
+
 enum RoomLocation { Academy, Hotel, StudyHostel }
 
 class RoomLocationsTitles {

@@ -5,12 +5,6 @@
     <string name="widget_title_tomorrow">Завтра</string>
     <string name="widget_title_after_tomorrow">Послезавтра</string>
     <string name="widget_title_after_days">Через %o дня(-ей)</string>
-    <string name="monday">Понедельник</string>
-    <string name="tuesday">Вторник</string>
-    <string name="wednesday">Среда</string>
-    <string name="thursday">Четверг</string>
-    <string name="friday">Пятница</string>
-    <string name="saturday">Суббота</string>
     <string name="noLessons">Пар не найдено.</string>
     <string name="noBeforeAlarmClock">Не задано время до будильника.\nЕго можно задать в настройках приложения.</string>
     <string name="noCalendarPermissions">Не удалось получить доступ к календарю.</string>

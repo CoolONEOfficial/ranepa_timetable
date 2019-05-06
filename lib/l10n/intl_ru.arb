@@ -456,6 +456,26 @@
     "type": "text",
     "placeholders": {}
   },
+  "dayStyleTitle": "Формат отображения дат",
+  "@dayStyleTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "dayStyleDescription": "Стиль отображения дней в расписании",
+  "@dayStyleDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "dayStyleWeekday": "День недели",
+  "@dayStyleWeekday": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "dayStyleDate": "Дата",
+  "@dayStyleDate": {
+    "type": "text",
+    "placeholders": {}
+  },
   "themeDark": "Темная",
   "@themeDark": {
     "type": "text",

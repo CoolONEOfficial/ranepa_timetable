@@ -5,12 +5,6 @@
     <string name="widget_title_tomorrow">Tomorrow</string>
     <string name="widget_title_after_tomorrow">Day after tomorrow</string>
     <string name="widget_title_after_days">In %o days</string>
-    <string name="monday">Monday</string>
-    <string name="tuesday">Tuesday</string>
-    <string name="wednesday">Wednesday</string>
-    <string name="thursday">Thursday</string>
-    <string name="friday">Friday</string>
-    <string name="saturday">Saturday</string>
     <string name="noLessons">No lessons found.</string>
     <string name="noBeforeAlarmClock">Not set time to alarm.\nIt can be set in the application settings.</string>
     <string name="noCalendarPermissions">Could not access the calendar.</string>

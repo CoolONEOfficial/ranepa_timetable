@@ -35,7 +35,8 @@ class PrefsIds {
       ITEM_ID = "id",
       ITEM_TITLE = "title",
       SITE_API = "site_api",
-      OPTIMIZED_LESSON_TITLES = "optimized_lesson_titles";
+      OPTIMIZED_LESSON_TITLES = "optimized_lesson_titles",
+      DAY_STYLE = "day_style";
 }
 
 Future<SearchItem> showSearchItemSelect(
@@ -109,6 +110,7 @@ void showMaterialColorPicker(BuildContext ctx) => showDialog(
     );
 
 final widgetTranslucentBloc = StreamController<bool>.broadcast(),
+    dayStyleBloc = StreamController<DayStyle>.broadcast(),
     roomLocationStyleBloc = StreamController<RoomLocationStyle>.broadcast(),
     siteApiBloc = StreamController<SiteApi>.broadcast(),
     optimizedLessonTitlesBloc = StreamController<bool>.broadcast();
@@ -235,6 +237,16 @@ class Prefs extends StatelessWidget {
         builder: builder,
       );
 
+  static StreamBuilder<DayStyle> buildDayStyleStream(
+    BuildContext ctx,
+    AsyncWidgetBuilder<DayStyle> builder,
+  ) =>
+      StreamBuilder<DayStyle>(
+        initialData: DayStyle.values[prefs.getInt(PrefsIds.DAY_STYLE) ?? 0],
+        stream: dayStyleBloc.stream,
+        builder: builder,
+      );
+
   static Widget _buildRoomLocationStylePreference(BuildContext ctx) =>
       buildRoomLocationStyleStream(
         ctx,
@@ -343,12 +355,39 @@ class Prefs extends StatelessWidget {
             ),
       );
 
+  static Widget _buildDayStylePreference(BuildContext ctx) =>
+      buildDayStyleStream(
+        ctx,
+        (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
+              ctx,
+              title: AppLocalizations.of(ctx).dayStyleTitle,
+              description: AppLocalizations.of(ctx).dayStyleDescription,
+              rightWidget: Row(
+                children: <Widget>[
+                  Text(AppLocalizations.of(ctx).dayStyleDate),
+                  Switch(
+                    value: snapshot.data == DayStyle.Weekday,
+                    onChanged: (value) {
+                      var dayStyle = value ? DayStyle.Weekday : DayStyle.Date;
+                      dayStyleBloc.add(dayStyle);
+                      prefs
+                          .setInt(PrefsIds.DAY_STYLE, dayStyle.index)
+                          .then((_) => PlatformChannels.refreshWidget());
+                    },
+                  ),
+                  Text(AppLocalizations.of(ctx).dayStyleWeekday),
+                ],
+              ),
+            ),
+      );
+
   @override
   Widget build(BuildContext ctx) => Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(ctx).prefs),
           leading: IconButton(
-            icon: Icon(Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
+            icon:
+                Icon(Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
             onPressed: () => Navigator.pop(ctx),
           ),
         ),
@@ -369,6 +408,8 @@ class Prefs extends StatelessWidget {
             _buildSiteApiPreference(ctx),
             Divider(height: 0),
             _buildOptimizedLessonTitlesPreference(ctx),
+            Divider(height: 0),
+            _buildDayStylePreference(ctx),
             Divider(height: 0),
           ],
         ),

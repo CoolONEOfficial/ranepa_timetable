@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2019-03-20T13:00:41.892382",
+  "@@last_modified": "2019-04-18T10:33:38.417827",
   "title": "RANEPA (Timetable)",
   "@title": {
     "type": "text",
@@ -452,6 +452,26 @@
   },
   "optimizedLessonTitlesDescription": "Shortens the lesson names",
   "@optimizedLessonTitlesDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "dayStyleTitle": "Date display format",
+  "@dayStyleTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "dayStyleDescription": "Date display style",
+  "@dayStyleDescription": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "dayStyleWeekday": "Day of week",
+  "@dayStyleWeekday": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "dayStyleDate": "Date",
+  "@dayStyleDate": {
     "type": "text",
     "placeholders": {}
   },

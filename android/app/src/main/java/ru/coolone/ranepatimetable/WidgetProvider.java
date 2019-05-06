@@ -19,6 +19,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.AlarmClock;
 import android.provider.CalendarContract;
@@ -36,10 +37,12 @@ import org.threeten.bp.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
 
 import androidx.core.app.ActivityCompat;
+
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
@@ -77,13 +80,19 @@ public class WidgetProvider extends AppWidgetProvider {
         Icon
     }
 
+    enum DayStyle {
+        Weekday,
+        Date
+    }
+
     AlarmManager manager;
     PendingIntent updatePendingIntent, deleteOldPendingIntent;
 
     static private int dateOffset;
 
     enum SearchItemTypeId {
-        Group, Teacher
+        Group,
+        Teacher
     }
 
     private static SharedPreferences _prefs;
@@ -381,7 +390,9 @@ public class WidgetProvider extends AppWidgetProvider {
         PrimarySearchItemPrefix("primary_search_item_"),
         ItemType("type", PrimarySearchItemPrefix.prefId),
         ItemId("id", PrimarySearchItemPrefix.prefId),
-        ItemTitle("title", PrimarySearchItemPrefix.prefId);
+        ItemTitle("title", PrimarySearchItemPrefix.prefId),
+
+        DayStyle("day_style");
 
         final String prefId;
 
@@ -592,6 +603,15 @@ public class WidgetProvider extends AppWidgetProvider {
         return _widgetSize;
     }
 
+    Locale getCurrentLocale(Context context){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            return context.getResources().getConfiguration().getLocales().get(0);
+        } else{
+            //noinspection deprecation
+            return context.getResources().getConfiguration().locale;
+        }
+    }
+
     private RemoteViews buildLayout(Context ctx, int appWidgetId, AppWidgetManager manager, boolean updateSize) {
         val prefs = getPrefs(ctx);
 
@@ -657,25 +677,28 @@ public class WidgetProvider extends AppWidgetProvider {
             var futureLessonFindDate = getTodayMidnight();
             futureLessonFindDate.add(Calendar.DATE, dateOffset);
 
-            String dayOfWeek = null;
-            switch (futureLessonFindDate.get(Calendar.DAY_OF_WEEK)) {
-                case Calendar.MONDAY:
-                    dayOfWeek = ctx.getString(R.string.monday);
+            var dayStyle = DayStyle.values()[
+                    (int) getPrefs(ctx).getLong(PrefsIds.DayStyle.prefId, 0)
+                    ];
+
+            String dayTitle = null;
+            switch (dayStyle) {
+                case Date:
+                    dayTitle = futureLessonFindDate.get(Calendar.DAY_OF_MONTH)
+                            + " "
+                            + futureLessonFindDate.getDisplayName(
+                                    Calendar.MONTH,
+                                    Calendar.SHORT,
+                                    getCurrentLocale(ctx)
+                            );
                     break;
-                case Calendar.TUESDAY:
-                    dayOfWeek = ctx.getString(R.string.tuesday);
-                    break;
-                case Calendar.WEDNESDAY:
-                    dayOfWeek = ctx.getString(R.string.wednesday);
-                    break;
-                case Calendar.THURSDAY:
-                    dayOfWeek = ctx.getString(R.string.thursday);
-                    break;
-                case Calendar.FRIDAY:
-                    dayOfWeek = ctx.getString(R.string.friday);
-                    break;
-                case Calendar.SATURDAY:
-                    dayOfWeek = ctx.getString(R.string.saturday);
+                case Weekday:
+                    dayTitle = futureLessonFindDate.getDisplayName(
+                            Calendar.DAY_OF_WEEK,
+                            Calendar.SHORT,
+                            getCurrentLocale(ctx)
+                    );
+                    dayTitle = dayTitle.substring(0, 1).toUpperCase() + dayTitle.substring(1);
                     break;
             }
 
@@ -699,7 +722,7 @@ public class WidgetProvider extends AppWidgetProvider {
                 dayDescStr = String.format(dayDescStr, dateOffset);
 
             rv.setTextViewText(R.id.widget_title,
-                    dayOfWeek + ", " + dayDescStr
+                    dayTitle != null ? dayTitle + ", " + dayDescStr : dayDescStr
             );
             rv.setTextColor(R.id.widget_title, theme.textPrimary);
 

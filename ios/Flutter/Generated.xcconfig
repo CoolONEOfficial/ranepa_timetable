@@ -1,10 +1,9 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/Users/vadimruzavin/flutter
-FLUTTER_APPLICATION_PATH=/Users/vadimruzavin/Downloads/ranepa_timetable
-FLUTTER_TARGET=/Users/vadimruzavin/Downloads/ranepa_timetable/lib/main.dart
+FLUTTER_ROOT=/home/coolone/StudioProjects/flutter
+FLUTTER_APPLICATION_PATH=/home/coolone/StudioProjects/ranepa_timetable
+FLUTTER_TARGET=lib/main.dart
 FLUTTER_BUILD_DIR=build
 SYMROOT=${SOURCE_ROOT}/../build/ios
-FLUTTER_FRAMEWORK_DIR=/Users/vadimruzavin/flutter/bin/cache/artifacts/engine/ios
+FLUTTER_FRAMEWORK_DIR=/home/coolone/StudioProjects/flutter/bin/cache/artifacts/engine/ios
 FLUTTER_BUILD_NAME=1.6.0
 FLUTTER_BUILD_NUMBER=15
-TRACK_WIDGET_CREATION=true
