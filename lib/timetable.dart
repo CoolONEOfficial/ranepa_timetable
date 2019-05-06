@@ -78,6 +78,8 @@ class Timetable extends StatelessWidget {
 
   static const dayCount = 6;
 
+  static DateTime fromDay = todayMidnight;
+
   static DateTime get endCacheMidnight {
     var mDate = todayMidnight.add(Duration(days: dayCount - 1));
 
@@ -93,8 +95,8 @@ class Timetable extends StatelessWidget {
     timetable.clear();
     return loadTimetable(
       ctx,
-      Timetable.todayMidnight,
-      Timetable.todayMidnight.add(Duration(days: dayCount - 1)),
+      fromDay,
+      fromDay.add(Duration(days: dayCount - 1)),
       searchItem,
       updateDb,
     );
@@ -470,7 +472,7 @@ class Timetable extends StatelessWidget {
               (ctx, ssDayStyle) {
                 // Create tabs
                 final tabs = List<Tab>();
-                var mDay = todayMidnight.subtract(Duration(days: 1));
+                var mDay = fromDay.subtract(Duration(days: 1));
                 for (int mTabId = 0; mTabId < dayCount; mTabId++) {
                   debugPrint("mTabId: " + mTabId.toString());
                   mDay = mDay.add(Duration(days: 1));
@@ -529,7 +531,7 @@ class Timetable extends StatelessWidget {
                                     dayCount,
                                     (dayIndex) =>
                                         MapEntry<DateTime, List<TimelineModel>>(
-                                          todayMidnight.add(
+                                          fromDay.add(
                                             Duration(days: dayIndex),
                                           ),
                                           List<TimelineModel>(),

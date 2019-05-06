@@ -50,10 +50,19 @@ Future<SearchItem> showSearchItemSelect(
       (searchItem) async {
         if (searchItem != null) {
           if (primary) {
+            Timetable.fromDay = Timetable.todayMidnight;
             searchItem.toPrefs(PrefsIds.SEARCH_ITEM_PREFIX);
             await PlatformChannels.deleteDb();
-          } else
+          } else {
+            Timetable.fromDay = await showDatePicker(
+                  context: ctx,
+                  initialDate: Timetable.fromDay ?? Timetable.todayMidnight,
+                  firstDate: Timetable.todayMidnight,
+                  lastDate: Timetable.todayMidnight.add(Duration(days: 365)),
+                ) ??
+                Timetable.todayMidnight;
             Timetable.selected = searchItem;
+          }
           timetableIdBloc.add(Tuple2<bool, SearchItem>(primary, searchItem));
         }
         return searchItem;
