@@ -1,7 +1,7 @@
 name: ranepa_timetable
 description: Custom RANEPA android client on Flutter.
 
-version: 1.6+15
+version: 1.7+16
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
