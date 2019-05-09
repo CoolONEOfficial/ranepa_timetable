@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:duration/duration.dart';
 import 'package:duration/locale.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_duration_picker/flutter_duration_picker.dart';
@@ -17,6 +18,8 @@ import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:tuple/tuple.dart';
 import 'package:ranepa_timetable/theme.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
+import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart'
+    as CoupertinoDatePicker;
 
 class PrefsIds {
   static const LAST_UPDATE = "last_update",
@@ -54,13 +57,34 @@ Future<SearchItem> showSearchItemSelect(
             searchItem.toPrefs(PrefsIds.SEARCH_ITEM_PREFIX);
             await PlatformChannels.deleteDb();
           } else {
-            Timetable.fromDay = await showDatePicker(
-                  context: ctx,
-                  initialDate: Timetable.fromDay ?? Timetable.todayMidnight,
-                  firstDate: Timetable.todayMidnight,
-                  lastDate: Timetable.todayMidnight.add(Duration(days: 365)),
-                ) ??
-                Timetable.todayMidnight;
+            if (Platform.isAndroid) {
+              var iosCompleter = Completer<DateTime>();
+              var initial = Timetable.fromDay ?? Timetable.todayMidnight;
+              CoupertinoDatePicker.DatePicker.showDatePicker(
+                ctx,
+                minDateTime: Timetable.todayMidnight,
+                maxDateTime: Timetable.todayMidnight.add(Duration(days: 365)),
+                initialDate: initial.day,
+                initialMonth: initial.month,
+                initialYear: initial.year,
+                onConfirm2: (dt, l) {
+                  iosCompleter.complete(dt);
+                },
+                onCancel: () {
+                  iosCompleter.complete(null);
+                },
+                locale: 'ru',
+              );
+              Timetable.fromDay = await iosCompleter.future;
+            } else {
+              Timetable.fromDay = await showDatePicker(
+                context: ctx,
+                initialDate: Timetable.fromDay ?? Timetable.todayMidnight,
+                firstDate: Timetable.todayMidnight,
+                lastDate: Timetable.todayMidnight.add(Duration(days: 365)),
+              );
+            }
+            Timetable.fromDay ??= Timetable.todayMidnight;
             Timetable.selected = searchItem;
           }
           timetableIdBloc.add(Tuple2<bool, SearchItem>(primary, searchItem));
