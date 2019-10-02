@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:xml/xml.dart' as xml;
 
-const DEFAULT_API_ID = SiteApiIds.APP_NEW;
+const DEFAULT_API_ID = SiteApiIds.SITE;
 
 enum SiteApiIds {
   APP_OLD,
