@@ -670,6 +670,15 @@ public class WidgetProvider extends AppWidgetProvider {
 
         RemoteViews rv;
 
+        var test = TimetableDatabase.getInstance(ctx).timetable();
+
+        var data = test.getAll();
+
+        var firstDate = data[0].date;
+
+        Calendar cal = new GregorianCalendar();
+        cal.setTimeInMillis(firstDate.getTime()*1000);
+
         if (TimetableDatabase.getInstance(ctx).timetable().count() != 0) {
 
             rv = new RemoteViews(ctx.getPackageName(), R.layout.widget_layout);

@@ -468,168 +468,159 @@ class Timetable extends StatelessWidget {
         initialData: Tuple2<bool, SearchItem>(
             true, Timetable.selected ?? SearchItem.fromPrefs()),
         builder: (ctx, ssSearchItem) => Prefs.buildDayStyleStream(
-              ctx,
-              (ctx, ssDayStyle) {
-                // Create tabs
-                final tabs = List<Tab>();
-                var mDay = fromDay.subtract(Duration(days: 1));
-                for (int mTabId = 0; mTabId < dayCount; mTabId++) {
-                  debugPrint("mTabId: " + mTabId.toString());
-                  mDay = mDay.add(Duration(days: 1));
-                  debugPrint("mDay: " + mDay.day.toString());
-                  debugPrint("mWeekday: " + mDay.weekday.toString());
-                  if (mDay.weekday == DateTime.sunday) {
-                    debugPrint("Skippin sunday");
-                    // Skip sunday
-                    mTabId--;
-                    continue;
-                  }
+          ctx,
+          (ctx, ssDayStyle) {
+            // Create tabs
+            final tabs = List<Tab>();
+            var mDay = fromDay.subtract(Duration(days: 1));
+            for (int mTabId = 0; mTabId < dayCount; mTabId++) {
+              debugPrint("mTabId: " + mTabId.toString());
+              mDay = mDay.add(Duration(days: 1));
+              debugPrint("mDay: " + mDay.day.toString());
+              debugPrint("mWeekday: " + mDay.weekday.toString());
+              if (mDay.weekday == DateTime.sunday) {
+                debugPrint("Skippin sunday");
+                // Skip sunday
+                mTabId--;
+                continue;
+              }
 
-                  tabs.add(Tab(
-                    text: ssDayStyle.data.index == DayStyle.Weekday.index
-                        ? [
-                            AppLocalizations.of(ctx).monday,
-                            AppLocalizations.of(ctx).tuesday,
-                            AppLocalizations.of(ctx).wednesday,
-                            AppLocalizations.of(ctx).thursday,
-                            AppLocalizations.of(ctx).friday,
-                            AppLocalizations.of(ctx).saturday
-                          ][mDay.weekday - 1]
-                        : mDay.day.toString(),
-                  ));
-                }
+              tabs.add(Tab(
+                text: ssDayStyle.data.index == DayStyle.Weekday.index
+                    ? [
+                        AppLocalizations.of(ctx).monday,
+                        AppLocalizations.of(ctx).tuesday,
+                        AppLocalizations.of(ctx).wednesday,
+                        AppLocalizations.of(ctx).thursday,
+                        AppLocalizations.of(ctx).friday,
+                        AppLocalizations.of(ctx).saturday
+                      ][mDay.weekday - 1]
+                    : mDay.day.toString(),
+              ));
+            }
 
-                return Scaffold(
-                  drawer: drawer,
-                  key: scaffoldKey,
-                  body: StreamBuilder<void>(
-                    stream: timetableFutureBuilderBloc.stream,
-                    builder: (ctx, _) => WidgetTemplates.buildFutureBuilder(ctx,
-                            future: WidgetTemplates.checkInternetConnection(),
-                            builder: (ctx, internetConn) {
-                          if (!internetConn.data &&
-                              (!Platform.isAndroid || !ssSearchItem.data.item1))
-                            return WidgetTemplates
-                                .buildNetworkErrorNotification(ctx);
-                          return WidgetTemplates.buildFutureBuilder(
+            return Scaffold(
+              drawer: drawer,
+              key: scaffoldKey,
+              body: StreamBuilder<void>(
+                stream: timetableFutureBuilderBloc.stream,
+                builder: (ctx, _) => WidgetTemplates.buildFutureBuilder(ctx,
+                    future: WidgetTemplates.checkInternetConnection(),
+                    builder: (ctx, internetConn) {
+                  if (!internetConn.data && !ssSearchItem.data.item1)
+                    return WidgetTemplates.buildNetworkErrorNotification(ctx);
+                  return WidgetTemplates.buildFutureBuilder(
+                    ctx,
+                    future: ssSearchItem.data.item1
+                        ? _getTimetable(ctx, ssSearchItem.data.item2, prefs)
+                        : _loadAllTimetable(
                             ctx,
-                            future:
-                                Platform.isAndroid && ssSearchItem.data.item1
-                                    ? _getTimetable(
-                                        ctx, ssSearchItem.data.item2, prefs)
-                                    : _loadAllTimetable(
-                                        ctx,
-                                        ssSearchItem.data.item2,
-                                        updateDb: false,
-                                      ),
-                            builder: (ctx, _) {
-                              if (timetable.values.isEmpty)
-                                timetable.addEntries(
-                                  Iterable<
-                                      MapEntry<DateTime,
-                                          List<TimelineModel>>>.generate(
-                                    dayCount,
-                                    (dayIndex) =>
-                                        MapEntry<DateTime, List<TimelineModel>>(
-                                          fromDay.add(
-                                            Duration(days: dayIndex),
-                                          ),
-                                          List<TimelineModel>(),
-                                        ),
-                                  ),
-                                );
+                            ssSearchItem.data.item2,
+                            updateDb: false,
+                          ),
+                    builder: (ctx, _) {
+                      if (timetable.values.isEmpty)
+                        timetable.addEntries(
+                          Iterable<
+                              MapEntry<DateTime, List<TimelineModel>>>.generate(
+                            dayCount,
+                            (dayIndex) =>
+                                MapEntry<DateTime, List<TimelineModel>>(
+                              fromDay.add(
+                                Duration(days: dayIndex),
+                              ),
+                              List<TimelineModel>(),
+                            ),
+                          ),
+                        );
 
-                              final tabViews = List<Widget>(),
-                                  endCache = DateTime.parse(
-                                      prefs.getString(PrefsIds.END_CACHE)),
-                                  optimizeLessonTitles = prefs.getBool(
-                                          PrefsIds.OPTIMIZED_LESSON_TITLES) ??
-                                      true;
+                      final tabViews = List<Widget>(),
+                          endCache = DateTime.parse(
+                              prefs.getString(PrefsIds.END_CACHE)),
+                          optimizeLessonTitles =
+                              prefs.getBool(PrefsIds.OPTIMIZED_LESSON_TITLES) ??
+                                  true;
 
-                              var timetableIter = timetable.entries.iterator,
-                                  mDate = timetable.entries.first.key;
+                      var timetableIter = timetable.entries.iterator,
+                          mDate = timetable.entries.first.key;
 
-                              while (tabViews.length < dayCount) {
-                                tabViews.add(
-                                  mDate.compareTo(endCache) > 0
+                      while (tabViews.length < dayCount) {
+                        tabViews.add(
+                          mDate.compareTo(endCache) > 0
+                              ? WidgetTemplates.buildNoCacheNotification(ctx)
+                              : timetableIter.moveNext()
+                                  ? timetableIter.current.value.isEmpty
                                       ? WidgetTemplates
-                                          .buildNoCacheNotification(ctx)
-                                      : timetableIter.moveNext()
-                                          ? timetableIter.current.value.isEmpty
-                                              ? WidgetTemplates
-                                                  .buildFreeDayNotification(
-                                                  ctx,
-                                                  ssSearchItem.data.item2,
-                                                )
-                                              : TimelineComponent(
-                                                  timetableIter.current.value,
-                                                  optimizeLessonTitles:
-                                                      optimizeLessonTitles,
-                                                )
-                                          : WidgetTemplates
-                                              .buildFreeDayNotification(
-                                              ctx,
-                                              ssSearchItem.data.item2,
-                                            ),
-                                );
+                                          .buildFreeDayNotification(
+                                          ctx,
+                                          ssSearchItem.data.item2,
+                                        )
+                                      : TimelineComponent(
+                                          timetableIter.current.value,
+                                          optimizeLessonTitles:
+                                              optimizeLessonTitles,
+                                        )
+                                  : WidgetTemplates.buildFreeDayNotification(
+                                      ctx,
+                                      ssSearchItem.data.item2,
+                                    ),
+                        );
 
-                                mDate.add(Duration(
-                                    days: mDate.weekday == DateTime.saturday
-                                        ? 2
-                                        : 1));
-                              }
-                              return TabBarView(children: tabViews);
-                            },
-                          );
-                        }),
-                  ),
-                  appBar: AppBar(
-                    elevation: Platform.isAndroid ? 5 : 0,
-                    title: Text(ssSearchItem.data.item2.typeId ==
-                            SearchItemTypeId.Teacher
+                        mDate.add(Duration(
+                            days: mDate.weekday == DateTime.saturday ? 2 : 1));
+                      }
+                      return TabBarView(children: tabViews);
+                    },
+                  );
+                }),
+              ),
+              appBar: AppBar(
+                elevation: Platform.isAndroid ? 5 : 0,
+                title: Text(
+                    ssSearchItem.data.item2.typeId == SearchItemTypeId.Teacher
                         ? TeacherModel.fromString(ssSearchItem.data.item2.title)
                             .initials()
                         : ssSearchItem.data.item2.title),
-                    actions: (Platform.isAndroid
-                        ? <Widget>[
-                            IconButton(
-                              tooltip: AppLocalizations.of(ctx).calendarTip,
-                              icon: const Icon(Icons.calendar_today),
-                              onPressed: () => _createCalendarEvents(
-                                  ctx, _deviceCalendarPlugin),
-                            ),
-                            IconButton(
-                              tooltip: AppLocalizations.of(ctx).alarmTip,
-                              icon: const Icon(Icons.alarm),
-                              onPressed: () => _createAlarm(ctx, prefs),
-                            )
-                          ]
-                        : List<Widget>())
-                      ..addAll(<Widget>[
+                actions: (Platform.isAndroid
+                    ? <Widget>[
                         IconButton(
-                          tooltip: AppLocalizations.of(ctx).refreshTip,
-                          icon: const Icon(Icons.refresh),
-                          onPressed: () async {
-                            await PlatformChannels.deleteDb();
-                            timetableIdBloc.add(ssSearchItem.data);
-                          },
+                          tooltip: AppLocalizations.of(ctx).calendarTip,
+                          icon: const Icon(Icons.calendar_today),
+                          onPressed: () =>
+                              _createCalendarEvents(ctx, _deviceCalendarPlugin),
                         ),
                         IconButton(
-                          tooltip: AppLocalizations.of(ctx).searchTip,
-                          icon: const Icon(Icons.search),
-                          onPressed: () => showSearchItemSelect(
-                                ctx,
-                                primary: false,
-                              ),
-                        ),
-                      ]),
-                    bottom: TabBar(
-                      tabs: tabs,
+                          tooltip: AppLocalizations.of(ctx).alarmTip,
+                          icon: const Icon(Icons.alarm),
+                          onPressed: () => _createAlarm(ctx, prefs),
+                        )
+                      ]
+                    : List<Widget>())
+                  ..addAll(<Widget>[
+                    IconButton(
+                      tooltip: AppLocalizations.of(ctx).refreshTip,
+                      icon: const Icon(Icons.refresh),
+                      onPressed: () async {
+                        await PlatformChannels.deleteDb();
+                        timetableIdBloc.add(ssSearchItem.data);
+                      },
                     ),
-                  ),
-                );
-              },
-            ),
+                    IconButton(
+                      tooltip: AppLocalizations.of(ctx).searchTip,
+                      icon: const Icon(Icons.search),
+                      onPressed: () => showSearchItemSelect(
+                        ctx,
+                        primary: false,
+                      ),
+                    ),
+                  ]),
+                bottom: TabBar(
+                  tabs: tabs,
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

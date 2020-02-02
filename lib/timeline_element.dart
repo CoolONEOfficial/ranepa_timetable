@@ -84,7 +84,7 @@ class TimelineElement extends StatelessWidget {
           softWrap: true,
           maxLines: 2,
           textAlign: TextAlign.center,
-          style: Theme.of(ctx).textTheme.title,
+          style: Theme.of(ctx).textTheme.headline6,
           maxFontSize: 20,
         ),
       );

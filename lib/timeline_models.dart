@@ -39,13 +39,17 @@ enum User {
 
 @JsonSerializable(nullable: false)
 class TimelineModel {
+  @JsonKey(fromJson: _numToDate, toJson: _dateToNum)
   final DateTime date;
+
   final LessonModel lesson;
   final RoomModel room;
   final String group;
   final TeacherModel teacher;
 
+  @JsonKey(fromJson: _intToBool, toJson: _boolToInt)
   bool first, last;
+  @JsonKey(fromJson: _intToBool, toJson: _boolToInt)
   bool mergeBottom, mergeTop;
 
   @JsonKey(fromJson: _timeOfDayFromIntList, toJson: _timeOfDayToIntList)
@@ -56,6 +60,15 @@ class TimelineModel {
 
   static Map<String, dynamic> _timeOfDayToIntList(TimeOfDay timeOfDay) =>
       {"hour": timeOfDay.hour, "minute": timeOfDay.minute};
+
+  static bool _intToBool(int i) => i == 1;
+
+  static int _boolToInt(bool b) => b ? 1 : 0;
+
+  static int _dateToNum(DateTime dt) => dt.millisecondsSinceEpoch;
+
+  static DateTime _numToDate(int n) => DateTime.fromMicrosecondsSinceEpoch(n);
+
 
   TimelineModel({
     @required this.date,

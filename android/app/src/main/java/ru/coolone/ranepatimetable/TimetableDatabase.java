@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 @Database(entities = {Timeline.class}, version = 1, exportSchema = false)
 public abstract class TimetableDatabase extends RoomDatabase {
 
-    public static final String NAME = "TimetableDatabase";
+    public static final String FILENAME = "timetable.db";
 
     /**
      * @return The DAO for the Timeline table.
@@ -32,11 +32,11 @@ public abstract class TimetableDatabase extends RoomDatabase {
         if (sInstance == null) {
             sInstance = Room
                     .databaseBuilder(
-                            ctx.getApplicationContext(),
+                            ctx,
                             TimetableDatabase.class,
-                            NAME
+                            FILENAME
                     )
-                    .fallbackToDestructiveMigration()
+                    .createFromAsset("database/" + FILENAME)
                     .allowMainThreadQueries()
                     .build();
         }

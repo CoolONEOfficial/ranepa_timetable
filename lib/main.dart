@@ -111,7 +111,7 @@ class BaseWidget extends StatelessWidget {
           final theme = snapshot.data;
           return MaterialApp(
             builder: (ctx, child) {
-              ScreenUtil.instance = ScreenUtil.getInstance()..init(ctx);
+              ScreenUtil.init(ctx);
               ErrorWidget.builder = _buildError(ctx);
               return MediaQuery(
                 data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),

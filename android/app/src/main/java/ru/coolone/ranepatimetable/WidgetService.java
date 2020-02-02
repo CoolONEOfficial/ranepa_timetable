@@ -427,7 +427,7 @@ class WidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory 
         if (cursor != null) {
             cursor.close();
         }
-        log.info("Database cursor refresh...");
+        log.info("Database cursor refresh... date: " + dateMillis);
         cursor = TimetableDatabase.getInstance(ctx).timetable().selectByDate(dateMillis);
     }
 }
