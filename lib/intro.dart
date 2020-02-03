@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,15 +6,11 @@ import 'package:intro_views_flutter/Models/page_view_model.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
 import 'package:ranepa_timetable/about.dart';
 import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/main.dart';
-import 'package:ranepa_timetable/platform_channels.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/timeline.dart';
-import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Intro extends StatelessWidget {
   final Widget base;
@@ -59,7 +54,7 @@ class Intro extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Text(
                       localizations.introWelcomeDescription,
-                      style: textTheme.body1.merge(
+                      style: textTheme.bodyText2.merge(
                         TextStyle(
                           color: Colors.white,
                           fontSize: 20
@@ -95,7 +90,7 @@ class Intro extends StatelessWidget {
         body: buildWelcomeTextList(
           localizations,
           TextTheme(
-            body1: TextStyle(color: Colors.white),
+            bodyText2: TextStyle(color: Colors.white),
             caption: TextStyle(color: Colors.grey),
           ),
         ),
@@ -192,7 +187,7 @@ class Intro extends StatelessWidget {
           contentColor = (theme.brightness == Brightness.light
                   ? theme.accentTextTheme
                   : theme.textTheme)
-              .body1
+              .bodyText2
               .color;
 
           return IntroViewsFlutter(

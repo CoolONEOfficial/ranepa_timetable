@@ -45,72 +45,72 @@ class PrefsIds {
 Future<SearchItem> showSearchItemSelect(
   BuildContext ctx, {
   primary = true,
-}) =>
-    showSearch<SearchItem>(
-      context: ctx,
-      delegate: Search(ctx),
-    ).then(
-      (searchItem) async {
-        if (searchItem != null) {
-          if (primary) {
-            Timetable.fromDay = Timetable.todayMidnight;
-            searchItem.toPrefs(PrefsIds.SEARCH_ITEM_PREFIX);
-            await PlatformChannels.deleteDb();
-          } else {
-            if (Platform.isAndroid) {
-              var iosCompleter = Completer<DateTime>();
-              var initial = Timetable.fromDay ?? Timetable.todayMidnight;
-              CoupertinoDatePicker.DatePicker.showDatePicker(
-                ctx,
-                minDateTime: Timetable.todayMidnight,
-                maxDateTime: Timetable.todayMidnight.add(Duration(days: 365)),
-                initialDate: initial.day,
-                initialMonth: initial.month,
-                initialYear: initial.year,
-                onConfirm2: (dt, l) {
-                  iosCompleter.complete(dt);
-                },
-                onCancel: () {
-                  iosCompleter.complete(null);
-                },
-                locale: 'ru',
-              );
-              Timetable.fromDay = await iosCompleter.future;
-            } else {
-              Timetable.fromDay = await showDatePicker(
-                context: ctx,
-                initialDate: Timetable.fromDay ?? Timetable.todayMidnight,
-                firstDate: Timetable.todayMidnight,
-                lastDate: Timetable.todayMidnight.add(Duration(days: 365)),
-              );
-            }
-            Timetable.fromDay ??= Timetable.todayMidnight;
-            Timetable.selected = searchItem;
-          }
-          timetableIdBloc.add(Tuple2<bool, SearchItem>(primary, searchItem));
-        }
-        return searchItem;
-      },
-    );
+}) async {
+  final searchItem = await showSearch<SearchItem>(
+    context: ctx,
+    delegate: Search(ctx),
+  );
+
+  if (searchItem != null) {
+    if (primary) {
+      Timetable.fromDay = Timetable.todayMidnight;
+      searchItem.toPrefs(PrefsIds.SEARCH_ITEM_PREFIX);
+      await PlatformChannels.deleteDb();
+    } else {
+      if (Platform.isIOS) {
+        var iosCompleter = Completer<DateTime>();
+        var initial = Timetable.fromDay ?? Timetable.todayMidnight;
+        CoupertinoDatePicker.DatePicker.showDatePicker(
+          ctx,
+          minDateTime: Timetable.todayMidnight,
+          maxDateTime: Timetable.todayMidnight.add(Duration(days: 365)),
+          initialDate: initial.day,
+          initialMonth: initial.month,
+          initialYear: initial.year,
+          onConfirm2: (dt, l) {
+            iosCompleter.complete(dt);
+          },
+          onCancel: () {
+            iosCompleter.complete(null);
+          },
+          locale: 'ru',
+        );
+        Timetable.fromDay = await iosCompleter.future;
+      } else {
+        Timetable.fromDay = await showDatePicker(
+          context: ctx,
+          initialDate: Timetable.fromDay ?? Timetable.todayMidnight,
+          firstDate: Timetable.todayMidnight,
+          lastDate: Timetable.todayMidnight.add(Duration(days: 365)),
+        );
+      }
+      Timetable.fromDay ??= Timetable.todayMidnight;
+      Timetable.selected = searchItem;
+    }
+    timetableIdBloc.add(Tuple2<bool, SearchItem>(primary, searchItem));
+  }
+
+  return searchItem;
+}
 
 Future<Brightness> showThemeBrightnessSelect(BuildContext ctx) =>
     showDialog<Brightness>(
       context: ctx,
       builder: (BuildContext ctx) => SimpleDialog(
-            title: Text(AppLocalizations.of(ctx).themeTitle),
-            children: Brightness.values
-                .map(
-                  (mBrightness) => SimpleDialogOption(
-                        onPressed: () {
-                          brightness = mBrightness;
-                          Navigator.pop(ctx, mBrightness);
-                        },
-                        child: Text(ThemeBrightnessTitles(ctx)
-                            .titles[mBrightness.index]),
-                      ),
-                )
-                .toList(),
-          ),
+        title: Text(AppLocalizations.of(ctx).themeTitle),
+        children: Brightness.values
+            .map(
+              (mBrightness) => SimpleDialogOption(
+                onPressed: () {
+                  brightness = mBrightness;
+                  Navigator.pop(ctx, mBrightness);
+                },
+                child:
+                    Text(ThemeBrightnessTitles(ctx).titles[mBrightness.index]),
+              ),
+            )
+            .toList(),
+      ),
     );
 
 void showMaterialColorPicker(BuildContext ctx) => showDialog(
@@ -171,13 +171,13 @@ class Prefs extends StatelessWidget {
         onPressed: () => showMaterialColorPicker(ctx),
         rightWidget: buildThemeStream(
           (ctx, snapshot) => Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: snapshot.data.accentColor,
-                  shape: BoxShape.circle,
-                ),
-              ),
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: snapshot.data.accentColor,
+              shape: BoxShape.circle,
+            ),
+          ),
         ),
       );
 
@@ -186,20 +186,19 @@ class Prefs extends StatelessWidget {
         initialData: prefs.getBool(PrefsIds.WIDGET_TRANSLUCENT) ?? true,
         stream: widgetTranslucentBloc.stream,
         builder: (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
-              ctx,
-              title: AppLocalizations.of(ctx).widgetTranslucentTitle,
-              description:
-                  AppLocalizations.of(ctx).widgetTranslucentDescription,
-              rightWidget: Switch(
-                value: snapshot.data,
-                onChanged: (value) {
-                  widgetTranslucentBloc.add(value);
-                  prefs.setBool(PrefsIds.WIDGET_TRANSLUCENT, value).then(
-                        (_) => PlatformChannels.refreshWidget(),
-                      );
-                },
-              ),
-            ),
+          ctx,
+          title: AppLocalizations.of(ctx).widgetTranslucentTitle,
+          description: AppLocalizations.of(ctx).widgetTranslucentDescription,
+          rightWidget: Switch(
+            value: snapshot.data,
+            onChanged: (value) {
+              widgetTranslucentBloc.add(value);
+              prefs.setBool(PrefsIds.WIDGET_TRANSLUCENT, value).then(
+                    (_) => PlatformChannels.refreshWidget(),
+                  );
+            },
+          ),
+        ),
       );
 
   static Future<Duration> showBeforeAlarmClockSelect(BuildContext ctx) =>
@@ -252,10 +251,10 @@ class Prefs extends StatelessWidget {
           stream: timetableIdBloc.stream,
           initialData: Tuple2<bool, SearchItem>(null, SearchItem.fromPrefs()),
           builder: (ctx, snapshot) => Text(
-                snapshot.data.item2.typeId == SearchItemTypeId.Group
-                    ? snapshot.data.item2.title
-                    : snapshot.data.item2.title.replaceAll(' ', '\n'),
-              ),
+            snapshot.data.item2.typeId == SearchItemTypeId.Group
+                ? snapshot.data.item2.title
+                : snapshot.data.item2.title.replaceAll(' ', '\n'),
+          ),
         ),
       );
 
@@ -284,30 +283,29 @@ class Prefs extends StatelessWidget {
       buildRoomLocationStyleStream(
         ctx,
         (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
-              ctx,
-              title: AppLocalizations.of(ctx).roomLocationStyleText,
-              description: snapshot.data == RoomLocationStyle.Icon
-                  ? AppLocalizations.of(ctx).roomLocationStyleDescriptionIcon
-                  : AppLocalizations.of(ctx).roomLocationStyleDescriptionText,
-              rightWidget: Row(
-                children: <Widget>[
-                  Text(AppLocalizations.of(ctx).roomLocationStyleText),
-                  Switch(
-                    value: snapshot.data == RoomLocationStyle.Icon,
-                    onChanged: (value) {
-                      var rlStyle = value
-                          ? RoomLocationStyle.Icon
-                          : RoomLocationStyle.Text;
-                      roomLocationStyleBloc.add(rlStyle);
-                      prefs
-                          .setInt(PrefsIds.ROOM_LOCATION_STYLE, rlStyle.index)
-                          .then((_) => PlatformChannels.refreshWidget());
-                    },
-                  ),
-                  Text(AppLocalizations.of(ctx).roomLocationStyleIcon),
-                ],
+          ctx,
+          title: AppLocalizations.of(ctx).roomLocationStyleText,
+          description: snapshot.data == RoomLocationStyle.Icon
+              ? AppLocalizations.of(ctx).roomLocationStyleDescriptionIcon
+              : AppLocalizations.of(ctx).roomLocationStyleDescriptionText,
+          rightWidget: Row(
+            children: <Widget>[
+              Text(AppLocalizations.of(ctx).roomLocationStyleText),
+              Switch(
+                value: snapshot.data == RoomLocationStyle.Icon,
+                onChanged: (value) {
+                  var rlStyle =
+                      value ? RoomLocationStyle.Icon : RoomLocationStyle.Text;
+                  roomLocationStyleBloc.add(rlStyle);
+                  prefs
+                      .setInt(PrefsIds.ROOM_LOCATION_STYLE, rlStyle.index)
+                      .then((_) => PlatformChannels.refreshWidget());
+                },
               ),
-            ),
+              Text(AppLocalizations.of(ctx).roomLocationStyleIcon),
+            ],
+          ),
+        ),
       );
 
   static Widget _buildOptimizedLessonTitlesPreference(BuildContext ctx) =>
@@ -315,20 +313,20 @@ class Prefs extends StatelessWidget {
         initialData: prefs.getBool(PrefsIds.OPTIMIZED_LESSON_TITLES) ?? true,
         stream: optimizedLessonTitlesBloc.stream,
         builder: (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
-              ctx,
-              title: AppLocalizations.of(ctx).optimizedLessonTitlesTitle,
-              description:
-                  AppLocalizations.of(ctx).optimizedLessonTitlesDescription,
-              rightWidget: Switch(
-                value: snapshot.data,
-                onChanged: (value) async {
-                  optimizedLessonTitlesBloc.add(value);
-                  await prefs.setBool(PrefsIds.OPTIMIZED_LESSON_TITLES, value);
-                  await PlatformChannels.deleteDb();
-                  PlatformChannels.refreshWidget();
-                },
-              ),
-            ),
+          ctx,
+          title: AppLocalizations.of(ctx).optimizedLessonTitlesTitle,
+          description:
+              AppLocalizations.of(ctx).optimizedLessonTitlesDescription,
+          rightWidget: Switch(
+            value: snapshot.data,
+            onChanged: (value) async {
+              optimizedLessonTitlesBloc.add(value);
+              await prefs.setBool(PrefsIds.OPTIMIZED_LESSON_TITLES, value);
+              await PlatformChannels.deleteDb();
+              PlatformChannels.refreshWidget();
+            },
+          ),
+        ),
       );
 
   static Widget _buildSiteApiPreference(BuildContext ctx) =>
@@ -350,68 +348,66 @@ class Prefs extends StatelessWidget {
       showDialog<SiteApi>(
         context: ctx,
         builder: (BuildContext ctx) => SimpleDialog(
-              title: Text(AppLocalizations.of(ctx).siteApiTitle),
-              children: SiteApis(ctx)
-                  .apis
-                  .asMap()
-                  .map(
-                    (index, mApi) => MapEntry(
-                        index,
-                        SimpleDialogOption(
-                          onPressed: () async {
-                            await prefs.setInt(PrefsIds.SITE_API, index);
-                            await PlatformChannels.deleteDb();
-                            siteApiBloc.add(mApi);
-                            Navigator.pop(ctx, mApi);
-                          },
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(child: Text(mApi.title)),
-                              WidgetTemplates.buildFutureBuilder(
-                                ctx,
-                                loading: Container(),
-                                future: WidgetTemplates.checkInternetConnection(
-                                  mApi.url.host,
-                                ),
-                                builder: (BuildContext ctx,
-                                        AsyncSnapshot snapshot) =>
-                                    Icon(snapshot.data
-                                        ? Icons.done
-                                        : Icons.clear),
-                              ),
-                            ],
+          title: Text(AppLocalizations.of(ctx).siteApiTitle),
+          children: SiteApis(ctx)
+              .apis
+              .asMap()
+              .map(
+                (index, mApi) => MapEntry(
+                    index,
+                    SimpleDialogOption(
+                      onPressed: () async {
+                        await prefs.setInt(PrefsIds.SITE_API, index);
+                        await PlatformChannels.deleteDb();
+                        siteApiBloc.add(mApi);
+                        Navigator.pop(ctx, mApi);
+                      },
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(child: Text(mApi.title)),
+                          WidgetTemplates.buildFutureBuilder(
+                            ctx,
+                            loading: Container(),
+                            future: WidgetTemplates.checkInternetConnection(
+                              mApi.url.host,
+                            ),
+                            builder: (BuildContext ctx,
+                                    AsyncSnapshot snapshot) =>
+                                Icon(snapshot.data ? Icons.done : Icons.clear),
                           ),
-                        )),
-                  )
-                  .values
-                  .toList(),
-            ),
+                        ],
+                      ),
+                    )),
+              )
+              .values
+              .toList(),
+        ),
       );
 
   static Widget _buildDayStylePreference(BuildContext ctx) =>
       buildDayStyleStream(
         ctx,
         (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
-              ctx,
-              title: AppLocalizations.of(ctx).dayStyleTitle,
-              description: AppLocalizations.of(ctx).dayStyleDescription,
-              rightWidget: Row(
-                children: <Widget>[
-                  Text(AppLocalizations.of(ctx).dayStyleDate),
-                  Switch(
-                    value: snapshot.data == DayStyle.Weekday,
-                    onChanged: (value) {
-                      var dayStyle = value ? DayStyle.Weekday : DayStyle.Date;
-                      dayStyleBloc.add(dayStyle);
-                      prefs
-                          .setInt(PrefsIds.DAY_STYLE, dayStyle.index)
-                          .then((_) => PlatformChannels.refreshWidget());
-                    },
-                  ),
-                  Text(AppLocalizations.of(ctx).dayStyleWeekday),
-                ],
+          ctx,
+          title: AppLocalizations.of(ctx).dayStyleTitle,
+          description: AppLocalizations.of(ctx).dayStyleDescription,
+          rightWidget: Row(
+            children: <Widget>[
+              Text(AppLocalizations.of(ctx).dayStyleDate),
+              Switch(
+                value: snapshot.data == DayStyle.Weekday,
+                onChanged: (value) {
+                  var dayStyle = value ? DayStyle.Weekday : DayStyle.Date;
+                  dayStyleBloc.add(dayStyle);
+                  prefs
+                      .setInt(PrefsIds.DAY_STYLE, dayStyle.index)
+                      .then((_) => PlatformChannels.refreshWidget());
+                },
               ),
-            ),
+              Text(AppLocalizations.of(ctx).dayStyleWeekday),
+            ],
+          ),
+        ),
       );
 
   @override
