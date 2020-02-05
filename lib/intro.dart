@@ -18,9 +18,7 @@ import 'package:ranepa_timetable/widget_templates.dart';
 class IntroScreen extends StatelessWidget {
   static const ROUTE = "/intro";
 
-  IntroScreen({
-    Key key
-  }) : super(key: key);
+  IntroScreen({Key key}) : super(key: key);
 
   PageViewModel _buildTimetable(BuildContext ctx) => PageViewModel(
         bubbleBackgroundColor: contentColor,
@@ -57,10 +55,7 @@ class IntroScreen extends StatelessWidget {
                     child: Text(
                       localizations.introWelcomeDescription,
                       style: textTheme.bodyText2.merge(
-                        TextStyle(
-                          color: Colors.white,
-                          fontSize: 20
-                        ),
+                        TextStyle(color: Colors.white, fontSize: 20),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -74,11 +69,12 @@ class IntroScreen extends StatelessWidget {
               style: textTheme.caption.merge(
                 TextStyle(
                   fontSize: 20,
-                  color: Colors.grey,
+                  color: Colors.white.withOpacity(0.5),
                 ),
               ),
             ),
-            onTap: () => AboutScreen.openUrl('https://vk.com/profcomniu_online'),
+            onTap: () =>
+                AboutScreen.openUrl('https://vk.com/profcomniu_online'),
           ),
         ],
       );
@@ -86,7 +82,7 @@ class IntroScreen extends StatelessWidget {
   get iosDarkMode => Platform.isIOS && getTheme().brightness == Brightness.dark;
 
   PageViewModel _buildWelcome() => PageViewModel(
-        pageColor: Colors.black,
+        pageColor: iosDarkMode ? Colors.black : backgroundColor,
         bubble: Icon(
           Icons.school,
           color: Colors.black,
@@ -116,8 +112,9 @@ class IntroScreen extends StatelessWidget {
           child: _buildCircleButton(
             Icons.color_lens,
             onPressed: () async {
-              if (await showThemeBrightnessSelect(ctx) != null)
-                showMaterialColorPicker(ctx);
+              if ((Platform.isAndroid &&
+                      await showThemeBrightnessSelect(ctx) != null) ||
+                  Platform.isIOS) showMaterialColorPicker(ctx);
             },
           ),
         ),

@@ -59,7 +59,10 @@ void _onThemeChange() async {
 
 final themeBloc = StreamController<ThemeData>.broadcast();
 
-final defaultTheme = ThemeData.light();
+ThemeData get defaultTheme =>
+    WidgetsBinding.instance.window.platformBrightness == Brightness.light
+        ? ThemeData.light()
+        : ThemeData.dark();
 
 StreamBuilder<ThemeData> buildThemeStream(
         AsyncWidgetBuilder<ThemeData> builder) =>
@@ -104,14 +107,14 @@ MaterialColor _toMaterialColor(Color color) {
 
 MaterialColor _accentColor;
 
-get accentColor {
+MaterialColor get accentColor {
   final prefColor = prefs.getString(PrefsIds.THEME_PRIMARY);
 
   return _accentColor != null
       ? _accentColor
       : prefColor != null
           ? _toMaterialColor(_hexToColor(prefColor))
-          : defaultTheme.primaryColor;
+          : ThemeData.light().primaryColor;
 }
 
 set accentColor(value) {
