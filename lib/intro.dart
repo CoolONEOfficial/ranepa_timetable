@@ -82,10 +82,11 @@ class IntroScreen extends StatelessWidget {
   get iosDarkMode => Platform.isIOS && getTheme().brightness == Brightness.dark;
 
   PageViewModel _buildWelcome() => PageViewModel(
+        bubbleBackgroundColor: contentColor,
         pageColor: iosDarkMode ? Colors.black : backgroundColor,
         bubble: Icon(
           Icons.school,
-          color: Colors.black,
+          color: backgroundColor,
         ),
         body: buildWelcomeTextList(
           localizations,

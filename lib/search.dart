@@ -1,13 +1,14 @@
-import 'dart:async';
+import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 import 'package:ranepa_timetable/apis.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
+import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 
 class SearchItemType {
@@ -82,61 +83,62 @@ class SearchDivider extends SearchItemBase {
   final String title;
 }
 
-class Search extends SearchDelegate<SearchItem> {
+class SearchScreen extends StatefulWidget {
+  static const ROUTE = "/search";
+
+  static Future<dynamic> showSearch(BuildContext ctx) async {
+    return await Navigator.pushNamed(ctx, SearchScreen.ROUTE);
+  }
+
+  static _capitalizeString(String str) =>
+      str[0].toUpperCase() + str.substring(1).toLowerCase();
+
+  @override
+  _SearchScreenState createState() => _SearchScreenState();
+}
+
+class _SearchScreenState extends State<SearchScreen> {
+  _cancelPressed(BuildContext ctx) => Navigator.pop(ctx);
+
+  _searchPlaceholder(BuildContext ctx) =>
+      MaterialLocalizations.of(ctx).searchFieldLabel;
+
+  get predefinedSuggestions => [
+        SearchDivider(AppLocalizations.of(context).groupInformatics),
+        SearchItem(SearchItemTypeId.Group, 15869, "Иб-011"),
+        SearchItem(SearchItemTypeId.Group, 15834, "Иб-021"),
+        SearchItem(SearchItemTypeId.Group, 15835, "Иб-022"),
+        SearchItem(SearchItemTypeId.Group, 15864, "Иб-031"),
+        SearchItem(SearchItemTypeId.Group, 15859, "Иб-041"),
+        SearchDivider(AppLocalizations.of(context).groupEconomics),
+        SearchItem(SearchItemTypeId.Group, 15856, "Эк-111"),
+        SearchItem(SearchItemTypeId.Group, 15844, "Эк-121"),
+        SearchItem(SearchItemTypeId.Group, 15882, "Эб-011"),
+        SearchItem(SearchItemTypeId.Group, 15827, "Эб-021"),
+        SearchItem(SearchItemTypeId.Group, 15828, "Эб-022"),
+        SearchItem(SearchItemTypeId.Group, 15845, "Эб-031"),
+        SearchItem(SearchItemTypeId.Group, 15847, "Эб-032"),
+        SearchDivider(AppLocalizations.of(context).searchResults),
+      ];
   List<SearchItemBase> webSuggestions = [];
 
-  final List<SearchItemBase> predefinedSuggestions;
-
-  Search(BuildContext ctx)
-      : predefinedSuggestions = [
-          SearchDivider(AppLocalizations.of(ctx).groupInformatics),
-          SearchItem(SearchItemTypeId.Group, 15869, "Иб-011"),
-          SearchItem(SearchItemTypeId.Group, 15834, "Иб-021"),
-          SearchItem(SearchItemTypeId.Group, 15835, "Иб-022"),
-          SearchItem(SearchItemTypeId.Group, 15864, "Иб-031"),
-          SearchItem(SearchItemTypeId.Group, 15859, "Иб-041"),
-          SearchDivider(AppLocalizations.of(ctx).groupEconomics),
-          SearchItem(SearchItemTypeId.Group, 15856, "Эк-111"),
-          SearchItem(SearchItemTypeId.Group, 15844, "Эк-121"),
-          SearchItem(SearchItemTypeId.Group, 15882, "Эб-011"),
-          SearchItem(SearchItemTypeId.Group, 15827, "Эб-021"),
-          SearchItem(SearchItemTypeId.Group, 15828, "Эб-022"),
-          SearchItem(SearchItemTypeId.Group, 15845, "Эб-031"),
-          SearchItem(SearchItemTypeId.Group, 15847, "Эб-032"),
-          SearchDivider(AppLocalizations.of(ctx).searchResults),
-        ];
-
-  @override
-  List<Widget> buildActions(ctx) {
-    return [
-      PlatformIconButton(
-        icon: Icon(PlatformIcons(ctx).clear),
-        onPressed: () {
-          query = "";
-        },
-      )
-    ];
+  initState() {
+    super.initState();
   }
 
-  @override
-  Widget buildLeading(ctx) {
-    return PlatformIconButton(
-        icon: AnimatedIcon(
-            icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
-        onPressed: () {
-          close(ctx, null);
-        });
-  }
+  TextEditingController searchController = TextEditingController();
 
-  static Response _newApiCachedResults;
+  get query => searchController.text;
 
-  Future<Response> _buildHttpRequest(SiteApiIds api) {
+  static http.Response _newApiCachedResults;
+
+  Future<http.Response> _buildHttpRequest(SiteApiIds api) {
     switch (api) {
       case SiteApiIds.APP_NEW:
         return _newApiCachedResults == null
             ? http.get('http://services.niu.ranepa.ru/'
                 'API/public/teacher/teachersAndGroupsList')
-            : Future<Response>.value(_newApiCachedResults);
+            : Future<http.Response>.value(_newApiCachedResults);
       case SiteApiIds.APP_OLD:
         return http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
             headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
@@ -158,14 +160,14 @@ class Search extends SearchDelegate<SearchItem> {
   }
 
   @override
-  Widget buildSuggestions(ctx) {
+  Widget buildSuggestions(BuildContext ctx) {
     debugPrint("Suggestions build start");
     webSuggestions.clear();
     var api = SiteApiIds
         .values[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index];
-    return query.isEmpty
+    return searchController.text.isEmpty
         ? _buildSuggestions()
-        : RegExp(r"^[(А-я)\d\s\-]+$").hasMatch(query)
+        : RegExp(r"^[(А-я)\d\s\-]+$").hasMatch(searchController.text)
             ? WidgetTemplates.buildFutureBuilder(
                 ctx,
                 future: _buildHttpRequest(api).then((response) => response),
@@ -256,6 +258,8 @@ class Search extends SearchDelegate<SearchItem> {
   }
 
   Widget _buildSuggestions() {
+    final query = searchController.text;
+
     final queryPredefinedSuggestions = query.isEmpty
         ? predefinedSuggestions
         : predefinedSuggestions.where((mSearchItemBase) {
@@ -285,22 +289,33 @@ class Search extends SearchDelegate<SearchItem> {
       }
     }
 
-    return ListView.builder(
-        itemBuilder: (ctx, index) {
-          final mItem = suggestions[index];
+    return Container(
+      color: Platform.isIOS
+          ? getTheme().brightness == Brightness.dark
+              ? Colors.black
+              : Colors.white
+          : Colors.transparent,
+      child: ListView.separated(
+          separatorBuilder: (ctx, _) => Divider(color: getTheme().dividerColor, height: 1,),
+          itemBuilder: (ctx, index) {
+            final mItem = suggestions[index];
 
-          final ThemeData theme = Theme.of(ctx);
-          if (mItem is SearchItem) {
-            final queryIndex =
-                    mItem.title.indexOf(RegExp(query, caseSensitive: false)),
-                selectColor = theme.textSelectionColor,
-                normalColor = theme.textTheme.headline6.color;
+            final ThemeData theme = Theme.of(ctx);
+            if (mItem is SearchItem) {
+              final queryIndex =
+                      mItem.title.indexOf(RegExp(query, caseSensitive: false)),
+                  selectColor = theme.textSelectionColor,
+                  normalColor = theme.textTheme.headline6.color;
 
-            return ListTile(
+              return WidgetTemplates.buildListTile(
+                ctx,
                 onTap: () {
-                  close(ctx, mItem);
+                  Navigator.pop(ctx, mItem);
                 },
-                leading: Icon(searchItemTypes[mItem.typeId.index].icon),
+                leading: Icon(
+                  searchItemTypes[mItem.typeId.index].icon,
+                  color: Platform.isIOS ? theme.accentColor : null,
+                ),
                 title: RichText(
                   // Recent suggestion
                   text: queryIndex == 0
@@ -347,40 +362,91 @@ class Search extends SearchDelegate<SearchItem> {
                             )
                           ],
                         ),
-                ));
-          } else if (mItem is SearchDivider) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(left: 15, top: 15),
-                  child: Text(mItem.title, style: theme.textTheme.caption),
                 ),
-                Divider(),
-              ],
-            );
-          }
-          return null;
-        },
-        itemCount: suggestions?.length ?? 0);
+              );
+            } else if (mItem is SearchDivider) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(left: 16.0, top: 16.0, bottom: 8.0),
+                    child: Text(mItem.title, style: theme.textTheme.caption),
+                  ),
+                ],
+              );
+            }
+            return null;
+          },
+          itemCount: suggestions?.length ?? 0),
+    );
   }
 
   @override
-  Widget buildResults(BuildContext ctx) {
-    return Container();
-  }
-
-  @override
-  ThemeData appBarTheme(BuildContext ctx) {
-    final ThemeData theme = Theme.of(ctx);
-
-    return theme.brightness == Brightness.light
-        ? super.appBarTheme(ctx)
-        : theme.copyWith(
-            primaryColor: theme.primaryColor,
-            primaryIconTheme: theme.primaryIconTheme,
-            primaryColorBrightness: theme.primaryColorBrightness,
-            primaryTextTheme: theme.primaryTextTheme,
-          );
+  Widget build(BuildContext ctx) {
+    return PlatformScaffold(
+      appBar: PlatformAppBar(
+        ios: (ctx) => CupertinoNavigationBarData(
+          padding: const EdgeInsetsDirectional.only(end: 15),
+        ),
+        leading: !Platform.isIOS
+            ? PlatformIconButton(
+                padding: EdgeInsets.zero,
+                icon: Icon(
+                  ctx.platformIcons.back,
+                ),
+                onPressed: () => _cancelPressed(ctx),
+              )
+            : SizedBox(
+                width: 0,
+              ),
+        trailingActions: Platform.isIOS
+            ? <Widget>[
+                CupertinoButton(
+                  padding: EdgeInsets.only(left: 15),
+                  child: Text(
+                    SearchScreen._capitalizeString(
+                        MaterialLocalizations.of(ctx).cancelButtonLabel),
+                    style: getTheme().textTheme.bodyText2,
+                  ),
+                  onPressed: () => _cancelPressed(ctx),
+                ),
+              ]
+            : [],
+        title: PlatformTextField(
+          controller: searchController,
+          maxLines: 1,
+          autocorrect: true,
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+          textInputAction: TextInputAction.search,
+          keyboardType: TextInputType.text,
+          onSubmitted: (_) {
+            setState(() {});
+          },
+          onChanged: (_) {
+            setState(() {});
+          },
+          ios: (ctx) => CupertinoTextFieldData(
+              prefix: Padding(
+                padding: const EdgeInsets.only(left: 5),
+                child: Icon(
+                  CupertinoIcons.search,
+                  size: 20,
+                  color: getTheme().accentColor,
+                ),
+              ),
+              placeholder: _searchPlaceholder(ctx),
+              clearButtonMode: OverlayVisibilityMode.editing,
+              cursorColor: getTheme().accentColor),
+          android: (ctx) => MaterialTextFieldData(
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: _searchPlaceholder(ctx),
+            ),
+          ),
+        ),
+      ),
+      body: buildSuggestions(ctx),
+    );
   }
 }

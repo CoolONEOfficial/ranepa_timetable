@@ -13,39 +13,80 @@ import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
 
 class WidgetTemplates {
-  static Widget buildPreferenceButton(BuildContext ctx,
-      {@required String title,
-      @required String description,
-      VoidCallback onPressed,
-      Widget rightWidget,
-      Widget bottomWidget}) {
+  static Widget buildDivider() => Divider(
+        height: Platform.isIOS ? 0 : 1,
+        color: Platform.isIOS
+            ? Color(0x4D000000)
+            : getTheme().textTheme.caption.color,
+      );
+
+  static Widget buildListTile(
+    BuildContext ctx, {
+    @required Widget title,
+    Widget subtitle,
+    VoidCallback onTap,
+    Widget leading,
+    Widget trailing,
+    Widget bottom,
+    EdgeInsets padding,
+  }) {
     var expandedChildren = <Widget>[
-      Text(
-        title,
-        style: Theme.of(ctx).textTheme.subhead,
-      ),
-      Container(
-        height: 2,
-      ),
-      Text(
-        description,
-        style: Theme.of(ctx).textTheme.caption,
-      ),
+      DefaultTextStyle(
+        style: Theme.of(ctx).textTheme.subtitle1,
+        child: title,
+      )
     ];
 
-    if (bottomWidget != null) expandedChildren.add(bottomWidget);
+    if (subtitle != null)
+      expandedChildren.addAll([
+        SizedBox(
+          height: 2,
+        ),
+        DefaultTextStyle(
+          style: Theme.of(ctx).textTheme.caption,
+          child: subtitle,
+        ),
+      ]);
 
-    var rowChildren = <Widget>[
-      Expanded(child: ListBody(children: expandedChildren)),
-    ];
+    if (bottom != null) expandedChildren.add(bottom);
 
-    if (rightWidget != null) rowChildren.add(rightWidget);
+    List<Widget> rowChildren = [];
+
+    if (leading != null)
+      rowChildren.add(
+        Padding(
+          padding: const EdgeInsets.only(right: 14.0),
+          child: leading,
+        ),
+      );
+
+    rowChildren.add(Expanded(
+      child: ListBody(
+        children: expandedChildren,
+      ),
+    ));
+
+    if (trailing != null)
+      rowChildren.add(
+        Padding(
+          padding: const EdgeInsets.only(left: 14.0),
+          child: trailing,
+        ),
+      );
 
     return FlatButton(
-      child: Container(
-          padding: EdgeInsets.symmetric(vertical: 18.0),
-          child: Row(children: rowChildren)),
-      onPressed: onPressed ?? () {},
+      color: Platform.isIOS ? CupertinoTheme.of(ctx).barBackgroundColor : null,
+      splashColor: Platform.isIOS ? Colors.transparent : null,
+      child: Padding(
+        padding: padding ??
+            EdgeInsets.symmetric(
+              vertical: Platform.isIOS ? 12.0 : 16.0,
+            ),
+        child: Row(
+          children: rowChildren,
+        ),
+      ),
+      onPressed: onTap ?? () {},
     );
   }
 
@@ -60,7 +101,7 @@ class WidgetTemplates {
             Container(height: 20),
             Text(
               text,
-              style: Theme.of(ctx).textTheme.title,
+              style: Theme.of(ctx).textTheme.headline6,
             )
           ],
         ),
@@ -76,7 +117,11 @@ class WidgetTemplates {
         text,
         FittedBox(
           fit: BoxFit.scaleDown,
-          child: Icon(icon, size: 140),
+          child: Icon(
+            icon,
+            size: 140,
+            color: Platform.isIOS ? getTheme().accentColor : null,
+          ),
         ),
       );
 

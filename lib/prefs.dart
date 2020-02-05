@@ -9,7 +9,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_duration_picker/flutter_duration_picker.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:ranepa_timetable/about.dart';
 import 'package:ranepa_timetable/apis.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/main.dart';
@@ -47,10 +46,7 @@ Future<SearchItem> showSearchItemSelect(
   BuildContext ctx, {
   primary = true,
 }) async {
-  final searchItem = await showSearch<SearchItem>(
-    context: ctx,
-    delegate: Search(ctx),
-  );
+  final searchItem = await SearchScreen.showSearch(ctx);
 
   if (searchItem != null) {
     if (primary) {
@@ -150,11 +146,11 @@ class PrefsScreen extends StatelessWidget {
   static const ROUTE = "/prefs";
 
   static Widget _buildThemePreference(BuildContext ctx) =>
-      WidgetTemplates.buildPreferenceButton(
+      WidgetTemplates.buildListTile(
         ctx,
-        title: AppLocalizations.of(ctx).themeTitle,
-        description: AppLocalizations.of(ctx).themeDescription,
-        rightWidget: buildThemeStream(
+        title: Text(AppLocalizations.of(ctx).themeTitle),
+        subtitle: Text(AppLocalizations.of(ctx).themeDescription),
+        trailing: buildThemeStream(
           (ctx, snapshot) => PlatformSwitch(
             value: brightness == Brightness.dark,
             onChanged: (value) {
@@ -165,12 +161,12 @@ class PrefsScreen extends StatelessWidget {
       );
 
   static Widget _buildThemeAccentPreference(BuildContext ctx) =>
-      WidgetTemplates.buildPreferenceButton(
+      WidgetTemplates.buildListTile(
         ctx,
-        title: AppLocalizations.of(ctx).themeAccentTitle,
-        description: AppLocalizations.of(ctx).themeAccentDescription,
-        onPressed: () => showMaterialColorPicker(ctx),
-        rightWidget: buildThemeStream(
+        title: Text(AppLocalizations.of(ctx).themeAccentTitle),
+        subtitle: Text(AppLocalizations.of(ctx).themeAccentDescription),
+        onTap: () => showMaterialColorPicker(ctx),
+        trailing: buildThemeStream(
           (ctx, snapshot) => Container(
             width: 30,
             height: 30,
@@ -186,11 +182,11 @@ class PrefsScreen extends StatelessWidget {
       StreamBuilder<bool>(
         initialData: prefs.getBool(PrefsIds.WIDGET_TRANSLUCENT) ?? true,
         stream: widgetTranslucentBloc.stream,
-        builder: (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
+        builder: (ctx, snapshot) => WidgetTemplates.buildListTile(
           ctx,
-          title: AppLocalizations.of(ctx).widgetTranslucentTitle,
-          description: AppLocalizations.of(ctx).widgetTranslucentDescription,
-          rightWidget: PlatformSwitch(
+          title: Text(AppLocalizations.of(ctx).widgetTranslucentTitle),
+          subtitle: Text(AppLocalizations.of(ctx).widgetTranslucentDescription),
+          trailing: PlatformSwitch(
             value: snapshot.data,
             onChanged: (value) {
               widgetTranslucentBloc.add(value);
@@ -219,12 +215,12 @@ class PrefsScreen extends StatelessWidget {
       });
 
   static Widget _buildBeforeAlarmClockPreference(BuildContext ctx) =>
-      WidgetTemplates.buildPreferenceButton(
+      WidgetTemplates.buildListTile(
         ctx,
-        title: AppLocalizations.of(ctx).beforeAlarmClockTitle,
-        description: AppLocalizations.of(ctx).beforeAlarmClockDescription,
-        onPressed: () => showBeforeAlarmClockSelect(ctx),
-        rightWidget: StreamBuilder<Duration>(
+        title: Text(AppLocalizations.of(ctx).beforeAlarmClockTitle),
+        subtitle: Text(AppLocalizations.of(ctx).beforeAlarmClockDescription),
+        onTap: () => showBeforeAlarmClockSelect(ctx),
+        trailing: StreamBuilder<Duration>(
           stream: beforeAlarmBloc.stream,
           initialData:
               Duration(minutes: prefs.getInt(PrefsIds.BEFORE_ALARM_CLOCK) ?? 0),
@@ -243,12 +239,12 @@ class PrefsScreen extends StatelessWidget {
       );
 
   static Widget _buildSearchItemPreference(BuildContext ctx) =>
-      WidgetTemplates.buildPreferenceButton(
+      WidgetTemplates.buildListTile(
         ctx,
-        title: AppLocalizations.of(ctx).groupTitle,
-        description: AppLocalizations.of(ctx).groupDescription,
-        onPressed: () => showSearchItemSelect(ctx),
-        rightWidget: StreamBuilder<Tuple2<bool, SearchItem>>(
+        title: Text(AppLocalizations.of(ctx).groupTitle),
+        subtitle: Text(AppLocalizations.of(ctx).groupDescription),
+        onTap: () => showSearchItemSelect(ctx),
+        trailing: StreamBuilder<Tuple2<bool, SearchItem>>(
           stream: timetableIdBloc.stream,
           initialData: Tuple2<bool, SearchItem>(null, SearchItem.fromPrefs()),
           builder: (ctx, snapshot) => Text(
@@ -283,25 +279,28 @@ class PrefsScreen extends StatelessWidget {
   static Widget _buildRoomLocationStylePreference(BuildContext ctx) =>
       buildRoomLocationStyleStream(
         ctx,
-        (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
+        (ctx, snapshot) => WidgetTemplates.buildListTile(
           ctx,
-          title: AppLocalizations.of(ctx).roomLocationStyleText,
-          description: snapshot.data == RoomLocationStyle.Icon
+          title: Text(AppLocalizations.of(ctx).roomLocationStyleText),
+          subtitle: Text(snapshot.data == RoomLocationStyle.Icon
               ? AppLocalizations.of(ctx).roomLocationStyleDescriptionIcon
-              : AppLocalizations.of(ctx).roomLocationStyleDescriptionText,
-          rightWidget: Row(
+              : AppLocalizations.of(ctx).roomLocationStyleDescriptionText),
+          trailing: Row(
             children: <Widget>[
               Icon(Icons.text_format),
-              PlatformSwitch(
-                value: snapshot.data == RoomLocationStyle.Icon,
-                onChanged: (value) {
-                  var rlStyle =
-                      value ? RoomLocationStyle.Icon : RoomLocationStyle.Text;
-                  roomLocationStyleBloc.add(rlStyle);
-                  prefs
-                      .setInt(PrefsIds.ROOM_LOCATION_STYLE, rlStyle.index)
-                      .then((_) => PlatformChannels.refreshWidget());
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: PlatformSwitch(
+                  value: snapshot.data == RoomLocationStyle.Icon,
+                  onChanged: (value) {
+                    var rlStyle =
+                        value ? RoomLocationStyle.Icon : RoomLocationStyle.Text;
+                    roomLocationStyleBloc.add(rlStyle);
+                    prefs
+                        .setInt(PrefsIds.ROOM_LOCATION_STYLE, rlStyle.index)
+                        .then((_) => PlatformChannels.refreshWidget());
+                  },
+                ),
               ),
               Icon(Icons.image),
             ],
@@ -313,12 +312,12 @@ class PrefsScreen extends StatelessWidget {
       StreamBuilder<bool>(
         initialData: prefs.getBool(PrefsIds.OPTIMIZED_LESSON_TITLES) ?? true,
         stream: optimizedLessonTitlesBloc.stream,
-        builder: (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
+        builder: (ctx, snapshot) => WidgetTemplates.buildListTile(
           ctx,
-          title: AppLocalizations.of(ctx).optimizedLessonTitlesTitle,
-          description:
-              AppLocalizations.of(ctx).optimizedLessonTitlesDescription,
-          rightWidget: PlatformSwitch(
+          title: Text(AppLocalizations.of(ctx).optimizedLessonTitlesTitle),
+          subtitle:
+              Text(AppLocalizations.of(ctx).optimizedLessonTitlesDescription),
+          trailing: PlatformSwitch(
             value: snapshot.data,
             onChanged: (value) async {
               optimizedLessonTitlesBloc.add(value);
@@ -331,12 +330,12 @@ class PrefsScreen extends StatelessWidget {
       );
 
   static Widget _buildSiteApiPreference(BuildContext ctx) =>
-      WidgetTemplates.buildPreferenceButton(
+      WidgetTemplates.buildListTile(
         ctx,
-        title: AppLocalizations.of(ctx).siteApiTitle,
-        description: AppLocalizations.of(ctx).siteApiDescription,
-        onPressed: () => showSiteApiSelect(ctx),
-        rightWidget: StreamBuilder<SiteApi>(
+        title: Text(AppLocalizations.of(ctx).siteApiTitle),
+        subtitle: Text(AppLocalizations.of(ctx).siteApiDescription),
+        onTap: () => showSiteApiSelect(ctx),
+        trailing: StreamBuilder<SiteApi>(
           builder: (BuildContext ctx, AsyncSnapshot<SiteApi> snapshot) =>
               Text(snapshot.data.title),
           stream: siteApiBloc.stream,
@@ -390,11 +389,11 @@ class PrefsScreen extends StatelessWidget {
   static Widget _buildDayStylePreference(BuildContext ctx) =>
       buildDayStyleStream(
         ctx,
-        (ctx, snapshot) => WidgetTemplates.buildPreferenceButton(
+        (ctx, snapshot) => WidgetTemplates.buildListTile(
           ctx,
-          title: AppLocalizations.of(ctx).dayStyleTitle,
-          description: AppLocalizations.of(ctx).dayStyleDescription,
-          rightWidget: Row(
+          title: Text(AppLocalizations.of(ctx).dayStyleTitle),
+          subtitle: Text(AppLocalizations.of(ctx).dayStyleDescription),
+          trailing: Row(
             children: <Widget>[
               Text(AppLocalizations.of(ctx).dayStyleDate),
               PlatformSwitch(
@@ -416,74 +415,56 @@ class PrefsScreen extends StatelessWidget {
     List<Widget> entries = [];
 
     if (!Platform.isIOS) {
-      entries.addAll([
-        _buildThemePreference(ctx),
-        Divider(height: 0),
-      ]);
+      entries.add(_buildThemePreference(ctx));
     }
 
     entries.addAll([
       _buildThemeAccentPreference(ctx),
-      Divider(height: 0),
-    ]);
-
-    entries.addAll([
       _buildSearchItemPreference(ctx),
-      Divider(height: 0),
-    ]);
-
-    entries.addAll([
-      _buildBeforeAlarmClockPreference(ctx),
-      Divider(height: 0),
     ]);
 
     if (Platform.isAndroid) {
       entries.addAll([
+        _buildBeforeAlarmClockPreference(ctx),
         _buildWidgetTranslucentPreference(ctx),
-        Divider(height: 0),
       ]);
     }
 
     entries.addAll([
       _buildRoomLocationStylePreference(ctx),
-      Divider(height: 0),
-    ]);
-
-    entries.addAll([
       _buildSiteApiPreference(ctx),
-      Divider(height: 0),
-    ]);
-
-    entries.addAll([
       _buildOptimizedLessonTitlesPreference(ctx),
-      Divider(height: 0),
     ]);
 
     if (!Platform.isIOS) {
-      entries.addAll([
-        _buildDayStylePreference(ctx),
-        Divider(height: 0),
-      ]);
+      entries.add(_buildDayStylePreference(ctx));
     }
 
     return entries;
   }
 
   @override
-  Widget build(BuildContext ctx) => PlatformScaffold(
-        appBar: PlatformAppBar(
-          title: Text(AppLocalizations.of(ctx).prefs),
-          leading: PlatformIconButton(
-            padding: EdgeInsets.zero,
-            icon: Icon(
-              ctx.platformIcons.back,
-              color: Platform.isIOS ? getTheme().accentColor : null,
-            ),
-            onPressed: () => Navigator.pop(ctx),
+  Widget build(BuildContext ctx) {
+    List<Widget> prefs = buildPrefsEntries(ctx);
+
+    return PlatformScaffold(
+      appBar: PlatformAppBar(
+        title: Text(AppLocalizations.of(ctx).prefs),
+        leading: PlatformIconButton(
+          padding: EdgeInsets.zero,
+          icon: Icon(
+            ctx.platformIcons.back,
+            color: Platform.isIOS ? getTheme().accentColor : null,
           ),
+          onPressed: () => Navigator.pop(ctx),
         ),
-        body: ListView(
-          children: buildPrefsEntries(ctx),
-        ),
-      );
+      ),
+      body: ListView.separated(
+        itemCount: prefs.length,
+        itemBuilder: (ctx, index) => prefs[index],
+        separatorBuilder: (ctx, _) =>
+            Platform.isIOS ? WidgetTemplates.buildDivider() : Container(),
+      ),
+    );
+  }
 }

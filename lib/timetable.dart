@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
 import 'package:android_intent/android_intent.dart';
 import 'package:device_calendar/device_calendar.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -542,7 +540,8 @@ class CupertinoCustomNavigationBar extends StatelessWidget
               ),
             ),
           ),
-        )
+        ),
+        WidgetTemplates.buildDivider(),
       ],
     );
   }
@@ -1001,13 +1000,10 @@ class _TimetableScreenState extends State<TimetableScreen>
                   )),
               ios: (ctx) => CupertinoPageScaffoldData(
                 navigationBar: CupertinoCustomNavigationBar(
-                  bottom: StreamBuilder(
-                    stream: themeBloc.stream,
-                    builder: (ctx, _) => CupertinoTabBar(
-                      controller: _tabController,
-                      titles: tabs,
-                    ),
-                  ),
+                  bottom: buildThemeStream((ctx, _) => CupertinoTabBar(
+                        controller: _tabController,
+                        titles: tabs,
+                      )),
                   title: appBarTitle(ssSearchItem),
                   leading: Row(
                     mainAxisSize: MainAxisSize.min,

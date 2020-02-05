@@ -13,6 +13,7 @@ import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/platform_channels.dart';
 import 'package:ranepa_timetable/prefs.dart';
+import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
@@ -91,6 +92,7 @@ class BaseWidget extends StatelessWidget {
                 PrefsScreen.ROUTE: (ctx) => PrefsScreen(),
                 AboutScreen.ROUTE: (ctx) => AboutScreen(),
                 IntroScreen.ROUTE: (ctx) => IntroScreen(),
+                SearchScreen.ROUTE: (ctx) => SearchScreen(),
                 TimetableScreen.ROUTE: (ctx) => TimetableScreen(),
               },
               initialRoute: prefs.getInt(
