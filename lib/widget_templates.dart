@@ -1,11 +1,14 @@
 import 'dart:io';
 
 import 'package:connectivity/connectivity.dart';
+import 'package:flushbar/flushbar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/search.dart';
+import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/timetable_icons.dart';
 
@@ -144,6 +147,32 @@ class WidgetTemplates {
     return _buildIconNotification(ctx, AppLocalizations.of(ctx).freeDay, icon);
   }
 
+  static Flushbar buildFlushbar(
+    BuildContext ctx,
+    String msg, {
+    String title,
+    IconData iconData,
+  }) =>
+      Flushbar(
+        title: title,
+        messageText: Text(
+          msg,
+          style: (Platform.isIOS
+                  ? getTheme().textTheme
+                  : getTheme().accentTextTheme)
+              .bodyText2,
+        ),
+        icon: Icon(iconData,
+            color: Platform.isIOS
+                ? getTheme().primaryColor
+                : getTheme().accentIconTheme.color),
+        duration: Duration(seconds: 3),
+        flushbarStyle: FlushbarStyle.GROUNDED,
+        backgroundColor: Platform.isIOS
+            ? CupertinoTheme.of(ctx).barBackgroundColor
+            : getTheme().accentColor,
+      );
+
   static Widget buildFutureBuilder<T>(
     BuildContext ctx, {
     @required Future future,
@@ -185,7 +214,6 @@ class WidgetTemplates {
   static Future<bool> checkInternetConnection() async {
     var conn = await Connectivity().checkConnectivity();
     print("conn status: $conn");
-    return conn !=
-        ConnectivityResult.none;
+    return conn != ConnectivityResult.none;
   }
 }

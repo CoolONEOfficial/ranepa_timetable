@@ -532,14 +532,14 @@ class AppLocalizations {
 
   String get themeTitle {
     return Intl.message(
-      'Theme',
+      'Dark mode',
       name: 'themeTitle',
     );
   }
 
   String get themeDescription {
     return Intl.message(
-      'Color scheme of the application and widget',
+      'Dark color scheme of the application and widget',
       name: 'themeDescription',
     );
   }

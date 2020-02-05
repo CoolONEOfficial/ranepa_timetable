@@ -6,6 +6,7 @@ import 'dart:ui';
 
 import 'package:android_intent/android_intent.dart';
 import 'package:device_calendar/device_calendar.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -386,11 +387,12 @@ class TimetableScreen extends StatefulWidget {
     final beforeAlarmClock = Duration(minutes: beforeAlarmClockStr);
 
     String snackBarText;
+    IconData snackBarIcon = Icons.error_outline;
 
     final alarmLessonDate = nextDayDate;
     final alarmDay = timetable[alarmLessonDate];
 
-    if (alarmDay.isNotEmpty) {
+    if (alarmDay?.isNotEmpty ?? false) {
       final alarmLesson = alarmDay.first;
       final alarmClock =
           _toDateTime(alarmLesson.start).subtract(beforeAlarmClock);
@@ -405,15 +407,18 @@ class TimetableScreen extends StatefulWidget {
         },
       ).launch();
 
+      snackBarIcon = Icons.done;
       snackBarText = AppLocalizations.of(ctx).alarmAddSuccess +
           TimeOfDay.fromDateTime(alarmClock).format(ctx);
-    } else
+    } else {
       snackBarText = AppLocalizations.of(ctx).noLessonsFound;
-    scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        content: Text(snackBarText),
-      ),
-    );
+    }
+
+    WidgetTemplates.buildFlushbar(
+      ctx,
+      snackBarText,
+      iconData: snackBarIcon,
+    )..show(ctx);
   }
 
   DeviceCalendarPlugin _deviceCalendarPlugin;
@@ -422,7 +427,8 @@ class TimetableScreen extends StatefulWidget {
     BuildContext ctx,
     DeviceCalendarPlugin calPlugin,
   ) async {
-    String snackBarText;
+    String snackBarText = AppLocalizations.of(ctx).calendarEventsAddFailed;
+    IconData snackBarIcon = Icons.error_outline;
 
     // Get calendar permissions if required
     var permissionsGrantedResult = await calPlugin.hasPermissions();
@@ -431,8 +437,6 @@ class TimetableScreen extends StatefulWidget {
       permissionsGrantedResult = await calPlugin.requestPermissions();
       if (permissionsGrantedResult.isSuccess && permissionsGrantedResult.data)
         permissionsGranted = true;
-      else
-        snackBarText = AppLocalizations.of(ctx).calendarEventsAddFailed;
     }
 
     if (permissionsGranted) {
@@ -443,7 +447,7 @@ class TimetableScreen extends StatefulWidget {
 
         final eventsDay = timetable[nextDayDate];
 
-        if (eventsDay.isNotEmpty) {
+        if (eventsDay?.isNotEmpty ?? false) {
           for (var mLesson in eventsDay) {
             calPlugin.createOrUpdateEvent(
               Event(
@@ -455,6 +459,7 @@ class TimetableScreen extends StatefulWidget {
               ),
             );
           }
+          snackBarIcon = Icons.done;
           snackBarText = AppLocalizations.of(ctx).calendarEventsAddSuccess;
         } else
           snackBarText = AppLocalizations.of(ctx).noLessonsFound;
@@ -462,11 +467,17 @@ class TimetableScreen extends StatefulWidget {
         snackBarText = AppLocalizations.of(ctx).calendarGetFailed;
     }
 
-    scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        content: Text(snackBarText),
-      ),
-    );
+    WidgetTemplates.buildFlushbar(
+      ctx,
+      snackBarText,
+      iconData: snackBarIcon,
+    )..show(ctx);
+
+//    scaffoldKey.currentState.showSnackBar(
+//      SnackBar(
+//        content: Text(snackBarText),
+//      ),
+//    );
   }
 
   @override
@@ -588,7 +599,7 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
   // saves the previous value of the tab animation. It's used to figure the direction of the animation
   double _prevAniValue = 0.0;
 
-  get _foregroundOn => getTheme().textTheme.bodyText2.color;
+  get _foregroundOn => getTheme().accentIconTheme.color;
 
   Color get _foregroundOff {
     return getTheme().brightness == Brightness.dark
@@ -1029,7 +1040,6 @@ class _TimetableScreenState extends State<TimetableScreen>
                   ),
                 ),
               ),
-              key: scaffoldKey,
               body: StreamBuilder<void>(
                 stream: timetableFutureBuilderBloc.stream,
                 builder: (ctx, _) => WidgetTemplates.buildFutureBuilder(ctx,
@@ -1198,8 +1208,6 @@ String getWeekdayTitle(BuildContext ctx, DateTime day) {
     AppLocalizations.of(ctx).saturday
   ][day.weekday - 1];
 }
-
-final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 final beforeAlarmBloc = StreamController<Duration>.broadcast();
 
