@@ -588,7 +588,7 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
   // saves the previous value of the tab animation. It's used to figure the direction of the animation
   double _prevAniValue = 0.0;
 
-  Color _foregroundOn = Colors.white;
+  get _foregroundOn => getTheme().textTheme.bodyText2.color;
 
   Color get _foregroundOff {
     return getTheme().brightness == Brightness.dark
