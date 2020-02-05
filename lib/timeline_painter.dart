@@ -12,6 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -68,7 +69,9 @@ class TimelinePainter extends CustomPainter {
         new Radius.circular(rectCornersRadius),
       ),
       Paint()
-        ..color = theme.backgroundColor
+        ..color = Platform.isIOS && theme.brightness == Brightness.dark
+            ? theme.backgroundColor.withOpacity(0.3)
+            : theme.backgroundColor
         ..strokeCap = StrokeCap.round
         ..style = PaintingStyle.fill,
     );

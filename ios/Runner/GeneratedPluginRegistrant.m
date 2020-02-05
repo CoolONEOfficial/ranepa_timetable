@@ -4,6 +4,12 @@
 
 #import "GeneratedPluginRegistrant.h"
 
+#if __has_include(<connectivity/FLTConnectivityPlugin.h>)
+#import <connectivity/FLTConnectivityPlugin.h>
+#else
+@import connectivity;
+#endif
+
 #if __has_include(<device_calendar/DeviceCalendarPlugin.h>)
 #import <device_calendar/DeviceCalendarPlugin.h>
 #else
@@ -43,6 +49,7 @@
 @implementation GeneratedPluginRegistrant
 
 + (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {
+  [FLTConnectivityPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTConnectivityPlugin"]];
   [DeviceCalendarPlugin registerWithRegistrar:[registry registrarForPlugin:@"DeviceCalendarPlugin"]];
   [FlutterEmailSenderPlugin registerWithRegistrar:[registry registrarForPlugin:@"FlutterEmailSenderPlugin"]];
   [FLTPackageInfoPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTPackageInfoPlugin"]];

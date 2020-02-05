@@ -3,20 +3,21 @@
 // messages from the main program should be duplicated here with the same
 // function name.
 
+// Ignore issues from commonly used lints in this file.
+// ignore_for_file:unnecessary_brace_in_string_interps, unnecessary_new
+// ignore_for_file:prefer_single_quotes,comment_references, directives_ordering
+// ignore_for_file:annotate_overrides,prefer_generic_function_type_aliases
+// ignore_for_file:unused_import, file_names
+
 import 'package:intl/intl.dart';
 import 'package:intl/message_lookup_by_library.dart';
 
-// ignore: unnecessary_new
 final messages = new MessageLookup();
 
-// ignore: unused_element
-final _keepAnalysisHappy = Intl.defaultLocale;
-
-// ignore: non_constant_identifier_names
-typedef MessageIfAbsent(String message_str, List args);
+typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 
 class MessageLookup extends MessageLookupByLibrary {
-  get localeName => 'messages';
+  String get localeName => 'messages';
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
@@ -120,9 +121,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "themeAccentDescription" : MessageLookupByLibrary.simpleMessage("Accent color of theme"),
     "themeAccentTitle" : MessageLookupByLibrary.simpleMessage("Theme accent color"),
     "themeDark" : MessageLookupByLibrary.simpleMessage("Dark"),
-    "themeDescription" : MessageLookupByLibrary.simpleMessage("Color scheme of the application and widget"),
+    "themeDescription" : MessageLookupByLibrary.simpleMessage("Dark color scheme of the application and widget"),
     "themeLight" : MessageLookupByLibrary.simpleMessage("Light"),
-    "themeTitle" : MessageLookupByLibrary.simpleMessage("Theme"),
+    "themeTitle" : MessageLookupByLibrary.simpleMessage("Dark mode"),
     "thursday" : MessageLookupByLibrary.simpleMessage("Th"),
     "timetable" : MessageLookupByLibrary.simpleMessage("Timetable"),
     "title" : MessageLookupByLibrary.simpleMessage("RANEPA (Timetable)"),

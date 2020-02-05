@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intro_views_flutter/Models/page_view_model.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
@@ -12,17 +15,16 @@ import 'package:ranepa_timetable/timeline.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 
-class Intro extends StatelessWidget {
-  final Widget base;
+class IntroScreen extends StatelessWidget {
+  static const ROUTE = "/intro";
 
-  Intro({
-    Key key,
-    @required this.base,
+  IntroScreen({
+    Key key
   }) : super(key: key);
 
   PageViewModel _buildTimetable(BuildContext ctx) => PageViewModel(
         bubbleBackgroundColor: contentColor,
-        pageColor: backgroundColor,
+        pageColor: iosDarkMode ? Colors.black : backgroundColor,
         bubble: Icon(
           Icons.list,
           color: backgroundColor,
@@ -33,7 +35,7 @@ class Intro extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 15)
               .add(EdgeInsets.only(top: 30)),
           child: TimelineComponent(
-            Timetable.generateRandomTimetable(ctx, 6),
+            TimetableScreen.generateRandomTimetable(ctx, 6),
           ),
         ),
       );
@@ -65,7 +67,7 @@ class Intro extends StatelessWidget {
                   ),
                 ),
           Container(height: 8),
-          InkWell(
+          GestureDetector(
             child: Text(
               localizations.introWelcomeSupportBy,
               textAlign: TextAlign.center,
@@ -76,10 +78,12 @@ class Intro extends StatelessWidget {
                 ),
               ),
             ),
-            onTap: () => HomeScreen.openUrl('https://vk.com/profcomniu_online'),
+            onTap: () => AboutScreen.openUrl('https://vk.com/profcomniu_online'),
           ),
         ],
       );
+
+  get iosDarkMode => Platform.isIOS && getTheme().brightness == Brightness.dark;
 
   PageViewModel _buildWelcome() => PageViewModel(
         pageColor: Colors.black,
@@ -100,7 +104,7 @@ class Intro extends StatelessWidget {
 
   PageViewModel _buildTheme(BuildContext ctx) => PageViewModel(
         bubbleBackgroundColor: contentColor,
-        pageColor: backgroundColor,
+        pageColor: iosDarkMode ? Colors.black : backgroundColor,
         bubble: Icon(
           Icons.color_lens,
           color: backgroundColor,
@@ -121,9 +125,9 @@ class Intro extends StatelessWidget {
 
   PageViewModel _buildSearch(BuildContext ctx) => PageViewModel(
         bubbleBackgroundColor: contentColor,
-        pageColor: backgroundColor,
+        pageColor: iosDarkMode ? Colors.black : backgroundColor,
         bubble: Icon(
-          Icons.search,
+          PlatformIcons(ctx).search,
           color: backgroundColor,
         ),
         body: _buildBodyText(
@@ -133,7 +137,7 @@ class Intro extends StatelessWidget {
         mainImage: Align(
           alignment: Alignment.center,
           child: _buildCircleButton(
-            Icons.search,
+            PlatformIcons(ctx).search,
             onPressed: () => showSearchItemSelect(ctx),
           ),
         ),
@@ -179,7 +183,7 @@ class Intro extends StatelessWidget {
   @override
   Widget build(BuildContext ctx) => buildThemeStream(
         (ctx, snapshot) {
-          theme = buildTheme();
+          theme = getTheme();
           localizations = AppLocalizations.of(ctx);
           backgroundColor = theme.brightness == Brightness.light
               ? theme.primaryColor

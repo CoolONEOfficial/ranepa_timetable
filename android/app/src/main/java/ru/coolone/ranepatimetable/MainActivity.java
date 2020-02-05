@@ -17,17 +17,12 @@ import lombok.var;
 @lombok.extern.java.Log
 public class MainActivity extends FlutterActivity {
 
-//    boolean oldRemoved = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         GeneratedPluginRegistrant.registerWith(this);
 
-        //                    Gson getGson() {
-//                        return new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
-//                    }
         new MethodChannel(getFlutterView(), "ru.coolone.ranepatimetable/methodChannel").setMethodCallHandler(
                 (methodCall, result) -> {
                     if ("refreshWidget".equals(methodCall.method)) {
@@ -38,53 +33,6 @@ public class MainActivity extends FlutterActivity {
                         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
                         sendBroadcast(intent);
                         result.success(null);
-                        //                            case "getDb": {
-//                                if(!oldRemoved) {
-//                                    TimetableDatabase.getInstance(MainActivity.this).timetable().deleteOld();
-//
-//                                    oldRemoved = true;
-//                                }
-//
-//                                log.info("getDb started..");
-//                                var g = getGson();
-//
-//                                var jsonArr = g.toJson(
-//                                        TimetableDatabase.getInstance(getApplicationContext())
-//                                        .timetable()
-//                                        .getAll()
-//                                );
-//
-//                                log.info("getDb success (db arr: " + jsonArr +")");
-//                                result.success(jsonArr);
-//                                break;
-//                            }
-//                            case "deleteDb": {
-//                                log.info("deleteDb started..");
-//
-//                                TimetableDatabase.getInstance(getApplicationContext())
-//                                        .timetable()
-//                                        .delete();
-//
-//                                log.info("deleteDb success");
-//                                result.success(null);
-//                                break;
-//                            }
-//                            case "updateDb": {
-//                                log.info("updateDb started..");
-//
-//                                var g = getGson();
-//                                var arr = g.fromJson(
-//                                        (String) methodCall.arguments,
-//                                        Timeline[].class
-//                                );
-//
-//                                TimetableDatabase.getInstance(getApplicationContext()).timetable()
-//                                        .insertAll(arr);
-//
-//                                log.info("updateDb success");
-//                                result.success(null);
-//                                break;
-//                            }
                     } else {
                         result.notImplemented();
                     }

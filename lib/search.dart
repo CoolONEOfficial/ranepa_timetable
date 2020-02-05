@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:ranepa_timetable/apis.dart';
@@ -33,6 +34,7 @@ final searchItemTypes = List<SearchItemType>.generate(
       case SearchItemTypeId.Group:
         return SearchItemType(Icons.group, "Group", "group");
     }
+    return null;
   },
 );
 
@@ -107,8 +109,8 @@ class Search extends SearchDelegate<SearchItem> {
   @override
   List<Widget> buildActions(ctx) {
     return [
-      IconButton(
-        icon: Icon(Icons.clear),
+      PlatformIconButton(
+        icon: Icon(PlatformIcons(ctx).clear),
         onPressed: () {
           query = "";
         },
@@ -118,7 +120,7 @@ class Search extends SearchDelegate<SearchItem> {
 
   @override
   Widget buildLeading(ctx) {
-    return IconButton(
+    return PlatformIconButton(
         icon: AnimatedIcon(
             icon: AnimatedIcons.menu_arrow, progress: transitionAnimation),
         onPressed: () {
@@ -241,7 +243,7 @@ class Search extends SearchDelegate<SearchItem> {
                       padding: EdgeInsets.only(right: 10, top: 10),
                       alignment: Alignment.topRight,
                       child: SizedBox(
-                        child: CircularProgressIndicator(),
+                        child: PlatformCircularProgressIndicator(),
                         height: 15.0,
                         width: 15.0,
                       ),
@@ -292,7 +294,7 @@ class Search extends SearchDelegate<SearchItem> {
             final queryIndex =
                     mItem.title.indexOf(RegExp(query, caseSensitive: false)),
                 selectColor = theme.textSelectionColor,
-                normalColor = theme.textTheme.title.color;
+                normalColor = theme.textTheme.headline6.color;
 
             return ListTile(
                 onTap: () {
@@ -358,6 +360,7 @@ class Search extends SearchDelegate<SearchItem> {
               ],
             );
           }
+          return null;
         },
         itemCount: suggestions?.length ?? 0);
   }

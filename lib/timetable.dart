@@ -2,35 +2,43 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:android_intent/android_intent.dart';
 import 'package:device_calendar/device_calendar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:ranepa_timetable/about.dart';
 import 'package:ranepa_timetable/apis.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/platform_channels.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/search.dart';
+import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/timeline.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
+import 'package:ranepa_timetable/timetable_icons.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 
-class Timetable extends StatelessWidget {
-  final Drawer drawer;
+class TimetableScreen extends StatefulWidget {
+  static const ROUTE = "/timetable";
 
   static SearchItem selected;
 
   static final LinkedHashMap<DateTime, List<TimelineModel>> timetable =
       LinkedHashMap<DateTime, List<TimelineModel>>();
 
-  Timetable({Key key, @required this.drawer})
-      : _deviceCalendarPlugin = DeviceCalendarPlugin(),
+  TimetableScreen({
+    Key key,
+  })  : _deviceCalendarPlugin = DeviceCalendarPlugin(),
         super(key: key);
 
   static DateTime _toDateTime(TimeOfDay tod, [DateTime dt]) {
@@ -92,6 +100,8 @@ class Timetable extends StatelessWidget {
     SearchItem searchItem, {
     bool updateDb = true,
   }) {
+    debugPrint("Loading all timetable.. ${searchItem.title}");
+
     timetable.clear();
     return loadTimetable(
       ctx,
@@ -110,7 +120,7 @@ class Timetable extends StatelessWidget {
     debugPrint("started get timetable");
 
     final dbTimetable = await PlatformChannels.getDb();
-    final today = Timetable.todayMidnight;
+    final today = TimetableScreen.todayMidnight;
 
     if (dbTimetable == null)
       await _loadAllTimetable(ctx, searchItem);
@@ -371,7 +381,7 @@ class Timetable extends StatelessWidget {
     var beforeAlarmClockStr = prefs.getInt(PrefsIds.BEFORE_ALARM_CLOCK);
     if (beforeAlarmClockStr == null) {
       beforeAlarmClockStr =
-          (await Prefs.showBeforeAlarmClockSelect(ctx)).inMinutes;
+          (await PrefsScreen.showBeforeAlarmClockSelect(ctx)).inMinutes;
     }
     final beforeAlarmClock = Duration(minutes: beforeAlarmClockStr);
 
@@ -401,7 +411,7 @@ class Timetable extends StatelessWidget {
       snackBarText = AppLocalizations.of(ctx).noLessonsFound;
     scaffoldKey.currentState.showSnackBar(
       SnackBar(
-        content: new Text(snackBarText),
+        content: Text(snackBarText),
       ),
     );
   }
@@ -454,26 +464,454 @@ class Timetable extends StatelessWidget {
 
     scaffoldKey.currentState.showSnackBar(
       SnackBar(
-        content: new Text(snackBarText),
+        content: Text(snackBarText),
       ),
     );
   }
 
   @override
+  _TimetableScreenState createState() => _TimetableScreenState();
+}
+
+class CupertinoCustomNavigationBar extends StatelessWidget
+    with ObstructingPreferredSizeWidget {
+  const CupertinoCustomNavigationBar({
+    Key key,
+    this.backgroundColor,
+    this.bottom,
+    this.title,
+    this.leading,
+    this.trailing,
+  });
+
+  final Color backgroundColor;
+
+  final Widget bottom;
+  final Widget title;
+  final Widget leading;
+  final Widget trailing;
+
+  @override
+  Size get preferredSize => Size.fromHeight(44.0 + 80.0);
+
+  @override
   Widget build(BuildContext ctx) {
-    return DefaultTabController(
-      length: dayCount,
-      child: StreamBuilder<Tuple2<bool, SearchItem>>(
+    SystemUiOverlayStyle overlayStyle;
+    switch (WidgetsBinding.instance.window.platformBrightness) {
+      case Brightness.dark:
+        overlayStyle = SystemUiOverlayStyle.light;
+        break;
+      case Brightness.light:
+      default:
+        overlayStyle = SystemUiOverlayStyle.dark;
+        break;
+    }
+    return Column(
+      children: <Widget>[
+        CupertinoNavigationBar(
+          middle: title,
+          border: null,
+          trailing: trailing,
+          leading: leading,
+        ),
+        ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: CupertinoTheme.of(ctx).barBackgroundColor,
+              ),
+              child: AnnotatedRegion<SystemUiOverlayStyle>(
+                value: overlayStyle,
+                sized: true,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: bottom,
+                ),
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  @override
+  bool shouldFullyObstruct(BuildContext context) {
+    final Color backgroundColor =
+        CupertinoDynamicColor.resolve(this.backgroundColor, context) ??
+            CupertinoTheme.of(context).barBackgroundColor;
+    return backgroundColor.alpha == 0xFF;
+  }
+}
+
+class CupertinoTabBar extends StatefulWidget {
+  final TabController controller;
+
+  final List titles;
+
+  const CupertinoTabBar({
+    Key key,
+    this.controller,
+    this.titles,
+  }) : super(key: key);
+
+  @override
+  _CupertinoTabBarState createState() => _CupertinoTabBarState();
+}
+
+class _CupertinoTabBarState extends State<CupertinoTabBar>
+    with TickerProviderStateMixin {
+  // this will control the animation when a button changes from an off state to an on state
+  AnimationController _animationControllerOn;
+
+  // this will control the animation when a button changes from an on state to an off state
+  AnimationController _animationControllerOff;
+
+  // this will give the background color values of a button when it changes to an on state
+  Animation _colorTweenBackgroundOn;
+  Animation _colorTweenBackgroundOff;
+
+  // this will give the foreground color values of a button when it changes to an on state
+  Animation _colorTweenForegroundOn;
+  Animation _colorTweenForegroundOff;
+
+  // when swiping, the _controller.index value only changes after the animation, therefore, we need this to trigger the animations and save the current index
+  int _currentIndex = 0;
+
+  // saves the previous active tab
+  int _prevControllerIndex = 0;
+
+  // saves the value of the tab animation. For example, if one is between the 1st and the 2nd tab, this value will be 0.5
+  double _aniValue = 0.0;
+
+  // saves the previous value of the tab animation. It's used to figure the direction of the animation
+  double _prevAniValue = 0.0;
+
+  Color _foregroundOn = Colors.white;
+
+  Color get _foregroundOff {
+    return getTheme().brightness == Brightness.dark
+        ? Colors.white
+        : Colors.black;
+  }
+
+  // active button's background color
+  get _backgroundOn => getTheme().accentColor;
+  Color _backgroundOff = Colors.transparent;
+
+  List _keys = [];
+
+  // regist if the the button was tapped
+  bool _buttonTap = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    for (int index = 0; index < widget.titles.length; index++) {
+      // create a GlobalKey for each Tab
+      _keys.add(GlobalKey());
+    }
+
+    // this will execute the function every time there's a swipe animation
+    widget.controller.animation.addListener(_handleTabAnimation);
+    // this will execute the function every time the _controller.index value changes
+    widget.controller.addListener(_handleTabChange);
+
+    _animationControllerOff =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 75));
+    // so the inactive buttons start in their "final" state (color)
+    _animationControllerOff.value = 1.0;
+    _colorTweenBackgroundOff =
+        ColorTween(begin: _backgroundOn, end: _backgroundOff)
+            .animate(_animationControllerOff);
+    _colorTweenForegroundOff =
+        ColorTween(begin: _foregroundOn, end: _foregroundOff)
+            .animate(_animationControllerOff);
+
+    _animationControllerOn =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 150));
+    // so the inactive buttons start in their "final" state (color)
+    _animationControllerOn.value = 1.0;
+    _colorTweenBackgroundOn =
+        ColorTween(begin: _backgroundOff, end: _backgroundOn)
+            .animate(_animationControllerOn);
+    _colorTweenForegroundOn =
+        ColorTween(begin: _foregroundOff, end: _foregroundOn)
+            .animate(_animationControllerOn);
+  }
+
+  @override
+  Widget build(BuildContext ctx) => Container(
+        height: 79.0,
+        // this generates our tabs buttons
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: widget.titles
+                .asMap()
+                .map((index, mTitle) {
+                  return MapEntry(
+                      index,
+                      Padding(
+                        // each button's key
+                        key: _keys[index],
+                        // padding for the buttons
+                        padding: EdgeInsets.all(8.0),
+                        child: Column(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Text(
+                                getWeekdayTitle(ctx, mTitle)[0].toLowerCase(),
+                                textScaleFactor: 0.8,
+                                style: TextStyle(color: _foregroundOff),
+                              ),
+                            ),
+                            Container(
+                              width: 35,
+                              height: 35,
+                              child: ButtonTheme(
+                                  child: AnimatedBuilder(
+                                animation: _colorTweenBackgroundOn,
+                                builder: (ctx, child) => RawMaterialButton(
+                                    highlightElevation: 0,
+                                    enableFeedback: false,
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    elevation: 0,
+                                    shape: CircleBorder(),
+                                    // get the color of the button's background (dependent of its state)
+                                    fillColor: _getBackgroundColor(index),
+                                    onPressed: () {
+                                      setState(() {
+                                        _buttonTap = true;
+                                        // trigger the controller to change between Tab Views
+                                        widget.controller.animateTo(index);
+                                        // set the current index
+                                        _setCurrentIndex(index);
+                                        // scroll to the tapped button
+                                        _scrollTo(index);
+                                      });
+                                    },
+                                    child: Text(
+                                      mTitle.day.toString(),
+                                      style: TextStyle(
+                                        color: _getForegroundColor(index),
+                                      ),
+                                      textScaleFactor: 1.3,
+                                    )),
+                              )),
+                            ),
+                          ],
+                        ),
+                      ));
+                })
+                .values
+                .toList()),
+      );
+
+  _handleTabAnimation() {
+    // gets the value of the animation. For example, if one is between the 1st and the 2nd tab, this value will be 0.5
+    _aniValue = widget.controller.animation.value;
+
+    // if the button wasn't pressed, which means the user is swiping, and the amount swipped is less than 1 (this means that we're swiping through neighbor Tab Views)
+    if (!_buttonTap && ((_aniValue - _prevAniValue).abs() < 1)) {
+      // set the current tab index
+      _setCurrentIndex(_aniValue.round());
+    }
+
+    // save the previous Animation Value
+    _prevAniValue = _aniValue;
+  }
+
+  // runs when the displayed tab changes
+  _handleTabChange() {
+    // if a button was tapped, change the current index
+    if (_buttonTap) _setCurrentIndex(widget.controller.index);
+
+    // this resets the button tap
+    if ((widget.controller.index == _prevControllerIndex) ||
+        (widget.controller.index == _aniValue.round())) _buttonTap = false;
+
+    // save the previous controller index
+    _prevControllerIndex = widget.controller.index;
+  }
+
+  _setCurrentIndex(int index) {
+    // if we're actually changing the index
+    if (index != _currentIndex) {
+      setState(() {
+        // change the index
+        _currentIndex = index;
+      });
+
+      // trigger the button animation
+      _triggerAnimation();
+      // scroll the TabBar to the correct position (if we have a scrollable bar)
+      _scrollTo(index);
+    }
+  }
+
+  _triggerAnimation() {
+    // reset the animations so they're ready to go
+    _animationControllerOn.reset();
+    _animationControllerOff.reset();
+
+    // run the animations!
+    _animationControllerOn.forward();
+    _animationControllerOff.forward();
+  }
+
+  _scrollTo(int index) {
+    // get the screen width. This is used to check if we have an element off screen
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    // get the button we want to scroll to
+    RenderBox renderBox = _keys[index].currentContext.findRenderObject();
+    // get its size
+    double size = renderBox.size.width;
+    // and position
+    double position = renderBox.localToGlobal(Offset.zero).dx;
+
+    // this is how much the button is away from the center of the screen and how much we must scroll to get it into place
+    double offset = (position + size / 2) - screenWidth / 2;
+
+    // if the button is to the left of the middle
+    if (offset < 0) {
+      // get the first button
+      renderBox = _keys[0].currentContext.findRenderObject();
+      // get the position of the first button of the TabBar
+      position = renderBox.localToGlobal(Offset.zero).dx;
+
+      // if the offset pulls the first button away from the left side, we limit that movement so the first button is stuck to the left side
+      if (position > offset) offset = position;
+    } else {
+      // if the button is to the right of the middle
+
+      // get the last button
+      renderBox =
+          _keys[widget.titles.length - 1].currentContext.findRenderObject();
+      // get its position
+      position = renderBox.localToGlobal(Offset.zero).dx;
+      // and size
+      size = renderBox.size.width;
+
+      // if the last button doesn't reach the right side, use it's right side as the limit of the screen for the TabBar
+      if (position + size < screenWidth) screenWidth = position + size;
+
+      // if the offset pulls the last button away from the right side limit, we reduce that movement so the last button is stuck to the right side limit
+      if (position + size - offset < screenWidth) {
+        offset = position + size - screenWidth;
+      }
+    }
+  }
+
+  _getBackgroundColor(int index) {
+    if (index == _currentIndex) {
+      // if it's active button
+      return _colorTweenBackgroundOn.value;
+    } else if (index == _prevControllerIndex) {
+      // if it's the previous active button
+      return _colorTweenBackgroundOff.value;
+    } else {
+      // if the button is inactive
+      return _backgroundOff;
+    }
+  }
+
+  _getForegroundColor(int index) {
+    // the same as the above
+    if (index == _currentIndex) {
+      return _colorTweenForegroundOn.value;
+    } else if (index == _prevControllerIndex) {
+      return _colorTweenForegroundOff.value;
+    } else {
+      return _foregroundOff;
+    }
+  }
+}
+
+class _TimetableScreenState extends State<TimetableScreen>
+    with SingleTickerProviderStateMixin {
+  TabController _tabController;
+
+  @override
+  void initState() {
+    _tabController = TabController(
+      vsync: this,
+      length: TimetableScreen.dayCount,
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  Widget appBarTitle(searchItem) =>
+      Text(searchItem.data.item2.typeId == SearchItemTypeId.Teacher
+          ? TeacherModel.fromString(searchItem.data.item2.title).initials()
+          : searchItem.data.item2.title);
+
+  List<Widget> buildTrailingActions(BuildContext ctx) => [
+        PlatformIconButton(
+          padding: EdgeInsets.zero,
+          android: (ctx) => MaterialIconButtonData(
+            tooltip: AppLocalizations.of(ctx).searchTip,
+          ),
+          icon: Icon(
+            ctx.platformIcons.search,
+            color: Platform.isIOS ? getTheme().accentColor : null,
+          ),
+          onPressed: () => showSearchItemSelect(
+            ctx,
+            primary: false,
+          ),
+        )
+      ];
+
+  List<Widget> buildIntegratingActions(BuildContext ctx) => [
+        PlatformIconButton(
+          padding: EdgeInsets.zero,
+          android: (ctx) => MaterialIconButtonData(
+              tooltip: AppLocalizations.of(ctx).calendarTip),
+          icon: PlatformWidget(
+            ios: (ctx) => Icon(
+              TimetableIcons.calendar,
+              color: getTheme().accentColor,
+            ),
+            android: (ctx) => Icon(Icons.calendar_today),
+          ),
+          onPressed: () => TimetableScreen._createCalendarEvents(
+              ctx, widget._deviceCalendarPlugin),
+        ),
+      ]..addAll(Platform.isAndroid
+          ? [
+              PlatformIconButton(
+                padding: EdgeInsets.zero,
+                android: (ctx) => MaterialIconButtonData(
+                    tooltip: AppLocalizations.of(ctx).alarmTip),
+                icon: const Icon(Icons.alarm),
+                onPressed: () => TimetableScreen._createAlarm(ctx, prefs),
+              )
+            ]
+          : []);
+
+  @override
+  Widget build(BuildContext ctx) => StreamBuilder<Tuple2<bool, SearchItem>>(
         stream: timetableIdBloc.stream,
         initialData: Tuple2<bool, SearchItem>(
-            true, Timetable.selected ?? SearchItem.fromPrefs()),
-        builder: (ctx, ssSearchItem) => Prefs.buildDayStyleStream(
+            true, TimetableScreen.selected ?? SearchItem.fromPrefs()),
+        builder: (ctx, ssSearchItem) => PrefsScreen.buildDayStyleStream(
           ctx,
           (ctx, ssDayStyle) {
             // Create tabs
-            final tabs = List<Tab>();
-            var mDay = fromDay.subtract(Duration(days: 1));
-            for (int mTabId = 0; mTabId < dayCount; mTabId++) {
+            final tabs = List();
+            var mDay = TimetableScreen.fromDay.subtract(Duration(days: 1));
+            for (int mTabId = 0; mTabId < TimetableScreen.dayCount; mTabId++) {
               debugPrint("mTabId: " + mTabId.toString());
               mDay = mDay.add(Duration(days: 1));
               debugPrint("mDay: " + mDay.day.toString());
@@ -485,48 +923,142 @@ class Timetable extends StatelessWidget {
                 continue;
               }
 
-              tabs.add(Tab(
-                text: ssDayStyle.data.index == DayStyle.Weekday.index
-                    ? [
-                        AppLocalizations.of(ctx).monday,
-                        AppLocalizations.of(ctx).tuesday,
-                        AppLocalizations.of(ctx).wednesday,
-                        AppLocalizations.of(ctx).thursday,
-                        AppLocalizations.of(ctx).friday,
-                        AppLocalizations.of(ctx).saturday
-                      ][mDay.weekday - 1]
-                    : mDay.day.toString(),
-              ));
+              tabs.add(Platform.isIOS
+                  ? mDay
+                  : Tab(
+                      text: ssDayStyle.data.index == DayStyle.Weekday.index
+                          ? getWeekdayTitle(ctx, mDay)
+                          : mDay.day.toString(),
+                    ));
             }
 
-            return Scaffold(
-              drawer: drawer,
+            return PlatformScaffold(
+              android: (ctx) => MaterialScaffoldData(
+                  drawer: Drawer(
+                    child: ListView(
+                      padding: EdgeInsets.zero,
+                      children: <Widget>[
+                        DrawerHeader(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(ctx).primaryColor,
+                            image: DecorationImage(
+                              image: AssetImage(
+                                  'assets/images/icon-foreground.png'),
+                            ),
+                          ),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.list),
+                          title: Text(AppLocalizations.of(ctx).timetable),
+                          onTap: () => Navigator.pop(ctx),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.settings),
+                          title: Text(AppLocalizations.of(ctx).prefs),
+                          onTap: () =>
+                              Navigator.popAndPushNamed(ctx, PrefsScreen.ROUTE),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.info),
+                          title: Text(AppLocalizations.of(ctx).about),
+                          onTap: () =>
+                              Navigator.popAndPushNamed(ctx, AboutScreen.ROUTE),
+                        ),
+                        Divider(),
+                        ListTile(
+                          leading: Icon(Icons.close),
+                          title: Text(AppLocalizations.of(ctx).close),
+                          onTap: () => SystemNavigator.pop(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  appBar: AppBar(
+                    title: appBarTitle(ssSearchItem),
+                    actions:
+                        (Platform.isAndroid ? buildIntegratingActions(ctx) : [])
+                          ..addAll(buildTrailingActions(ctx)),
+                    bottom: TabBar(
+                      tabs: tabs.cast<Widget>(),
+                      controller: _tabController,
+                    ),
+                  )),
+              ios: (ctx) => CupertinoPageScaffoldData(
+                navigationBar: CupertinoCustomNavigationBar(
+                  bottom: StreamBuilder(
+                    stream: themeBloc.stream,
+                    builder: (ctx, _) => CupertinoTabBar(
+                      controller: _tabController,
+                      titles: tabs,
+                    ),
+                  ),
+                  title: appBarTitle(ssSearchItem),
+                  leading: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      PlatformIconButton(
+                        padding: EdgeInsets.zero,
+                        icon: Icon(
+                          ctx.platformIcons.info,
+                          color: getTheme().accentColor,
+                        ),
+                        onPressed: () =>
+                            Navigator.pushNamed(ctx, AboutScreen.ROUTE),
+                      ),
+                    ]..addAll(buildIntegratingActions(ctx)),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: buildTrailingActions(ctx)
+                      ..addAll([
+                        PlatformIconButton(
+                          padding: EdgeInsets.zero,
+                          icon: Icon(
+                            ctx.platformIcons.settings,
+                            color: getTheme().accentColor,
+                          ),
+                          onPressed: () =>
+                              Navigator.pushNamed(ctx, PrefsScreen.ROUTE),
+                        )
+                      ]),
+                  ),
+                ),
+              ),
               key: scaffoldKey,
               body: StreamBuilder<void>(
                 stream: timetableFutureBuilderBloc.stream,
                 builder: (ctx, _) => WidgetTemplates.buildFutureBuilder(ctx,
                     future: WidgetTemplates.checkInternetConnection(),
                     builder: (ctx, internetConn) {
-                  if (!internetConn.data && !ssSearchItem.data.item1)
+                  if (!internetConn.data)
                     return WidgetTemplates.buildNetworkErrorNotification(ctx);
                   return WidgetTemplates.buildFutureBuilder(
                     ctx,
                     future: ssSearchItem.data.item1
-                        ? _getTimetable(ctx, ssSearchItem.data.item2, prefs)
-                        : _loadAllTimetable(
+                        ? TimetableScreen._getTimetable(
+                            ctx,
+                            ssSearchItem.data.item2,
+                            prefs,
+                          )
+                        : TimetableScreen._loadAllTimetable(
                             ctx,
                             ssSearchItem.data.item2,
                             updateDb: false,
                           ),
                     builder: (ctx, _) {
-                      if (timetable.values.isEmpty)
-                        timetable.addEntries(
+                      if (TimetableScreen.timetable.values.isEmpty)
+                        TimetableScreen.timetable.addEntries(
                           Iterable<
                               MapEntry<DateTime, List<TimelineModel>>>.generate(
-                            dayCount,
+                            TimetableScreen.dayCount,
                             (dayIndex) =>
                                 MapEntry<DateTime, List<TimelineModel>>(
-                              fromDay.add(
+                              TimetableScreen.fromDay.add(
                                 Duration(days: dayIndex),
                               ),
                               List<TimelineModel>(),
@@ -535,18 +1067,21 @@ class Timetable extends StatelessWidget {
                         );
 
                       final tabViews = List<Widget>(),
-                          endCache = DateTime.parse(
-                              prefs.getString(PrefsIds.END_CACHE)),
+                          endCacheStr = prefs.getString(PrefsIds.END_CACHE),
+                          endCache = endCacheStr != null
+                              ? DateTime.parse(endCacheStr)
+                              : null,
                           optimizeLessonTitles =
                               prefs.getBool(PrefsIds.OPTIMIZED_LESSON_TITLES) ??
                                   true;
 
-                      var timetableIter = timetable.entries.iterator,
-                          mDate = timetable.entries.first.key;
+                      var timetableIter =
+                              TimetableScreen.timetable.entries.iterator,
+                          mDate = TimetableScreen.timetable.entries.first.key;
 
-                      while (tabViews.length < dayCount) {
+                      while (tabViews.length < TimetableScreen.dayCount) {
                         tabViews.add(
-                          mDate.compareTo(endCache) > 0
+                          endCache != null && mDate.compareTo(endCache) > 0
                               ? WidgetTemplates.buildNoCacheNotification(ctx)
                               : timetableIter.moveNext()
                                   ? timetableIter.current.value.isEmpty
@@ -559,6 +1094,20 @@ class Timetable extends StatelessWidget {
                                           timetableIter.current.value,
                                           optimizeLessonTitles:
                                               optimizeLessonTitles,
+                                          onRefresh: () async {
+                                            if (ssSearchItem.data.item1) {
+                                              await PlatformChannels.deleteDb();
+                                              await TimetableScreen
+                                                  ._loadAllTimetable(
+                                                ctx,
+                                                ssSearchItem.data.item2,
+                                                updateDb: true,
+                                              );
+                                            }
+
+                                            timetableFutureBuilderBloc
+                                                .add(null);
+                                          },
                                         )
                                   : WidgetTemplates.buildFreeDayNotification(
                                       ctx,
@@ -569,61 +1118,85 @@ class Timetable extends StatelessWidget {
                         mDate.add(Duration(
                             days: mDate.weekday == DateTime.saturday ? 2 : 1));
                       }
-                      return TabBarView(children: tabViews);
+                      return TabBarView(
+                        children: tabViews,
+                        controller: _tabController,
+                      );
                     },
                   );
                 }),
               ),
-              appBar: AppBar(
-                elevation: Platform.isAndroid ? 5 : 0,
-                title: Text(
-                    ssSearchItem.data.item2.typeId == SearchItemTypeId.Teacher
-                        ? TeacherModel.fromString(ssSearchItem.data.item2.title)
-                            .initials()
-                        : ssSearchItem.data.item2.title),
-                actions: (Platform.isAndroid
-                    ? <Widget>[
-                        IconButton(
-                          tooltip: AppLocalizations.of(ctx).calendarTip,
-                          icon: const Icon(Icons.calendar_today),
-                          onPressed: () =>
-                              _createCalendarEvents(ctx, _deviceCalendarPlugin),
-                        ),
-                        IconButton(
-                          tooltip: AppLocalizations.of(ctx).alarmTip,
-                          icon: const Icon(Icons.alarm),
-                          onPressed: () => _createAlarm(ctx, prefs),
-                        )
-                      ]
-                    : List<Widget>())
-                  ..addAll(<Widget>[
-                    IconButton(
-                      tooltip: AppLocalizations.of(ctx).refreshTip,
-                      icon: const Icon(Icons.refresh),
-                      onPressed: () async {
-                        await PlatformChannels.deleteDb();
-                        timetableIdBloc.add(ssSearchItem.data);
-                      },
-                    ),
-                    IconButton(
-                      tooltip: AppLocalizations.of(ctx).searchTip,
-                      icon: const Icon(Icons.search),
-                      onPressed: () => showSearchItemSelect(
-                        ctx,
-                        primary: false,
-                      ),
-                    ),
-                  ]),
-                bottom: TabBar(
-                  tabs: tabs,
-                ),
-              ),
+//              appBar: PlatformAppBar(
+//                android: (ctx) => MaterialAppBarData(
+//                  bottom: TabBar(
+//                    tabs: tabs,
+//                    controller: _tabController,
+//                  ),
+//                ),
+//                title: Text(
+//                    ssSearchItem.data.item2.typeId == SearchItemTypeId.Teacher
+//                        ? TeacherModel.fromString(ssSearchItem.data.item2.title)
+//                            .initials()
+//                        : ssSearchItem.data.item2.title),
+//                trailingActions: (Platform.isAndroid
+//                    ? <Widget>[
+//                        PlatformIconButton(
+//                          padding: EdgeInsets.zero,
+//                          android: (ctx) => MaterialIconButtonData(
+//                              tooltip: AppLocalizations.of(ctx).calendarTip),
+//                          icon: const Icon(Icons.calendar_today),
+//                          onPressed: () => Timetable._createCalendarEvents(
+//                              ctx, widget._deviceCalendarPlugin),
+//                        ),
+//                        PlatformIconButton(
+//                          padding: EdgeInsets.zero,
+//                          android: (ctx) => MaterialIconButtonData(
+//                              tooltip: AppLocalizations.of(ctx).alarmTip),
+//                          icon: const Icon(Icons.alarm),
+//                          onPressed: () => Timetable._createAlarm(ctx, prefs),
+//                        )
+//                      ]
+//                    : List<Widget>())
+//                  ..addAll(<Widget>[
+//                    PlatformIconButton(
+//                      padding: EdgeInsets.zero,
+//                      android: (ctx) => MaterialIconButtonData(
+//                        tooltip: AppLocalizations.of(ctx).refreshTip,
+//                      ),
+//                      icon: Icon(ctx.platformIcons.refresh),
+//                      onPressed: () async {
+//                        await PlatformChannels.deleteDb();
+//                        timetableIdBloc.add(ssSearchItem.data);
+//                      },
+//                    ),
+//                    PlatformIconButton(
+//                      padding: EdgeInsets.zero,
+//                      android: (ctx) => MaterialIconButtonData(
+//                        tooltip: AppLocalizations.of(ctx).searchTip,
+//                      ),
+//                      icon: Icon(ctx.platformIcons.search),
+//                      onPressed: () => showSearchItemSelect(
+//                        ctx,
+//                        primary: false,
+//                      ),
+//                    ),
+//                  ]),
+//              ),
             );
           },
         ),
-      ),
-    );
-  }
+      );
+}
+
+String getWeekdayTitle(BuildContext ctx, DateTime day) {
+  return [
+    AppLocalizations.of(ctx).monday,
+    AppLocalizations.of(ctx).tuesday,
+    AppLocalizations.of(ctx).wednesday,
+    AppLocalizations.of(ctx).thursday,
+    AppLocalizations.of(ctx).friday,
+    AppLocalizations.of(ctx).saturday
+  ][day.weekday - 1];
 }
 
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();

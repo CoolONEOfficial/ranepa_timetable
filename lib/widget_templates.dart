@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/search.dart';
 import 'package:ranepa_timetable/timetable.dart';
@@ -79,7 +81,7 @@ class WidgetTemplates {
       _buildNotification(
         ctx,
         AppLocalizations.of(ctx).loading,
-        CircularProgressIndicator(),
+        PlatformCircularProgressIndicator(),
       );
 
   static Widget buildErrorNotification(BuildContext ctx, String error) =>
@@ -92,7 +94,7 @@ class WidgetTemplates {
         RawMaterialButton(
           onPressed: () => timetableFutureBuilderBloc.add(null),
           child: Icon(
-            Icons.refresh,
+            PlatformIcons(ctx).refresh,
             size: 100,
           ),
           shape: CircleBorder(),
@@ -165,10 +167,11 @@ class WidgetTemplates {
                         ctx, "${snapshot.error}" ?? "Unknown");
               return builder(ctx, snapshot);
           }
+          return null;
         },
       );
 
-  static Future<bool> checkInternetConnection([
+  static Future<bool> checkHostConnection([
     String host = 'google.com',
   ]) async {
     try {
@@ -177,5 +180,12 @@ class WidgetTemplates {
     } on SocketException catch (_) {
       return false;
     }
+  }
+
+  static Future<bool> checkInternetConnection() async {
+    var conn = await Connectivity().checkConnectivity();
+    print("conn status: $conn");
+    return conn !=
+        ConnectivityResult.none;
   }
 }

@@ -38,7 +38,7 @@ class TimelineElement extends StatelessWidget {
       );
 
   Widget _buildTeacherGroup(BuildContext ctx) {
-    final user = User.values[Timetable.selected?.typeId?.index ??
+    final user = User.values[TimetableScreen.selected?.typeId?.index ??
         SearchItem.fromPrefs().typeId.index];
     return Tooltip(
       message: user == User.Student ? model.teacher.toString() : model.group,
@@ -78,14 +78,17 @@ class TimelineElement extends StatelessWidget {
   Widget _buildLessonTitle(BuildContext ctx, {@required bool optimizeTitles}) =>
       Tooltip(
         message: model.lesson.fullTitle ?? model.lesson.title,
-        child: AutoSizeText(
-          optimizeTitles ? model.lesson.title : model.lesson.fullTitle,
-          overflow: TextOverflow.ellipsis,
-          softWrap: true,
-          maxLines: 2,
-          textAlign: TextAlign.center,
-          style: Theme.of(ctx).textTheme.headline6,
-          maxFontSize: 20,
+        child: Container(
+          height: 40,
+          child: AutoSizeText(
+            optimizeTitles ? model.lesson.title : model.lesson.fullTitle,
+            overflow: TextOverflow.ellipsis,
+            softWrap: true,
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            style: Theme.of(ctx).textTheme.headline6,
+            maxFontSize: 20,
+          ),
         ),
       );
 
@@ -104,9 +107,10 @@ class TimelineElement extends StatelessWidget {
         default:
       }
 
-    return Text(
+    return AutoSizeText(
       prefix + model.room.number,
-      style: Theme.of(ctx).textTheme.subtitle,
+      style: Theme.of(ctx).textTheme.subtitle2,
+      maxLines: 1,
       textAlign: RoomLocationStyle
                   .values[prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ?? 0] ==
               RoomLocationStyle.Text

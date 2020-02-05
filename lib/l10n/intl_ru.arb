@@ -346,12 +346,12 @@
     "type": "text",
     "placeholders": {}
   },
-  "themeTitle": "Тема",
+  "themeTitle": "Тёмный режим",
   "@themeTitle": {
     "type": "text",
     "placeholders": {}
   },
-  "themeDescription": "Цветовая схема приложения и виджета",
+  "themeDescription": "Темная цветовая схема приложения и виджета",
   "@themeDescription": {
     "type": "text",
     "placeholders": {}

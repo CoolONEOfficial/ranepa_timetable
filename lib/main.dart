@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:ranepa_timetable/about.dart';
 import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
@@ -25,53 +26,6 @@ String version;
 final random = new Random();
 
 class BaseWidget extends StatelessWidget {
-  Widget buildBase(BuildContext ctx) => Timetable(
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                ),
-                decoration: BoxDecoration(
-                  color: Theme.of(ctx).primaryColor,
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/icon-foreground.png'),
-                  ),
-                ),
-              ),
-              ListTile(
-                leading: Icon(Icons.list),
-                title: Text(AppLocalizations.of(ctx).timetable),
-                onTap: () => Navigator.pop(ctx),
-              ),
-              ListTile(
-                leading: Icon(Icons.settings),
-                title: Text(AppLocalizations.of(ctx).prefs),
-                onTap: () => Navigator.popAndPushNamed(ctx, Prefs.ROUTE),
-              ),
-              ListTile(
-                leading: Icon(Icons.info),
-                title: Text(AppLocalizations.of(ctx).about),
-                onTap: () => Navigator.popAndPushNamed(ctx, HomeScreen.ROUTE),
-              ),
-            ]..addAll(Platform.isAndroid
-                ? <Widget>[
-                    Divider(),
-                    ListTile(
-                      leading: Icon(Icons.close),
-                      title: Text(AppLocalizations.of(ctx).close),
-                      onTap: () => SystemNavigator.pop(),
-                    ),
-                  ]
-                : []),
-          ),
-        ),
-      );
-
   @override
   Widget build(BuildContext ctx) =>
       WidgetTemplates.buildFutureBuilder<PackageInfo>(
@@ -109,37 +63,41 @@ class BaseWidget extends StatelessWidget {
   Widget _build(BuildContext ctx) => buildThemeStream(
         (ctx, snapshot) {
           final theme = snapshot.data;
-          return MaterialApp(
-            builder: (ctx, child) {
-              ScreenUtil.init(ctx);
-              ErrorWidget.builder = _buildError(ctx);
-              return MediaQuery(
-                data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
-                child: child,
-              );
-            },
-            localizationsDelegates: [
-              AppLocalizationsDelegate(),
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate
-            ],
-            supportedLocales: [
-              SupportedLocales.en,
-              SupportedLocales.ru,
-            ],
-            onGenerateTitle: (BuildContext ctx) =>
-                AppLocalizations.of(ctx).title,
-            theme: theme,
-            routes: <String, WidgetBuilder>{
-              Prefs.ROUTE: (ctx) => Prefs(),
-              HomeScreen.ROUTE: (ctx) => HomeScreen(),
-            },
-            home: Builder(
-              builder: (ctx) => prefs.getInt(
+          return Theme(
+            data: theme,
+            child: PlatformApp(
+              builder: (ctx, child) {
+                ScreenUtil.init(ctx);
+                ErrorWidget.builder = _buildError(ctx);
+                return MediaQuery(
+                  data:
+                      MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
+                  child: child,
+                );
+              },
+              localizationsDelegates: [
+                AppLocalizationsDelegate(),
+                GlobalCupertinoLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate
+              ],
+              supportedLocales: [
+                SupportedLocales.en,
+                SupportedLocales.ru,
+              ],
+              onGenerateTitle: (BuildContext ctx) =>
+                  AppLocalizations.of(ctx).title,
+              routes: <String, WidgetBuilder>{
+                PrefsScreen.ROUTE: (ctx) => PrefsScreen(),
+                AboutScreen.ROUTE: (ctx) => AboutScreen(),
+                IntroScreen.ROUTE: (ctx) => IntroScreen(),
+                TimetableScreen.ROUTE: (ctx) => TimetableScreen(),
+              },
+              initialRoute: prefs.getInt(
                           PrefsIds.SEARCH_ITEM_PREFIX + PrefsIds.ITEM_ID) ==
                       null
-                  ? Intro(base: buildBase(ctx))
-                  : buildBase(ctx),
+                  ? IntroScreen.ROUTE
+                  : TimetableScreen.ROUTE,
             ),
           );
         },
@@ -169,8 +127,8 @@ Widget Function(FlutterErrorDetails) _buildError(BuildContext ctx) {
           Container(
             width: 200,
             padding: const EdgeInsets.symmetric(vertical: 10),
-            child: TextFormField(
-              initialValue: err.toString(),
+            child: PlatformTextField(
+              controller: TextEditingController(text: err.toString()),
               keyboardType: TextInputType.multiline,
               maxLines: 6,
               enableInteractiveSelection: false,
@@ -182,15 +140,15 @@ Widget Function(FlutterErrorDetails) _buildError(BuildContext ctx) {
             style: TextStyle(fontSize: ScreenUtil().setSp(15)),
             maxLines: 2,
           ),
-          IconButton(
+          PlatformIconButton(
             icon: Icon(
               Icons.send,
             ),
             onPressed: () => FlutterEmailSender.send(Email(
-                  body: err.toString(),
-                  subject: "RANEPA Timetable error",
-                  recipients: ["coolone.official@gmail.com"],
-                )),
+              body: err.toString(),
+              subject: "RANEPA Timetable error",
+              recipients: ["coolone.official@gmail.com"],
+            )),
           ),
         ],
       ));

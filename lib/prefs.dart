@@ -6,7 +6,10 @@ import 'package:duration/locale.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_duration_picker/flutter_duration_picker.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:ranepa_timetable/about.dart';
 import 'package:ranepa_timetable/apis.dart';
 import 'package:ranepa_timetable/localizations.dart';
 import 'package:ranepa_timetable/main.dart';
@@ -18,8 +21,6 @@ import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:tuple/tuple.dart';
 import 'package:ranepa_timetable/theme.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
-import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart'
-    as CoupertinoDatePicker;
 
 class PrefsIds {
   static const LAST_UPDATE = "last_update",
@@ -53,41 +54,35 @@ Future<SearchItem> showSearchItemSelect(
 
   if (searchItem != null) {
     if (primary) {
-      Timetable.fromDay = Timetable.todayMidnight;
+      TimetableScreen.fromDay = TimetableScreen.todayMidnight;
       searchItem.toPrefs(PrefsIds.SEARCH_ITEM_PREFIX);
       await PlatformChannels.deleteDb();
     } else {
       if (Platform.isIOS) {
-        var iosCompleter = Completer<DateTime>();
-        var initial = Timetable.fromDay ?? Timetable.todayMidnight;
-        CoupertinoDatePicker.DatePicker.showDatePicker(
-          ctx,
-          minDateTime: Timetable.todayMidnight,
-          maxDateTime: Timetable.todayMidnight.add(Duration(days: 365)),
-          initialDate: initial.day,
-          initialMonth: initial.month,
-          initialYear: initial.year,
-          onConfirm2: (dt, l) {
-            iosCompleter.complete(dt);
-          },
-          onCancel: () {
-            iosCompleter.complete(null);
-          },
-          locale: 'ru',
-        );
-        Timetable.fromDay = await iosCompleter.future;
+        TimetableScreen.fromDay = await DatePicker.showDatePicker(ctx,
+            minTime: TimetableScreen.todayMidnight,
+            maxTime: TimetableScreen.todayMidnight.add(Duration(days: 365)),
+            locale: Localizations.localeOf(ctx) == SupportedLocales.ru
+                ? LocaleType.ru
+                : LocaleType.en,
+            theme: DatePickerTheme(
+                backgroundColor: getTheme().brightness == Brightness.dark
+                    ? Colors.black
+                    : Colors.white,
+                itemStyle: getTheme().textTheme.bodyText2,
+                cancelStyle: getTheme().textTheme.caption));
       } else {
-        Timetable.fromDay = await showDatePicker(
+        TimetableScreen.fromDay = await showDatePicker(
           context: ctx,
-          initialDate: Timetable.fromDay ?? Timetable.todayMidnight,
-          firstDate: Timetable.todayMidnight,
-          lastDate: Timetable.todayMidnight.add(Duration(days: 365)),
+          initialDate: TimetableScreen.fromDay ?? TimetableScreen.todayMidnight,
+          firstDate: TimetableScreen.todayMidnight,
+          lastDate: TimetableScreen.todayMidnight.add(Duration(days: 365)),
         );
       }
-      Timetable.fromDay ??= Timetable.todayMidnight;
-      Timetable.selected = searchItem;
+      TimetableScreen.fromDay ??= TimetableScreen.todayMidnight;
+      TimetableScreen.selected = searchItem;
     }
-    timetableIdBloc.add(Tuple2<bool, SearchItem>(primary, searchItem));
+    Navigator.of(ctx).popAndPushNamed(TimetableScreen.ROUTE);
   }
 
   return searchItem;
@@ -113,17 +108,20 @@ Future<Brightness> showThemeBrightnessSelect(BuildContext ctx) =>
       ),
     );
 
-void showMaterialColorPicker(BuildContext ctx) => showDialog(
+void showMaterialColorPicker(BuildContext ctx) => showPlatformDialog(
       context: ctx,
       builder: (ctx) {
         var pickedColor = accentColor;
-        return AlertDialog(
+        return PlatformAlertDialog(
           title: Text(AppLocalizations.of(ctx).themeAccentTitle),
-          contentPadding: const EdgeInsets.all(6.0),
-          content: MaterialColorPicker(
-            selectedColor: pickedColor,
-            allowShades: false,
-            onMainColorChange: (color) => pickedColor = color,
+          content: Container(
+            height: Platform.isIOS ? 300 : null,
+            width: Platform.isIOS ? 300 : null,
+            child: MaterialColorPicker(
+              selectedColor: pickedColor,
+              allowShades: false,
+              onMainColorChange: (color) => pickedColor = color,
+            ),
           ),
           actions: [
             FlatButton(
@@ -148,7 +146,7 @@ final widgetTranslucentBloc = StreamController<bool>.broadcast(),
     siteApiBloc = StreamController<SiteApi>.broadcast(),
     optimizedLessonTitlesBloc = StreamController<bool>.broadcast();
 
-class Prefs extends StatelessWidget {
+class PrefsScreen extends StatelessWidget {
   static const ROUTE = "/prefs";
 
   static Widget _buildThemePreference(BuildContext ctx) =>
@@ -156,10 +154,13 @@ class Prefs extends StatelessWidget {
         ctx,
         title: AppLocalizations.of(ctx).themeTitle,
         description: AppLocalizations.of(ctx).themeDescription,
-        onPressed: () => showThemeBrightnessSelect(ctx),
         rightWidget: buildThemeStream(
-          (ctx, snapshot) => Text(ThemeBrightnessTitles(ctx)
-              .titles[snapshot.data.brightness.index]),
+          (ctx, snapshot) => PlatformSwitch(
+            value: brightness == Brightness.dark,
+            onChanged: (value) {
+              brightness = value ? Brightness.dark : Brightness.light;
+            },
+          ),
         ),
       );
 
@@ -189,7 +190,7 @@ class Prefs extends StatelessWidget {
           ctx,
           title: AppLocalizations.of(ctx).widgetTranslucentTitle,
           description: AppLocalizations.of(ctx).widgetTranslucentDescription,
-          rightWidget: Switch(
+          rightWidget: PlatformSwitch(
             value: snapshot.data,
             onChanged: (value) {
               widgetTranslucentBloc.add(value);
@@ -290,8 +291,8 @@ class Prefs extends StatelessWidget {
               : AppLocalizations.of(ctx).roomLocationStyleDescriptionText,
           rightWidget: Row(
             children: <Widget>[
-              Text(AppLocalizations.of(ctx).roomLocationStyleText),
-              Switch(
+              Icon(Icons.text_format),
+              PlatformSwitch(
                 value: snapshot.data == RoomLocationStyle.Icon,
                 onChanged: (value) {
                   var rlStyle =
@@ -302,7 +303,7 @@ class Prefs extends StatelessWidget {
                       .then((_) => PlatformChannels.refreshWidget());
                 },
               ),
-              Text(AppLocalizations.of(ctx).roomLocationStyleIcon),
+              Icon(Icons.image),
             ],
           ),
         ),
@@ -317,7 +318,7 @@ class Prefs extends StatelessWidget {
           title: AppLocalizations.of(ctx).optimizedLessonTitlesTitle,
           description:
               AppLocalizations.of(ctx).optimizedLessonTitlesDescription,
-          rightWidget: Switch(
+          rightWidget: PlatformSwitch(
             value: snapshot.data,
             onChanged: (value) async {
               optimizedLessonTitlesBloc.add(value);
@@ -368,12 +369,14 @@ class Prefs extends StatelessWidget {
                           WidgetTemplates.buildFutureBuilder(
                             ctx,
                             loading: Container(),
-                            future: WidgetTemplates.checkInternetConnection(
+                            future: WidgetTemplates.checkHostConnection(
                               mApi.url.host,
                             ),
-                            builder: (BuildContext ctx,
-                                    AsyncSnapshot snapshot) =>
-                                Icon(snapshot.data ? Icons.done : Icons.clear),
+                            builder:
+                                (BuildContext ctx, AsyncSnapshot snapshot) =>
+                                    Icon(snapshot.data
+                                        ? Icons.done
+                                        : ctx.platformIcons.clear),
                           ),
                         ],
                       ),
@@ -394,14 +397,13 @@ class Prefs extends StatelessWidget {
           rightWidget: Row(
             children: <Widget>[
               Text(AppLocalizations.of(ctx).dayStyleDate),
-              Switch(
+              PlatformSwitch(
                 value: snapshot.data == DayStyle.Weekday,
-                onChanged: (value) {
+                onChanged: (value) async {
                   var dayStyle = value ? DayStyle.Weekday : DayStyle.Date;
                   dayStyleBloc.add(dayStyle);
-                  prefs
-                      .setInt(PrefsIds.DAY_STYLE, dayStyle.index)
-                      .then((_) => PlatformChannels.refreshWidget());
+                  await prefs.setInt(PrefsIds.DAY_STYLE, dayStyle.index);
+                  await PlatformChannels.refreshWidget();
                 },
               ),
               Text(AppLocalizations.of(ctx).dayStyleWeekday),
@@ -410,37 +412,78 @@ class Prefs extends StatelessWidget {
         ),
       );
 
+  List<Widget> buildPrefsEntries(BuildContext ctx) {
+    List<Widget> entries = [];
+
+    if (!Platform.isIOS) {
+      entries.addAll([
+        _buildThemePreference(ctx),
+        Divider(height: 0),
+      ]);
+    }
+
+    entries.addAll([
+      _buildThemeAccentPreference(ctx),
+      Divider(height: 0),
+    ]);
+
+    entries.addAll([
+      _buildSearchItemPreference(ctx),
+      Divider(height: 0),
+    ]);
+
+    entries.addAll([
+      _buildBeforeAlarmClockPreference(ctx),
+      Divider(height: 0),
+    ]);
+
+    if (Platform.isAndroid) {
+      entries.addAll([
+        _buildWidgetTranslucentPreference(ctx),
+        Divider(height: 0),
+      ]);
+    }
+
+    entries.addAll([
+      _buildRoomLocationStylePreference(ctx),
+      Divider(height: 0),
+    ]);
+
+    entries.addAll([
+      _buildSiteApiPreference(ctx),
+      Divider(height: 0),
+    ]);
+
+    entries.addAll([
+      _buildOptimizedLessonTitlesPreference(ctx),
+      Divider(height: 0),
+    ]);
+
+    if (!Platform.isIOS) {
+      entries.addAll([
+        _buildDayStylePreference(ctx),
+        Divider(height: 0),
+      ]);
+    }
+
+    return entries;
+  }
+
   @override
-  Widget build(BuildContext ctx) => Scaffold(
-        appBar: AppBar(
+  Widget build(BuildContext ctx) => PlatformScaffold(
+        appBar: PlatformAppBar(
           title: Text(AppLocalizations.of(ctx).prefs),
-          leading: IconButton(
-            icon:
-                Icon(Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back),
+          leading: PlatformIconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              ctx.platformIcons.back,
+              color: Platform.isIOS ? getTheme().accentColor : null,
+            ),
             onPressed: () => Navigator.pop(ctx),
           ),
         ),
         body: ListView(
-          children: <Widget>[
-            _buildThemePreference(ctx),
-            Divider(height: 0),
-            _buildThemeAccentPreference(ctx),
-            Divider(height: 0),
-            _buildSearchItemPreference(ctx),
-            Divider(height: 0),
-            _buildBeforeAlarmClockPreference(ctx),
-            Divider(height: 0),
-            _buildWidgetTranslucentPreference(ctx),
-            Divider(height: 0),
-            _buildRoomLocationStylePreference(ctx),
-            Divider(height: 0),
-            _buildSiteApiPreference(ctx),
-            Divider(height: 0),
-            _buildOptimizedLessonTitlesPreference(ctx),
-            Divider(height: 0),
-            _buildDayStylePreference(ctx),
-            Divider(height: 0),
-          ],
+          children: buildPrefsEntries(ctx),
         ),
       );
 }

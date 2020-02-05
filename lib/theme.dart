@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:ranepa_timetable/localizations.dart';
@@ -6,23 +7,31 @@ import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/platform_channels.dart';
 import 'package:ranepa_timetable/prefs.dart';
 
-ThemeData buildTheme() => _buildTheme(brightness, accentColor);
+ThemeData _theme;
 
-ThemeData _buildTheme(
+ThemeData getTheme() {
+  if (_theme == null) _theme = buildTheme(brightness, accentColor);
+  return _theme;
+}
+
+ThemeData buildTheme(
   Brightness brightness,
   MaterialColor accentColor,
 ) =>
     ThemeData(
-        brightness: brightness,
-        primarySwatch: accentColor,
-        primaryColor: accentColor,
-        primaryColorLight: accentColor.shade100,
-        primaryColorDark: accentColor.shade700,
-        toggleableActiveColor: accentColor.shade600,
-        accentColor: accentColor.shade500);
+      brightness: brightness,
+      primarySwatch: accentColor,
+      primaryColor: accentColor,
+      primaryColorLight: accentColor.shade100,
+      primaryColorDark: accentColor.shade700,
+      toggleableActiveColor: accentColor.shade600,
+      accentColor: accentColor.shade500,
+    );
 
 void _onThemeChange() async {
-  var theme = buildTheme();
+  _theme = null;
+
+  var theme = getTheme();
   themeBloc.sink.add(theme);
 
   debugPrint("Writing theme to prefs...");
@@ -39,11 +48,11 @@ void _onThemeChange() async {
       PrefsIds.THEME_TEXT_PRIMARY, _colorToHex(theme.textTheme.body1.color));
 
   await prefs.setString(PrefsIds.THEME_TEXT_ACCENT,
-      _colorToHex(theme.accentTextTheme.body1.color));
+      _colorToHex(theme.accentTextTheme.bodyText2.color));
 
   await prefs.setInt(PrefsIds.THEME_BRIGHTNESS, theme.brightness.index);
 
-  PlatformChannels.refreshWidget();
+  await PlatformChannels.refreshWidget();
 }
 
 // Reactive bloc
@@ -56,7 +65,7 @@ StreamBuilder<ThemeData> buildThemeStream(
         AsyncWidgetBuilder<ThemeData> builder) =>
     StreamBuilder<ThemeData>(
       stream: themeBloc.stream,
-      initialData: buildTheme(),
+      initialData: getTheme(),
       builder: builder,
     );
 
@@ -64,10 +73,15 @@ StreamBuilder<ThemeData> buildThemeStream(
 
 Brightness _brightness;
 
-get brightness => _brightness != null
-    ? _brightness
-    : Brightness.values[prefs.getInt(PrefsIds.THEME_BRIGHTNESS) ??
-        defaultTheme.brightness.index];
+get brightness {
+  if (Platform.isIOS)
+    return WidgetsBinding.instance.window.platformBrightness;
+  else
+    return _brightness != null
+        ? _brightness
+        : Brightness.values[prefs.getInt(PrefsIds.THEME_BRIGHTNESS) ??
+            defaultTheme.brightness.index];
+}
 
 set brightness(value) {
   _brightness = value;

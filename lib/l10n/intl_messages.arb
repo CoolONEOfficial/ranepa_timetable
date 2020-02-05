@@ -1,4 +1,5 @@
 {
+  "@@locale": "messages",
   "@@last_modified": "2019-04-18T10:33:38.417827",
   "title": "RANEPA (Timetable)",
   "@title": {
@@ -345,12 +346,12 @@
     "type": "text",
     "placeholders": {}
   },
-  "themeTitle": "Theme",
+  "themeTitle": "Dark mode",
   "@themeTitle": {
     "type": "text",
     "placeholders": {}
   },
-  "themeDescription": "Color scheme of the application and widget",
+  "themeDescription": "Dark color scheme of the application and widget",
   "@themeDescription": {
     "type": "text",
     "placeholders": {}

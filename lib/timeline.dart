@@ -14,10 +14,12 @@ limitations under the License. */
 
 library timeline;
 
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ranepa_timetable/timeline_element.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TimelineComponent extends StatelessWidget {
   final List<TimelineModel> timelineList;
@@ -28,16 +30,46 @@ class TimelineComponent extends StatelessWidget {
     this.timelineList, {
     this.optimizeLessonTitles = true,
     Key key,
+    this.onRefresh,
   }) : super(key: key);
+
+  final Future<void> Function() onRefresh;
+
+  Widget itemBuild(ctx, index) => TimelineElement(
+        timelineList[index],
+        optimizeLessonTitles: optimizeLessonTitles,
+      );
+
+  Widget defaultListView() => ListView.builder(
+        itemCount: timelineList.length,
+        itemBuilder: itemBuild,
+      );
 
   @override
   Widget build(BuildContext ctx) => Container(
-        child: ListView.builder(
-          itemCount: timelineList.length,
-          itemBuilder: (_, index) => TimelineElement(
-                timelineList[index],
-                optimizeLessonTitles: optimizeLessonTitles,
-              ),
-        ),
+        child: onRefresh != null
+            ? Platform.isIOS
+                ? SafeArea(
+                    child: CustomScrollView(
+                      physics: const BouncingScrollPhysics(
+                          parent: AlwaysScrollableScrollPhysics()),
+                      slivers: <Widget>[
+                        CupertinoSliverRefreshControl(
+                          onRefresh: onRefresh,
+                        ),
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            itemBuild,
+                            childCount: timelineList.length,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : RefreshIndicator(
+                    onRefresh: onRefresh,
+                    child: defaultListView(),
+                  )
+            : defaultListView(),
       );
 }

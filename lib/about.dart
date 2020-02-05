@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ranepa_timetable/intro.dart';
 import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -52,10 +54,10 @@ class AboutBackgroundClipper extends CustomClipper<Path> {
 void main() => runApp(MaterialApp(
       title: 'TITLE',
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: AboutScreen(),
     ));
 
-class HomeScreen extends StatelessWidget {
+class AboutScreen extends StatelessWidget {
   BuildContext ctx;
   static const ROUTE = "/about";
 
@@ -211,7 +213,7 @@ class HomeScreen extends StatelessWidget {
           'cooloneofficial',
           'coolone',
           orientation,
-          descriptionLeft: 'Flutter\n${Platform.isIOS ? 'Java' : 'Android'}',
+          descriptionLeft: 'Flutter\n${Platform.isIOS ? 'iOS' : 'Android'}',
           descriptionRight: 'разработчик',
         ),
         _buildGuyIcon(
@@ -230,7 +232,7 @@ class HomeScreen extends StatelessWidget {
     TextTheme textTheme,
     Orientation orientation,
   ) =>
-      Intro.buildWelcomeTextList(
+      IntroScreen.buildWelcomeTextList(
         AppLocalizations.of(ctx),
         Theme.of(ctx).accentTextTheme,
       );
@@ -245,7 +247,7 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: WidgetTemplates.buildLogo(
             Theme.of(ctx),
-            color: textTheme.title.color,
+            color: textTheme.headline6.color,
           ),
         ),
         orientation == Orientation.landscape
@@ -265,92 +267,92 @@ class HomeScreen extends StatelessWidget {
         ? Theme.of(ctx).accentTextTheme
         : Theme.of(ctx).primaryTextTheme);
 
-    return Scaffold(
+    return PlatformScaffold(
       body: OrientationBuilder(
         builder: (ctx, orientation) => Container(
-              color: Theme.of(ctx).primaryColor,
-              padding: orientation == Orientation.portrait
-                  ? const EdgeInsets.only(bottom: 10)
-                  : null,
-              child: Stack(
-                children: orientation == Orientation.portrait
-                    ? <Widget>[
-                        ClipPath(
-                          clipper: AboutBackgroundClipper(orientation),
-                          child: Container(
-                            height: ScreenUtil().setHeight(1200),
-                            decoration: BoxDecoration(color: Colors.black),
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            Expanded(
-                              child: Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: _buildLogoText(
-                                      ctx,
-                                      textTheme,
-                                      orientation,
-                                    ),
-                                  ),
+          color: Theme.of(ctx).primaryColor,
+          padding: orientation == Orientation.portrait
+              ? const EdgeInsets.only(bottom: 10)
+              : null,
+          child: Stack(
+            children: orientation == Orientation.portrait
+                ? <Widget>[
+                    ClipPath(
+                      clipper: AboutBackgroundClipper(orientation),
+                      child: Container(
+                        height: ScreenUtil().setHeight(1200),
+                        decoration: BoxDecoration(color: Colors.black),
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Expanded(
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: _buildLogoText(
+                                  ctx,
+                                  textTheme,
+                                  orientation,
                                 ),
                               ),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: _buildGuys(ctx, textTheme, orientation),
-                            ),
-                          ],
-                        ),
-                      ]
-                    : <Widget>[
-                        ClipPath(
-                          clipper: AboutBackgroundClipper(orientation),
-                          child: Container(
-                            width: ScreenUtil().setWidth(565),
-                            decoration: BoxDecoration(color: Colors.black),
                           ),
                         ),
-                        Center(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: _buildLogoText(
-                              ctx,
-                              textTheme,
-                              orientation,
-                            )
-                              ..add(Container(width: 20))
-                              ..addAll(_buildGuys(ctx, textTheme, orientation)),
-                          ),
-                        )
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: _buildGuys(ctx, textTheme, orientation),
+                        ),
                       ],
-              ),
-            ),
+                    ),
+                  ]
+                : <Widget>[
+                    ClipPath(
+                      clipper: AboutBackgroundClipper(orientation),
+                      child: Container(
+                        width: ScreenUtil().setWidth(565),
+                        decoration: BoxDecoration(color: Colors.black),
+                      ),
+                    ),
+                    Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: _buildLogoText(
+                          ctx,
+                          textTheme,
+                          orientation,
+                        )
+                          ..add(Container(width: 20))
+                          ..addAll(_buildGuys(ctx, textTheme, orientation)),
+                      ),
+                    )
+                  ],
+          ),
+        ),
       ),
-      appBar: AppBar(
+      appBar: PlatformAppBar(
+        android: (ctx) => MaterialAppBarData(elevation: 0),
         title: Text(
           AppLocalizations.of(ctx).about,
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.black,
-        elevation: 0,
-        leading: IconButton(
+        leading: PlatformIconButton(
+          padding: EdgeInsets.zero,
           icon: Icon(
-            Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back,
-            color: Colors.white,
+            PlatformIcons(ctx).back,
+            color: Platform.isIOS ? getTheme().accentColor : null,
           ),
           onPressed: () => Navigator.pop(ctx),
         ),
