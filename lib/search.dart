@@ -296,7 +296,10 @@ class _SearchScreenState extends State<SearchScreen> {
               : Colors.white
           : Colors.transparent,
       child: ListView.separated(
-          separatorBuilder: (ctx, _) => Divider(color: getTheme().dividerColor, height: 1,),
+          separatorBuilder: (ctx, _) => Divider(
+                color: getTheme().dividerColor,
+                height: 1,
+              ),
           itemBuilder: (ctx, index) {
             final mItem = suggestions[index];
 
@@ -369,7 +372,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.only(left: 16.0, top: 16.0, bottom: 8.0),
+                    padding:
+                        EdgeInsets.only(left: 16.0, top: 16.0, bottom: 8.0),
                     child: Text(mItem.title, style: theme.textTheme.caption),
                   ),
                 ],
@@ -442,6 +446,17 @@ class _SearchScreenState extends State<SearchScreen> {
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: _searchPlaceholder(ctx),
+              suffixIcon: searchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: Icon(
+                        Icons.clear,
+                        color: getTheme().accentTextTheme.bodyText2.color,
+                      ),
+                      onPressed: () {
+                        searchController.clear();
+                        setState(() {});
+                      })
+                  : null,
             ),
           ),
         ),
