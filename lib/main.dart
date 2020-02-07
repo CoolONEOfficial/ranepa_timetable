@@ -43,9 +43,7 @@ class BaseWidget extends StatelessWidget {
             future: SharedPreferences.getInstance(),
             builder: (ctx, snapshot) {
               prefs = snapshot.data;
-
-              if (prefs.getString(PrefsIds.LAST_UPDATE) != version &&
-                  Platform.isAndroid) {
+              if (Platform.isAndroid && prefs.getString(PrefsIds.LAST_UPDATE) != version) {
                 return WidgetTemplates.buildFutureBuilder(ctx,
                     loading: Container(),
                     future: Future.wait(
