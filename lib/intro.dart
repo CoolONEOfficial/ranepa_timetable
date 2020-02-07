@@ -22,7 +22,7 @@ class IntroScreen extends StatelessWidget {
 
   PageViewModel _buildTimetable(BuildContext ctx) => PageViewModel(
         bubbleBackgroundColor: contentColor,
-        pageColor: iosDarkMode ? Colors.black : backgroundColor,
+        pageColor: backgroundColor,
         bubble: Icon(
           Icons.list,
           color: backgroundColor,
@@ -83,7 +83,7 @@ class IntroScreen extends StatelessWidget {
 
   PageViewModel _buildWelcome() => PageViewModel(
         bubbleBackgroundColor: contentColor,
-        pageColor: iosDarkMode ? Colors.black : backgroundColor,
+        pageColor: backgroundColor,
         bubble: Icon(
           Icons.school,
           color: backgroundColor,
@@ -101,7 +101,7 @@ class IntroScreen extends StatelessWidget {
 
   PageViewModel _buildTheme(BuildContext ctx) => PageViewModel(
         bubbleBackgroundColor: contentColor,
-        pageColor: iosDarkMode ? Colors.black : backgroundColor,
+        pageColor: backgroundColor,
         bubble: Icon(
           Icons.color_lens,
           color: backgroundColor,
@@ -123,7 +123,7 @@ class IntroScreen extends StatelessWidget {
 
   PageViewModel _buildSearch(BuildContext ctx) => PageViewModel(
         bubbleBackgroundColor: contentColor,
-        pageColor: iosDarkMode ? Colors.black : backgroundColor,
+        pageColor: backgroundColor,
         bubble: Icon(
           PlatformIcons(ctx).search,
           color: backgroundColor,
@@ -183,9 +183,11 @@ class IntroScreen extends StatelessWidget {
         (ctx, snapshot) {
           theme = getTheme();
           localizations = AppLocalizations.of(ctx);
-          backgroundColor = theme.brightness == Brightness.light
-              ? theme.primaryColor
-              : theme.canvasColor;
+          backgroundColor = iosDarkMode
+              ? Colors.black
+              : theme.brightness == Brightness.light
+                  ? theme.primaryColor
+                  : theme.canvasColor;
           contentColor = (theme.brightness == Brightness.light
                   ? theme.accentTextTheme
                   : theme.textTheme)
