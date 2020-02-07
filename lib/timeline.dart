@@ -49,8 +49,12 @@ class TimelineComponent extends StatelessWidget {
   Widget build(BuildContext ctx) => Container(
         child: onRefresh != null
             ? Platform.isIOS
-                ? SafeArea(
-                    child: CustomScrollView(
+                ? ListView(
+                  children: <Widget>[
+                    SizedBox(height: 0,),
+                    Container(
+                      height: timelineList.length * 85.0,
+                      child: CustomScrollView(
                       physics: const BouncingScrollPhysics(
                           parent: AlwaysScrollableScrollPhysics()),
                       slivers: <Widget>[
@@ -64,8 +68,9 @@ class TimelineComponent extends StatelessWidget {
                           ),
                         ),
                       ],
-                    ),
-                  )
+                  ),
+                    ),]
+                )
                 : RefreshIndicator(
                     onRefresh: onRefresh,
                     child: defaultListView(),
