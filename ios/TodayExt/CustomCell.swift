@@ -8,71 +8,6 @@
 
 import UIKit
 
-enum PrefsIds {
-  case LAST_UPDATE,
-      ROOM_LOCATION_STYLE,
-      WIDGET_TRANSLUCENT,
-      THEME_PRIMARY,
-      THEME_ACCENT,
-      THEME_TEXT_PRIMARY,
-      THEME_TEXT_ACCENT,
-      THEME_BACKGROUND,
-      THEME_BRIGHTNESS,
-      BEFORE_ALARM_CLOCK,
-      END_CACHE,
-      SEARCH_ITEM_PREFIX,
-      ITEM_TYPE,
-      ITEM_ID,
-      ITEM_TITLE,
-      SITE_API,
-      OPTIMIZED_LESSON_TITLES,
-    DAY_STYLE;
-    
-    func toString() -> String {
-        var str: String
-        switch self {
-        case .LAST_UPDATE:
-            str = "last_update"
-        case .ROOM_LOCATION_STYLE:
-            str = "room_location_style"
-        case .WIDGET_TRANSLUCENT:
-            str = "widget_translucent"
-        case .THEME_PRIMARY:
-            str = "theme_primary"
-        case .THEME_ACCENT:
-            str = "theme_accent"
-        case .THEME_TEXT_PRIMARY:
-            str = "theme_text_primary"
-        case .THEME_TEXT_ACCENT:
-            str = "theme_text_accent"
-        case .THEME_BACKGROUND:
-            str = "theme_background"
-        case .THEME_BRIGHTNESS:
-            str = "theme_brightness"
-        case .BEFORE_ALARM_CLOCK:
-            str = "before_alarm_clock"
-        case .END_CACHE:
-            str = "end_cache"
-        case .SEARCH_ITEM_PREFIX:
-            str = "primary_search_item_"
-        case .ITEM_TYPE:
-            str = "type"
-        case .ITEM_ID:
-            str = "id"
-        case .ITEM_TITLE:
-            str = "title"
-        case .SITE_API:
-            str = "site_api"
-        case .OPTIMIZED_LESSON_TITLES:
-            str = "optimized_lesson_titles"
-        case .DAY_STYLE:
-            str = "day_style"
-        }
-        
-        return "flutter." + str
-    }
-}
-
 extension UIColor {
    convenience init(red: Int, green: Int, blue: Int) {
        assert(red >= 0 && red <= 255, "Invalid red component")
@@ -89,6 +24,12 @@ extension UIColor {
            blue: rgb & 0xFF
        )
    }
+    
+    convenience init(rgbStr: String) {
+        self.init(
+            rgb: Int(rgbStr, radix: 16)!
+        )
+    }
 }
 
 class CustomCell: UITableViewCell {
@@ -103,11 +44,12 @@ class CustomCell: UITableViewCell {
     var textView: UITextView = {
         var textView = UITextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.text = "dfsfd"
-        var df = UserDefaults(suiteName: "group.coolone.ranepatimetable.data")!.dictionaryRepresentation().keys
-        debugPrint(df)
-        textView.textColor = UIColor(rgb: UserDefaults(suiteName: "group.coolone.ranepatimetable.data")!
-            .integer(forKey: PrefsIds.THEME_ACCENT.toString()))
+        let pres = UserDefaults(suiteName: "group.coolone.ranepatimetable.data")!.dictionaryRepresentation()
+        debugPrint("keys: \(pres.keys)")
+        debugPrint("key: \(PrefsIds.THEME_PRIMARY.toString())")
+        debugPrint("theme primary: \(UserDefaults(suiteName: "group.coolone.ranepatimetable.data")!.string(forKey: PrefsIds.THEME_PRIMARY.toString())!)")
+        textView.textColor = UIColor(rgbStr: UserDefaults(suiteName: "group.coolone.ranepatimetable.data")!
+            .string(forKey: PrefsIds.THEME_PRIMARY.toString())!)
         return textView
     }()
     
@@ -115,14 +57,14 @@ class CustomCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         self.addSubview(lessonView)
-        
+
         lessonView.backgroundColor = UIColor(white: 1, alpha: 0)
-        
+
         lessonView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
         lessonView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         lessonView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
         lessonView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
-        
+
         self.addSubview(textView)
         textView.backgroundColor = UIColor(white: 1, alpha: 0)
         textView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
@@ -134,7 +76,7 @@ class CustomCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         if let lesson = lesson {
-            lessonView.lesson = lesson
+            textView.text = lesson
         }
     }
     

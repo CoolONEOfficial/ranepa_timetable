@@ -9,13 +9,32 @@
 import UIKit
 import NotificationCenter
 
+struct CustomCellData {
+    let lesson: String?
+}
+
 class TodayViewController: UIViewController, NCWidgetProviding {
     @IBOutlet var tableView: UITableView!
-    @IBOutlet var testLabel: UILabel!
+
+    var data = [CustomCellData]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        data = [
+            CustomCellData.init(lesson: "dfsdf"),
+            CustomCellData.init(lesson: "nn"),
+            CustomCellData.init(lesson: "657567"),
+            CustomCellData.init(lesson: "dfsdf"),
+            CustomCellData.init(lesson: "dfsdf"),
+            CustomCellData.init(lesson: "dfsdf")
+        ]
+        
+        tableView.register(CustomCell.self, forCellReuseIdentifier: "custom")
     }
 
     func widgetPerformUpdate(completionHandler: (@escaping (NCUpdateResult) -> Void)) {
@@ -25,12 +44,22 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         // If there's no update required, use NCUpdateResult.NoData
         // If there's an update, use NCUpdateResult.NewData
         
-        let prefs = UserDefaults.init(suiteName: "group.coolone.ranepatimetable.data")
-        
-        debugPrint("keys: \(prefs!.dictionaryRepresentation().keys)")
-        
-        testLabel.text = prefs?.string(forKey: "flutter.theme_accent") ?? "nil"
+//        let prefs = UserDefaults.init(suiteName: "group.coolone.ranepatimetable.data")
+//
+//        debugPrint("keys: \(prefs!.dictionaryRepresentation().keys)")
         
         completionHandler(NCUpdateResult.newData)
+    }
+}
+
+extension TodayViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return data.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = self.tableView.dequeueReusableCell(withIdentifier: "custom") as! CustomCell
+        cell.lesson = data[indexPath.row].lesson
+        return cell
     }
 }

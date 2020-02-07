@@ -19,6 +19,7 @@
 		858E64BE23ED6E8100722D91 /* TodayExt.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 858E64B123ED6E8000722D91 /* TodayExt.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		858E64C623ED6EA500722D91 /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858E64C323ED6EA400722D91 /* CustomCell.swift */; };
 		858E64C723ED6EA500722D91 /* LessonPainter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858E64C423ED6EA400722D91 /* LessonPainter.swift */; };
+		858E64CC23EDD32900722D91 /* FlutterUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858E64CB23EDD32900722D91 /* FlutterUserDefaults.swift */; };
 		9705A1C61CF904A100538489 /* Flutter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; };
 		9705A1C71CF904A300538489 /* Flutter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9740EEB41CF90195004384FC /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 9740EEB21CF90195004384FC /* Debug.xcconfig */; };
@@ -86,6 +87,7 @@
 		858E64C423ED6EA400722D91 /* LessonPainter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LessonPainter.swift; sourceTree = "<group>"; };
 		858E64C923ED73AD00722D91 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		858E64CA23ED73B500722D91 /* TodayExt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TodayExt.entitlements; sourceTree = "<group>"; };
+		858E64CB23EDD32900722D91 /* FlutterUserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlutterUserDefaults.swift; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		9740EEBA1CF902C7004384FC /* Flutter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Flutter.framework; path = Flutter/Flutter.framework; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 				858E64B523ED6E8000722D91 /* TodayViewController.swift */,
 				858E64B723ED6E8000722D91 /* MainInterface.storyboard */,
 				858E64BA23ED6E8000722D91 /* Info.plist */,
+				858E64CB23EDD32900722D91 /* FlutterUserDefaults.swift */,
 			);
 			path = TodayExt;
 			sourceTree = "<group>";
@@ -398,6 +401,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				858E64C623ED6EA500722D91 /* CustomCell.swift in Sources */,
+				858E64CC23EDD32900722D91 /* FlutterUserDefaults.swift in Sources */,
 				858E64B623ED6E8000722D91 /* TodayViewController.swift in Sources */,
 				858E64C723ED6EA500722D91 /* LessonPainter.swift in Sources */,
 			);
