@@ -65,43 +65,40 @@ class BaseWidget extends StatelessWidget {
           final theme = snapshot.data;
           return Theme(
             data: theme,
-            child: Directionality(
-              textDirection: TextDirection.ltr,
-              child: PlatformApp(
-                builder: (ctx, child) {
-                  ScreenUtil.init(ctx);
-                  ErrorWidget.builder = _buildError(ctx);
-                  return MediaQuery(
-                    data: MediaQuery.of(ctx)
-                        .copyWith(alwaysUse24HourFormat: true),
-                    child: child,
-                  );
-                },
-                localizationsDelegates: [
-                  AppLocalizationsDelegate(),
-                  GlobalCupertinoLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate
-                ],
-                supportedLocales: [
-                  SupportedLocales.en,
-                  SupportedLocales.ru,
-                ],
-                onGenerateTitle: (BuildContext ctx) =>
-                    AppLocalizations.of(ctx).title,
-                routes: <String, WidgetBuilder>{
-                  PrefsScreen.ROUTE: (ctx) => PrefsScreen(),
-                  AboutScreen.ROUTE: (ctx) => AboutScreen(),
-                  IntroScreen.ROUTE: (ctx) => IntroScreen(),
-                  SearchScreen.ROUTE: (ctx) => SearchScreen(),
-                  TimetableScreen.ROUTE: (ctx) => TimetableScreen(),
-                },
-                initialRoute: prefs.getInt(
-                            PrefsIds.SEARCH_ITEM_PREFIX + PrefsIds.ITEM_ID) ==
-                        null
-                    ? IntroScreen.ROUTE
-                    : TimetableScreen.ROUTE,
-              ),
+            child: PlatformApp(
+              builder: (ctx, child) {
+                ScreenUtil.init(ctx);
+                ErrorWidget.builder = _buildError(ctx);
+                return MediaQuery(
+                  data: MediaQuery.of(ctx)
+                      .copyWith(alwaysUse24HourFormat: true),
+                  child: child,
+                );
+              },
+              localizationsDelegates: [
+                AppLocalizationsDelegate(),
+                GlobalCupertinoLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate
+              ],
+              supportedLocales: [
+                SupportedLocales.en,
+                SupportedLocales.ru,
+              ],
+              onGenerateTitle: (BuildContext ctx) =>
+                  AppLocalizations.of(ctx).title,
+              routes: <String, WidgetBuilder>{
+                PrefsScreen.ROUTE: (ctx) => PrefsScreen(),
+                AboutScreen.ROUTE: (ctx) => AboutScreen(),
+                IntroScreen.ROUTE: (ctx) => IntroScreen(),
+                SearchScreen.ROUTE: (ctx) => SearchScreen(),
+                TimetableScreen.ROUTE: (ctx) => TimetableScreen(),
+              },
+              initialRoute: prefs.getInt(
+                          PrefsIds.SEARCH_ITEM_PREFIX + PrefsIds.ITEM_ID) ==
+                      null
+                  ? IntroScreen.ROUTE
+                  : TimetableScreen.ROUTE,
             ),
           );
         },

@@ -18,8 +18,7 @@ dependencies:
   http: ^0.12.0+4
   xml: ^3.5.0
   shared_preferences:
-    git:
-      url: git://github.com/CoolONEOfficial/shared_preferences_suite_name.git
+    path: shared_preferences_suite_name
   json_serializable: ^3.2.5
   intro_views_flutter: ^2.8.0
   android_intent: ^0.3.5
