@@ -308,7 +308,7 @@ class _SearchScreenState extends State<SearchScreen> {
               final queryIndex =
                       mItem.title.indexOf(RegExp(query, caseSensitive: false)),
                   selectColor = theme.textSelectionColor,
-                  normalColor = theme.textTheme.headline6.color;
+                  normalColor = theme.textTheme.title.color;
 
               return WidgetTemplates.buildListTile(
                 ctx,
@@ -410,7 +410,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: Text(
                     SearchScreen._capitalizeString(
                         MaterialLocalizations.of(ctx).cancelButtonLabel),
-                    style: getTheme().textTheme.bodyText2,
+                    style: getTheme().textTheme.body1,
                   ),
                   onPressed: () => _cancelPressed(ctx),
                 ),
@@ -450,7 +450,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ? IconButton(
                       icon: Icon(
                         Icons.clear,
-                        color: getTheme().accentTextTheme.bodyText2.color,
+                        color: getTheme().accentTextTheme.body1.color,
                       ),
                       onPressed: () {
                         searchController.clear();

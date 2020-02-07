@@ -65,7 +65,7 @@ Future<SearchItem> showSearchItemSelect(
                 backgroundColor: getTheme().brightness == Brightness.dark
                     ? Colors.black
                     : Colors.white,
-                itemStyle: getTheme().textTheme.bodyText2,
+                itemStyle: getTheme().textTheme.body1,
                 cancelStyle: getTheme().textTheme.caption));
       } else {
         TimetableScreen.fromDay = await showDatePicker(

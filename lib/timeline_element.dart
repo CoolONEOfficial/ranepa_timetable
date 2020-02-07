@@ -86,7 +86,7 @@ class TimelineElement extends StatelessWidget {
             softWrap: true,
             maxLines: 2,
             textAlign: TextAlign.center,
-            style: Theme.of(ctx).textTheme.headline6,
+            style: Theme.of(ctx).textTheme.title,
             maxFontSize: 20,
           ),
         ),
@@ -109,7 +109,7 @@ class TimelineElement extends StatelessWidget {
 
     return AutoSizeText(
       prefix + model.room.number,
-      style: Theme.of(ctx).textTheme.subtitle2,
+      style: Theme.of(ctx).textTheme.subtitle,
       maxLines: 1,
       textAlign: RoomLocationStyle
                   .values[prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ?? 0] ==

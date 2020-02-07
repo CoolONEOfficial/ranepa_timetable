@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:ios_app_group/ios_app_group.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:sqflite/sqflite.dart';
@@ -13,14 +14,17 @@ class PlatformChannels {
       const MethodChannel('ru.coolone.ranepatimetable/methodChannel');
 
   static const tableName = 'lessons';
-  static const tablePath = 'timetable.db';
+  static const tableFile = 'timetable.db';
+  static const iosAppGroup = 'group.coolone.ranepatimetable.data';
 
   static Database _db;
 
   static get db async {
     if (_db == null) {
       _db = await openDatabase(
-        tablePath,
+        Platform.isIOS
+            ? "${(await IosAppGroup.getAppGroupDirectory(iosAppGroup)).path}/$tableFile"
+            : tableFile,
         version: 1,
         onCreate: (Database db, int version) async {
           await db.execute("CREATE TABLE `$tableName`"
@@ -46,7 +50,8 @@ class PlatformChannels {
               "`finish_hour` INTEGER,"
               "`finish_minute` INTEGER"
               ")");
-          await db.execute("CREATE INDEX index_lessons__id ON $tableName (_id);");
+          await db
+              .execute("CREATE INDEX index_lessons__id ON $tableName (_id);");
         },
       );
     }

@@ -32,7 +32,7 @@ class WidgetTemplates {
   }) {
     var expandedChildren = <Widget>[
       DefaultTextStyle(
-        style: Theme.of(ctx).textTheme.subtitle1,
+        style: Theme.of(ctx).textTheme.subtitle,
         child: title,
       )
     ];
@@ -101,7 +101,7 @@ class WidgetTemplates {
             Container(height: 20),
             Text(
               text,
-              style: Theme.of(ctx).textTheme.headline6,
+              style: Theme.of(ctx).textTheme.title,
             )
           ],
         ),
@@ -205,7 +205,7 @@ class WidgetTemplates {
           style: (Platform.isIOS
                   ? getTheme().textTheme
                   : getTheme().accentTextTheme)
-              .bodyText2,
+              .body1,
         ),
         icon: Icon(iconData,
             color: Platform.isIOS

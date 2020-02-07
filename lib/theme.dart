@@ -48,7 +48,7 @@ void _onThemeChange() async {
       PrefsIds.THEME_TEXT_PRIMARY, _colorToHex(theme.textTheme.body1.color));
 
   await prefs.setString(PrefsIds.THEME_TEXT_ACCENT,
-      _colorToHex(theme.accentTextTheme.bodyText2.color));
+      _colorToHex(theme.accentTextTheme.body1.color));
 
   await prefs.setInt(PrefsIds.THEME_BRIGHTNESS, theme.brightness.index);
 

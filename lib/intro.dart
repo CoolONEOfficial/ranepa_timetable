@@ -54,7 +54,7 @@ class IntroScreen extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Text(
                       localizations.introWelcomeDescription,
-                      style: textTheme.bodyText2.merge(
+                      style: textTheme.body1.merge(
                         TextStyle(color: Colors.white, fontSize: 20),
                       ),
                       textAlign: TextAlign.center,
@@ -91,7 +91,7 @@ class IntroScreen extends StatelessWidget {
         body: buildWelcomeTextList(
           localizations,
           TextTheme(
-            bodyText2: TextStyle(color: Colors.white),
+            body1: TextStyle(color: Colors.white),
             caption: TextStyle(color: Colors.grey),
           ),
         ),
@@ -189,7 +189,7 @@ class IntroScreen extends StatelessWidget {
           contentColor = (theme.brightness == Brightness.light
                   ? theme.accentTextTheme
                   : theme.textTheme)
-              .bodyText2
+              .body1
               .color;
 
           return IntroViewsFlutter(

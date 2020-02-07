@@ -483,8 +483,8 @@ class TimetableScreen extends StatefulWidget {
 }
 
 class CupertinoCustomNavigationBar extends StatelessWidget
-    with ObstructingPreferredSizeWidget {
-  const CupertinoCustomNavigationBar({
+    implements ObstructingPreferredSizeWidget {
+  CupertinoCustomNavigationBar({
     Key key,
     this.backgroundColor,
     this.bottom,

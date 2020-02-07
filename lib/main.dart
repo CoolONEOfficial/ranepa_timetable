@@ -6,6 +6,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:ranepa_timetable/about.dart';
@@ -18,7 +19,6 @@ import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/timetable.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:package_info/package_info.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -44,7 +44,8 @@ class BaseWidget extends StatelessWidget {
             builder: (ctx, snapshot) {
               prefs = snapshot.data;
 
-              if (prefs.getString(PrefsIds.LAST_UPDATE) != version) {
+              if (prefs.getString(PrefsIds.LAST_UPDATE) != version &&
+                  Platform.isAndroid) {
                 return WidgetTemplates.buildFutureBuilder(ctx,
                     loading: Container(),
                     future: Future.wait(
@@ -66,40 +67,43 @@ class BaseWidget extends StatelessWidget {
           final theme = snapshot.data;
           return Theme(
             data: theme,
-            child: PlatformApp(
-              builder: (ctx, child) {
-                ScreenUtil.init(ctx);
-                ErrorWidget.builder = _buildError(ctx);
-                return MediaQuery(
-                  data:
-                      MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
-                  child: child,
-                );
-              },
-              localizationsDelegates: [
-                AppLocalizationsDelegate(),
-                GlobalCupertinoLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate
-              ],
-              supportedLocales: [
-                SupportedLocales.en,
-                SupportedLocales.ru,
-              ],
-              onGenerateTitle: (BuildContext ctx) =>
-                  AppLocalizations.of(ctx).title,
-              routes: <String, WidgetBuilder>{
-                PrefsScreen.ROUTE: (ctx) => PrefsScreen(),
-                AboutScreen.ROUTE: (ctx) => AboutScreen(),
-                IntroScreen.ROUTE: (ctx) => IntroScreen(),
-                SearchScreen.ROUTE: (ctx) => SearchScreen(),
-                TimetableScreen.ROUTE: (ctx) => TimetableScreen(),
-              },
-              initialRoute: prefs.getInt(
-                          PrefsIds.SEARCH_ITEM_PREFIX + PrefsIds.ITEM_ID) ==
-                      null
-                  ? IntroScreen.ROUTE
-                  : TimetableScreen.ROUTE,
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: PlatformApp(
+                builder: (ctx, child) {
+                  ScreenUtil.init(ctx);
+                  ErrorWidget.builder = _buildError(ctx);
+                  return MediaQuery(
+                    data: MediaQuery.of(ctx)
+                        .copyWith(alwaysUse24HourFormat: true),
+                    child: child,
+                  );
+                },
+                localizationsDelegates: [
+                  AppLocalizationsDelegate(),
+                  GlobalCupertinoLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate
+                ],
+                supportedLocales: [
+                  SupportedLocales.en,
+                  SupportedLocales.ru,
+                ],
+                onGenerateTitle: (BuildContext ctx) =>
+                    AppLocalizations.of(ctx).title,
+                routes: <String, WidgetBuilder>{
+                  PrefsScreen.ROUTE: (ctx) => PrefsScreen(),
+                  AboutScreen.ROUTE: (ctx) => AboutScreen(),
+                  IntroScreen.ROUTE: (ctx) => IntroScreen(),
+                  SearchScreen.ROUTE: (ctx) => SearchScreen(),
+                  TimetableScreen.ROUTE: (ctx) => TimetableScreen(),
+                },
+                initialRoute: prefs.getInt(
+                            PrefsIds.SEARCH_ITEM_PREFIX + PrefsIds.ITEM_ID) ==
+                        null
+                    ? IntroScreen.ROUTE
+                    : TimetableScreen.ROUTE,
+              ),
             ),
           );
         },

@@ -247,7 +247,7 @@ class AboutScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: WidgetTemplates.buildLogo(
             Theme.of(ctx),
-            color: textTheme.headline6.color,
+            color: textTheme.title.color,
           ),
         ),
         orientation == Orientation.landscape
