@@ -65,10 +65,12 @@ class TimelineModel {
 
   static int _boolToInt(bool b) => b ? 1 : 0;
 
-  static int _dateToNum(DateTime dt) => dt.millisecondsSinceEpoch;
+  static int _dateToNum(DateTime dt) {
+    debugPrint("convert ${dt.toIso8601String()} too ${dt.millisecondsSinceEpoch}");
+    return dt.millisecondsSinceEpoch;
+  }
 
-  static DateTime _numToDate(int n) => DateTime.fromMicrosecondsSinceEpoch(n);
-
+  static DateTime _numToDate(int n) => DateTime.fromMillisecondsSinceEpoch(n);
 
   TimelineModel({
     @required this.date,

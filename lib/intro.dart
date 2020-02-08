@@ -136,7 +136,10 @@ class IntroScreen extends StatelessWidget {
           alignment: Alignment.center,
           child: _buildCircleButton(
             PlatformIcons(ctx).search,
-            onPressed: () => showSearchItemSelect(ctx),
+            onPressed: () async {
+              await onThemeChange();
+              return showSearchItemSelect(ctx);
+            },
           ),
         ),
       );

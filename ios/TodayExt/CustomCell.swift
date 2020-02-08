@@ -32,51 +32,223 @@ extension UIColor {
     }
 }
 
+class TitleLabel: UILabel {
+    override func draw(_ rect: CGRect) {
+        super.drawText(in: rect.insetBy(dx: 5, dy: 0))
+    }
+}
+
+public enum FontIcon: UInt32 {
+    case studyHostel = 0xe802,
+        hotel = 0xe801,
+        academy = 0xe81b,
+        beer = 0xe838,
+        confetti = 0xe839,
+        unknownLesson = 0xe826
+    
+    func toStringIcon() -> String {
+        return FontIcon.intToStringIcon(self.rawValue)
+    }
+    
+    static func intToStringIcon(_ int: UInt32) -> String {
+        var rawIcon = int
+        let xPtr = withUnsafeMutablePointer(to: &rawIcon, { $0 })
+        return String(bytesNoCopy: xPtr, length:MemoryLayout<UInt32>.size, encoding: String.Encoding.utf32LittleEndian, freeWhenDone: false)!
+    }
+}
+
 class CustomCell: UITableViewCell {
-    var lesson: String?
+    var model: TimelineModel?
     
-    var lessonView: LessonPainter = {
-        var painter = LessonPainter()
-        painter.translatesAutoresizingMaskIntoConstraints = false
-        return painter
+    var painterView: TimelinePainter = {
+        var painterView = TimelinePainter()
+        painterView.translatesAutoresizingMaskIntoConstraints = false
+        return painterView
     }()
     
-    var textView: UITextView = {
-        var textView = UITextView()
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        let pres = UserDefaults(suiteName: "group.coolone.ranepatimetable.data")!.dictionaryRepresentation()
-        debugPrint("keys: \(pres.keys)")
-        debugPrint("key: \(PrefsIds.THEME_PRIMARY.toString())")
-        debugPrint("theme primary: \(UserDefaults(suiteName: "group.coolone.ranepatimetable.data")!.string(forKey: PrefsIds.THEME_PRIMARY.toString())!)")
-        textView.textColor = UIColor(rgbStr: UserDefaults(suiteName: "group.coolone.ranepatimetable.data")!
-            .string(forKey: PrefsIds.THEME_PRIMARY.toString())!)
-        return textView
+    var painterContentView: UIView = {
+        var contentView = UIView()
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        return contentView
     }()
+    
+    var startView: UILabel = {
+        var labelView = UILabel()
+        labelView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let color = Prefs.THEME_TEXT_PRIMARY.fromUserDefaults() as? String ?? "ff0000ff"
+        debugPrint("theme primary: \(color)")
+        labelView.textColor = UIColor(rgbStr: color)
+        labelView.font = labelView.font.withSize(20)
+        return labelView
+    }()
+    
+    var finishView: UILabel = {
+        var labelView = UILabel()
+        labelView.translatesAutoresizingMaskIntoConstraints = false
+
+        let color = Prefs.THEME_TEXT_PRIMARY.fromUserDefaults() as? String ?? "ff0000ff"
+        labelView.textColor = UIColor(rgbStr: color)
+        labelView.font = labelView.font.withSize(14)
+        return labelView
+    }()
+
+    var locationView: UILabel = {
+        var labelView = UILabel()
+        labelView.translatesAutoresizingMaskIntoConstraints = false
+
+        let color = Prefs.THEME_TEXT_PRIMARY.fromUserDefaults() as? String ?? "ff0000ff"
+        labelView.textColor = UIColor(rgbStr: color)
+        labelView.font = labelView.font.withSize(14)
+        return labelView
+    }()
+    
+    var locationIconView: UILabel = {
+        var labelView = UILabel()
+        labelView.translatesAutoresizingMaskIntoConstraints = false
+
+        let color = Prefs.THEME_TEXT_PRIMARY.fromUserDefaults() as? String ?? "ff0000ff"
+        labelView.textColor = UIColor(rgbStr: color)
+        labelView.font = labelView.font.withSize(14)
+        labelView.font = UIFont.init(name: "TimetableIcons", size: 20)
+        return labelView
+    }()
+    
+    var iconView: UILabel = {
+        var labelView = UILabel()
+        labelView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let color = Prefs.THEME_TEXT_ACCENT.fromUserDefaults() as? String ?? "ff0000ff"
+        labelView.textColor = UIColor(rgbStr: color)
+        labelView.font = UIFont.init(name: "TimetableIcons", size: 20)
+        return labelView
+    }()
+    
+    var lessonTypeView: TitleLabel = {
+        var labelView = TitleLabel()
+        labelView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let color = Prefs.THEME_TEXT_PRIMARY.fromUserDefaults() as? String ?? "ff0000ff"
+        labelView.textColor = UIColor(rgbStr: color)
+        return labelView
+    }()
+    
+    var teacherGroupView: TitleLabel = {
+        var labelView = TitleLabel()
+        labelView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let color = Prefs.THEME_TEXT_PRIMARY.fromUserDefaults() as? String ?? "ff0000ff"
+        labelView.textColor = UIColor(rgbStr: color)
+        return labelView
+    }()
+    
+    var titleView: TitleLabel = {
+        var labelView = TitleLabel()
+        labelView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let color = Prefs.THEME_TEXT_PRIMARY.fromUserDefaults() as? String ?? "ff0000ff"
+        labelView.textColor = UIColor(rgbStr: color)
+        labelView.numberOfLines = 0
+        labelView.lineBreakMode = .byWordWrapping
+        labelView.sizeToFit()
+        return labelView
+    }()
+    
+    static let innerPadding = 4.0,
+        leftContentWidth = CGFloat(68 - innerPadding);
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        self.addSubview(lessonView)
+        self.addSubview(painterView)
+        painterView.backgroundColor = UIColor(white: 1, alpha: 0)
+        painterView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
+        painterView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        painterView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+        painterView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
 
-        lessonView.backgroundColor = UIColor(white: 1, alpha: 0)
+        self.addSubview(painterContentView)
+        painterContentView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: CGFloat(TimelinePainter.rectMargins * 2)).isActive = true
+        painterContentView.topAnchor.constraint(equalTo: self.topAnchor, constant: CGFloat(TimelinePainter.rectMargins * 2)).isActive = true
+        painterContentView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -CGFloat(TimelinePainter.rectMargins * 2)).isActive = true
+        painterContentView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -CGFloat(TimelinePainter.rectMargins * 2)).isActive = true
 
-        lessonView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
-        lessonView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        lessonView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-        lessonView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
+        painterContentView.addSubview(startView)
+        startView.textAlignment = .center
+        startView.leftAnchor.constraint(equalTo: painterContentView.leftAnchor).isActive = true
+        startView.topAnchor.constraint(equalTo: painterContentView.topAnchor).isActive = true
+        startView.addConstraint(NSLayoutConstraint(item: startView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: CustomCell.leftContentWidth))
 
-        self.addSubview(textView)
-        textView.backgroundColor = UIColor(white: 1, alpha: 0)
-        textView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
-        textView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        textView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
-        textView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
+        painterContentView.addSubview(finishView)
+        finishView.textAlignment = .center
+        finishView.leftAnchor.constraint(equalTo: startView.leftAnchor).isActive = true
+        finishView.rightAnchor.constraint(equalTo: startView.rightAnchor).isActive = true
+        finishView.topAnchor.constraint(equalTo: startView.bottomAnchor).isActive = true
+        
+        painterContentView.addSubview(locationView)
+        locationView.textAlignment = .left
+        locationView.topAnchor.constraint(equalTo: finishView.bottomAnchor, constant: 5).isActive = true
+        
+        switch RoomLocationStyle.fromUserDefaults() {
+        case .Text:
+            locationView.textAlignment = .center
+            
+            locationView.leftAnchor.constraint(equalTo: startView.leftAnchor).isActive = true
+            locationView.rightAnchor.constraint(equalTo: startView.rightAnchor).isActive = true
+        case .Icon:
+            locationView.textAlignment = .left
+            painterContentView.addSubview(locationIconView)
+            
+            locationIconView.leftAnchor.constraint(equalTo: startView.leftAnchor).isActive = true
+            locationIconView.topAnchor.constraint(equalTo: finishView.bottomAnchor, constant: 2).isActive = true
+            locationView.leftAnchor.constraint(equalTo: locationIconView.rightAnchor, constant: 5).isActive = true
+        }
+        
+        painterContentView.addSubview(iconView)
+        iconView.textAlignment = .center
+        iconView.addConstraint(NSLayoutConstraint(item: iconView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 50))
+        iconView.leftAnchor.constraint(equalTo: startView.rightAnchor).isActive = true
+        iconView.topAnchor.constraint(equalTo: painterContentView.topAnchor).isActive = true
+        iconView.bottomAnchor.constraint(equalTo: painterContentView.bottomAnchor).isActive = true
+     
+        painterContentView.addSubview(lessonTypeView)
+        lessonTypeView.leftAnchor.constraint(equalTo: iconView.rightAnchor).isActive = true
+        lessonTypeView.topAnchor.constraint(equalTo: painterContentView.topAnchor).isActive = true
+        
+        painterContentView.addSubview(teacherGroupView)
+        teacherGroupView.textAlignment = .right
+        teacherGroupView.leftAnchor.constraint(equalTo: lessonTypeView.rightAnchor).isActive = true
+        teacherGroupView.topAnchor.constraint(equalTo: painterContentView.topAnchor).isActive = true
+        teacherGroupView.rightAnchor.constraint(equalTo: painterContentView.rightAnchor).isActive = true
+        
+        teacherGroupView.widthAnchor.constraint(equalTo: lessonTypeView.widthAnchor, multiplier: 1.0).isActive = true
+        
+        painterContentView.addSubview(titleView)
+        titleView.leftAnchor.constraint(equalTo: iconView.rightAnchor).isActive = true
+        titleView.topAnchor.constraint(equalTo: lessonTypeView.bottomAnchor).isActive = true
+        titleView.bottomAnchor.constraint(equalTo: painterContentView.bottomAnchor).isActive = true
+        titleView.rightAnchor.constraint(equalTo: painterContentView.rightAnchor).isActive = true
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        if let lesson = lesson {
-            textView.text = lesson
+        if let model = model {
+            startView.text = model.start.format()
+            finishView.text = model.finish.format()
+            locationView.text = model.room.formatNumber()
+            locationIconView.text = model.room.formatLocation()
+            lessonTypeView.text = model.lesson.actionTitle
+            switch SearchItemTypeId.fromUserDefaults() {
+            case .Group:
+                teacherGroupView.text = model.teacher.format()
+            case .Teacher:
+                teacherGroupView.text = model.group
+            }
+            
+            titleView.text = Prefs.OPTIMIZED_LESSON_TITLES.fromUserDefaults() as? Bool ?? true
+                ? model.lesson.title
+                : model.lesson.fullTitle
+            iconView.text = FontIcon.intToStringIcon(UInt32(model.lesson.iconCodePoint))
         }
     }
     

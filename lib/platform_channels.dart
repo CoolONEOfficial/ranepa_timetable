@@ -1,12 +1,10 @@
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:ios_app_group/ios_app_group.dart';
 import 'package:ranepa_timetable/timeline_models.dart';
-import 'package:ranepa_timetable/timetable.dart';
 import 'package:sqflite/sqflite.dart';
 
 class PlatformChannels {
@@ -21,10 +19,14 @@ class PlatformChannels {
 
   static get db async {
     if (_db == null) {
+      String path = Platform.isIOS
+          ? "${(await IosAppGroup.getAppGroupDirectory(iosAppGroup)).path}/$tableFile"
+          : tableFile;
+
+      debugPrint("dbPath: $path");
+
       _db = await openDatabase(
-        Platform.isIOS
-            ? "${(await IosAppGroup.getAppGroupDirectory(iosAppGroup)).path}/$tableFile"
-            : tableFile,
+        path,
         version: 1,
         onCreate: (Database db, int version) async {
           await db.execute("CREATE TABLE `$tableName`"

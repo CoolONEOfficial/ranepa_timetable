@@ -8,6 +8,22 @@
 
 import Foundation
 
+enum RoomLocationStyle: Int {
+    case Text = 0, Icon = 1
+    
+    static func fromUserDefaults() -> RoomLocationStyle {
+        return RoomLocationStyle.init(rawValue: Prefs.ROOM_LOCATION_STYLE.fromUserDefaults() as? Int ?? RoomLocationStyle.Text.rawValue)!
+    }
+}
+
+enum SearchItemTypeId: Int {
+    case Group = 0, Teacher = 1
+
+    static func fromUserDefaults() -> SearchItemTypeId {
+        return SearchItemTypeId.init(rawValue: Prefs.ITEM_TYPE.fromUserDefaults() as? Int ?? SearchItemTypeId.Group.rawValue)!
+    }
+}
+
 enum Prefs {
   case LAST_UPDATE,
       ROOM_LOCATION_STYLE,
@@ -26,9 +42,9 @@ enum Prefs {
       ITEM_TITLE,
       SITE_API,
       OPTIMIZED_LESSON_TITLES,
-    DAY_STYLE;
+      DAY_STYLE
 
-    func fromUserDefaults() -> String? {
+    func fromUserDefaults() -> Any? {
         var str: String
         switch self {
         case .LAST_UPDATE:
@@ -69,7 +85,7 @@ enum Prefs {
             str = "day_style"
         }
 
-        return FlutterUserDefaults.userDefaults.string(forKey: "flutter.\(str)")
+        return FlutterUserDefaults.userDefaults.object(forKey: "flutter.\(str)")
     }
 }
 

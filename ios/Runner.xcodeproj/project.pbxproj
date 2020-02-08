@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
-		361DA37B224581B40067E0D1 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 361DA37A224581B40067E0D1 /* File.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		3B80C3941E831B6300D905FE /* App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; };
 		3B80C3951E831B6300D905FE /* App.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -18,8 +17,12 @@
 		858E64B923ED6E8000722D91 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 858E64B723ED6E8000722D91 /* MainInterface.storyboard */; };
 		858E64BE23ED6E8100722D91 /* TodayExt.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 858E64B123ED6E8000722D91 /* TodayExt.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		858E64C623ED6EA500722D91 /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858E64C323ED6EA400722D91 /* CustomCell.swift */; };
-		858E64C723ED6EA500722D91 /* LessonPainter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858E64C423ED6EA400722D91 /* LessonPainter.swift */; };
+		858E64C723ED6EA500722D91 /* TimelinePainter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858E64C423ED6EA400722D91 /* TimelinePainter.swift */; };
 		858E64CC23EDD32900722D91 /* FlutterUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858E64CB23EDD32900722D91 /* FlutterUserDefaults.swift */; };
+		858E64D823EDE53800722D91 /* SQLite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 858E64CD23EDD5F300722D91 /* SQLite.framework */; };
+		858E64D923EDE53800722D91 /* SQLite.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 858E64CD23EDD5F300722D91 /* SQLite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		858E64DB23EDE83E00722D91 /* LessonsDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858E64DA23EDE83E00722D91 /* LessonsDatabase.swift */; };
+		858E64DE23EDFB7A00722D91 /* TimetableIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 858E64DD23EDFB7A00722D91 /* TimetableIcons.ttf */; };
 		9705A1C61CF904A100538489 /* Flutter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; };
 		9705A1C71CF904A300538489 /* Flutter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9740EEB41CF90195004384FC /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 9740EEB21CF90195004384FC /* Debug.xcconfig */; };
@@ -60,6 +63,7 @@
 			files = (
 				3B80C3951E831B6300D905FE /* App.framework in Embed Frameworks */,
 				9705A1C71CF904A300538489 /* Flutter.framework in Embed Frameworks */,
+				858E64D923EDE53800722D91 /* SQLite.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -71,7 +75,6 @@
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		361DA379224581B40067E0D1 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
-		361DA37A224581B40067E0D1 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		3B80C3931E831B6300D905FE /* App.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = App.framework; path = Flutter/App.framework; sourceTree = "<group>"; };
 		3CBE2D7E8A29364C72C76242 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
@@ -84,10 +87,13 @@
 		858E64B823ED6E8000722D91 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		858E64BA23ED6E8000722D91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		858E64C323ED6EA400722D91 /* CustomCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCell.swift; sourceTree = "<group>"; };
-		858E64C423ED6EA400722D91 /* LessonPainter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LessonPainter.swift; sourceTree = "<group>"; };
+		858E64C423ED6EA400722D91 /* TimelinePainter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimelinePainter.swift; sourceTree = "<group>"; };
 		858E64C923ED73AD00722D91 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		858E64CA23ED73B500722D91 /* TodayExt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TodayExt.entitlements; sourceTree = "<group>"; };
 		858E64CB23EDD32900722D91 /* FlutterUserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlutterUserDefaults.swift; sourceTree = "<group>"; };
+		858E64CD23EDD5F300722D91 /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = Carthage/Build/iOS/SQLite.framework; sourceTree = "<group>"; };
+		858E64DA23EDE83E00722D91 /* LessonsDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonsDatabase.swift; sourceTree = "<group>"; };
+		858E64DD23EDFB7A00722D91 /* TimetableIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = TimetableIcons.ttf; path = ../../../assets/fonts/TimetableIcons.ttf; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		9740EEBA1CF902C7004384FC /* Flutter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Flutter.framework; path = Flutter/Flutter.framework; sourceTree = "<group>"; };
@@ -116,6 +122,7 @@
 			files = (
 				9705A1C61CF904A100538489 /* Flutter.framework in Frameworks */,
 				3B80C3941E831B6300D905FE /* App.framework in Frameworks */,
+				858E64D823EDE53800722D91 /* SQLite.framework in Frameworks */,
 				7AFEC5E8ED9E1A07079435E5 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -126,6 +133,7 @@
 		7C54038238C58F9C2299D867 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				858E64CD23EDD5F300722D91 /* SQLite.framework */,
 				0A9BBFDCB1E71FC1AFED79AB /* Pods_Runner.framework */,
 				858E64B223ED6E8000722D91 /* NotificationCenter.framework */,
 			);
@@ -135,15 +143,25 @@
 		858E64B423ED6E8000722D91 /* TodayExt */ = {
 			isa = PBXGroup;
 			children = (
+				858E64DC23EDFB4400722D91 /* fonts */,
 				858E64CA23ED73B500722D91 /* TodayExt.entitlements */,
 				858E64C323ED6EA400722D91 /* CustomCell.swift */,
-				858E64C423ED6EA400722D91 /* LessonPainter.swift */,
+				858E64C423ED6EA400722D91 /* TimelinePainter.swift */,
 				858E64B523ED6E8000722D91 /* TodayViewController.swift */,
 				858E64B723ED6E8000722D91 /* MainInterface.storyboard */,
 				858E64BA23ED6E8000722D91 /* Info.plist */,
 				858E64CB23EDD32900722D91 /* FlutterUserDefaults.swift */,
+				858E64DA23EDE83E00722D91 /* LessonsDatabase.swift */,
 			);
 			path = TodayExt;
+			sourceTree = "<group>";
+		};
+		858E64DC23EDFB4400722D91 /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				858E64DD23EDFB7A00722D91 /* TimetableIcons.ttf */,
+			);
+			path = fonts;
 			sourceTree = "<group>";
 		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
@@ -162,7 +180,6 @@
 		97C146E51CF9000F007C117D = {
 			isa = PBXGroup;
 			children = (
-				361DA37A224581B40067E0D1 /* File.swift */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				858E64B423ED6E8000722D91 /* TodayExt */,
@@ -310,6 +327,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				858E64B923ED6E8000722D91 /* MainInterface.storyboard in Resources */,
+				858E64DE23EDFB7A00722D91 /* TimetableIcons.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,7 +358,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" thin";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" thin\n";
 		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -354,7 +372,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
 		};
 		D543A9A3220BCC574F9D4AFC /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -402,8 +420,9 @@
 			files = (
 				858E64C623ED6EA500722D91 /* CustomCell.swift in Sources */,
 				858E64CC23EDD32900722D91 /* FlutterUserDefaults.swift in Sources */,
+				858E64DB23EDE83E00722D91 /* LessonsDatabase.swift in Sources */,
 				858E64B623ED6E8000722D91 /* TodayViewController.swift in Sources */,
-				858E64C723ED6EA500722D91 /* LessonPainter.swift in Sources */,
+				858E64C723ED6EA500722D91 /* TimelinePainter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -412,7 +431,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */,
-				361DA37B224581B40067E0D1 /* File.swift in Sources */,
 				97C146F31CF9000F007C117D /* main.m in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);
@@ -515,11 +533,13 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 99C2LB4W93;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -549,6 +569,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 99C2LB4W93;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = TodayExt/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
@@ -579,6 +603,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 99C2LB4W93;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = TodayExt/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
@@ -607,6 +635,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 99C2LB4W93;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = TodayExt/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
@@ -735,11 +767,13 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 99C2LB4W93;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -766,11 +800,13 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 99C2LB4W93;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = Runner/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

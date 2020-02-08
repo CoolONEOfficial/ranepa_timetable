@@ -28,7 +28,7 @@ ThemeData buildTheme(
       accentColor: accentColor.shade500,
     );
 
-void _onThemeChange() async {
+Future<void> onThemeChange() async {
   _theme = null;
 
   var theme = getTheme();
@@ -88,7 +88,7 @@ get brightness {
 
 set brightness(value) {
   _brightness = value;
-  _onThemeChange();
+  onThemeChange();
 }
 
 // Accent color
@@ -119,7 +119,7 @@ MaterialColor get accentColor {
 
 set accentColor(value) {
   _accentColor = value;
-  _onThemeChange();
+  onThemeChange();
 }
 
 // Theme brightness titles

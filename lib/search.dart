@@ -10,6 +10,7 @@ import 'package:ranepa_timetable/main.dart';
 import 'package:ranepa_timetable/prefs.dart';
 import 'package:ranepa_timetable/theme.dart';
 import 'package:ranepa_timetable/widget_templates.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchItemType {
   final IconData icon;
@@ -60,10 +61,11 @@ class SearchItem extends SearchItemBase {
       title +
       ".\n";
 
-  void toPrefs(String prefix) {
+  Future<void> toPrefs(String prefix) async {
     prefs.setInt(prefix + PrefsIds.ITEM_TYPE, typeId.index);
     prefs.setInt(prefix + PrefsIds.ITEM_ID, id);
     prefs.setString(prefix + PrefsIds.ITEM_TITLE, title);
+    debugPrint("searchitem saved to prefs");
   }
 
   factory SearchItem.fromPrefs([

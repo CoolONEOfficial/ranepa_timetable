@@ -51,7 +51,7 @@ Future<SearchItem> showSearchItemSelect(
   if (searchItem != null) {
     if (primary) {
       TimetableScreen.fromDay = TimetableScreen.todayMidnight;
-      searchItem.toPrefs(PrefsIds.SEARCH_ITEM_PREFIX);
+      await searchItem.toPrefs(PrefsIds.SEARCH_ITEM_PREFIX);
       await PlatformChannels.deleteDb();
     } else {
       if (Platform.isIOS) {

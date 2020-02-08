@@ -63,6 +63,9 @@ class BaseWidget extends StatelessWidget {
   Widget _build(BuildContext ctx) => buildThemeStream(
         (ctx, snapshot) {
           final theme = snapshot.data;
+
+          debugPrint("prefskeys: ${prefs.getKeys()}");
+
           return Theme(
             data: theme,
             child: PlatformApp(
