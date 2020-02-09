@@ -17,29 +17,37 @@ Custom crossplatform open-source NRU RANEPA mobile client written on Flutter.
 * Customizable timetable app design
 * Cool intro screen
 
-<img src="screenshots/android_light_welcome.jpeg" width=150>
-<img src="screenshots/android_light_search.jpeg" width=150>
-<img src="screenshots/android_light_timetable.jpeg" width=150>
-<img src="screenshots/android_light_prefs.jpeg" width=150>
-<img src="screenshots/android_light_widget.jpeg" width=150>
+<p float="left">
+    <img src="screenshots/android_light_welcome.jpeg" width=150>
+    <img src="screenshots/android_light_search.jpeg" width=150>
+    <img src="screenshots/android_light_timetable.jpeg" width=150>
+    <img src="screenshots/android_light_prefs.jpeg" width=150>
+    <img src="screenshots/android_light_widget.jpeg" width=150>
+</p>
 
-<img src="screenshots/ios_light_welcome.jpeg" width=150>
-<img src="screenshots/ios_light_search.jpeg" width=150>
-<img src="screenshots/ios_light_timetable.jpeg" width=150>
-<img src="screenshots/ios_light_prefs.jpeg" width=150>
-<img src="screenshots/ios_light_widget.jpeg" width=150>
+<p float="left">
+    <img src="screenshots/ios_light_welcome.jpeg" width=150>
+    <img src="screenshots/ios_light_search.jpeg" width=150>
+    <img src="screenshots/ios_light_timetable.jpeg" width=150>
+    <img src="screenshots/ios_light_prefs.jpeg" width=150>
+    <img src="screenshots/ios_light_widget.jpeg" width=150>
+</p>
 
-<img src="screenshots/android_dark_welcome.jpeg" width=150>
-<img src="screenshots/android_dark_search.jpeg" width=150>
-<img src="screenshots/android_dark_timetable.jpeg" width=150>
-<img src="screenshots/android_dark_prefs.jpeg" width=150>
-<img src="screenshots/android_dark_widget.jpeg" width=150>
+<p float="left">
+    <img src="screenshots/android_dark_welcome.jpeg" width=150>
+    <img src="screenshots/android_dark_search.jpeg" width=150>
+    <img src="screenshots/android_dark_timetable.jpeg" width=150>
+    <img src="screenshots/android_dark_prefs.jpeg" width=150>
+    <img src="screenshots/android_dark_widget.jpeg" width=150>
+</p>
 
-<img src="screenshots/ios_dark_welcome.jpeg" width=150>
-<img src="screenshots/ios_dark_search.jpeg" width=150>
-<img src="screenshots/ios_dark_timetable.jpeg" width=150>
-<img src="screenshots/ios_dark_prefs.jpeg" width=150>
-<img src="screenshots/ios_dark_widget.jpeg" width=150>
+<p float="left">
+    <img src="screenshots/ios_dark_welcome.jpeg" width=150>
+    <img src="screenshots/ios_dark_search.jpeg" width=150>
+    <img src="screenshots/ios_dark_timetable.jpeg" width=150>
+    <img src="screenshots/ios_dark_prefs.jpeg" width=150>
+    <img src="screenshots/ios_dark_widget.jpeg" width=150>
+</p>
 
 [![AppStore][appstore-image]][appstore-url]
 [![PlayStore][playstore-image]][playstore-url]
