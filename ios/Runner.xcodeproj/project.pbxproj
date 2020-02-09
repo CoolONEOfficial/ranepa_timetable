@@ -15,7 +15,7 @@
 		858E64B323ED6E8000722D91 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 858E64B223ED6E8000722D91 /* NotificationCenter.framework */; };
 		858E64B623ED6E8000722D91 /* TodayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858E64B523ED6E8000722D91 /* TodayViewController.swift */; };
 		858E64B923ED6E8000722D91 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 858E64B723ED6E8000722D91 /* MainInterface.storyboard */; };
-		858E64BE23ED6E8100722D91 /* TodayExt.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 858E64B123ED6E8000722D91 /* TodayExt.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		858E64BE23ED6E8100722D91 /* TodayExtTest.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 858E64B123ED6E8000722D91 /* TodayExtTest.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		858E64C623ED6EA500722D91 /* CustomCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858E64C323ED6EA400722D91 /* CustomCell.swift */; };
 		858E64C723ED6EA500722D91 /* TimelinePainter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858E64C423ED6EA400722D91 /* TimelinePainter.swift */; };
 		858E64CC23EDD32900722D91 /* FlutterUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858E64CB23EDD32900722D91 /* FlutterUserDefaults.swift */; };
@@ -23,6 +23,9 @@
 		858E64D923EDE53800722D91 /* SQLite.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 858E64CD23EDD5F300722D91 /* SQLite.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		858E64DB23EDE83E00722D91 /* LessonsDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858E64DA23EDE83E00722D91 /* LessonsDatabase.swift */; };
 		858E64DE23EDFB7A00722D91 /* TimetableIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 858E64DD23EDFB7A00722D91 /* TimetableIcons.ttf */; };
+		858E64E423EFFFBE00722D91 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 858E64E623EFFFBE00722D91 /* Localizable.strings */; };
+		858E64EA23F007E000722D91 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 858E64EC23F007E000722D91 /* InfoPlist.strings */; };
+		858E64F023F008FE00722D91 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 858E64F223F008FE00722D91 /* InfoPlist.strings */; };
 		9705A1C61CF904A100538489 /* Flutter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; };
 		9705A1C71CF904A300538489 /* Flutter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9740EEB41CF90195004384FC /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 9740EEB21CF90195004384FC /* Debug.xcconfig */; };
@@ -50,7 +53,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				858E64BE23ED6E8100722D91 /* TodayExt.appex in Embed App Extensions */,
+				858E64BE23ED6E8100722D91 /* TodayExtTest.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -81,7 +84,7 @@
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		7AFFD8ED1D35381100E5BB4D /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		858E64B123ED6E8000722D91 /* TodayExt.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TodayExt.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		858E64B123ED6E8000722D91 /* TodayExtTest.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TodayExtTest.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		858E64B223ED6E8000722D91 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		858E64B523ED6E8000722D91 /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
 		858E64B823ED6E8000722D91 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -94,6 +97,15 @@
 		858E64CD23EDD5F300722D91 /* SQLite.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SQLite.framework; path = Carthage/Build/iOS/SQLite.framework; sourceTree = "<group>"; };
 		858E64DA23EDE83E00722D91 /* LessonsDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonsDatabase.swift; sourceTree = "<group>"; };
 		858E64DD23EDFB7A00722D91 /* TimetableIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = TimetableIcons.ttf; path = ../../../assets/fonts/TimetableIcons.ttf; sourceTree = "<group>"; };
+		858E64DF23EFFEBD00722D91 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Main.strings; sourceTree = "<group>"; };
+		858E64E023EFFEBD00722D91 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		858E64E123EFFEBE00722D91 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/MainInterface.strings; sourceTree = "<group>"; };
+		858E64E523EFFFBE00722D91 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		858E64E723EFFFC600722D91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		858E64EB23F007E000722D91 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		858E64ED23F007E300722D91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		858E64F123F008FE00722D91 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		858E64F323F0090200722D91 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		9740EEBA1CF902C7004384FC /* Flutter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Flutter.framework; path = Flutter/Flutter.framework; sourceTree = "<group>"; };
@@ -152,6 +164,8 @@
 				858E64BA23ED6E8000722D91 /* Info.plist */,
 				858E64CB23EDD32900722D91 /* FlutterUserDefaults.swift */,
 				858E64DA23EDE83E00722D91 /* LessonsDatabase.swift */,
+				858E64E623EFFFBE00722D91 /* Localizable.strings */,
+				858E64EC23F007E000722D91 /* InfoPlist.strings */,
 			);
 			path = TodayExt;
 			sourceTree = "<group>";
@@ -194,7 +208,7 @@
 			isa = PBXGroup;
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
-				858E64B123ED6E8000722D91 /* TodayExt.appex */,
+				858E64B123ED6E8000722D91 /* TodayExtTest.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -212,6 +226,7 @@
 				97C146F11CF9000F007C117D /* Supporting Files */,
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
+				858E64F223F008FE00722D91 /* InfoPlist.strings */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -251,7 +266,7 @@
 			);
 			name = TodayExt;
 			productName = TodayExt;
-			productReference = 858E64B123ED6E8000722D91 /* TodayExt.appex */;
+			productReference = 858E64B123ED6E8000722D91 /* TodayExtTest.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		97C146ED1CF9000F007C117D /* Runner */ = {
@@ -309,6 +324,7 @@
 				English,
 				en,
 				Base,
+				ru,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
@@ -327,6 +343,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				858E64B923ED6E8000722D91 /* MainInterface.storyboard in Resources */,
+				858E64EA23F007E000722D91 /* InfoPlist.strings in Resources */,
+				858E64E423EFFFBE00722D91 /* Localizable.strings in Resources */,
 				858E64DE23EDFB7A00722D91 /* TimetableIcons.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -336,6 +354,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
+				858E64F023F008FE00722D91 /* InfoPlist.strings in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				9740EEB41CF90195004384FC /* Debug.xcconfig in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
@@ -451,14 +470,43 @@
 			isa = PBXVariantGroup;
 			children = (
 				858E64B823ED6E8000722D91 /* Base */,
+				858E64E123EFFEBE00722D91 /* ru */,
 			);
 			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
+		858E64E623EFFFBE00722D91 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				858E64E523EFFFBE00722D91 /* ru */,
+				858E64E723EFFFC600722D91 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		858E64EC23F007E000722D91 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				858E64EB23F007E000722D91 /* ru */,
+				858E64ED23F007E300722D91 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		858E64F223F008FE00722D91 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				858E64F123F008FE00722D91 /* en */,
+				858E64F323F0090200722D91 /* ru */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 		97C146FA1CF9000F007C117D /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				97C146FB1CF9000F007C117D /* Base */,
+				858E64DF23EFFEBD00722D91 /* ru */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -467,6 +515,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				97C147001CF9000F007C117D /* Base */,
+				858E64E023EFFEBD00722D91 /* ru */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -580,7 +629,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.coolone.ranepaTimetableJJJ.TodayExt;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = TodayExtTest;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -613,7 +662,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.coolone.ranepaTimetableJJJ.TodayExt;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = TodayExtTest;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
@@ -645,7 +694,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.coolone.ranepaTimetableJJJ.TodayExt;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = TodayExtTest;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;

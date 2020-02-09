@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  Runner
+
+  Created by Nickolay Truhin on 09.02.2020.
+  Copyright © 2020 The Chromium Authors. All rights reserved.
+*/
+
+"CFBundleName" = "Расписание занятий";
+"CFBundleDisplayName" = "Расписание занятий";

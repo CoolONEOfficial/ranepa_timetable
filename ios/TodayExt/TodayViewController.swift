@@ -41,7 +41,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         var dbExist = false
         
         do {
-            try data = LessonsDatabase.getLessons()
+            try data = LessonsDatabase.getAll()
             
             dbExist = true
         } catch {}
@@ -55,7 +55,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                 case .Teacher:
                     icon = FontIcon.confetti
                 }
-                buildMessage(text: "Free day", icon: icon)
+                buildMessage(text: NSLocalizedString("freeDay", comment: ""), icon: icon)
             } else {
                 tableView.delegate = self
                 tableView.dataSource = self
@@ -65,7 +65,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
                 self.extensionContext?.widgetLargestAvailableDisplayMode = .expanded
             }
         } else {
-            buildMessage(text: "No cache", icon: FontIcon.unknownLesson)
+            buildMessage(text: NSLocalizedString("noCache", comment: ""), icon: FontIcon.unknownLesson)
         }
     }
     
@@ -102,7 +102,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             self.preferredContentSize = maxSize
         } else {
             //extended
-            self.preferredContentSize = CGSize(width: maxSize.width, height: CGFloat(data.count * 96))
+            self.preferredContentSize = CGSize(width: maxSize.width, height: CGFloat(data.count * 88 + Int(TimelinePainter.rectMargins)))
         }
     }
 }

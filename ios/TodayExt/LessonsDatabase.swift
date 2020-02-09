@@ -14,7 +14,7 @@ class LessonsDatabase {
     
     static let table = Table("lessons")
     
-    static func getLessons() throws -> [TimelineModel] {
+    static func getAll() throws -> [TimelineModel] {
         var lessons = [TimelineModel]()
         let midnight = Calendar.current.date(byAdding: .day, value: 1, to:
             Calendar(identifier: .gregorian).startOfDay(for: Date()))!
@@ -40,6 +40,8 @@ struct TimelineModel {
     let room: RoomModel
     let start: TimeModel
     let finish: TimeModel
+    let first, last: Bool
+    let mergeBottom, mergeTop: Bool
     
     init(_ data: Row) {
         date = Date(timeIntervalSince1970: Double(data[TableKeys.date] / 1000))
@@ -49,6 +51,10 @@ struct TimelineModel {
         start = TimeModel.init(data, prefix: "start")
         finish = TimeModel.init(data, prefix: "finish")
         group = data[TableKeys.group]
+        mergeTop = data[TableKeys.mergeTop]
+        mergeBottom = data[TableKeys.mergeBottom]
+        first = data[TableKeys.first]
+        last = data[TableKeys.last]
     }
     
     class TableKeys {

@@ -109,7 +109,6 @@ class CustomCell: UITableViewCell {
 
         let color = Prefs.THEME_TEXT_PRIMARY.fromUserDefaults() as? String ?? "ff0000ff"
         labelView.textColor = UIColor(rgbStr: color)
-        labelView.font = labelView.font.withSize(14)
         labelView.font = UIFont.init(name: "TimetableIcons", size: 20)
         return labelView
     }()
@@ -148,9 +147,8 @@ class CustomCell: UITableViewCell {
         
         let color = Prefs.THEME_TEXT_PRIMARY.fromUserDefaults() as? String ?? "ff0000ff"
         labelView.textColor = UIColor(rgbStr: color)
-        labelView.numberOfLines = 0
         labelView.lineBreakMode = .byWordWrapping
-        labelView.sizeToFit()
+        labelView.numberOfLines = 0
         return labelView
     }()
     
@@ -170,7 +168,7 @@ class CustomCell: UITableViewCell {
         self.addSubview(painterContentView)
         painterContentView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: CGFloat(TimelinePainter.rectMargins * 2)).isActive = true
         painterContentView.topAnchor.constraint(equalTo: self.topAnchor, constant: CGFloat(TimelinePainter.rectMargins * 2)).isActive = true
-        painterContentView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -CGFloat(TimelinePainter.rectMargins * 2)).isActive = true
+        painterContentView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -CGFloat(TimelinePainter.rectMargins)).isActive = true
         painterContentView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -CGFloat(TimelinePainter.rectMargins * 2)).isActive = true
 
         painterContentView.addSubview(startView)
@@ -233,6 +231,7 @@ class CustomCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         if let model = model {
+            painterView.model = model
             startView.text = model.start.format()
             finishView.text = model.finish.format()
             locationView.text = model.room.formatNumber()
@@ -248,6 +247,10 @@ class CustomCell: UITableViewCell {
             titleView.text = Prefs.OPTIMIZED_LESSON_TITLES.fromUserDefaults() as? Bool ?? true
                 ? model.lesson.title
                 : model.lesson.fullTitle
+            if titleView.text!.count > 20 {
+                titleView.font = titleView.font.withSize(14)
+                titleView.textAlignment = .center
+            }
             iconView.text = FontIcon.intToStringIcon(UInt32(model.lesson.iconCodePoint))
         }
     }
