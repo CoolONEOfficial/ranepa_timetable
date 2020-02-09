@@ -16,6 +16,8 @@ Custom crossplatform open-source NRU RANEPA mobile client written on Flutter.
 * Fully internationalization
 * Customizable timetable app design
 * Cool intro screen
+* iOS & Android calendar integration
+* Android alarm clock integration
 
 <p float="left">
     <img src="screenshots/android_light_welcome.jpeg" width=150>
