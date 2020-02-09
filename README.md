@@ -1,14 +1,48 @@
-![RANEPA Logo](assets/images/icon.png?raw=true "")
+<img src="assets/images/icon.png" width=120>
+
+# NRU RANEPA (Timetable)
+
+Custom crossplatform open-source NRU RANEPA mobile client written on Flutter.
 
 [![Build Status](https://travis-ci.org/CoolONEOfficial/ranepa_timetable.svg?branch=master)](https://travis-ci.org/CoolONEOfficial/ranepa_timetable)
 
+## Features
+
+* iOS today extension and android app widget
+* Platform adaptive design (using CupertinoApp & MaterialApp)
+* Caching support
+* Multicolor themes with dark & light app appearance
+* Multiple site api's support
+* Fully internationalization
+* Customizable timetable app design
+* Cool intro screen
+
+<img src="screenshots/android_light_welcome.jpeg" width=150>
+<img src="screenshots/android_light_search.jpeg" width=150>
+<img src="screenshots/android_light_timetable.jpeg" width=150>
+<img src="screenshots/android_light_prefs.jpeg" width=150>
+<img src="screenshots/android_light_widget.jpeg" width=150>
+
+<img src="screenshots/ios_light_welcome.jpeg" width=150>
+<img src="screenshots/ios_light_search.jpeg" width=150>
+<img src="screenshots/ios_light_timetable.jpeg" width=150>
+<img src="screenshots/ios_light_prefs.jpeg" width=150>
+<img src="screenshots/ios_light_widget.jpeg" width=150>
+
+<img src="screenshots/android_dark_welcome.jpeg" width=150>
+<img src="screenshots/android_dark_search.jpeg" width=150>
+<img src="screenshots/android_dark_timetable.jpeg" width=150>
+<img src="screenshots/android_dark_prefs.jpeg" width=150>
+<img src="screenshots/android_dark_widget.jpeg" width=150>
+
+<img src="screenshots/ios_dark_welcome.jpeg" width=150>
+<img src="screenshots/ios_dark_search.jpeg" width=150>
+<img src="screenshots/ios_dark_timetable.jpeg" width=150>
+<img src="screenshots/ios_dark_prefs.jpeg" width=150>
+<img src="screenshots/ios_dark_widget.jpeg" width=150>
+
 [![AppStore][appstore-image]][appstore-url]
 [![PlayStore][playstore-image]][playstore-url]
-
-
-# NRU RANEPA Timetable
-
-Custom open-source NRU RANEPA mobile client written on Flutter.
 
 ## Getting Started
 
@@ -29,17 +63,10 @@ storeFile=/path/to/keystore/# FILENAME #.keystore
 
 ### iOS:
 
-1. Open Podfile.lock
-
-1.1. Uncomment "platform :ios, '9.0''
-
-1.2. Add `use_frameworks!` after `platform`
-
-1.3. add `config.build_settings['SWIFT_VERSION'] = '4.0'` after `ENABLE_BITCODE`.
-
-4. Create "File.swift" to /ios with:
-```
-import Foundation
+1. Get carthage deps in /ios folder
+```sh
+cd ios
+carthage update Alamofire --platform iOS
 ```
 
 ## References, used in the development
@@ -72,6 +99,7 @@ flutter packages pub run build_runner build --delete-conflicting-outputs
 
 [appstore-image]: https://itsallwidgets.com/images/apple.png
 [playstore-image]: https://itsallwidgets.com/images/google.png
+[screenshots-size]: 120
 
 [appstore-url]: https://apps.apple.com/ru/app/niu-ranepa/id1489094504
 [playstore-url]: https://play.google.com/store/apps/details?id=ru.coolone.ranepatimetable
