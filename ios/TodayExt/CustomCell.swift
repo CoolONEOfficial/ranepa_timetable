@@ -129,6 +129,7 @@ class CustomCell: UITableViewCell {
         
         let color = Prefs.THEME_TEXT_PRIMARY.fromUserDefaults() as? String ?? "ff0000ff"
         labelView.textColor = UIColor(rgbStr: color)
+        labelView.font = labelView.font.withSize(14)
         return labelView
     }()
     
@@ -138,6 +139,7 @@ class CustomCell: UITableViewCell {
         
         let color = Prefs.THEME_TEXT_PRIMARY.fromUserDefaults() as? String ?? "ff0000ff"
         labelView.textColor = UIColor(rgbStr: color)
+        labelView.font = labelView.font.withSize(14)
         return labelView
     }()
     
@@ -204,7 +206,7 @@ class CustomCell: UITableViewCell {
         
         painterContentView.addSubview(iconView)
         iconView.textAlignment = .center
-        iconView.addConstraint(NSLayoutConstraint(item: iconView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 50))
+        iconView.addConstraint(NSLayoutConstraint(item: iconView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 54))
         iconView.leftAnchor.constraint(equalTo: startView.rightAnchor).isActive = true
         iconView.topAnchor.constraint(equalTo: painterContentView.topAnchor).isActive = true
         iconView.bottomAnchor.constraint(equalTo: painterContentView.bottomAnchor).isActive = true
@@ -247,7 +249,7 @@ class CustomCell: UITableViewCell {
             titleView.text = Prefs.OPTIMIZED_LESSON_TITLES.fromUserDefaults() as? Bool ?? true
                 ? model.lesson.title
                 : model.lesson.fullTitle
-            if titleView.text!.count > 20 {
+            if titleView.text!.count > 30 {
                 titleView.font = titleView.font.withSize(14)
                 titleView.textAlignment = .center
             }
