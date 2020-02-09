@@ -109,7 +109,6 @@ flutter packages pub run build_runner build --delete-conflicting-outputs
 
 [appstore-image]: https://itsallwidgets.com/images/apple.png
 [playstore-image]: https://itsallwidgets.com/images/google.png
-[screenshots-size]: 120
 
 [appstore-url]: https://apps.apple.com/ru/app/niu-ranepa/id1489094504
 [playstore-url]: https://play.google.com/store/apps/details?id=ru.coolone.ranepatimetable

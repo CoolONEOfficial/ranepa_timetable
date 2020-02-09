@@ -43,7 +43,8 @@ class BaseWidget extends StatelessWidget {
             future: SharedPreferences.getInstance(),
             builder: (ctx, snapshot) {
               prefs = snapshot.data;
-              if (Platform.isAndroid && prefs.getString(PrefsIds.LAST_UPDATE) != version) {
+              if (Platform.isAndroid &&
+                  prefs.getString(PrefsIds.LAST_UPDATE) != version) {
                 return WidgetTemplates.buildFutureBuilder(ctx,
                     loading: Container(),
                     future: Future.wait(
@@ -69,12 +70,13 @@ class BaseWidget extends StatelessWidget {
           return Theme(
             data: theme,
             child: PlatformApp(
+              debugShowCheckedModeBanner: false,
               builder: (ctx, child) {
                 ScreenUtil.init(ctx);
                 ErrorWidget.builder = _buildError(ctx);
                 return MediaQuery(
-                  data: MediaQuery.of(ctx)
-                      .copyWith(alwaysUse24HourFormat: true),
+                  data:
+                      MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
                   child: child,
                 );
               },
