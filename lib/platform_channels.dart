@@ -23,8 +23,6 @@ class PlatformChannels {
           ? "${(await IosAppGroup.getAppGroupDirectory(iosAppGroup)).path}/$tableFile"
           : tableFile;
 
-      debugPrint("dbPath: $path");
-
       _db = await openDatabase(
         path,
         version: 1,
@@ -68,17 +66,14 @@ class PlatformChannels {
       var mValue = data[mKey];
       debugPrint("mType: ${mValue.runtimeType}");
       if (mValue is bool) {
-        debugPrint("its bool");
         data[mKey] = mValue ? 1 : 0;
       } else if (mValue is int || mValue is String) {
-        debugPrint("its str / int");
+        // its int / str
       } else {
         Map dataMap;
         if (mValue is Map) {
-          debugPrint("its map");
           dataMap = jsonToDb(mValue);
         } else {
-          debugPrint("its model??");
           dataMap = jsonToDb(mValue.toJson());
         }
 

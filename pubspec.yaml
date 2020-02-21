@@ -25,7 +25,10 @@ dependencies:
   tuple: ^1.0.3
   device_calendar: ^3.0.0+3
   ios_app_group: ^1.0.2
-  flushbar: ^1.9.1
+  flushbar:
+    git:
+      url: git://github.com/valterh4ck3r/flushbar
+      ref: master
   url_launcher: ^5.4.1
   connectivity: ^0.4.6+2
   flutter_svg: ^0.17.1

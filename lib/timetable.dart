@@ -99,7 +99,7 @@ class TimetableScreen extends StatefulWidget {
     SearchItem searchItem, {
     bool updateDb = true,
   }) {
-    debugPrint("Loading all timetable.. ${searchItem.title}");
+    debugPrint("Clear timetable before load.. ${searchItem.title}");
 
     timetable.clear();
     return loadTimetable(
@@ -116,19 +116,22 @@ class TimetableScreen extends StatefulWidget {
     SearchItem searchItem,
     SharedPreferences prefs,
   ) async {
-    debugPrint("started get timetable");
+    debugPrint("getting timetable..");
 
     final dbTimetable = await PlatformChannels.getDb();
     final today = TimetableScreen.todayMidnight;
 
-    if (dbTimetable == null)
+    if (dbTimetable == null) {
+      debugPrint("db is empty..");
       await _loadAllTimetable(ctx, searchItem);
-    else {
+    } else {
+      debugPrint("loading timetable from cache..");
       timetable.clear();
       timetable.addAll(dbTimetable);
 
       final endCache = DateTime.parse(prefs.getString(PrefsIds.END_CACHE));
       if (endCache.compareTo(endCacheMidnight) != 0) {
+        debugPrint("Starting additional cache..");
         await loadTimetable(
           ctx,
           endCache,
@@ -137,8 +140,6 @@ class TimetableScreen extends StatefulWidget {
         );
       }
     }
-
-    debugPrint("ended get timetable");
   }
 
   static String formatDateTime(DateTime dt) =>
@@ -156,7 +157,7 @@ class TimetableScreen extends StatefulWidget {
     final api = SiteApiIds
         .values[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index];
 
-    debugPrint("Started load timetable via API №${api.index}");
+    debugPrint("Starting load timetable ${updateDb ? "to cache" : "locallly"} via API №${api.index}");
 
     var resp;
 
@@ -922,12 +923,8 @@ class _TimetableScreenState extends State<TimetableScreen>
             final tabs = List();
             var mDay = TimetableScreen.fromDay.subtract(Duration(days: 1));
             for (int mTabId = 0; mTabId < TimetableScreen.dayCount; mTabId++) {
-              debugPrint("mTabId: " + mTabId.toString());
               mDay = mDay.add(Duration(days: 1));
-              debugPrint("mDay: " + mDay.day.toString());
-              debugPrint("mWeekday: " + mDay.weekday.toString());
               if (mDay.weekday == DateTime.sunday) {
-                debugPrint("Skippin sunday");
                 // Skip sunday
                 mTabId--;
                 continue;
