@@ -76,7 +76,7 @@ storeFile=/path/to/keystore/# FILENAME #.keystore
 1. Get carthage deps in /ios folder
 ```sh
 cd ios
-carthage update Alamofire --platform iOS
+carthage update --platform iOS
 ```
 
 ## References, used in the development
