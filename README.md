@@ -2,9 +2,9 @@
 
 # NRU RANEPA (Timetable)
 
-Custom crossplatform open-source NRU RANEPA mobile client written on Flutter.
-
 [![Build Status](https://travis-ci.org/CoolONEOfficial/ranepa_timetable.svg?branch=master)](https://travis-ci.org/CoolONEOfficial/ranepa_timetable)
+
+Custom crossplatform open-source NRU RANEPA mobile client written on Flutter.
 
 ## Features
 
