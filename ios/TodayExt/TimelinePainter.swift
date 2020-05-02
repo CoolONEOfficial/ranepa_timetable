@@ -166,6 +166,6 @@ class TimelinePainter: UIView {
 
 extension CGFloat {
   func toRadians() -> CGFloat {
-    return self * CGFloat(M_PI) / 180.0
+    return self * CGFloat(Float.pi) / 180.0
   }
 }

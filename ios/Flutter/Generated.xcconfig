@@ -4,6 +4,7 @@ FLUTTER_APPLICATION_PATH=/Users/coolone/AndroidStudioProjects/ranepa_timetable
 FLUTTER_TARGET=/Users/coolone/AndroidStudioProjects/ranepa_timetable/lib/main.dart
 FLUTTER_BUILD_DIR=build
 SYMROOT=${SOURCE_ROOT}/../build/ios
+OTHER_LDFLAGS=$(inherited) -framework Flutter
 FLUTTER_FRAMEWORK_DIR=/Users/coolone/AndroidStudioProjects/flutter/bin/cache/artifacts/engine/ios
 FLUTTER_BUILD_NAME=1.8.0
 FLUTTER_BUILD_NUMBER=19

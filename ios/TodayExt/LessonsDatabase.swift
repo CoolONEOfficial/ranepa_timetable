@@ -22,8 +22,6 @@ class LessonsDatabase {
         for data in try self.db.prepare(table
             .filter(TimelineModel.TableKeys.date == Int(midnight.timeIntervalSince1970 * 1000))
             ) {
-//                let model = TimelineModel.init(data)
-//                debugPrint("\(model.date) and \(midnight)")
                 lessons.append(TimelineModel.init(data))
         }
     

@@ -154,8 +154,8 @@ class CustomCell: UITableViewCell {
         return labelView
     }()
     
-    static let innerPadding = 4.0,
-        leftContentWidth = CGFloat(68 - innerPadding);
+    static let innerPadding = 4.0
+    static let leftContentWidth = CGFloat(68 - innerPadding)
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
