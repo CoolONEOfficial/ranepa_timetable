@@ -16,18 +16,18 @@ import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:ranepa_timetable/main.dart';
-import 'package:ranepa_timetable/prefs.dart';
-import 'package:ranepa_timetable/search.dart';
-import 'package:ranepa_timetable/timeline_models.dart';
-import 'package:ranepa_timetable/timeline_painter.dart';
-import 'package:ranepa_timetable/timetable.dart';
+import 'package:ranepatimetable/main.dart';
+import 'package:ranepatimetable/prefs.dart';
+import 'package:ranepatimetable/search.dart';
+import 'package:ranepatimetable/timeline_models.dart';
+import 'package:ranepatimetable/timeline_painter.dart';
+import 'package:ranepatimetable/timetable.dart';
 
 class TimelineElement extends StatelessWidget {
   final TimelineModel model;
   final bool optimizeLessonTitles;
 
-  TimelineElement(this.model, {@required this.optimizeLessonTitles});
+  TimelineElement(this.model, {required this.optimizeLessonTitles});
 
   Widget _buildLine(BuildContext ctx) => SizedBox.expand(
         child: Container(
@@ -45,7 +45,7 @@ class TimelineElement extends StatelessWidget {
       child: Text(
         user == User.Student ? model.teacher.initials() : model.group,
         overflow: TextOverflow.ellipsis,
-        style: Theme.of(ctx).textTheme.body2,
+        style: Theme.of(ctx).textTheme.bodyMedium,
       ),
     );
   }
@@ -53,7 +53,7 @@ class TimelineElement extends StatelessWidget {
   Widget _buildStart(BuildContext ctx) => AutoSizeText(
         model.start.format(ctx),
         textAlign: TextAlign.center,
-        style: Theme.of(ctx).textTheme.title,
+        style: Theme.of(ctx).textTheme.titleLarge,
         maxFontSize: 20,
         maxLines: 1,
       );
@@ -61,7 +61,7 @@ class TimelineElement extends StatelessWidget {
   Widget _buildFinish(BuildContext ctx) => AutoSizeText(
         model.finish.format(ctx),
         textAlign: TextAlign.center,
-        style: Theme.of(ctx).textTheme.body2,
+        style: Theme.of(ctx).textTheme.bodyMedium,
         maxFontSize: 14,
         maxLines: 1,
       );
@@ -69,24 +69,24 @@ class TimelineElement extends StatelessWidget {
   Widget _buildLessonType(BuildContext ctx) => Tooltip(
         message: model.lesson.action?.title ?? model.lesson.fullTitle,
         child: AutoSizeText(
-          model.lesson.action.title,
+          model.lesson.action?.title ?? '',
           overflow: TextOverflow.ellipsis,
-          style: Theme.of(ctx).textTheme.body2,
+          style: Theme.of(ctx).textTheme.bodyMedium,
           maxLines: 1,
         ),
       );
-  Widget _buildLessonTitle(BuildContext ctx, {@required bool optimizeTitles}) =>
+  Widget _buildLessonTitle(BuildContext ctx, {required bool optimizeTitles}) =>
       Tooltip(
         message: model.lesson.fullTitle ?? model.lesson.title,
         child: Container(
           height: 40,
           child: AutoSizeText(
-            optimizeTitles ? model.lesson.title : model.lesson.fullTitle,
+            optimizeTitles ? model.lesson.title ?? '' : model.lesson.fullTitle ?? '',
             overflow: TextOverflow.ellipsis,
             softWrap: true,
             maxLines: 2,
             textAlign: TextAlign.center,
-            style: Theme.of(ctx).textTheme.title,
+            style: Theme.of(ctx).textTheme.titleLarge,
             maxFontSize: 20,
           ),
         ),
@@ -109,7 +109,7 @@ class TimelineElement extends StatelessWidget {
 
     return AutoSizeText(
       prefix + model.room.number,
-      style: Theme.of(ctx).textTheme.subtitle,
+      style: Theme.of(ctx).textTheme.titleMedium,
       maxLines: 1,
       textAlign: RoomLocationStyle
                   .values[prefs.getInt(PrefsIds.ROOM_LOCATION_STYLE) ?? 0] ==
@@ -149,7 +149,7 @@ class TimelineElement extends StatelessWidget {
 
   Widget _buildRightContent(
     BuildContext ctx, {
-    @required bool optimizeTitles,
+    required bool optimizeTitles,
   }) =>
       Expanded(
         child: Column(

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
-import 'package:ranepa_timetable/localizations.dart';
+import 'package:ranepatimetable/localizations.dart';
 import 'package:xml/xml.dart' as xml;
 
 const DEFAULT_API_ID = SiteApiIds.SITE;
@@ -35,12 +35,9 @@ enum OldAppApiSearchIndexes {
 }
 
 class SiteApis {
-  static SiteApis _singleton;
+  static SiteApis? _singleton;
 
-  factory SiteApis(BuildContext ctx) {
-    if (_singleton == null) _singleton = SiteApis._internal(ctx);
-    return _singleton;
-  }
+  factory SiteApis(BuildContext ctx) => _singleton ?? SiteApis._internal(ctx);
 
   final List<SiteApi> apis;
 
@@ -81,13 +78,13 @@ parseResp(SiteApiIds api, String resp) {
       var arr = json.decode(resp);
       return arr is Iterable ? arr : [arr];
     case SiteApiIds.APP_OLD:
-      return xml
+      return xml.XmlDocument
           .parse(resp)
           .children[1]
           .firstChild
-          .firstChild
-          .firstChild
-          .children;
+          ?.firstChild
+          ?.firstChild
+          ?.children;
     case SiteApiIds.SITE:
       final arr = json.decode(resp).entries.first.value.entries;
 

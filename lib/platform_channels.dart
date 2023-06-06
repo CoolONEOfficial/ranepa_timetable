@@ -3,8 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:ios_app_group/ios_app_group.dart';
-import 'package:ranepa_timetable/timeline_models.dart';
+import 'package:ranepatimetable/timeline_models.dart';
 import 'package:sqflite/sqflite.dart';
 
 class PlatformChannels {
@@ -15,13 +14,11 @@ class PlatformChannels {
   static const tableFile = 'timetable.db';
   static const iosAppGroup = 'group.coolone.ranepatimetable.data';
 
-  static Database _db;
+  static Database? _db;
 
   static get db async {
     if (_db == null) {
-      String path = Platform.isIOS
-          ? "${(await IosAppGroup.getAppGroupDirectory(iosAppGroup)).path}/$tableFile"
-          : tableFile;
+      String path = '${await getDatabasesPath()}/$tableFile';
 
       _db = await openDatabase(
         path,
@@ -72,7 +69,7 @@ class PlatformChannels {
       } else {
         Map dataMap;
         if (mValue is Map) {
-          dataMap = jsonToDb(mValue);
+          dataMap = jsonToDb(mValue as Map<String, dynamic>);
         } else {
           dataMap = jsonToDb(mValue.toJson());
         }
@@ -94,7 +91,7 @@ class PlatformChannels {
 
     for (var mEntry in changeMap.entries) {
       data.remove(mEntry.key);
-      data.addEntries(mEntry.value);
+      data.addEntries(mEntry.value as dynamic);
     }
 
     return data;
@@ -139,7 +136,7 @@ class PlatformChannels {
     }
   }
 
-  static Future<LinkedHashMap<DateTime, List<TimelineModel>>> getDb() async {
+  static Future<LinkedHashMap<DateTime, List<TimelineModel>>?> getDb() async {
     Database database = await db;
 
     var res = await database.query(tableName);
@@ -175,7 +172,7 @@ class PlatformChannels {
   static Future<void> refreshWidget() async {
     if (Platform.isAndroid) {
       debugPrint("Refreshing widget...");
-      methodChannel.invokeMethod("refreshWidget");
+      // methodChannel.invokeMethod("refreshWidget");
     }
   }
 }

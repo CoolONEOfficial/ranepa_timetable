@@ -18,8 +18,8 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ranepa_timetable/timeline_element.dart';
-import 'package:ranepa_timetable/timeline_models.dart';
+import 'package:ranepatimetable/timeline_element.dart';
+import 'package:ranepatimetable/timeline_models.dart';
 
 class TimelineComponent extends StatelessWidget {
   final List<TimelineModel> timelineList;
@@ -29,11 +29,11 @@ class TimelineComponent extends StatelessWidget {
   const TimelineComponent(
     this.timelineList, {
     this.optimizeLessonTitles = true,
-    Key key,
+    Key? key,
     this.onRefresh,
   }) : super(key: key);
 
-  final Future<void> Function() onRefresh;
+  final Future<void> Function()? onRefresh;
 
   Widget itemBuild(ctx, index) => TimelineElement(
         timelineList[index],
@@ -72,7 +72,7 @@ class TimelineComponent extends StatelessWidget {
                     ),]
                 )
                 : RefreshIndicator(
-                    onRefresh: onRefresh,
+                    onRefresh: onRefresh ?? () async {},
                     child: defaultListView(),
                   )
             : defaultListView(),

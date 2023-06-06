@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
 
@@ -12,40 +13,40 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:ranepa_timetable/about.dart';
-import 'package:ranepa_timetable/apis.dart';
-import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/main.dart';
-import 'package:ranepa_timetable/platform_channels.dart';
-import 'package:ranepa_timetable/prefs.dart';
-import 'package:ranepa_timetable/search.dart';
-import 'package:ranepa_timetable/theme.dart';
-import 'package:ranepa_timetable/timeline.dart';
-import 'package:ranepa_timetable/timeline_models.dart';
-import 'package:ranepa_timetable/timetable_icons.dart';
-import 'package:ranepa_timetable/widget_templates.dart';
+import 'package:ranepatimetable/about.dart';
+import 'package:ranepatimetable/apis.dart';
+import 'package:ranepatimetable/localizations.dart';
+import 'package:ranepatimetable/main.dart';
+import 'package:ranepatimetable/platform_channels.dart';
+import 'package:ranepatimetable/prefs.dart';
+import 'package:ranepatimetable/search.dart';
+import 'package:ranepatimetable/theme.dart';
+import 'package:ranepatimetable/timeline.dart';
+import 'package:ranepatimetable/timeline_models.dart';
+import 'package:ranepatimetable/timetable_icons.dart';
+import 'package:ranepatimetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tuple/tuple.dart';
 
 class TimetableScreen extends StatefulWidget {
   static const ROUTE = "/timetable";
 
-  static SearchItem selected;
+  static SearchItem? selected;
 
   static final LinkedHashMap<DateTime, List<TimelineModel>> timetable =
       LinkedHashMap<DateTime, List<TimelineModel>>();
 
   TimetableScreen({
-    Key key,
+    Key? key,
   })  : _deviceCalendarPlugin = DeviceCalendarPlugin(),
         super(key: key);
 
-  static DateTime _toDateTime(TimeOfDay tod, [DateTime dt]) {
+  static DateTime _toDateTime(TimeOfDay tod, [DateTime? dt]) {
     dt ??= DateTime.now();
     return DateTime(dt.year, dt.month, dt.day, tod.hour, tod.minute);
   }
 
-  static TimeOfDay _toTimeOfDay([DateTime dt]) {
+  static TimeOfDay _toTimeOfDay([DateTime? dt]) {
     dt ??= DateTime.now();
     return TimeOfDay(hour: dt.hour, minute: dt.minute);
   }
@@ -129,7 +130,7 @@ class TimetableScreen extends StatefulWidget {
       timetable.clear();
       timetable.addAll(dbTimetable);
 
-      final endCache = DateTime.parse(prefs.getString(PrefsIds.END_CACHE));
+      final endCache = DateTime.parse(prefs.getString(PrefsIds.END_CACHE) ?? '');
       if (endCache.compareTo(endCacheMidnight) != 0) {
         debugPrint("Starting additional cache..");
         await loadTimetable(
@@ -152,24 +153,25 @@ class TimetableScreen extends StatefulWidget {
     SearchItem searchItem, [
     bool updateDb = true,
   ]) async {
-    if (!await WidgetTemplates.checkInternetConnection()) return;
+    try {
+      if (!await WidgetTemplates.checkInternetConnection()) return;
 
-    final api = SiteApiIds
-        .values[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index];
+      final api = SiteApiIds
+          .values[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index];
 
-    debugPrint("Starting load timetable ${updateDb ? "to cache" : "locallly"} via API №${api.index}");
+      debugPrint("Starting load timetable ${updateDb ? "to cache" : "locallly"} via API №${api.index}");
 
-    var resp;
+      var resp;
 
-    switch (api) {
-      case SiteApiIds.APP_NEW:
-        resp = await http.get('http://services.niu.ranepa.ru/API/public/'
-            '${searchItemTypes[searchItem.typeId.index].newApiStr}/${searchItem.id}'
-            '/schedule/${formatDateTime(from)}/${formatDateTime(to.add(Duration(days: 1)))}');
-        break;
-      case SiteApiIds.APP_OLD:
-        resp = await http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
-            headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
+      switch (api) {
+        case SiteApiIds.APP_NEW:
+          resp = await http.get(Uri.parse('http://services.niu.ranepa.ru/API/public/'
+              '${searchItemTypes[searchItem.typeId.index].newApiStr}/${searchItem.id}'
+              '/schedule/${formatDateTime(from)}/${formatDateTime(to.add(Duration(days: 1)))}'));
+          break;
+        case SiteApiIds.APP_OLD:
+          resp = await http.post(Uri.parse('http://test.ranhigs-nn.ru/api/WebService.asmx'),
+              headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -181,175 +183,177 @@ class TimetableScreen extends StatefulWidget {
   </soap:Body>
 </soap:Envelope>
 ''');
-        break;
-      case SiteApiIds.SITE:
-        resp = await http.get('http://services.niu.ranepa.ru/'
-            'wp-content/plugins/rasp/rasp_json_data.php'
-            '?user=${searchItem.title}'
-            '&dstart=${formatDateTime(from)}'
-            '&dfinish=${formatDateTime(to)}');
-        break;
-    }
-
-    debugPrint("http load end. starting parse request..");
-
-    var itemArr = parseResp(api, resp.body);
-
-    var mDate = from.subtract(Duration(days: 1));
-    final _startDayId = timetable.keys.length;
-    for (var mItem in itemArr) {
-      DateTime mItemDate;
-      var mItemTimeStart;
-      var mItemTimeFinish;
-      String mItemTeacher;
-      String mItemName;
-      String mItemRoomStr;
-      String mItemGroup;
-
-      switch (api) {
-        case SiteApiIds.APP_NEW:
-          mItemDate = DateTime.parse(mItem["xdt"]);
-          mItemTimeStart = mItem["nf"];
-          mItemTimeFinish = mItem["kf"];
-          mItemTeacher = searchItem.typeId == SearchItemTypeId.Group
-              ? mItem["teacher"]
-              : searchItem.title;
-          mItemRoomStr = mItem["number"];
-          mItemGroup = searchItem.typeId == SearchItemTypeId.Teacher
-              ? mItem["group"]
-              : searchItem.title;
-          break;
-        case SiteApiIds.APP_OLD:
-          mItemDate = DateTime.parse(
-              mItem.children[OldAppApiTimetableIndexes.Date.index].text);
-          mItemTimeStart =
-              mItem.children[OldAppApiTimetableIndexes.TimeStart.index].text;
-          mItemTimeFinish =
-              mItem.children[OldAppApiTimetableIndexes.TimeFinish.index].text;
-          mItemName = mItem.children[OldAppApiTimetableIndexes.Name.index].text;
-          mItemRoomStr =
-              mItem.children[OldAppApiTimetableIndexes.Room.index].text;
-          mItemGroup =
-              mItem.children[OldAppApiTimetableIndexes.Group.index].text;
-
           break;
         case SiteApiIds.SITE:
-          String mItemDateStr = mItem["date"];
-          mItemDate = DateTime(
-            int.parse(mItemDateStr.substring(6)),
-            int.parse(mItemDateStr.substring(3, 5)),
-            int.parse(mItemDateStr.substring(0, 2)),
-          );
-          mItemTimeStart = mItem["timestart"];
-          mItemTimeFinish = mItem["timefinish"];
-          mItemName = mItem["name"];
-          mItemRoomStr = mItem["aydit"];
-          mItemGroup = mItem["namegroup"];
+          resp = await http.get(Uri.parse('http://services.niu.ranepa.ru/'
+              'wp-content/plugins/rasp/rasp_json_data.php'
+              '?user=${searchItem.title}'
+              '&dstart=${formatDateTime(from)}'
+              '&dfinish=${formatDateTime(to)}'));
           break;
       }
 
-      String mItemSubject;
-      String mItemType;
+      debugPrint("http load end. starting parse request..");
 
-      switch (api) {
-        case SiteApiIds.APP_NEW:
-          mItemSubject = mItem["subject"];
-          mItemType = mItem["type"];
-          break;
-        case SiteApiIds.SITE:
-        case SiteApiIds.APP_OLD:
-          mItemSubject = mItemName.substring(0, mItemName.indexOf('('));
-          mItemType = RegExp(r"\(([^)]*)\)[^(]*$").stringMatch(mItemName);
-          mItemType = mItemType.substring(1, mItemType.lastIndexOf(')'));
-          mItemTeacher = mItemName.substring(mItemName.indexOf('>') + 1);
-          break;
-      }
+      var itemArr = parseResp(api, resp.body);
 
-      while (mDate != mItemDate) {
-        mDate = mDate.add(Duration(days: 1));
-        // skip sunday
-        if (mDate.weekday != DateTime.sunday) {
-          timetable[mDate] = List<TimelineModel>();
+      var mDate = from.subtract(Duration(days: 1));
+      final _startDayId = timetable.keys.length;
+      for (var mItem in itemArr) {
+        DateTime mItemDate;
+        var mItemTimeStart;
+        var mItemTimeFinish;
+        String? mItemTeacher;
+        String? mItemName;
+        String mItemRoomStr;
+        String mItemGroup;
+
+        switch (api) {
+          case SiteApiIds.APP_NEW:
+            mItemDate = DateTime.parse(mItem["xdt"]);
+            mItemTimeStart = mItem["nf"];
+            mItemTimeFinish = mItem["kf"];
+            mItemTeacher = searchItem.typeId == SearchItemTypeId.Group
+                ? mItem["teacher"]
+                : searchItem.title;
+            mItemRoomStr = mItem["number"];
+            mItemGroup = searchItem.typeId == SearchItemTypeId.Teacher
+                ? mItem["group"]
+                : searchItem.title;
+            break;
+          case SiteApiIds.APP_OLD:
+            mItemDate = DateTime.parse(
+                mItem.children[OldAppApiTimetableIndexes.Date.index].text);
+            mItemTimeStart =
+                mItem.children[OldAppApiTimetableIndexes.TimeStart.index].text;
+            mItemTimeFinish =
+                mItem.children[OldAppApiTimetableIndexes.TimeFinish.index].text;
+            mItemName = mItem.children[OldAppApiTimetableIndexes.Name.index].text;
+            mItemRoomStr =
+                mItem.children[OldAppApiTimetableIndexes.Room.index].text;
+            mItemGroup =
+                mItem.children[OldAppApiTimetableIndexes.Group.index].text;
+
+            break;
+          case SiteApiIds.SITE:
+            String mItemDateStr = mItem?["date"] ?? '';
+            mItemDate = DateTime(
+              int.parse(mItemDateStr.substring(6)),
+              int.parse(mItemDateStr.substring(3, 5)),
+              int.parse(mItemDateStr.substring(0, 2)),
+            );
+            mItemTimeStart = mItem?["timestart"] ?? '';
+            mItemTimeFinish = mItem?["timefinish"] ?? '';
+            mItemName = mItem?["name"] ?? '';
+            mItemRoomStr = mItem?["aydit"] ?? '';
+            mItemGroup = mItem?["namegroup"] ?? '';
+            break;
         }
+
+        String? mItemSubject;
+        String? mItemType;
+
+        switch (api) {
+          case SiteApiIds.APP_NEW:
+            mItemSubject = mItem["subject"];
+            mItemType = mItem["type"];
+            break;
+          case SiteApiIds.SITE:
+          case SiteApiIds.APP_OLD:
+            mItemSubject = mItemName?.substring(0, mItemName.indexOf('('));
+            mItemType = RegExp(r"\(([^)]*)\)[^(]*$").stringMatch(mItemName ?? '');
+            mItemType = mItemType?.substring(1, mItemType.lastIndexOf(')'));
+            mItemTeacher = mItemName?.substring(mItemName.indexOf('>') + 1) ?? '';
+            break;
+        }
+
+        while (mDate != mItemDate) {
+          mDate = mDate.add(Duration(days: 1));
+          // skip sunday
+          if (mDate.weekday != DateTime.sunday) {
+            timetable[mDate] = <TimelineModel>[];
+          }
+        }
+
+        final mLesson = TimelineModel(
+          date: mItemDate,
+          start: TimeOfDay(
+              hour: int.parse(
+                  mItemTimeStart.substring(0, mItemTimeStart.length - 3)),
+              minute: int.parse(mItemTimeStart.substring(
+                  mItemTimeStart.length - 2, mItemTimeStart.length))),
+          finish: TimeOfDay(
+              hour: int.parse(
+                  mItemTimeFinish.substring(0, mItemTimeFinish.length - 3)),
+              minute: int.parse(mItemTimeFinish.substring(
+                  mItemTimeFinish.length - 2, mItemTimeFinish.length))),
+          room: RoomModel.fromString(mItemRoomStr),
+          group: mItemGroup,
+          lesson: LessonModel.build(
+            ctx,
+            mItemSubject ?? '',
+            mItemType ?? '',
+            api,
+          ),
+          teacher: TeacherModel.fromString(
+              (searchItem.typeId == SearchItemTypeId.Group
+                  ? mItemTeacher
+                  : searchItem.title) ?? ''),
+        );
+
+        timetable[mItemDate]?.add(mLesson);
       }
 
-      final mLesson = TimelineModel(
-        date: mItemDate,
-        start: TimeOfDay(
-            hour: int.parse(
-                mItemTimeStart.substring(0, mItemTimeStart.length - 3)),
-            minute: int.parse(mItemTimeStart.substring(
-                mItemTimeStart.length - 2, mItemTimeStart.length))),
-        finish: TimeOfDay(
-            hour: int.parse(
-                mItemTimeFinish.substring(0, mItemTimeFinish.length - 3)),
-            minute: int.parse(mItemTimeFinish.substring(
-                mItemTimeFinish.length - 2, mItemTimeFinish.length))),
-        room: RoomModel.fromString(mItemRoomStr),
-        group: mItemGroup,
-        lesson: LessonModel.build(
-          ctx,
-          mItemSubject,
-          mItemType,
-          api,
-        ),
-        teacher: TeacherModel.fromString(
-            searchItem.typeId == SearchItemTypeId.Group
-                ? mItemTeacher
-                : searchItem.title),
-      );
+      for (var mDay in timetable.values) {
+        if (mDay.isEmpty) continue;
 
-      timetable[mItemDate].add(mLesson);
-    }
+        mDay.first.first = true;
+        mDay.last.last = true;
 
-    for (var mDay in timetable.values) {
-      if (mDay.isEmpty) continue;
+        for (var mItemId = 0; mItemId < mDay.length - 1; mItemId++) {
+          final mItem = mDay[mItemId], mNextItem = mDay[mItemId + 1];
 
-      mDay.first.first = true;
-      mDay.last.last = true;
+          if (mItem.start == mNextItem.start) {
+            mItem.mergeBottom = true;
+            mNextItem.mergeTop = true;
+          } else {
+            final diff = _toDateTime(mNextItem.start)
+                .difference(_toDateTime(mItem.finish));
 
-      for (var mItemId = 0; mItemId < mDay.length - 1; mItemId++) {
-        final mItem = mDay[mItemId], mNextItem = mDay[mItemId + 1];
-
-        if (mItem.start == mNextItem.start) {
-          mItem.mergeBottom = true;
-          mNextItem.mergeTop = true;
-        } else {
-          final diff = _toDateTime(mNextItem.start)
-              .difference(_toDateTime(mItem.finish));
-
-          debugPrint("mDiff: $diff");
-          if (diff.inMinutes > 10) {
-            mItem.last = true;
-            mNextItem.first = true;
+            debugPrint("mDiff: $diff");
+            if (diff.inMinutes > 10) {
+              mItem.last = true;
+              mNextItem.first = true;
+            }
           }
         }
       }
+
+      debugPrint("parsing http requests end..");
+      // Update db
+      if (updateDb)
+        await PlatformChannels.updateDb(
+          timetable.values
+              .toList()
+              .sublist(
+            _startDayId,
+          )
+              .expand(
+                (f) => f,
+          ),
+        );
+
+      // Save cache end
+      prefs.setString(PrefsIds.END_CACHE, to.toIso8601String());
+
+      // Refresh widget
+      PlatformChannels.refreshWidget();
+    } catch (e, s) {
+      print(s);
     }
-
-    debugPrint("parsing http requests end..");
-
-    // Update db
-    if (updateDb)
-      await PlatformChannels.updateDb(
-        timetable.values
-            .toList()
-            .sublist(
-              _startDayId,
-            )
-            .expand(
-              (f) => f,
-            ),
-      );
-
-    // Save cache end
-    prefs.setString(PrefsIds.END_CACHE, to.toIso8601String());
-
-    // Refresh widget
-    PlatformChannels.refreshWidget();
   }
 
-  static DateTime _todayMidnight;
+  static DateTime? _todayMidnight;
 
   static DateTime get todayMidnight {
     if (_todayMidnight == null) {
@@ -362,11 +366,11 @@ class TimetableScreen extends StatefulWidget {
               ? now.day + 1
               : now.day); // skip sunday
     }
-    return _todayMidnight;
+    return _todayMidnight ?? DateTime.now();
   }
 
-  static DateTime get nextDayDate {
-    final todayLastLesson = timetable[todayMidnight]?.last?.finish;
+  static DateTime? get nextDayDate {
+    final todayLastLesson = timetable[todayMidnight]?.last.finish;
     if (todayLastLesson == null) return null;
 
     return _toDateTime(todayLastLesson).isBefore(DateTime.now())
@@ -392,9 +396,9 @@ class TimetableScreen extends StatefulWidget {
     final alarmDay = timetable[alarmLessonDate];
 
     if (alarmDay?.isNotEmpty ?? false) {
-      final alarmLesson = alarmDay.first;
+      final alarmLesson = alarmDay?.first;
       final alarmClock =
-          _toDateTime(alarmLesson.start).subtract(beforeAlarmClock);
+          _toDateTime(alarmLesson!.start).subtract(beforeAlarmClock);
 
       await AndroidIntent(
         action: 'android.intent.action.SET_ALARM',
@@ -434,27 +438,27 @@ class TimetableScreen extends StatefulWidget {
     var permissionsGranted = permissionsGrantedResult.data ?? false;
     if (permissionsGrantedResult.isSuccess && !permissionsGranted) {
       permissionsGrantedResult = await calPlugin.requestPermissions();
-      if (permissionsGrantedResult.isSuccess && permissionsGrantedResult.data)
+      if (permissionsGrantedResult.isSuccess && permissionsGrantedResult.data!)
         permissionsGranted = true;
     }
 
     if (permissionsGranted) {
       // Add calendar event
-      final calendarArr = (await calPlugin.retrieveCalendars())?.data;
+      final calendarArr = (await calPlugin.retrieveCalendars()).data;
       if (calendarArr?.isNotEmpty ?? false) {
-        final calendar = calendarArr.lastWhere((mCal) => !mCal.isReadOnly);
+        final calendar = calendarArr!.lastWhere((mCal) => !mCal.isReadOnly!);
 
         final eventsDay = timetable[nextDayDate];
 
         if (eventsDay?.isNotEmpty ?? false) {
-          for (var mLesson in eventsDay) {
+          for (var mLesson in eventsDay!) {
             calPlugin.createOrUpdateEvent(
               Event(
                 calendar.id,
                 title: mLesson.lesson.title,
                 description: mLesson.lesson.fullTitle,
-                start: _toDateTime(mLesson.start, mLesson.date),
-                end: _toDateTime(mLesson.finish, mLesson.date),
+                start: TZDateTime.from(_toDateTime(mLesson.start, mLesson.date), local),
+                end: TZDateTime.from(_toDateTime(mLesson.finish, mLesson.date), local),
               ),
             );
           }
@@ -486,7 +490,7 @@ class TimetableScreen extends StatefulWidget {
 class CupertinoCustomNavigationBar extends StatelessWidget
     implements ObstructingPreferredSizeWidget {
   CupertinoCustomNavigationBar({
-    Key key,
+    Key? key,
     this.backgroundColor,
     this.bottom,
     this.title,
@@ -494,12 +498,12 @@ class CupertinoCustomNavigationBar extends StatelessWidget
     this.trailing,
   });
 
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
-  final Widget bottom;
-  final Widget title;
-  final Widget leading;
-  final Widget trailing;
+  final Widget? bottom;
+  final Widget? title;
+  final Widget? leading;
+  final Widget? trailing;
 
   @override
   Size get preferredSize => Size.fromHeight(44.0 + 80.0);
@@ -550,19 +554,19 @@ class CupertinoCustomNavigationBar extends StatelessWidget
   @override
   bool shouldFullyObstruct(BuildContext context) {
     final Color backgroundColor =
-        CupertinoDynamicColor.resolve(this.backgroundColor, context) ??
+        CupertinoDynamicColor.resolve(this.backgroundColor ?? Colors.white, context) ??
             CupertinoTheme.of(context).barBackgroundColor;
     return backgroundColor.alpha == 0xFF;
   }
 }
 
 class CupertinoTabBar extends StatefulWidget {
-  final TabController controller;
+  final TabController? controller;
 
-  final List titles;
+  final List? titles;
 
   const CupertinoTabBar({
-    Key key,
+    Key? key,
     this.controller,
     this.titles,
   }) : super(key: key);
@@ -574,18 +578,18 @@ class CupertinoTabBar extends StatefulWidget {
 class _CupertinoTabBarState extends State<CupertinoTabBar>
     with TickerProviderStateMixin {
   // this will control the animation when a button changes from an off state to an on state
-  AnimationController _animationControllerOn;
+  AnimationController? _animationControllerOn;
 
   // this will control the animation when a button changes from an on state to an off state
-  AnimationController _animationControllerOff;
+  AnimationController? _animationControllerOff;
 
   // this will give the background color values of a button when it changes to an on state
-  Animation _colorTweenBackgroundOn;
-  Animation _colorTweenBackgroundOff;
+  Animation? _colorTweenBackgroundOn;
+  Animation? _colorTweenBackgroundOff;
 
   // this will give the foreground color values of a button when it changes to an on state
-  Animation _colorTweenForegroundOn;
-  Animation _colorTweenForegroundOff;
+  Animation? _colorTweenForegroundOn;
+  Animation? _colorTweenForegroundOff;
 
   // when swiping, the _controller.index value only changes after the animation, therefore, we need this to trigger the animations and save the current index
   int _currentIndex = 0;
@@ -599,7 +603,7 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
   // saves the previous value of the tab animation. It's used to figure the direction of the animation
   double _prevAniValue = 0.0;
 
-  get _foregroundOn => getTheme().accentIconTheme.color;
+  get _foregroundOn => getTheme().colorScheme.secondary;
 
   Color get _foregroundOff {
     return getTheme().brightness == Brightness.dark
@@ -608,7 +612,7 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
   }
 
   // active button's background color
-  get _backgroundOn => getTheme().accentColor;
+  get _backgroundOn => getTheme().colorScheme.secondary;
   Color _backgroundOff = Colors.transparent;
 
   List _keys = [];
@@ -620,37 +624,37 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
   void initState() {
     super.initState();
 
-    for (int index = 0; index < widget.titles.length; index++) {
+    for (int index = 0; index < (widget.titles ?? []).length; index++) {
       // create a GlobalKey for each Tab
       _keys.add(GlobalKey());
     }
 
     // this will execute the function every time there's a swipe animation
-    widget.controller.animation.addListener(_handleTabAnimation);
+    widget.controller!.animation!.addListener(_handleTabAnimation);
     // this will execute the function every time the _controller.index value changes
-    widget.controller.addListener(_handleTabChange);
+    widget.controller!.addListener(_handleTabChange);
 
     _animationControllerOff =
         AnimationController(vsync: this, duration: Duration(milliseconds: 75));
     // so the inactive buttons start in their "final" state (color)
-    _animationControllerOff.value = 1.0;
+    _animationControllerOff!.value = 1.0;
     _colorTweenBackgroundOff =
         ColorTween(begin: _backgroundOn, end: _backgroundOff)
-            .animate(_animationControllerOff);
+            .animate(_animationControllerOff!);
     _colorTweenForegroundOff =
         ColorTween(begin: _foregroundOn, end: _foregroundOff)
-            .animate(_animationControllerOff);
+            .animate(_animationControllerOff!);
 
     _animationControllerOn =
         AnimationController(vsync: this, duration: Duration(milliseconds: 150));
     // so the inactive buttons start in their "final" state (color)
-    _animationControllerOn.value = 1.0;
+    _animationControllerOn!.value = 1.0;
     _colorTweenBackgroundOn =
         ColorTween(begin: _backgroundOff, end: _backgroundOn)
-            .animate(_animationControllerOn);
+            .animate(_animationControllerOn!);
     _colorTweenForegroundOn =
         ColorTween(begin: _foregroundOff, end: _foregroundOn)
-            .animate(_animationControllerOn);
+            .animate(_animationControllerOn!);
   }
 
   @override
@@ -659,7 +663,7 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
         // this generates our tabs buttons
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: widget.titles
+            children: (widget.titles ?? [])
                 .asMap()
                 .map((index, mTitle) {
                   return MapEntry(
@@ -684,7 +688,7 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
                               height: 35,
                               child: ButtonTheme(
                                   child: AnimatedBuilder(
-                                animation: _colorTweenBackgroundOn,
+                                animation: _colorTweenBackgroundOn!,
                                 builder: (ctx, child) => RawMaterialButton(
                                     highlightElevation: 0,
                                     enableFeedback: false,
@@ -698,7 +702,7 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
                                       setState(() {
                                         _buttonTap = true;
                                         // trigger the controller to change between Tab Views
-                                        widget.controller.animateTo(index);
+                                        widget.controller?.animateTo(index);
                                         // set the current index
                                         _setCurrentIndex(index);
                                         // scroll to the tapped button
@@ -724,7 +728,7 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
 
   _handleTabAnimation() {
     // gets the value of the animation. For example, if one is between the 1st and the 2nd tab, this value will be 0.5
-    _aniValue = widget.controller.animation.value;
+    _aniValue = widget.controller!.animation!.value;
 
     // if the button wasn't pressed, which means the user is swiping, and the amount swipped is less than 1 (this means that we're swiping through neighbor Tab Views)
     if (!_buttonTap && ((_aniValue - _prevAniValue).abs() < 1)) {
@@ -739,14 +743,14 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
   // runs when the displayed tab changes
   _handleTabChange() {
     // if a button was tapped, change the current index
-    if (_buttonTap) _setCurrentIndex(widget.controller.index);
+    if (_buttonTap) _setCurrentIndex(widget.controller!.index);
 
     // this resets the button tap
-    if ((widget.controller.index == _prevControllerIndex) ||
-        (widget.controller.index == _aniValue.round())) _buttonTap = false;
+    if ((widget.controller!.index == _prevControllerIndex) ||
+        (widget.controller!.index == _aniValue.round())) _buttonTap = false;
 
     // save the previous controller index
-    _prevControllerIndex = widget.controller.index;
+    _prevControllerIndex = widget.controller!.index;
   }
 
   _setCurrentIndex(int index) {
@@ -766,12 +770,12 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
 
   _triggerAnimation() {
     // reset the animations so they're ready to go
-    _animationControllerOn.reset();
-    _animationControllerOff.reset();
+    _animationControllerOn!.reset();
+    _animationControllerOff!.reset();
 
     // run the animations!
-    _animationControllerOn.forward();
-    _animationControllerOff.forward();
+    _animationControllerOn!.forward();
+    _animationControllerOff!.forward();
   }
 
   _scrollTo(int index) {
@@ -802,7 +806,7 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
 
       // get the last button
       renderBox =
-          _keys[widget.titles.length - 1].currentContext.findRenderObject();
+          _keys[widget.titles!.length - 1].currentContext.findRenderObject();
       // get its position
       position = renderBox.localToGlobal(Offset.zero).dx;
       // and size
@@ -821,10 +825,10 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
   _getBackgroundColor(int index) {
     if (index == _currentIndex) {
       // if it's active button
-      return _colorTweenBackgroundOn.value;
+      return _colorTweenBackgroundOn!.value;
     } else if (index == _prevControllerIndex) {
       // if it's the previous active button
-      return _colorTweenBackgroundOff.value;
+      return _colorTweenBackgroundOff!.value;
     } else {
       // if the button is inactive
       return _backgroundOff;
@@ -834,9 +838,9 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
   _getForegroundColor(int index) {
     // the same as the above
     if (index == _currentIndex) {
-      return _colorTweenForegroundOn.value;
+      return _colorTweenForegroundOn!.value;
     } else if (index == _prevControllerIndex) {
-      return _colorTweenForegroundOff.value;
+      return _colorTweenForegroundOff!.value;
     } else {
       return _foregroundOff;
     }
@@ -845,7 +849,7 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
 
 class _TimetableScreenState extends State<TimetableScreen>
     with SingleTickerProviderStateMixin {
-  TabController _tabController;
+  late TabController _tabController;
 
   @override
   void initState() {
@@ -870,12 +874,12 @@ class _TimetableScreenState extends State<TimetableScreen>
   List<Widget> buildTrailingActions(BuildContext ctx) => [
         PlatformIconButton(
           padding: EdgeInsets.zero,
-          android: (ctx) => MaterialIconButtonData(
+          material: (ctx, _) => MaterialIconButtonData(
             tooltip: AppLocalizations.of(ctx).searchTip,
           ),
           icon: Icon(
             ctx.platformIcons.search,
-            color: Platform.isIOS ? getTheme().accentColor : null,
+            color: Platform.isIOS ? getTheme().colorScheme.secondary : null,
           ),
           onPressed: () => showSearchItemSelect(
             ctx,
@@ -887,14 +891,14 @@ class _TimetableScreenState extends State<TimetableScreen>
   List<Widget> buildIntegratingActions(BuildContext ctx) => [
         PlatformIconButton(
           padding: EdgeInsets.zero,
-          android: (ctx) => MaterialIconButtonData(
+          material: (ctx, _) => MaterialIconButtonData(
               tooltip: AppLocalizations.of(ctx).calendarTip),
           icon: PlatformWidget(
-            ios: (ctx) => Icon(
+            cupertino: (ctx, _) => Icon(
               TimetableIcons.calendar,
-              color: getTheme().accentColor,
+              color: getTheme().colorScheme.secondary,
             ),
-            android: (ctx) => Icon(Icons.calendar_today),
+            material: (ctx, _) => Icon(Icons.calendar_today),
           ),
           onPressed: () => TimetableScreen._createCalendarEvents(
               ctx, widget._deviceCalendarPlugin),
@@ -903,7 +907,7 @@ class _TimetableScreenState extends State<TimetableScreen>
           ? [
               PlatformIconButton(
                 padding: EdgeInsets.zero,
-                android: (ctx) => MaterialIconButtonData(
+                material: (ctx, _) => MaterialIconButtonData(
                     tooltip: AppLocalizations.of(ctx).alarmTip),
                 icon: const Icon(Icons.alarm),
                 onPressed: () => TimetableScreen._createAlarm(ctx, prefs),
@@ -920,7 +924,7 @@ class _TimetableScreenState extends State<TimetableScreen>
           ctx,
           (ctx, ssDayStyle) {
             // Create tabs
-            final tabs = List();
+            final tabs = [];
             var mDay = TimetableScreen.fromDay.subtract(Duration(days: 1));
             for (int mTabId = 0; mTabId < TimetableScreen.dayCount; mTabId++) {
               mDay = mDay.add(Duration(days: 1));
@@ -933,14 +937,14 @@ class _TimetableScreenState extends State<TimetableScreen>
               tabs.add(Platform.isIOS
                   ? mDay
                   : Tab(
-                      text: ssDayStyle.data.index == DayStyle.Weekday.index
+                      text: ssDayStyle.data?.index == DayStyle.Weekday.index
                           ? getWeekdayTitle(ctx, mDay)
                           : mDay.day.toString(),
                     ));
             }
 
             return PlatformScaffold(
-              android: (ctx) => MaterialScaffoldData(
+              material: (ctx, _) => MaterialScaffoldData(
                   drawer: Drawer(
                     child: ListView(
                       padding: EdgeInsets.zero,
@@ -995,7 +999,7 @@ class _TimetableScreenState extends State<TimetableScreen>
                       controller: _tabController,
                     ),
                   )),
-              ios: (ctx) => CupertinoPageScaffoldData(
+              cupertino: (ctx, _) => CupertinoPageScaffoldData(
                 navigationBar: CupertinoCustomNavigationBar(
                   bottom: buildThemeStream((ctx, _) => CupertinoTabBar(
                         controller: _tabController,
@@ -1009,7 +1013,7 @@ class _TimetableScreenState extends State<TimetableScreen>
                         padding: EdgeInsets.zero,
                         icon: Icon(
                           ctx.platformIcons.info,
-                          color: getTheme().accentColor,
+                          color: getTheme().colorScheme.secondary,
                         ),
                         onPressed: () =>
                             Navigator.pushNamed(ctx, AboutScreen.ROUTE),
@@ -1024,7 +1028,7 @@ class _TimetableScreenState extends State<TimetableScreen>
                           padding: EdgeInsets.zero,
                           icon: Icon(
                             ctx.platformIcons.settings,
-                            color: getTheme().accentColor,
+                            color: getTheme().colorScheme.secondary,
                           ),
                           onPressed: () =>
                               Navigator.pushNamed(ctx, PrefsScreen.ROUTE),
@@ -1038,19 +1042,19 @@ class _TimetableScreenState extends State<TimetableScreen>
                 builder: (ctx, _) => WidgetTemplates.buildFutureBuilder(ctx,
                     future: WidgetTemplates.checkInternetConnection(),
                     builder: (ctx, internetConn) {
-                  if (!internetConn.data)
+                  if (!(internetConn.data as bool))
                     return WidgetTemplates.buildNetworkErrorNotification(ctx);
                   return WidgetTemplates.buildFutureBuilder(
                     ctx,
-                    future: ssSearchItem.data.item1
+                    future: ssSearchItem.data?.item1 ?? false
                         ? TimetableScreen._getTimetable(
                             ctx,
-                            ssSearchItem.data.item2,
+                            ssSearchItem.data!.item2,
                             prefs,
                           )
                         : TimetableScreen._loadAllTimetable(
                             ctx,
-                            ssSearchItem.data.item2,
+                            ssSearchItem.data!.item2,
                             updateDb: false,
                           ),
                     builder: (ctx, _) {
@@ -1064,12 +1068,12 @@ class _TimetableScreenState extends State<TimetableScreen>
                               TimetableScreen.fromDay.add(
                                 Duration(days: dayIndex),
                               ),
-                              List<TimelineModel>(),
+                                  <TimelineModel>[],
                             ),
                           ),
                         );
 
-                      final tabViews = List<Widget>(),
+                      final tabViews = <Widget>[],
                           endCacheStr = prefs.getString(PrefsIds.END_CACHE),
                           endCache = endCacheStr != null
                               ? DateTime.parse(endCacheStr)
@@ -1091,19 +1095,19 @@ class _TimetableScreenState extends State<TimetableScreen>
                                       ? WidgetTemplates
                                           .buildFreeDayNotification(
                                           ctx,
-                                          ssSearchItem.data.item2,
+                                          ssSearchItem.data!.item2,
                                         )
                                       : TimelineComponent(
                                           timetableIter.current.value,
                                           optimizeLessonTitles:
                                               optimizeLessonTitles,
                                           onRefresh: () async {
-                                            if (ssSearchItem.data.item1) {
+                                            if (ssSearchItem.data!.item1) {
                                               await PlatformChannels.deleteDb();
                                               await TimetableScreen
                                                   ._loadAllTimetable(
                                                 ctx,
-                                                ssSearchItem.data.item2,
+                                                ssSearchItem.data!.item2,
                                                 updateDb: true,
                                               );
                                             }
@@ -1114,7 +1118,7 @@ class _TimetableScreenState extends State<TimetableScreen>
                                         )
                                   : WidgetTemplates.buildFreeDayNotification(
                                       ctx,
-                                      ssSearchItem.data.item2,
+                                      ssSearchItem.data!.item2,
                                     ),
                         );
 

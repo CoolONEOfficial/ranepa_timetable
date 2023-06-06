@@ -15,10 +15,10 @@ limitations under the License. */
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:ranepa_timetable/apis.dart';
-import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/main.dart';
-import 'package:ranepa_timetable/timetable_icons.dart';
+import 'package:ranepatimetable/apis.dart';
+import 'package:ranepatimetable/localizations.dart';
+import 'package:ranepatimetable/main.dart';
+import 'package:ranepatimetable/timetable_icons.dart';
 import 'package:tuple/tuple.dart';
 
 part 'timeline_models.g.dart';
@@ -29,7 +29,7 @@ abstract class FindableModel {
 
 mixin ToAlias {}
 
-class FindTree = Tuple2<FindableModel, Map<List<dynamic>, dynamic>>
+class FindTree = Tuple2<FindableModel?, Map<List<dynamic>, dynamic>>
     with ToAlias;
 
 enum User {
@@ -37,7 +37,7 @@ enum User {
   Teacher,
 }
 
-@JsonSerializable(nullable: false)
+@JsonSerializable()
 class TimelineModel {
   @JsonKey(fromJson: _numToDate, toJson: _dateToNum)
   final DateTime date;
@@ -73,13 +73,13 @@ class TimelineModel {
   static DateTime _numToDate(int n) => DateTime.fromMillisecondsSinceEpoch(n);
 
   TimelineModel({
-    @required this.date,
-    @required this.start,
-    @required this.finish,
-    @required this.room,
-    @required this.group,
-    @required this.lesson,
-    @required this.teacher,
+    required this.date,
+    required this.start,
+    required this.finish,
+    required this.room,
+    required this.group,
+    required this.lesson,
+    required this.teacher,
     this.first = false,
     this.last = false,
     this.mergeBottom = false,
@@ -99,12 +99,10 @@ enum DayStyle { Weekday, Date }
 enum RoomLocation { Academy, Hotel, StudyHostel }
 
 class RoomLocationsTitles {
-  static RoomLocationsTitles _singleton;
+  static RoomLocationsTitles? _singleton;
 
   factory RoomLocationsTitles(BuildContext ctx) {
-    if (_singleton == null) _singleton = RoomLocationsTitles._(ctx);
-
-    return _singleton;
+    return _singleton ?? RoomLocationsTitles._(ctx);
   }
 
   RoomLocationsTitles._(this.ctx)
@@ -140,7 +138,7 @@ class RoomModel extends FindableModel {
   Map<String, dynamic> toJson() => _$RoomModelToJson(this);
 
   factory RoomModel.fromString(String str) => RoomModel(
-      RegExp(r"(\d{3}[А-я]?)").stringMatch(str),
+      RegExp(r"(\d{3}[А-я]?)").stringMatch(str ?? '') ?? '',
       str.startsWith("СО")
           ? RoomLocation.StudyHostel
           : str.startsWith("П8") ? RoomLocation.Hotel : RoomLocation.Academy);
@@ -161,12 +159,10 @@ class LessonAction extends FindableModel {
 }
 
 class LessonActions {
-  static LessonActions _singleton;
+  static LessonActions? _singleton;
 
   factory LessonActions(BuildContext ctx, SiteApiIds api) {
-    if (_singleton == null) _singleton = LessonActions._(ctx, api);
-
-    return _singleton;
+    return _singleton ?? LessonActions._(ctx, api);
   }
 
   final SiteApiIds api;
@@ -213,10 +209,10 @@ class LessonActions {
 
 @JsonSerializable(nullable: false)
 class LessonModel extends FindableModel {
-  String fullTitle;
+  String? fullTitle;
   final String title;
   final int iconCodePoint;
-  LessonAction action;
+  LessonAction? action;
 
   LessonModel(
     this.title,
@@ -260,12 +256,10 @@ class LessonModel extends FindableModel {
 }
 
 class Lessons {
-  static Lessons _singleton;
+  static Lessons? _singleton;
 
   factory Lessons(BuildContext ctx) {
-    if (_singleton == null) _singleton = Lessons._(ctx);
-
-    return _singleton;
+    return _singleton ?? Lessons._(ctx);
   }
 
   Lessons._(this.ctx)
