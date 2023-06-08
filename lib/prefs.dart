@@ -143,20 +143,6 @@ final widgetTranslucentBloc = StreamController<bool>.broadcast(),
 class PrefsScreen extends StatelessWidget {
   static const ROUTE = "/prefs";
 
-  static Widget _buildThemePreference(BuildContext ctx) =>
-      WidgetTemplates.buildListTile(
-        ctx,
-        title: Text(AppLocalizations.of(ctx).themeTitle),
-        subtitle: Text(AppLocalizations.of(ctx).themeDescription),
-        trailing: buildThemeStream(
-          (ctx, snapshot) => PlatformSwitch(
-            value: brightness == Brightness.dark,
-            onChanged: (value) {
-              brightness = value ? Brightness.dark : Brightness.light;
-            },
-          ),
-        ),
-      );
 
   static Widget _buildThemeAccentPreference(BuildContext ctx) =>
       WidgetTemplates.buildListTile(
@@ -326,20 +312,6 @@ class PrefsScreen extends StatelessWidget {
         ),
       );
 
-  static Widget _buildSiteApiPreference(BuildContext ctx) =>
-      WidgetTemplates.buildListTile(
-        ctx,
-        title: Text(AppLocalizations.of(ctx).siteApiTitle),
-        subtitle: Text(AppLocalizations.of(ctx).siteApiDescription),
-        onTap: () => showSiteApiSelect(ctx),
-        trailing: StreamBuilder<SiteApi>(
-          builder: (BuildContext ctx, AsyncSnapshot<SiteApi> snapshot) =>
-              Text(snapshot.data!.title),
-          stream: siteApiBloc.stream,
-          initialData: SiteApis(ctx)
-              .apis[prefs.getInt(PrefsIds.SITE_API) ?? DEFAULT_API_ID.index],
-        ),
-      );
 
   static Future<SiteApi?> showSiteApiSelect(BuildContext ctx) =>
       showDialog<SiteApi>(
@@ -348,6 +320,8 @@ class PrefsScreen extends StatelessWidget {
           title: Text(AppLocalizations.of(ctx).siteApiTitle),
           children: SiteApis(ctx)
               .apis
+              .where((api) => !api.isHidden)
+              .toList()
               .asMap()
               .map(
                 (index, mApi) => MapEntry(
@@ -411,10 +385,6 @@ class PrefsScreen extends StatelessWidget {
   List<Widget> buildPrefsEntries(BuildContext ctx) {
     List<Widget> entries = [];
 
-    if (!Platform.isIOS) {
-      entries.add(_buildThemePreference(ctx));
-    }
-
     entries.addAll([
       _buildThemeAccentPreference(ctx),
       _buildSearchItemPreference(ctx),
@@ -429,7 +399,6 @@ class PrefsScreen extends StatelessWidget {
 
     entries.addAll([
       _buildRoomLocationStylePreference(ctx),
-      _buildSiteApiPreference(ctx),
       _buildOptimizedLessonTitlesPreference(ctx),
     ]);
 

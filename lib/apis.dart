@@ -15,8 +15,9 @@ enum SiteApiIds {
 class SiteApi {
   final String title;
   final Uri url;
+  final bool isHidden;
 
-  const SiteApi(this.title, this.url);
+  const SiteApi(this.title, this.url, this.isHidden);
 }
 
 enum OldAppApiTimetableIndexes {
@@ -50,6 +51,7 @@ class SiteApis {
               "test.ranhigs-nn.ru",
               "/api/WebService.asmx",
             ),
+            true
           ),
 
           // APP_NEW
@@ -59,6 +61,7 @@ class SiteApis {
               "services.niu.ranepa.ru",
               "/wp-content/plugins/rasp/rasp_json_data.php",
             ),
+            true
           ),
 
           // SITE
@@ -68,6 +71,7 @@ class SiteApis {
               "services.niu.ranepa.ru",
               "/API/public/",
             ),
+            true
           ),
         ];
 }
