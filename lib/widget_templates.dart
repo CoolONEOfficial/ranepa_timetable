@@ -31,7 +31,9 @@ class WidgetTemplates {
   }) {
     var expandedChildren = <Widget>[
       DefaultTextStyle(
-        style: Theme.of(ctx).textTheme.titleMedium!,
+        style: Theme.of(ctx).textTheme.titleMedium!.copyWith(
+          color: MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness == Brightness.dark ? Colors.white : Colors.black
+        ),
         child: title,
       )
     ];

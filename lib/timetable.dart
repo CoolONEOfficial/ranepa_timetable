@@ -607,8 +607,8 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
 
   Color get _foregroundOff {
     return getTheme().brightness == Brightness.dark
-        ? Colors.white
-        : Colors.black;
+        ? Colors.black
+        : Colors.white;
   }
 
   // active button's background color
@@ -838,7 +838,7 @@ class _CupertinoTabBarState extends State<CupertinoTabBar>
   _getForegroundColor(int index) {
     // the same as the above
     if (index == _currentIndex) {
-      return _colorTweenForegroundOn!.value;
+      return Colors.white;
     } else if (index == _prevControllerIndex) {
       return _colorTweenForegroundOff!.value;
     } else {

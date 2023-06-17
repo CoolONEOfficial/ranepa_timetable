@@ -148,7 +148,9 @@ class PrefsScreen extends StatelessWidget {
       WidgetTemplates.buildListTile(
         ctx,
         title: Text(AppLocalizations.of(ctx).themeAccentTitle),
-        subtitle: Text(AppLocalizations.of(ctx).themeAccentDescription),
+        subtitle: Text(AppLocalizations.of(ctx).themeAccentDescription, style: TextStyle(
+            color: MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness == Brightness.dark ? Colors.white : Colors.black
+        )),
         onTap: () => showMaterialColorPicker(ctx),
         trailing: buildThemeStream(
           (ctx, snapshot) => Container(
@@ -225,7 +227,9 @@ class PrefsScreen extends StatelessWidget {
       WidgetTemplates.buildListTile(
         ctx,
         title: Text(AppLocalizations.of(ctx).groupTitle),
-        subtitle: Text(AppLocalizations.of(ctx).groupDescription),
+        subtitle: Text(AppLocalizations.of(ctx).groupDescription, style: TextStyle(
+            color: MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness == Brightness.dark ? Colors.white : Colors.black
+        )),
         onTap: () => showSearchItemSelect(ctx),
         trailing: StreamBuilder<Tuple2<bool, SearchItem>>(
           stream: timetableIdBloc.stream,
@@ -267,7 +271,10 @@ class PrefsScreen extends StatelessWidget {
           title: Text(AppLocalizations.of(ctx).roomLocationStyleText),
           subtitle: Text(snapshot.data == RoomLocationStyle.Icon
               ? AppLocalizations.of(ctx).roomLocationStyleDescriptionIcon
-              : AppLocalizations.of(ctx).roomLocationStyleDescriptionText),
+              : AppLocalizations.of(ctx).roomLocationStyleDescriptionText,
+          style: TextStyle(
+              color: MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness == Brightness.dark ? Colors.white : Colors.black
+          )),
           trailing: Row(
             children: <Widget>[
               Icon(Icons.text_format),
