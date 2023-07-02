@@ -18,7 +18,7 @@ class AppLocalizations {
   }
 
   static AppLocalizations of(BuildContext ctx) {
-    return Localizations.of<AppLocalizations>(ctx, AppLocalizations);
+    return Localizations.of<AppLocalizations>(ctx, AppLocalizations)!;
   }
 
   // App title

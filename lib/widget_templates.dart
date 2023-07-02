@@ -1,38 +1,39 @@
 import 'dart:io';
 
 import 'package:connectivity/connectivity.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/search.dart';
-import 'package:ranepa_timetable/theme.dart';
-import 'package:ranepa_timetable/timetable.dart';
-import 'package:ranepa_timetable/timetable_icons.dart';
+import 'package:ranepatimetable/localizations.dart';
+import 'package:ranepatimetable/search.dart';
+import 'package:ranepatimetable/theme.dart';
+import 'package:ranepatimetable/timetable.dart';
+import 'package:ranepatimetable/timetable_icons.dart';
 
 class WidgetTemplates {
   static Widget buildDivider() => Divider(
         height: Platform.isIOS ? 0 : 1,
         color: Platform.isIOS
             ? Color(0x4D000000)
-            : getTheme().textTheme.caption.color,
+            : getTheme().textTheme.bodySmall!.color,
       );
 
   static Widget buildListTile(
     BuildContext ctx, {
-    @required Widget title,
-    Widget subtitle,
-    VoidCallback onTap,
-    Widget leading,
-    Widget trailing,
-    Widget bottom,
-    EdgeInsets padding,
+    required Widget title,
+    Widget? subtitle,
+    VoidCallback? onTap,
+    Widget? leading,
+    Widget? trailing,
+    Widget? bottom,
+    EdgeInsets? padding,
   }) {
     var expandedChildren = <Widget>[
       DefaultTextStyle(
-        style: Theme.of(ctx).textTheme.subtitle,
+        style: Theme.of(ctx).textTheme.titleMedium!.copyWith(
+          color: MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness == Brightness.dark ? Colors.white : Colors.black
+        ),
         child: title,
       )
     ];
@@ -43,7 +44,7 @@ class WidgetTemplates {
           height: 2,
         ),
         DefaultTextStyle(
-          style: Theme.of(ctx).textTheme.caption,
+          style: Theme.of(ctx).textTheme.bodySmall!,
           child: subtitle,
         ),
       ]);
@@ -74,9 +75,10 @@ class WidgetTemplates {
         ),
       );
 
-    return FlatButton(
-      color: Platform.isIOS ? CupertinoTheme.of(ctx).barBackgroundColor : null,
-      splashColor: Platform.isIOS ? Colors.transparent : null,
+    return TextButton(
+      style: TextButton.styleFrom(
+        backgroundColor: Platform.isIOS ? CupertinoTheme.of(ctx).barBackgroundColor : null,
+      ),
       child: Padding(
         padding: padding ??
             EdgeInsets.symmetric(
@@ -101,7 +103,7 @@ class WidgetTemplates {
             Container(height: 20),
             Text(
               text,
-              style: Theme.of(ctx).textTheme.title,
+              style: Theme.of(ctx).textTheme.titleLarge!,
             )
           ],
         ),
@@ -110,7 +112,7 @@ class WidgetTemplates {
   static Widget _buildIconNotification(
     BuildContext ctx,
     String text, [
-    IconData icon,
+    IconData? icon,
   ]) =>
       _buildNotification(
         ctx,
@@ -120,7 +122,7 @@ class WidgetTemplates {
           child: Icon(
             icon,
             size: 140,
-            color: Platform.isIOS ? getTheme().accentColor : null,
+            color: Platform.isIOS ? getTheme().colorScheme.secondary : null,
           ),
         ),
       );
@@ -167,7 +169,7 @@ class WidgetTemplates {
 
   static Image buildLogo(
     ThemeData theme, {
-    Color color,
+    Color? color,
   }) =>
       Image(
         image: AssetImage(
@@ -192,40 +194,45 @@ class WidgetTemplates {
     return _buildIconNotification(ctx, AppLocalizations.of(ctx).freeDay, icon);
   }
 
-  static Flushbar buildFlushbar(
+  static buildFlushbar(
     BuildContext ctx,
     String msg, {
-    String title,
-    IconData iconData,
-  }) =>
-      Flushbar(
-        title: title,
-        messageText: Text(
-          msg,
-          style: (Platform.isIOS
-                  ? getTheme().textTheme
-                  : getTheme().accentTextTheme)
-              .body1,
-        ),
-        icon: Icon(iconData,
-            color: Platform.isIOS
-                ? getTheme().primaryColor
-                : getTheme().accentIconTheme.color),
-        duration: Duration(seconds: 3),
-        flushbarStyle: FlushbarStyle.GROUNDED,
-        backgroundColor: Platform.isIOS
-            ? CupertinoTheme.of(ctx).barBackgroundColor
-            : getTheme().accentColor,
-      );
+    String? title,
+    IconData? iconData,
+  }) => ScaffoldMessenger.of(ctx).showSnackBar(
+      SnackBar(
+          content: Text(msg)
+      )
+  );
+      // __DEPRECATED
+      // Flushbar(
+      //   title: title,
+      //   messageText: Text(
+      //     msg,
+      //     style: (Platform.isIOS
+      //             ? getTheme().textTheme
+      //             : getTheme().accentTextTheme)
+      //         .body1,
+      //   ),
+      //   icon: Icon(iconData,
+      //       color: Platform.isIOS
+      //           ? getTheme().primaryColor
+      //           : getTheme().accentIconTheme.color),
+      //   duration: Duration(seconds: 3),
+      //   flushbarStyle: FlushbarStyle.GROUNDED,
+      //   backgroundColor: Platform.isIOS
+      //       ? CupertinoTheme.of(ctx).barBackgroundColor
+      //       : getTheme().accentColor,
+      // );
 
   static Widget buildFutureBuilder<T>(
     BuildContext ctx, {
-    @required Future future,
-    @required AsyncWidgetBuilder<T> builder,
-    Widget loading,
-    Widget error,
+    required Future future,
+    required AsyncWidgetBuilder builder,
+    Widget? loading,
+    Widget? error,
   }) =>
-      FutureBuilder<T>(
+      FutureBuilder(
         future: future,
         builder: (BuildContext ctx, AsyncSnapshot snapshot) {
           switch (snapshot.connectionState) {
@@ -241,7 +248,6 @@ class WidgetTemplates {
                         ctx, "${snapshot.error}" ?? "Unknown");
               return builder(ctx, snapshot);
           }
-          return null;
         },
       );
 

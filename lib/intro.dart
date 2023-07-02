@@ -5,20 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intro_views_flutter/Models/page_view_model.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
-import 'package:ranepa_timetable/about.dart';
-import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/prefs.dart';
-import 'package:ranepa_timetable/theme.dart';
-import 'package:ranepa_timetable/timeline.dart';
-import 'package:ranepa_timetable/timetable.dart';
-import 'package:ranepa_timetable/widget_templates.dart';
+import 'package:ranepatimetable/about.dart';
+import 'package:ranepatimetable/localizations.dart';
+import 'package:ranepatimetable/prefs.dart';
+import 'package:ranepatimetable/theme.dart';
+import 'package:ranepatimetable/timeline.dart';
+import 'package:ranepatimetable/timetable.dart';
+import 'package:ranepatimetable/widget_templates.dart';
 
 class IntroScreen extends StatelessWidget {
-  static const ROUTE = "/intro";
+  static String ROUTE = "/intro";
 
-  IntroScreen({Key key}) : super(key: key);
+  IntroScreen({Key? key}) : super(key: key);
 
   PageViewModel _buildTimetable(BuildContext ctx) => PageViewModel(
         bubbleBackgroundColor: contentColor,
@@ -41,7 +40,7 @@ class IntroScreen extends StatelessWidget {
   static Widget buildWelcomeTextList(
     AppLocalizations localizations,
     TextTheme textTheme, {
-    Orientation orientation,
+    Orientation? orientation,
   }) =>
       Column(
         mainAxisSize: MainAxisSize.max,
@@ -49,12 +48,12 @@ class IntroScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           orientation == Orientation.landscape
-              ? Expanded
+              ? Expanded(child: Container())
               : Flexible(
                   child: SingleChildScrollView(
                     child: Text(
                       localizations.introWelcomeDescription,
-                      style: textTheme.body1.merge(
+                      style: textTheme.bodyMedium?.merge(
                         TextStyle(color: Colors.white, fontSize: 20),
                       ),
                       textAlign: TextAlign.center,
@@ -66,7 +65,7 @@ class IntroScreen extends StatelessWidget {
             child: Text(
               localizations.introWelcomeSupportBy,
               textAlign: TextAlign.center,
-              style: textTheme.caption.merge(
+              style: textTheme.bodySmall?.merge(
                 TextStyle(
                   fontSize: 20,
                   color: Colors.white.withOpacity(0.5),
@@ -91,8 +90,8 @@ class IntroScreen extends StatelessWidget {
         body: buildWelcomeTextList(
           localizations,
           TextTheme(
-            body1: TextStyle(color: Colors.white),
-            caption: TextStyle(color: Colors.grey),
+            bodyLarge: TextStyle(color: Colors.white),
+            bodySmall: TextStyle(color: Colors.grey),
           ),
         ),
         title: _buildTitleText(localizations.introWelcomeTitle),
@@ -138,7 +137,7 @@ class IntroScreen extends StatelessWidget {
             PlatformIcons(ctx).search,
             onPressed: () async {
               await onThemeChange();
-              return showSearchItemSelect(ctx);
+              showSearchItemSelect(ctx);
             },
           ),
         ),
@@ -159,7 +158,7 @@ class IntroScreen extends StatelessWidget {
   RawMaterialButton _buildCircleButton(
     IconData icon, {
     double size = 100,
-    VoidCallback onPressed,
+    required VoidCallback onPressed,
     bool enabled = true,
   }) =>
       RawMaterialButton(
@@ -176,10 +175,10 @@ class IntroScreen extends StatelessWidget {
         padding: EdgeInsets.all(size / 3),
       );
 
-  ThemeData theme;
-  Color backgroundColor;
-  Color contentColor;
-  AppLocalizations localizations;
+  static late ThemeData theme;
+  static late Color backgroundColor;
+  static late Color contentColor;
+  static late AppLocalizations localizations;
 
   @override
   Widget build(BuildContext ctx) => buildThemeStream(
@@ -192,10 +191,8 @@ class IntroScreen extends StatelessWidget {
                   ? theme.primaryColor
                   : theme.canvasColor;
           contentColor = (theme.brightness == Brightness.light
-                  ? theme.accentTextTheme
-                  : theme.textTheme)
-              .body1
-              .color;
+                  ? Colors.white
+                  : Colors.black);
 
           return IntroViewsFlutter(
             [

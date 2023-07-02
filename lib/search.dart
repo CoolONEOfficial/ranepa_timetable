@@ -4,13 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:ranepa_timetable/apis.dart';
-import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/main.dart';
-import 'package:ranepa_timetable/prefs.dart';
-import 'package:ranepa_timetable/theme.dart';
-import 'package:ranepa_timetable/widget_templates.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ranepatimetable/apis.dart';
+import 'package:ranepatimetable/localizations.dart';
+import 'package:ranepatimetable/prefs.dart';
+import 'package:ranepatimetable/theme.dart';
+import 'package:ranepatimetable/widget_templates.dart';
 
 class SearchItemType {
   final IconData icon;
@@ -36,7 +34,6 @@ final searchItemTypes = List<SearchItemType>.generate(
       case SearchItemTypeId.Group:
         return SearchItemType(Icons.group, "Group", "group");
     }
-    return null;
   },
 );
 
@@ -74,8 +71,8 @@ class SearchItem extends SearchItemBase {
       SearchItem(
         SearchItemTypeId.values[prefs.getInt(prefix + PrefsIds.ITEM_TYPE) ??
             DEFAULT_ITEM_TYPE_ID.index],
-        prefs.getInt(prefix + PrefsIds.ITEM_ID),
-        prefs.getString(prefix + PrefsIds.ITEM_TITLE),
+        prefs.getInt(prefix + PrefsIds.ITEM_ID) ?? 0,
+        prefs.getString(prefix + PrefsIds.ITEM_TITLE) ?? '',
       );
 }
 
@@ -132,17 +129,17 @@ class _SearchScreenState extends State<SearchScreen> {
 
   get query => searchController.text;
 
-  static http.Response _newApiCachedResults;
+  static http.Response? _newApiCachedResults;
 
   Future<http.Response> _buildHttpRequest(SiteApiIds api) {
     switch (api) {
       case SiteApiIds.APP_NEW:
         return _newApiCachedResults == null
-            ? http.get('http://services.niu.ranepa.ru/'
-                'API/public/teacher/teachersAndGroupsList')
+            ? http.get(Uri.parse('http://services.niu.ranepa.ru/'
+            'API/public/teacher/teachersAndGroupsList'))
             : Future<http.Response>.value(_newApiCachedResults);
       case SiteApiIds.APP_OLD:
-        return http.post('http://test.ranhigs-nn.ru/api/WebService.asmx',
+        return http.post(Uri.parse('http://test.ranhigs-nn.ru/api/WebService.asmx'),
             headers: {'Content-Type': 'text/xml; charset=utf-8'}, body: '''
 <?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -154,14 +151,13 @@ class _SearchScreenState extends State<SearchScreen> {
 </soap:Envelope>
 ''');
       case SiteApiIds.SITE:
-        return http.get('http://services.niu.ranepa.ru/'
-            'wp-content/plugins/rasp/rasp_json_data.php?name=$query');
+        return http.get(Uri.parse('http://services.niu.ranepa.ru/'
+            'wp-content/plugins/rasp/rasp_json_data.php?name=$query'));
       default:
         throw Exception("api is fucked up");
     }
   }
 
-  @override
   Widget buildSuggestions(BuildContext ctx) {
     debugPrint("Suggestions build start");
     webSuggestions.clear();
@@ -175,8 +171,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 future: _buildHttpRequest(api).then((response) => response),
                 builder: (ctx, snapshot) {
                   if (_newApiCachedResults == null)
-                    _newApiCachedResults = snapshot.data;
-                  final body = snapshot.data.body;
+                    _newApiCachedResults = snapshot.data as http.Response;
+                  final body = (snapshot.data as http.Response).body;
 
                   debugPrint("Search snapshot data body: " + body);
 
@@ -211,7 +207,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         break;
                     }
 
-                    SearchItemTypeId mItemTypeId;
+                    SearchItemTypeId? mItemTypeId;
 
                     switch (api) {
                       case SiteApiIds.APP_NEW:
@@ -232,7 +228,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     }
 
                     webSuggestions.add(SearchItem(
-                      mItemTypeId,
+                      mItemTypeId!,
                       mItemId,
                       mItemTitle,
                     ));
@@ -270,10 +266,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 final SearchItem mSearchItem = mSearchItemBase;
                 return mSearchItem.title
                     .startsWith(RegExp("^" + query, caseSensitive: false));
-                break;
               case SearchDivider:
                 return true;
-                break;
             }
 
             return false;
@@ -309,8 +303,8 @@ class _SearchScreenState extends State<SearchScreen> {
             if (mItem is SearchItem) {
               final queryIndex =
                       mItem.title.indexOf(RegExp(query, caseSensitive: false)),
-                  selectColor = theme.textSelectionColor,
-                  normalColor = theme.textTheme.title.color;
+                  selectColor = Colors.blue,
+                  normalColor = theme.textTheme.titleLarge?.color;
 
               return WidgetTemplates.buildListTile(
                 ctx,
@@ -319,7 +313,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 },
                 leading: Icon(
                   searchItemTypes[mItem.typeId.index].icon,
-                  color: Platform.isIOS ? theme.accentColor : null,
+                  color: Platform.isIOS ? theme.primaryColor : null,
                 ),
                 title: RichText(
                   // Recent suggestion
@@ -383,7 +377,7 @@ class _SearchScreenState extends State<SearchScreen> {
             }
             return null;
           },
-          itemCount: suggestions?.length ?? 0),
+          itemCount: suggestions.length ?? 0),
     );
   }
 
@@ -391,7 +385,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext ctx) {
     return PlatformScaffold(
       appBar: PlatformAppBar(
-        ios: (ctx) => CupertinoNavigationBarData(
+        cupertino: (ctx, _) => CupertinoNavigationBarData(
           padding: const EdgeInsetsDirectional.only(end: 15),
         ),
         leading: !Platform.isIOS
@@ -412,7 +406,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   child: Text(
                     SearchScreen._capitalizeString(
                         MaterialLocalizations.of(ctx).cancelButtonLabel),
-                    style: getTheme().textTheme.body1,
+                    style: getTheme().textTheme.bodyLarge,
                   ),
                   onPressed: () => _cancelPressed(ctx),
                 ),
@@ -432,19 +426,19 @@ class _SearchScreenState extends State<SearchScreen> {
           onChanged: (_) {
             setState(() {});
           },
-          ios: (ctx) => CupertinoTextFieldData(
+          cupertino: (ctx, _) => CupertinoTextFieldData(
               prefix: Padding(
                 padding: const EdgeInsets.only(left: 5),
                 child: Icon(
                   CupertinoIcons.search,
                   size: 20,
-                  color: getTheme().accentColor,
+                  color: getTheme().primaryColor,
                 ),
               ),
               placeholder: _searchPlaceholder(ctx),
               clearButtonMode: OverlayVisibilityMode.editing,
-              cursorColor: getTheme().accentColor),
-          android: (ctx) => MaterialTextFieldData(
+              cursorColor: getTheme().primaryColor),
+          material: (ctx, _) => MaterialTextFieldData(
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: _searchPlaceholder(ctx),
@@ -452,7 +446,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ? IconButton(
                       icon: Icon(
                         Icons.clear,
-                        color: getTheme().accentTextTheme.body1.color,
+                        color: getTheme().textTheme.bodyLarge?.color,
                       ),
                       onPressed: () {
                         searchController.clear();

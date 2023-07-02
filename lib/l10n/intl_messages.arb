@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2020-02-05T14:06:26.216374",
+  "@@last_modified": "2023-06-04T16:56:33.684027",
   "title": "RANEPA (Timetable)",
   "@title": {
     "type": "text",
@@ -345,12 +345,12 @@
     "type": "text",
     "placeholders": {}
   },
-  "themeTitle": "Theme",
+  "themeTitle": "Dark mode",
   "@themeTitle": {
     "type": "text",
     "placeholders": {}
   },
-  "themeDescription": "Color scheme of the application and widget",
+  "themeDescription": "Dark color scheme of the application and widget",
   "@themeDescription": {
     "type": "text",
     "placeholders": {}

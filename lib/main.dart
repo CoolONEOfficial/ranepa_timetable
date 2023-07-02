@@ -9,24 +9,24 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:ranepa_timetable/about.dart';
-import 'package:ranepa_timetable/intro.dart';
-import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/platform_channels.dart';
-import 'package:ranepa_timetable/prefs.dart';
-import 'package:ranepa_timetable/search.dart';
-import 'package:ranepa_timetable/theme.dart';
-import 'package:ranepa_timetable/timetable.dart';
-import 'package:ranepa_timetable/widget_templates.dart';
+import 'package:ranepatimetable/about.dart';
+import 'package:ranepatimetable/intro.dart';
+import 'package:ranepatimetable/localizations.dart';
+import 'package:ranepatimetable/platform_channels.dart';
+import 'package:ranepatimetable/prefs.dart';
+import 'package:ranepatimetable/search.dart';
+import 'package:ranepatimetable/theme.dart';
+import 'package:ranepatimetable/timetable.dart';
+import 'package:ranepatimetable/widget_templates.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:package_info/package_info.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-SharedPreferences prefs;
-String version;
 final random = new Random();
 
 class BaseWidget extends StatelessWidget {
+  String version = '';
+  SharedPreferences? prefs;
   @override
   Widget build(BuildContext ctx) =>
       WidgetTemplates.buildFutureBuilder<PackageInfo>(
@@ -34,8 +34,7 @@ class BaseWidget extends StatelessWidget {
         loading: Container(),
         future: PackageInfo.fromPlatform(),
         builder: (ctx, snapshot) {
-          version = snapshot.data.version;
-          debugPrint("App version: " + version);
+          version = snapshot.data?.version ?? '';
 
           return WidgetTemplates.buildFutureBuilder<SharedPreferences>(
             ctx,
@@ -44,13 +43,13 @@ class BaseWidget extends StatelessWidget {
             builder: (ctx, snapshot) {
               prefs = snapshot.data;
               if (Platform.isAndroid &&
-                  prefs.getString(PrefsIds.LAST_UPDATE) != version) {
+                  prefs!.getString(PrefsIds.LAST_UPDATE) != version) {
                 return WidgetTemplates.buildFutureBuilder(ctx,
                     loading: Container(),
                     future: Future.wait(
-                        <Future>[prefs.clear(), PlatformChannels.deleteDb()]),
+                        <Future>[prefs!.clear(), PlatformChannels.deleteDb()]),
                     builder: (ctx, _) {
-                  prefs.setString(PrefsIds.LAST_UPDATE, version);
+                  prefs!.setString(PrefsIds.LAST_UPDATE, version);
                   return _build(ctx);
                 });
               }
@@ -63,9 +62,9 @@ class BaseWidget extends StatelessWidget {
 
   Widget _build(BuildContext ctx) => buildThemeStream(
         (ctx, snapshot) {
-          final theme = snapshot.data;
+          final theme = snapshot.data ?? ThemeData();
 
-          debugPrint("prefskeys: ${prefs.getKeys()}");
+          debugPrint("prefskeys: ${prefs!.getKeys()}");
 
           return Theme(
             data: theme,
@@ -77,7 +76,7 @@ class BaseWidget extends StatelessWidget {
                 return MediaQuery(
                   data:
                       MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: true),
-                  child: child,
+                  child: child!,
                 );
               },
               localizationsDelegates: [
@@ -99,7 +98,7 @@ class BaseWidget extends StatelessWidget {
                 SearchScreen.ROUTE: (ctx) => SearchScreen(),
                 TimetableScreen.ROUTE: (ctx) => TimetableScreen(),
               },
-              initialRoute: prefs.getInt(
+              initialRoute: prefs!.getInt(
                           PrefsIds.SEARCH_ITEM_PREFIX + PrefsIds.ITEM_ID) ==
                       null
                   ? IntroScreen.ROUTE
@@ -160,4 +159,13 @@ Widget Function(FlutterErrorDetails) _buildError(BuildContext ctx) {
       ));
 }
 
-Future main() async => runApp(BaseWidget());
+Future main() async {
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    prefs = await SharedPreferences.getInstance();
+    runApp(BaseWidget());
+  }, (error, stack) {
+    print(error);
+    print(stack);
+  });
+}

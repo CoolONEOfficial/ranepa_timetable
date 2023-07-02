@@ -2,16 +2,16 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/main.dart';
-import 'package:ranepa_timetable/platform_channels.dart';
-import 'package:ranepa_timetable/prefs.dart';
+import 'package:ranepatimetable/localizations.dart';
+import 'package:ranepatimetable/main.dart';
+import 'package:ranepatimetable/platform_channels.dart';
+import 'package:ranepatimetable/prefs.dart';
 
-ThemeData _theme;
+ThemeData? _theme = ThemeData();
 
 ThemeData getTheme() {
-  if (_theme == null) _theme = buildTheme(brightness, accentColor);
-  return _theme;
+  if (_theme == null) _theme = buildTheme(brightness, accentColor!);
+  return ThemeData();
 }
 
 ThemeData buildTheme(
@@ -25,7 +25,7 @@ ThemeData buildTheme(
       primaryColorLight: accentColor.shade100,
       primaryColorDark: accentColor.shade700,
       toggleableActiveColor: accentColor.shade600,
-      accentColor: accentColor.shade500,
+      hintColor: accentColor.shade500,
     );
 
 Future<void> onThemeChange() async {
@@ -39,16 +39,16 @@ Future<void> onThemeChange() async {
   await prefs.setString(
       PrefsIds.THEME_PRIMARY, _colorToHex(theme.primaryColor));
 
-  await prefs.setString(PrefsIds.THEME_ACCENT, _colorToHex(theme.accentColor));
+  await prefs.setString(PrefsIds.THEME_ACCENT, _colorToHex(theme.colorScheme.secondary));
 
   await prefs.setString(
       PrefsIds.THEME_BACKGROUND, _colorToHex(theme.backgroundColor));
 
   await prefs.setString(
-      PrefsIds.THEME_TEXT_PRIMARY, _colorToHex(theme.textTheme.body1.color));
+      PrefsIds.THEME_TEXT_PRIMARY, _colorToHex(theme.textTheme.bodyLarge?.color ?? Colors.white));
 
   await prefs.setString(PrefsIds.THEME_TEXT_ACCENT,
-      _colorToHex(theme.accentTextTheme.body1.color));
+      _colorToHex(theme.textTheme.bodyLarge?.color ?? Colors.white));
 
   await prefs.setInt(PrefsIds.THEME_BRIGHTNESS, theme.brightness.index);
 
@@ -74,7 +74,7 @@ StreamBuilder<ThemeData> buildThemeStream(
 
 // Brightness
 
-Brightness _brightness;
+Brightness? _brightness;
 
 get brightness {
   if (Platform.isIOS)
@@ -105,16 +105,16 @@ MaterialColor _toMaterialColor(Color color) {
   throw Exception('Material color ${color.toString()} not found!!!');
 }
 
-MaterialColor _accentColor;
+MaterialColor? _accentColor;
 
-MaterialColor get accentColor {
+MaterialColor? get accentColor {
   final prefColor = prefs.getString(PrefsIds.THEME_PRIMARY);
 
   return _accentColor != null
       ? _accentColor
       : prefColor != null
           ? _toMaterialColor(_hexToColor(prefColor))
-          : ThemeData.light().primaryColor;
+          : _toMaterialColor(ThemeData.light().primaryColor);
 }
 
 set accentColor(value) {
@@ -125,11 +125,10 @@ set accentColor(value) {
 // Theme brightness titles
 
 class ThemeBrightnessTitles {
-  static ThemeBrightnessTitles _singleton;
+  static ThemeBrightnessTitles? _singleton;
 
   factory ThemeBrightnessTitles(BuildContext ctx) {
-    if (_singleton == null) _singleton = ThemeBrightnessTitles._internal(ctx);
-    return _singleton;
+    return _singleton ?? ThemeBrightnessTitles._internal(ctx);
   }
 
   final List<String> titles;

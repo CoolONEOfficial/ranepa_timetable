@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ranepa_timetable/intro.dart';
-import 'package:ranepa_timetable/localizations.dart';
-import 'package:ranepa_timetable/theme.dart';
-import 'package:ranepa_timetable/widget_templates.dart';
+import 'package:ranepatimetable/intro.dart';
+import 'package:ranepatimetable/localizations.dart';
+import 'package:ranepatimetable/theme.dart';
+import 'package:ranepatimetable/widget_templates.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutBackgroundClipper extends CustomClipper<Path> {
@@ -58,7 +58,7 @@ void main() => runApp(MaterialApp(
     ));
 
 class AboutScreen extends StatelessWidget {
-  BuildContext ctx;
+  static late BuildContext ctx;
   static const ROUTE = "/about";
 
   Widget _buildGuyIconContent(
@@ -67,9 +67,9 @@ class AboutScreen extends StatelessWidget {
     String name,
     String url,
     String image, {
-    String descriptionLeft,
-    String descriptionRight,
-    String singleStr,
+    String? descriptionLeft,
+    String? descriptionRight,
+    String? singleStr,
   }) =>
       Container(
         height: 220,
@@ -83,14 +83,14 @@ class AboutScreen extends StatelessWidget {
                   width: 100.0,
                   height: 100.0,
                   decoration: BoxDecoration(
-                    color: textTheme.title.color,
+                    color: textTheme.titleLarge?.color,
                     image: DecorationImage(
                       image: AssetImage('assets/images/$image.jpg'),
                       fit: BoxFit.cover,
                     ),
                     borderRadius: BorderRadius.all(Radius.circular(50.0)),
                     border: Border.all(
-                      color: textTheme.title.color,
+                      color: textTheme.titleLarge?.color ?? Colors.transparent,
                       width: 4.0,
                     ),
                   ),
@@ -100,11 +100,11 @@ class AboutScreen extends StatelessWidget {
               RichText(
                 text: TextSpan(
                   text: '$name\n',
-                  style: textTheme.title,
+                  style: textTheme.titleLarge,
                   children: <TextSpan>[
                     TextSpan(
                       text: '"$url"',
-                      style: textTheme.body2,
+                      style: textTheme.bodyLarge,
                     ),
                   ],
                 ),
@@ -115,7 +115,7 @@ class AboutScreen extends StatelessWidget {
                   child: singleStr != null
                       ? AutoSizeText(
                           singleStr,
-                          style: textTheme.subtitle,
+                          style: textTheme.titleMedium,
                           textAlign: TextAlign.center,
                         )
                       : Row(
@@ -126,21 +126,21 @@ class AboutScreen extends StatelessWidget {
                           children: <Widget>[
                             Flexible(
                               child: AutoSizeText(
-                                descriptionLeft,
-                                style: textTheme.subtitle,
+                                descriptionLeft ?? '',
+                                style: textTheme.titleMedium,
                                 textAlign: TextAlign.right,
                                 minFontSize: 2,
-                                maxLines: descriptionLeft.split('\n').length,
+                                maxLines: descriptionLeft?.split('\n').length,
                                 softWrap: false,
                               ),
                             ),
                             Container(width: 4),
                             Flexible(
                               child: AutoSizeText(
-                                descriptionRight,
-                                style: textTheme.subtitle,
+                                descriptionRight ?? '',
+                                style: textTheme.titleMedium,
                                 textAlign: TextAlign.left,
-                                maxLines: descriptionRight.split('\n').length,
+                                maxLines: descriptionRight?.split('\n').length,
                                 minFontSize: 2,
                                 softWrap: false,
                               ),
@@ -161,9 +161,9 @@ class AboutScreen extends StatelessWidget {
     String url,
     String image,
     Orientation orientation, {
-    String descriptionLeft,
-    String descriptionRight,
-    String singleStr,
+    String? descriptionLeft,
+    String? descriptionRight,
+    String? singleStr,
   }) =>
       orientation == Orientation.portrait
           ? Flexible(
@@ -234,7 +234,7 @@ class AboutScreen extends StatelessWidget {
   ) =>
       IntroScreen.buildWelcomeTextList(
         AppLocalizations.of(ctx),
-        Theme.of(ctx).accentTextTheme,
+        Theme.of(ctx).textTheme,
       );
 
   List<Widget> _buildLogoText(
@@ -247,7 +247,7 @@ class AboutScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: WidgetTemplates.buildLogo(
             Theme.of(ctx),
-            color: textTheme.title.color,
+            color: textTheme.titleLarge?.color ?? Colors.transparent,
           ),
         ),
         orientation == Orientation.landscape
@@ -264,7 +264,7 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext ctx) {
     final currentTheme = Theme.of(ctx);
     final textTheme = (currentTheme.brightness == Brightness.dark
-        ? Theme.of(ctx).accentTextTheme
+        ? Theme.of(ctx).textTheme
         : Theme.of(ctx).primaryTextTheme);
 
     return PlatformScaffold(
@@ -342,7 +342,7 @@ class AboutScreen extends StatelessWidget {
         ),
       ),
       appBar: PlatformAppBar(
-        android: (ctx) => MaterialAppBarData(elevation: 0),
+        material: (ctx, platform) => MaterialAppBarData(elevation: 0),
         title: Text(
           AppLocalizations.of(ctx).about,
           style: TextStyle(color: Colors.white),
@@ -352,7 +352,7 @@ class AboutScreen extends StatelessWidget {
           padding: EdgeInsets.zero,
           icon: Icon(
             PlatformIcons(ctx).back,
-            color: Platform.isIOS ? getTheme().accentColor : null,
+            color: Platform.isIOS ? ColorScheme.fromSwatch().secondary : null,
           ),
           onPressed: () => Navigator.pop(ctx),
         ),

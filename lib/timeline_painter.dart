@@ -18,10 +18,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ranepa_timetable/main.dart';
-import 'package:ranepa_timetable/prefs.dart';
-import 'package:ranepa_timetable/timeline_models.dart';
-import 'package:ranepa_timetable/timetable_icons.dart';
+import 'package:ranepatimetable/main.dart';
+import 'package:ranepatimetable/prefs.dart';
+import 'package:ranepatimetable/timeline_models.dart';
+import 'package:ranepatimetable/timetable_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TimelinePainter extends CustomPainter {
@@ -85,7 +85,7 @@ class TimelinePainter extends CustomPainter {
     if (!(model.first && model.last)) {
       // Timeline rect
       final rectPaint = Paint()
-        ..color = theme.accentColor
+        ..color = theme.primaryColor
         ..strokeCap = StrokeCap.round;
 
       if (model.first || !model.last) {
@@ -107,7 +107,7 @@ class TimelinePainter extends CustomPainter {
 
       // Timeline border arc
       final arcPaint = Paint()
-        ..color = theme.accentColor
+        ..color = theme.primaryColor
         ..style = PaintingStyle.fill;
 
       if (model.first)
@@ -132,7 +132,7 @@ class TimelinePainter extends CustomPainter {
           circleOffset,
           circleRadius + circleRadiusAdd,
           Paint()
-            ..color = theme.accentColor
+            ..color = theme.primaryColor
             ..style = PaintingStyle.fill);
 
     // Icons
@@ -143,7 +143,7 @@ class TimelinePainter extends CustomPainter {
       text: TextSpan(
         style: TextStyle(
           fontFamily: fontFamily,
-          color: theme.accentTextTheme.body1.color,
+          color: theme.textTheme.bodyLarge?.color,
           fontSize: iconSize * 2,
         ),
         text: String.fromCharCode(model.lesson.iconCodePoint),
@@ -166,7 +166,7 @@ class TimelinePainter extends CustomPainter {
           text: TextSpan(
             style: TextStyle(
               fontFamily: fontFamily,
-              color: theme.textTheme.body1.color,
+              color: theme.textTheme.bodyLarge?.color,
               fontSize: 20,
             ),
             text: String.fromCharCode(
