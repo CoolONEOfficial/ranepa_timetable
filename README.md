@@ -4,7 +4,7 @@
 
 [![Build Status](https://travis-ci.org/CoolONEOfficial/ranepa_timetable.svg?branch=master)](https://travis-ci.org/CoolONEOfficial/ranepa_timetable)
 
-Custom crossplatform open-source NRU RANEPA mobile client written on Flutter.
+Experience the power of seamless cross-platform integration with our Flutter-based mobile client, expertly crafted by NRU RANEPA. This custom solution redefines versatility and opens up endless possibilities for your mobile experience.
 
 ## Features
 
