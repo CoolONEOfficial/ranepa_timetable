@@ -2,8 +2,6 @@
 
 # NRU RANEPA (Timetable)
 
-[![Build Status](https://travis-ci.org/CoolONEOfficial/ranepa_timetable.svg?branch=master)](https://travis-ci.org/CoolONEOfficial/ranepa_timetable)
-
 Experience the power of seamless cross-platform integration with our Flutter-based mobile client, expertly crafted by NRU RANEPA. This custom solution redefines versatility and opens up endless possibilities for your mobile experience.
 
 ## Features
